@@ -18,3 +18,4 @@ Styling:
 
 -Import workouts from mainsite using beautiful soup code. Should be able to run beatuiful soup file from inside the manage.py shell
     using `exec(open('filename.py').read())`
+    this depends on if mainsite has changed their html to get their workouts. would require rework of the beautiful soup code
