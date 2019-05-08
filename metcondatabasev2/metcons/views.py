@@ -22,6 +22,13 @@ class WorkoutListView(generic.ListView):
     model = Workout
     paginate_by = 10
 
+    def get_context_data(self, **kwargs):
+        context = super(WorkoutListView, self).get_context_data(**kwargs)
+        context.update({
+            'movement_list': Movement.objects.all(),
+        })
+        return context
+
 class WorkoutDetailView(generic.DetailView):
     model = Workout
 
@@ -43,7 +50,7 @@ def create_workout(request):
                               scaling_or_description_text=form.cleaned_data['workout_scaling'],
                               estimated_duration_in_minutes=form.cleaned_data['estimated_duration'],
                               what_website_workout_came_from=form.cleaned_data['what_website_workout_came_from'],
-                              classifications=None,
+                              classification=None,
                               )
             workout.save()
             #can't update movements and class until the workout has a valid id
@@ -65,16 +72,5 @@ def create_workout(request):
 class MovementCreate(CreateView):
     model = Movement
     fields = '__all__'
-    
-##class WorkoutCreate(CreateView):
-##    model = Workout
-##    fields = ['workout_text',
-##              'scaling_or_description_text',
-##              'what_website_workout_came_from',
-##              'estimated_duration_in_minutes',
-##              'classifications',
-##              ]
-##    #exclude = ['classifications']
-##    #model.classifications = None
-##    initial = {'classifications': Classification.objects.get(name='Total Body')}
+
               
