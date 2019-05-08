@@ -1,0 +1,11 @@
+Functionality to add:
+- Add workout instance for users
+- change number of times completed in base workout model to add together all times that workout was completed from all instances
+- change number of times completed in instance to be specific to that instance
+- Create search and filter funtionality for workouts based on movements or classification. use this link: https://www.w3schools.com/howto/howto_js_filter_dropdown.asp
+- Create a user homepage
+- Create user accounts and login page
+- Change create movement page to a popup page when link is clicked (this should allow for on page adding and refreshing of movements)
+- Allow for on page refreshing of movement tags/classifications
+- Allow for database updating of movement tags for all workouts at once when a new movement is added
+- Come up with a better way to list workouts instead of by workout number
