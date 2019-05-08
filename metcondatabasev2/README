@@ -12,7 +12,16 @@ Functionality to add:
 - Allow for on page refreshing of movement tags/classifications
 - Allow for database updating of movement tags for all workouts at once when a new movement is added
 - Come up with a better way to list workouts instead of by workout number
-
+- Add abbreviations to some movements?
+        could change movement_list to a list of lists:
+        movement_list = [
+                ['Pull Up', 'Upper Body', ['abbrvs']],...]
+         then in the for loop just use:
+         for i in all_movements:
+                for x, y, z in i:
+                        movement = Movement(name=x,
+                                        classification = Classification.objects.get(name=y),
+                                        abbreviations = [a for a in z]
 
 Styling:
 - Create stylebook for all screens
