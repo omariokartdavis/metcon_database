@@ -1,16 +1,92 @@
 {% extends "base_generic.html" %}
 
+
 {% block content %}
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+#myInput {
+  border-box: box-sizing;
+  background-image: url('searchicon.png');
+  background-position: 14px 12px;
+  background-repeat: no-repeat;
+  font-size: 16px;
+  padding: 14px 20px 12px 45px;
+  border: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+#myInput:focus {outline: 3px solid #ddd;}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f6f6f6;
+  min-width: 230px;
+  overflow: auto;
+  border: 1px solid #ddd;
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown a:hover {background-color: #ddd;}
+
+.show {display: block;}
+</style>
+</head>
 	<h1>Workout List</h1>
 	{% if workout_list %}
+	<div class="dropdown">
+		<input type="text" placeholder="Search.."  onclick="myDropdown()" id="myInput" onkeyup="filterFunction()">
+		<div id="myDropdown" class="dropdown-content">
+			{% for movement in movement_list %}
+				<a href="{{ movement.get_absolute_url }}">{{ movement.name }}</a> <!-- This currently just links to the movements detail page. doesn't actually filter the workout list page-->
+			{% endfor %}
+		</div>
+	</div>
 	<ul>
 		{% for workout in workout_list %}
 			<li>
-				<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a> - Classification: {{ workout.classifications }}, Movements: {{ workout.display_movement }}, Description: {{ workout.workout_text }}</p>
+				<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a> - Classification: {{ workout.classification }}, Movements: {{ workout.display_movement }}, Description: {{ workout.workout_text }}</p>
 			</li>
 		{% endfor %}
 	</ul>
 	{% else %}
 		<p>There are no workouts in the database.</p>
 	{% endif %}
+<script>
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myDropdown() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function filterFunction() {
+  var input, filter, ul, li, a, i;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  div = document.getElementById("myDropdown");
+  a = div.getElementsByTagName("a");
+  for (i = 0; i < a.length; i++) {
+    txtValue = a[i].textContent || a[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
+  }
+}
+</script>
 {% endblock %}
