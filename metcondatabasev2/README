@@ -17,7 +17,7 @@ Functionality to add:
 Styling:
 - Create stylebook for all screens
 - Create table for viewing workouts
-
+        similar to the styling of this: https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
 
 -Import workouts from mainsite using beautiful soup code. Should be able to run beatuiful soup file from inside the manage.py shell
     using `exec(open('filename.py').read())`
