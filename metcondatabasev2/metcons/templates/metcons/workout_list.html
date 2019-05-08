@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<h1>Workout List</h1>
+	{% if workout_list %}
+	<ul>
+		{% for workout in workout_list %}
+			<li>
+				<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a> - Classification: {{ workout.classifications }}, Movements: {{ workout.display_movement }}, Description: {{ workout.workout_text }}</p>
+			</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+		<p>There are no workouts in the database.</p>
+	{% endif %}
+{% endblock %}
