@@ -14,3 +14,7 @@ Functionality to add:
 Styling:
 - Create stylebook for all screens
 - Create table for viewing workouts
+
+
+-Import workouts from mainsite using beautiful soup code. Should be able to run beatuiful soup file from inside the manage.py shell
+    using `exec(open('filename.py').read())`
