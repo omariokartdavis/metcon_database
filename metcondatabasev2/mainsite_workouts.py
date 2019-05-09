@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup as bs
 import re
 
 #run with: exec(open('mainsite_workouts.py').read()) in python manage.py shell
-#doesn't work for 2019 as Crossfit Mainsite changed their format of posting workouts for that year
+#doesn't work for 2019 or <= 2017 as Crossfit Mainsite changed their format of posting workouts for those years
 year = 2018
 while year >= 2018:
     page_number = 1
