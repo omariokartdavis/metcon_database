@@ -34,7 +34,7 @@
   z-index: 1;
 }
 
-.dropdown-content a {
+.dropdown-content option {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
@@ -49,19 +49,24 @@
 	<h1>Workout List</h1>
 	{% if workout_list %}
 	<div class="dropdown">
-		<input type="text" placeholder="Search.."  onclick="myDropdown()" id="myInput" onkeyup="filterFunction()">
-		<div id="myDropdown" class="dropdown-content">
-			{% for movement in movement_list %}
-				<a href="{{ movement.get_absolute_url }}">{{ movement.name }}</a> <!-- This currently just links to the movements detail page. doesn't actually filter the workout list page-->
-			{% endfor %}
-		</div>
+		<form method='GET'>
+			<input type="text" placeholder="Search.."  name="q" onclick="myDropdown()" id="myInput" onkeyup="filterFunction()">
+			<input type='submit' class='button'>
+			<div id="myDropdown" class="dropdown-content">
+				<select name="q" size="15" multiple> <!--currently only returning based on 1 entry, onchange="this.form.submit()"-->
+					{% for movement in movement_list %}
+						<option>{{ movement.name }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</form>
 	</div>
 	<ul>
 		{% for workout in workout_list %}
 			<li>
 				<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
 				<br />Classification: {{ workout.classifications }}
-				<br />Movements: {% for movement in workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %} <!--{{ workout.display_movement }}-->
+				<br />Movements: {% for movement in workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %}
 				<br />Description: {{ workout.workout_text|linebreaks }}</p>
 			</li>
 		{% endfor %}
@@ -77,17 +82,17 @@ function myDropdown() {
 }
 
 function filterFunction() {
-  var input, filter, ul, li, a, i;
+  var input, filter, ul, li, option, i;
   input = document.getElementById("myInput");
   filter = input.value.toUpperCase();
   div = document.getElementById("myDropdown");
-  a = div.getElementsByTagName("a");
-  for (i = 0; i < a.length; i++) {
-    txtValue = a[i].textContent || a[i].innerText;
+  option = div.getElementsByTagName("option");
+  for (i = 0; i < option.length; i++) {
+    txtValue = option[i].textContent || option[i].innerText;
     if (txtValue.toUpperCase().indexOf(filter) > -1) {
-      a[i].style.display = "";
+      option[i].style.display = "";
     } else {
-      a[i].style.display = "none";
+      option[i].style.display = "none";
     }
   }
 }
