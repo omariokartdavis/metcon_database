@@ -25,7 +25,7 @@ while year >= 2017:
                 for paragraph in div.select('p'):
                     if paragraph.find_all(string=re.compile('Merry Christmas|Related|Scroll for scaling options|Compare|Post|Tips and Scaling')):
                         continue
-                    workout_part = paragraph.get_text()
+                    workout_part = paragraph.get_text().replace('-', ' ')
                     w.append(workout_part)
                 workout = '\n'.join(w)
                 print(workout)
