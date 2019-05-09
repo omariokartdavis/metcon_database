@@ -8,7 +8,6 @@
 
 #myInput {
   border-box: box-sizing;
-  background-image: url('searchicon.png');
   background-position: 14px 12px;
   background-repeat: no-repeat;
   font-size: 16px;
@@ -26,12 +25,7 @@
 
 .dropdown-content {
   display: none;
-  position: absolute;
-  background-color: #f6f6f6;
-  min-width: 230px;
-  overflow: auto;
-  border: 1px solid #ddd;
-  z-index: 1;
+  position: relative;
 }
 
 .dropdown-content option {
@@ -41,7 +35,7 @@
   display: block;
 }
 
-.dropdown a:hover {background-color: #ddd;}
+.dropdown option:hover {background-color: #ddd;}
 
 .show {display: block;}
 </style>
