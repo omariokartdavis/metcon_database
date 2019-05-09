@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<h1>Movement List</h1>
+	{% if movement_list %}
+	<ul>
+		{% for movement in movement_list %}
+			<li>
+				<a href="{{ movement.get_absolute_url }}">{{ movement.name }}</a>
+			</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+		<p>There are no movements in the database.</p>
+	{% endif %}
+{% endblock %}

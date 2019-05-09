@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<h1>{{ workout.display_name }}</h1>
+	<h3>Classification: {{ workout.classification }}</h3>
+	<h4>Date Created: {{ workout.date_created }}</h4>
+	<p><strong>Description:</strong> {{ workout.workout_text|linebreaks }}</p>
+	<p><strong>Scaling:</strong> {{ workout.scaling_or_description_text|linebreaks }}</p>
+	<p><strong>Movements:</strong> {% for movement in workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+	<p><strong>Estimated Duration:</strong> {{ workout.estimated_duration_in_minutes }}</p>
+	<p><strong>Number of Times Completed:</strong> {{ workout.number_of_times_completed }}</p>
+	
+	<p>Movement isn't tagged?</p>
+	<form action="{% url 'movement_create' %}">
+		<input type="submit" value="Create Movement" />
+	</form>
+	<button onclick= {{ workout.update_movements_and_classification }} >Update Workout</button><p>Click update workout and then refresh page to update movement tags</p>
+{% endblock %}
