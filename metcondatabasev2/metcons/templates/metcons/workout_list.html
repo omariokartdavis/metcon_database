@@ -59,7 +59,10 @@
 	<ul>
 		{% for workout in workout_list %}
 			<li>
-				<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a> - Classification: {{ workout.classification }}, Movements: {{ workout.display_movement }}, Description: {{ workout.workout_text }}</p>
+				<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
+				<br />Classification: {{ workout.classifications }}
+				<br />Movements: {% for movement in workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %} <!--{{ workout.display_movement }}-->
+				<br />Description: {{ workout.workout_text|linebreaks }}</p>
 			</li>
 		{% endfor %}
 	</ul>
