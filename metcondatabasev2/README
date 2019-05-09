@@ -2,6 +2,7 @@ Edited files on 5/9/2019:
 workout_list.html
 workout_detail.html
 added mainsite_workouts.py
+views.py
 
 Functionality to add:
 - Make movement tags match movement names by regex full match?
