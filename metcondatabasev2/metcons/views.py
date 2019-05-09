@@ -21,7 +21,7 @@ def index(request):
 class WorkoutListView(generic.ListView):
     model = Workout
     paginate_by = 10
-
+    
     def get_context_data(self, **kwargs):
         context = super(WorkoutListView, self).get_context_data(**kwargs)
         context.update({
@@ -29,6 +29,15 @@ class WorkoutListView(generic.ListView):
         })
         return context
 
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            query = query.title()
+            object_list = Workout.objects.filter(movements__name = query)
+        else:
+            object_list = Workout.objects.all()
+        return object_list
+    
 class WorkoutDetailView(generic.DetailView):
     model = Workout
 
@@ -72,5 +81,4 @@ def create_workout(request):
 class MovementCreate(CreateView):
     model = Movement
     fields = '__all__'
-
-              
+    
