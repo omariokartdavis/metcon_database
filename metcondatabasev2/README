@@ -6,6 +6,7 @@ Functionality to add:
         use this link: https://www.w3schools.com/howto/howto_js_filter_dropdown.asp
                 search filter but without dropdown: https://www.w3schools.com/howto/howto_js_filter_lists.asp
         this might help too: https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
+        - Created a search and dropdown menu for movements on the workout list page. Need to add functions to filter list based on movements selected now.
 - Create a user homepage
 - Create user accounts and login page
 - Change create movement page to a popup page when link is clicked (this should allow for on page adding and refreshing of movements)
