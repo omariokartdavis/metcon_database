@@ -95,7 +95,7 @@ class Workout(models.Model):
             
             
         class Meta:
-                ordering = ['-number_of_times_completed', '-date_created', '-id']
+                ordering = [ '-date_created', '-number_of_times_completed', '-id']
 
         def display_name(self):
                 name = "Workout " + str(self.id)
