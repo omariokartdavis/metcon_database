@@ -20,6 +20,7 @@ Functionality completed on 5/10/2019:
 
 Functionality to add:
 - make one dropdown close if you click on the other
+        - on work computer script.js should have functionality for turning display to show but not back to hide
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
@@ -28,6 +29,7 @@ Functionality to add:
 - change number of times completed in base workout model to add together all times that workout was completed from all instances
         - ?keep count variable and create a method that updates that count variable based on all count variables in instances?
                 - ?maybe only calls update when an instance is updated?
+                - ?maybe only called once a night overnight?
 - change number of times completed in instance to be specific to that instance
         - ?keep count variable and create a method that updates the count variable whenever a box is checked?
 - Create a user homepage
@@ -35,6 +37,10 @@ Functionality to add:
 - Change create movement page to a popup page when link is clicked (this should allow for on page adding and refreshing of movements)
 - Allow for on page refreshing of movement tags/classifications
         -should be doable with javascript to refresh page after updating.
+        -on create movement button click open a popup to add movement. on save click run three functions:
+                -save movement
+                -update current workout
+                -refresh page
 - Come up with a better way to list workouts instead of by workout number
 - Add search and filter functionality for duration of workout
         -requires adding range functionality
