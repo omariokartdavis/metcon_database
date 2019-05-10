@@ -6,7 +6,7 @@ workout_list.html
 views.py
 models.py
 
-Functionality completed:
+Functionality completed on 5/10/2019:
 - Create search and filter for workouts based on movements and classifications
         - not including fully case insentive search. Can search for exact match or title case only.
         - including multiple movement search.
