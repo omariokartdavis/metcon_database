@@ -32,6 +32,8 @@ Functionality to add:
                 - ?maybe only called once a night overnight?
 - change number of times completed in instance to be specific to that instance
         - ?keep count variable and create a method that updates the count variable whenever a box is checked?
+- Add search and filter for popularity of workout.
+        - only possible after adding count variables for base workout and workoutinstance
 - Create a user homepage
 - Create user accounts and login page
 - Change create movement page to a popup page when link is clicked (this should allow for on page adding and refreshing of movements)
@@ -42,6 +44,9 @@ Functionality to add:
                 -update current workout
                 -refresh page
 - Come up with a better way to list workouts instead of by workout number
+        -add name to workout model or workoutinstance model and allow for blank/null. If name exists list by name otherwise list
+                by "workout " + str(id)
+        -would also change def __str__ to if statement on if name exists otherwise same as above
 - Add search and filter functionality for duration of workout
         -requires adding range functionality
 - Populate search box with chosen filters
