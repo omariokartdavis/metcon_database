@@ -70,7 +70,7 @@
 	{% if workout_list %}
 	<div class="dropdown">
 		<form method='GET'>
-			<input type="text" placeholder="Search Movements.."  name="q" onclick="myMovementDropdown()" id="myMovementInput" onkeyup="filterMovementFunction()">
+			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" onclick="myMovementDropdown()" id="myMovementInput" onkeyup="filterMovementFunction()">
 			<div id="myMovementDropdown" class="dropdown-content">
 				<select name="q" size="15" multiple>
 					{% for movement in movement_list %}
@@ -78,7 +78,7 @@
 					{% endfor %}
 				</select>
 			</div>
-			<input type="text" placeholder="Search Classifications.."  name="z" onclick="myClassificationDropdown()" id="myClassificationInput" onkeyup="filterClassificationFunction()">
+			<input type="text" class = "textinput" placeholder="Search Classifications.."  name="z" onclick="myClassificationDropdown()" id="myClassificationInput" onkeyup="filterClassificationFunction()">
 			<div id="myClassificationDropdown" class="dropdown-content">
 				<select name="z" size="5">
 					{% for classification in classification_list %}
@@ -144,5 +144,20 @@ function filterClassificationFunction() {
     }
   }
 }
+
+window.onclick = function(event) {
+  if (!event.target.matches('.textinput')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
+
 </script>
 {% endblock %}
