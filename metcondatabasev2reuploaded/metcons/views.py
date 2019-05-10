@@ -6,6 +6,7 @@ from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView
 
 from metcons.forms import CreateWorkoutForm
+from django.db.models import Q
 
 def index(request):
     """View function for home page of site"""
@@ -30,20 +31,18 @@ class WorkoutListView(generic.ListView):
         })
         return context
 
-    def get_queryset(self):
-        query1 = self.request.GET.get('q')
+    def get_queryset(self):           
+        object_list = Workout.objects.all()
+        query1 = self.request.GET.getlist('q')
         query2 = self.request.GET.get('z')
         if query1:
-            object_list = Workout.objects.filter(movements__name = query1)
-            if not object_list:
-                query1 = query1.title()
-                object_list = Workout.objects.filter(movements__name = query1)
-            if query2:
-                object_list = object_list.filter(classification__name = query2)
-        elif query2:
-            object_list = Workout.objects.filter(classification__name = query2)
-        else:
-            object_list = Workout.objects.all()
+            query1.pop(0) #first entry in my list is bogus and causes failures in rest of filters
+            for i in query1:
+                object_list = object_list.filter(movements__name = i)
+                if not object_list:
+                    ojbect_list = Workout.objects.filter(movements__name = i.title())
+        if query2:
+            object_list = object_list.filter(classification__name = query2)        
         return object_list
     
 class WorkoutDetailView(generic.DetailView):
