@@ -79,6 +79,7 @@ class MovementList:
         'Hang Dumbbell Snatch': t,
         'Dumbbel Power Snatch': t,
         'Overhead Walking Lunge': t,
+        'Turkish Get Up': t,
         'Sit Up': co,
         'GHD Sit Up': co,
         'L Sit': co,
