@@ -25,9 +25,11 @@ while year >= 2018:
                 if div.find_all(string=re.compile(r'^Scaling$')):
                     scaling_text = div.get_text()
                     scaling_text = scaling_text[10:]
+                    scaling_text = re.sub(r'(?<=[a-z])-(?=[a-z])', ' ', scaling_text)
                 elif div.find_all(string=re.compile(r'^Scaled Option$')):
                     scaling_text = div.get_text()
                     scaling_text = scaling_text[16:]
+                    scaling_text = re.sub(r'(?<=[a-z])-(?=[a-z])', ' ', scaling_text)
                 else:
                     scaling_text = None
             for div in eachworkout.select('div[class="col-sm-6"]'):
@@ -38,7 +40,7 @@ while year >= 2018:
                 for paragraph in div.select('p'):
                     if paragraph.find_all(string=re.compile('Merry Christmas|Related|Scroll for scaling options|Compare|Post|Tips and Scaling')):
                         continue
-                    workout_part = paragraph.get_text().replace('-', ' ')
+                    workout_part = re.sub(r'(?<=[a-z])-(?=[a-z])', ' ', paragraph.get_text())
                     w.append(workout_part)
                 workout_text = '\n'.join(w)
             workout = Workout(workout_text=workout_text,
