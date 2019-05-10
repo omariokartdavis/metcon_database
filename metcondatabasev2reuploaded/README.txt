@@ -1,4 +1,5 @@
 Edited files on 5/10/2019:
+Don't forget to createsuperuser if deleting the database
 movements_list.py (includes core and classifications update. May need to reset database for this)
 workout_list.html
 views.py
