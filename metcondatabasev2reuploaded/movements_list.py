@@ -3,6 +3,7 @@ class MovementList:
     t = 'Total Body'
     l = 'Lower Body'
     c = 'Cardio'
+    co = 'Core'
 
     movement_list = {
         'Pull Up': u,
@@ -77,17 +78,31 @@ class MovementList:
         'Sumo Deadlift High Pull': t,
         'Hang Dumbbell Snatch': t,
         'Dumbbel Power Snatch': t,
-        'Sit Up': t,
-        'GHD Sit Up': t,
-        'L Sit': t,
         'Overhead Walking Lunge': t,
+        'Sit Up': co,
+        'GHD Sit Up': co,
+        'L Sit': co,
+        'V Up': co,
+        'Plank': co,
         }
+
+class ClassificationList:
+    class_list = ['Upper Body', 'Lower Body', 'Total Body', 'Cardio', 'Core']
 
 # to call this function to add movements to the database run:
 # python manage.py shell
 # exec(open('movements_list.py').read())
 
 from metcons.models import Classification, Movement, Workout
+
+all_classifications = ClassificationList()
+current_classifications_in_database = Classification.objects.all()
+current_classifications_in_database_names = [i.name for i in current_classifications_in_database]
+
+for k in all_classifications.class_list:
+    if k not in current_classifications_in_database_names:
+        classification = Classification(name=k)
+        classification.save()
 
 all_movements = MovementList()
 current_movements_in_database = Movement.objects.all()
