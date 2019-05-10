@@ -22,6 +22,7 @@ Functionality to add:
 - Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
 - Add workout instance for users
+        - helpful info from bookinstance model here: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Models
 - change number of times completed in base workout model to add together all times that workout was completed from all instances
 - change number of times completed in instance to be specific to that instance
 - Create a user homepage
