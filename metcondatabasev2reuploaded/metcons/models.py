@@ -26,7 +26,6 @@ class Classification(models.Model):
 class Movement(models.Model):
 	"""Model representing a movement type in a workout"""
 	name = models.CharField(max_length=200)
-
 	classification = models.ForeignKey(Classification, default=3, on_delete=models.CASCADE)
 	
 	class Meta:
@@ -86,6 +85,8 @@ class Workout(models.Model):
                 self.classification = Classification.objects.get(name='Lower Body')
             elif 'Cardio' in movement_classifications:
                 self.classification = Classification.objects.get(name='Cardio')
+            elif 'Core' in movement_classifications:
+                self.classification = Classification.objects.get(name='Core')
             else:
                 self.classification = None
 
