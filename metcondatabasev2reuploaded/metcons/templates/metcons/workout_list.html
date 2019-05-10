@@ -71,9 +71,8 @@
 	<div class="dropdown">
 		<form method='GET'>
 			<input type="text" placeholder="Search Movements.."  name="q" onclick="myMovementDropdown()" id="myMovementInput" onkeyup="filterMovementFunction()">
-			<!--<input type='submit' class='button'>-->
 			<div id="myMovementDropdown" class="dropdown-content">
-				<select name="q" size="15" multiple> <!--currently only returning based on 1 entry. need to change get queryset method in views to allow for multiple filters, onchange="this.form.submit()"-->
+				<select name="q" size="15" multiple>
 					{% for movement in movement_list %}
 						<option>{{ movement.name }}</option>
 					{% endfor %}
