@@ -3,22 +3,29 @@ movements_list.py (includes core and classifications update. May need to reset d
 workout_list.html
 views.py
 
+Functionality completed:
+- Create search and filter for workouts based on movements and classifications
+        - not including fully case insentive search. Can search for exact match or title case only
+        -related links:
+                https://www.w3schools.com/howto/howto_js_filter_dropdown.asp
+                https://www.w3schools.com/howto/howto_js_filter_lists.asp
+                https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
+
+
 Functionality to add:
 - Make movement tags match movement names by regex full match?
+        - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
 - Add workout instance for users
 - change number of times completed in base workout model to add together all times that workout was completed from all instances
 - change number of times completed in instance to be specific to that instance
-- Create search and filter funtionality for workouts based on movements or classification.
-        use this link: https://www.w3schools.com/howto/howto_js_filter_dropdown.asp
-                search filter but without dropdown: https://www.w3schools.com/howto/howto_js_filter_lists.asp
-        this might help too: https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
-        - Created a search and dropdown menu for movements on the workout list page. Need to add functions to filter list based on movements selected now.
 - Create a user homepage
 - Create user accounts and login page
 - Change create movement page to a popup page when link is clicked (this should allow for on page adding and refreshing of movements)
 - Allow for on page refreshing of movement tags/classifications
+        -should be doable with javascript to refresh page after updating.
 - Allow for database updating of movement tags for all workouts at once when a new movement is added
 - Come up with a better way to list workouts instead of by workout number
+- Add search and filter functionality for duration of workout
 - Add abbreviations to some movements?
         could change movement_list to a list of lists:
         movement_list = [
@@ -35,6 +42,3 @@ Styling:
 - Create table for viewing workouts
         similar to the styling of this: https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
 
--Import workouts from mainsite using beautiful soup code. Should be able to run beatuiful soup file from inside the manage.py shell
-    using `exec(open('filename.py').read())`
-    Include variable of workout to say 'workout from crossfit mainsite' for creating workouts.
