@@ -1,6 +1,7 @@
 Edited files on 5/10/2019:
 Don't forget to createsuperuser if deleting the database
 movements_list.py (includes core and classifications update. May need to reset database for this)
+Created update_all_workout_movement_and_class_tags.py
 workout_list.html
 views.py
 models.py
@@ -14,7 +15,7 @@ Functionality completed:
                 https://www.w3schools.com/howto/howto_js_filter_lists.asp
                 https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
 - Dropdowns now close when clicking out
-
+- Allow for database updating of movement tags for all workouts at once when a new movement is added
 
 Functionality to add:
 - Endless Scroll of workouts
@@ -28,7 +29,6 @@ Functionality to add:
 - Change create movement page to a popup page when link is clicked (this should allow for on page adding and refreshing of movements)
 - Allow for on page refreshing of movement tags/classifications
         -should be doable with javascript to refresh page after updating.
-- Allow for database updating of movement tags for all workouts at once when a new movement is added
 - Come up with a better way to list workouts instead of by workout number
 - Add search and filter functionality for duration of workout
 - Add abbreviations to some movements?
