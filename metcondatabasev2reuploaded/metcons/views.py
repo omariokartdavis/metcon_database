@@ -26,16 +26,22 @@ class WorkoutListView(generic.ListView):
         context = super(WorkoutListView, self).get_context_data(**kwargs)
         context.update({
             'movement_list': Movement.objects.all(),
+            'classification_list': Classification.objects.all(),
         })
         return context
 
     def get_queryset(self):
-        query = self.request.GET.get('q')
-        if query:
-            object_list = Workout.objects.filter(movements__name = query)
+        query1 = self.request.GET.get('q')
+        query2 = self.request.GET.get('z')
+        if query1:
+            object_list = Workout.objects.filter(movements__name = query1)
             if not object_list:
-                query = query.title()
-                object_list = Workout.objects.filter(movements__name = query)
+                query1 = query1.title()
+                object_list = Workout.objects.filter(movements__name = query1)
+            if query2:
+                object_list = object_list.filter(classification__name = query2)
+        elif query2:
+            object_list = Workout.objects.filter(classification__name = query2)
         else:
             object_list = Workout.objects.all()
         return object_list
