@@ -8,11 +8,12 @@ models.py
 Functionality completed:
 - Create search and filter for workouts based on movements and classifications
         - not including fully case insentive search. Can search for exact match or title case only.
-        - not including multiple movement search.
+        - including multiple movement search.
         - related links:
                 https://www.w3schools.com/howto/howto_js_filter_dropdown.asp
                 https://www.w3schools.com/howto/howto_js_filter_lists.asp
                 https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
+- Dropdowns now close when clicking out
 
 
 Functionality to add:
@@ -30,7 +31,6 @@ Functionality to add:
 - Allow for database updating of movement tags for all workouts at once when a new movement is added
 - Come up with a better way to list workouts instead of by workout number
 - Add search and filter functionality for duration of workout
-- Add search and filter of multiple movements
 - Add abbreviations to some movements?
         could change movement_list to a list of lists:
         movement_list = [
