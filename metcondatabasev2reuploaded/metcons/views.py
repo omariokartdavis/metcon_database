@@ -69,10 +69,7 @@ def create_workout(request):
                               classification=None,
                               )
             workout.save()
-            #can't update movements and class until the workout has a valid id
-            workout.update_movements()
-            workout.update_classification()
-            workout.save()
+            workout.update_movements_and_classification()
             
             return HttpResponseRedirect(workout.get_absolute_url())
 
