@@ -37,6 +37,8 @@ Functionality to add:
 - Come up with a better way to list workouts instead of by workout number
 - Add search and filter functionality for duration of workout
         -requires adding range functionality
+- Populate search box with chosen filters
+- Add filters currently active below search boxes after a filter is chosen
 - Add abbreviations to some movements?
         could change movement_list to a list of lists:
         movement_list = [
