@@ -2,6 +2,7 @@ Edited files on 5/10/2019:
 movements_list.py (includes core and classifications update. May need to reset database for this)
 workout_list.html
 views.py
+models.py
 
 Functionality completed:
 - Create search and filter for workouts based on movements and classifications
