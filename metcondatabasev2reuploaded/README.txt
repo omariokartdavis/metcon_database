@@ -31,6 +31,7 @@ Functionality to add:
         -should be doable with javascript to refresh page after updating.
 - Come up with a better way to list workouts instead of by workout number
 - Add search and filter functionality for duration of workout
+        -requires adding range functionality
 - Add abbreviations to some movements?
         could change movement_list to a list of lists:
         movement_list = [
