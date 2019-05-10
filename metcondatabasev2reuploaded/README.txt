@@ -14,10 +14,11 @@ Functionality completed on 5/10/2019:
                 https://www.w3schools.com/howto/howto_js_filter_dropdown.asp
                 https://www.w3schools.com/howto/howto_js_filter_lists.asp
                 https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
-- Dropdowns now close when clicking out
+- Dropdowns now close when clicking out of all search boxes
 - Allow for database updating of movement tags for all workouts at once when a new movement is added
 
 Functionality to add:
+- make one dropdown close if you click on the other
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
