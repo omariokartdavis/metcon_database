@@ -96,7 +96,7 @@ current_movements_in_database_names = [i.name for i in current_movements_in_data
 for k, v in all_movements.movement_list.items():
     if k not in current_movements_in_database_names:
         #change 'classification=' below to classifications for work.
-        movement = Movement(name=k, classifications=Classification.objects.get(name=v))
+        movement = Movement(name=k, classification=Classification.objects.get(name=v))
         movement.save()
 
     
