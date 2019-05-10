@@ -15,6 +15,7 @@ Functionality completed:
 
 
 Functionality to add:
+- Endless Scroll of workouts
 - Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
 - Add workout instance for users
