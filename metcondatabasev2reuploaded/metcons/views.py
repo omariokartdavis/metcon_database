@@ -32,8 +32,10 @@ class WorkoutListView(generic.ListView):
     def get_queryset(self):
         query = self.request.GET.get('q')
         if query:
-            query = query.title()
             object_list = Workout.objects.filter(movements__name = query)
+            if not object_list:
+                query = query.title()
+                object_list = Workout.objects.filter(movements__name = query)
         else:
             object_list = Workout.objects.all()
         return object_list
