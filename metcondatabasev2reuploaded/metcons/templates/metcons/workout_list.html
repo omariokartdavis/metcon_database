@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 
-#myInput {
+#myMovementInput {
   border-box: box-sizing;
   background-position: 14px 12px;
   background-repeat: no-repeat;
@@ -16,7 +16,19 @@
   border-bottom: 1px solid #ddd;
 }
 
-#myInput:focus {outline: 3px solid #ddd;}
+#myMovementInput:focus {outline: 3px solid #ddd;}
+
+#myClassificationInput {
+  border-box: box-sizing;
+  background-position: 14px 12px;
+  background-repeat: no-repeat;
+  font-size: 16px;
+  padding: 14px 20px 12px 45px;
+  border: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+#myClassificationInput:focus {outline: 3px solid #ddd;}
 
 .dropdown {
   position: relative;
@@ -25,7 +37,21 @@
 
 .dropdown-content {
   display: none;
-  position: relative;
+}
+
+#myMovementDropdown {
+  position: absolute;
+  background-color: #f6f6f6;
+  border: 1px solid #ddd;
+  z-index: 1;
+}
+
+#myClassificationDropdown {
+  position: absolute;
+  right: 0;
+  background-color: #f6f6f6;
+  border: 1px solid #ddd;
+  z-index: 1;
 }
 
 .dropdown-content option {
@@ -44,15 +70,24 @@
 	{% if workout_list %}
 	<div class="dropdown">
 		<form method='GET'>
-			<input type="text" placeholder="Search.."  name="q" onclick="myDropdown()" id="myInput" onkeyup="filterFunction()">
-			<input type='submit' class='button'>
-			<div id="myDropdown" class="dropdown-content">
-				<select name="q" size="15" multiple> <!--currently only returning based on 1 entry, onchange="this.form.submit()"-->
+			<input type="text" placeholder="Search Movements.."  name="q" onclick="myMovementDropdown()" id="myMovementInput" onkeyup="filterMovementFunction()">
+			<!--<input type='submit' class='button'>-->
+			<div id="myMovementDropdown" class="dropdown-content">
+				<select name="q" size="15" multiple> <!--currently only returning based on 1 entry. need to change get queryset method in views to allow for multiple filters, onchange="this.form.submit()"-->
 					{% for movement in movement_list %}
 						<option>{{ movement.name }}</option>
 					{% endfor %}
 				</select>
 			</div>
+			<input type="text" placeholder="Search Classifications.."  name="z" onclick="myClassificationDropdown()" id="myClassificationInput" onkeyup="filterClassificationFunction()">
+			<div id="myClassificationDropdown" class="dropdown-content">
+				<select name="z" size="5">
+					{% for classification in classification_list %}
+						<option>{{ classification.name }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<input type='submit' class='button'>
 		</form>
 	</div>
 	<ul>
@@ -60,7 +95,7 @@
 			<li>
 				<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
 				<br />Classification: {{ workout.classification }}
-				<br />Movements: {% for movement in workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %}
+				<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}
 				<br />Description: {{ workout.workout_text|linebreaks }}</p>
 			</li>
 		{% endfor %}
@@ -71,15 +106,35 @@
 <script>
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
-function myDropdown() {
-  document.getElementById("myDropdown").classList.toggle("show");
+function myMovementDropdown() {
+  document.getElementById("myMovementDropdown").classList.toggle("show");
 }
 
-function filterFunction() {
+function myClassificationDropdown() {
+  document.getElementById("myClassificationDropdown").classList.toggle("show");
+}
+
+function filterMovementFunction() {
   var input, filter, ul, li, option, i;
-  input = document.getElementById("myInput");
+  input = document.getElementById("myMovementInput");
   filter = input.value.toUpperCase();
-  div = document.getElementById("myDropdown");
+  div = document.getElementById("myMovementDropdown");
+  option = div.getElementsByTagName("option");
+  for (i = 0; i < option.length; i++) {
+    txtValue = option[i].textContent || option[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      option[i].style.display = "";
+    } else {
+      option[i].style.display = "none";
+    }
+  }
+}
+
+function filterClassificationFunction() {
+  var input, filter, ul, li, option, i;
+  input = document.getElementById("myClassificationInput");
+  filter = input.value.toUpperCase();
+  div = document.getElementById("myClassificationDropdown");
   option = div.getElementsByTagName("option");
   for (i = 0; i < option.length; i++) {
     txtValue = option[i].textContent || option[i].innerText;
