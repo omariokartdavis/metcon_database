@@ -19,12 +19,15 @@ Functionality completed on 5/10/2019:
 
 Functionality to add:
 - Endless Scroll of workouts
-- Make movement tags match movement names by regex full match?
+- ?Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
 - Add workout instance for users
         - helpful info from bookinstance model here: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Models
 - change number of times completed in base workout model to add together all times that workout was completed from all instances
+        - ?keep count variable and create a method that updates that count variable based on all count variables in instances?
+                - ?maybe only calls update when an instance is updated?
 - change number of times completed in instance to be specific to that instance
+        - ?keep count variable and create a method that updates the count variable whenever a box is checked?
 - Create a user homepage
 - Create user accounts and login page
 - Change create movement page to a popup page when link is clicked (this should allow for on page adding and refreshing of movements)
