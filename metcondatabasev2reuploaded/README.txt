@@ -1,5 +1,7 @@
-Edited files on 5/9/2019:
-movements_list.py (need to upload from work computer)
+Edited files on 5/10/2019:
+movements_list.py
+workout_list.html
+views.py
 
 Functionality to add:
 - Make movement tags match movement names by regex full match?
