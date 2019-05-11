@@ -10,7 +10,9 @@ Functionality completed on 5/11/2019:
 - don't hide dropdown when reclicking in search box. only hide on clicking out of all search boxes
 - added workout instance model
 - added workout instance completed dates model
-
+- added workout instance count to workout model
+        - also displayed on admin page
+        
 Functionality to add:
 - make one dropdown close if you click on the other
         - likely have to make all dropdowns a different class for this to work.
