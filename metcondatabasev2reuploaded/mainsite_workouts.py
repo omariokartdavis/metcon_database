@@ -3,6 +3,9 @@ import datetime as dt
 import urllib.request
 from bs4 import BeautifulSoup as bs
 import re
+from django.contrib.auth.models import User
+
+user = User.objects.get(username='odavis')
 
 #run with: exec(open('mainsite_workouts.py').read()) in python manage.py shell
 #doesn't work for 2019 or <= 2017 as Crossfit Mainsite changed their format of posting workouts for those years
@@ -48,6 +51,7 @@ while year >= 2018:
                               what_website_workout_came_from='Crossfit Mainsite',
                               classification=None,
                               date_created=date_in_datetime,
+                              created_by_user=user,
                               )
             workout.save()
             workout.update_movements_and_classification()
