@@ -3,6 +3,8 @@ workouts_list.html (haven't reuploaded)
 views.py (haven't reuploaded)
 models.py (haven't reuploaded)
 admin.py (haven't reuploaded)
+mainsite_workouts.py (no)
+movements_list.py (no)
 
 Functionality completed on 5/11/2019:
 - multiple search boxes for movements added
