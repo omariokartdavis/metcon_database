@@ -1,11 +1,6 @@
-Edited files on 5/10/2019:
-Don't forget to createsuperuser if deleting the database
-movements_list.py (includes core and classifications update. May need to reset database for this)
-mainsite_workouts.py
-Created update_all_workout_movement_and_class_tags.py
-workout_list.html
-views.py
-models.py
+Edited files on 5/11/2019:
+workouts_list.html (haven't reuploaded)
+views.py (haven't reuploaded)
 
 Functionality completed on 5/10/2019:
 - Create search and filter for workouts based on movements and classifications
