@@ -4,7 +4,7 @@ views.py (haven't reuploaded)
 
 Functionality completed on 5/11/2019:
 - multiple search boxes for movements added
-- populate text input on dropdown click
+- populate search box with chosen filters
 - don't hide dropdown when reclicking in search box. only hide on clicking out of all search boxes
 
 
@@ -40,8 +40,8 @@ Functionality to add:
         -would also change def __str__ to if statement on if name exists otherwise same as above
 - Add search and filter functionality for duration of workout
         -requires adding range functionality
-- Populate search box with chosen filters
 - Add filters currently active below search boxes after a filter is chosen
+- Add back button to previous search after filtering
 - Add abbreviations to some movements?
         could change movement_list to a list of lists:
         movement_list = [
