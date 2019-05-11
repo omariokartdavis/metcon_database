@@ -11,6 +11,7 @@ Functionality completed on 5/11/2019:
 Functionality to add:
 - make one dropdown close if you click on the other
         - likely have to make all dropdowns a different class for this to work.
+- consolidate javascript code on workouts_list.html
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
