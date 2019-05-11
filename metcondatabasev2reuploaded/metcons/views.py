@@ -36,12 +36,15 @@ class WorkoutListView(generic.ListView):
         query1 = self.request.GET.getlist('q')
         query2 = self.request.GET.get('z')
         if query1:
-            query1.pop(0) #first entry in my list is bogus and causes failures in rest of filters
             for i in query1:
-                object_list = object_list.filter(movements__name = i)
-                if not object_list:
-                    ojbect_list = Workout.objects.filter(movements__name = i.title())
+                if i != '':
+                    object_list2 = object_list.filter(movements__name = i)
+                    if not object_list2:
+                        object_list2 = object_list.filter(movements__name = i.title())
+                    object_list = object_list2
         if query2:
+            if query2.islower():
+                query2 = query2.title()
             object_list = object_list.filter(classification__name = query2)        
         return object_list
     
