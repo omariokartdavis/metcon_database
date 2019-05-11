@@ -1,12 +1,15 @@
 Edited files on 5/11/2019:
 workouts_list.html (haven't reuploaded)
 views.py (haven't reuploaded)
+models.py (haven't reuploaded)
+admin.py (haven't reuploaded)
 
 Functionality completed on 5/11/2019:
 - multiple search boxes for movements added
 - populate search box with chosen filters
 - don't hide dropdown when reclicking in search box. only hide on clicking out of all search boxes
-
+- added workout instance model
+- added workout instance completed dates model
 
 Functionality to add:
 - make one dropdown close if you click on the other
@@ -15,8 +18,6 @@ Functionality to add:
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
-- Add workout instance for users
-        - helpful info from bookinstance model here: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Models
 - change number of times completed in base workout model to add together all times that workout was completed from all instances
         - ?keep count variable and create a method that updates that count variable based on all count variables in instances?
                 - ?maybe only calls update when an instance is updated?
