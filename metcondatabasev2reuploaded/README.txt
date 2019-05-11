@@ -2,21 +2,15 @@ Edited files on 5/11/2019:
 workouts_list.html (haven't reuploaded)
 views.py (haven't reuploaded)
 
-Functionality completed on 5/10/2019:
-- Create search and filter for workouts based on movements and classifications
-        - not including fully case insentive search. Can search for exact match or title case only.
-        - including multiple movement search.
-        - related links:
-                https://www.w3schools.com/howto/howto_js_filter_dropdown.asp
-                https://www.w3schools.com/howto/howto_js_filter_lists.asp
-                https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
-- Dropdowns now close when clicking out of all search boxes
-- Allow for database updating of movement tags for all workouts at once when a new movement is added (file:
-                update_all_workout_movement_and_class_tags)
+Functionality completed on 5/11/2019:
+- multiple search boxes for movements added
+- populate text input on dropdown click
+- don't hide dropdown when reclicking in search box. only hide on clicking out of all search boxes
+
 
 Functionality to add:
 - make one dropdown close if you click on the other
-        - on work computer script.js should have functionality for turning display to show but not back to hide
+        - likely have to make all dropdowns a different class for this to work.
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
