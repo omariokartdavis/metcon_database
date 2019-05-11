@@ -18,6 +18,18 @@
 
 #myMovementInput:focus {outline: 3px solid #ddd;}
 
+#myMovementInput2 {
+  border-box: box-sizing;
+  background-position: 14px 12px;
+  background-repeat: no-repeat;
+  font-size: 16px;
+  padding: 14px 20px 12px 45px;
+  border: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+#myMovementInput2:focus {outline: 3px solid #ddd;}
+
 #myClassificationInput {
   border-box: box-sizing;
   background-position: 14px 12px;
@@ -41,6 +53,15 @@
 
 #myMovementDropdown {
   position: absolute;
+  left: 60px;
+  background-color: #f6f6f6;
+  border: 1px solid #ddd;
+  z-index: 1;
+}
+
+#myMovementDropdown2 {
+  position: absolute;
+  left: 326px;
   background-color: #f6f6f6;
   border: 1px solid #ddd;
   z-index: 1;
@@ -48,7 +69,7 @@
 
 #myClassificationDropdown {
   position: absolute;
-  right: 60px;
+  right: 61px;
   background-color: #f6f6f6;
   border: 1px solid #ddd;
   z-index: 1;
@@ -67,12 +88,20 @@
 </style>
 </head>
 	<h1>Workout List</h1>
-	{% if workout_list %}
+
 	<div class="dropdown">
 		<form method='GET'>
 			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" onclick="myMovementDropdown()" id="myMovementInput" onkeyup="filterMovementFunction()">
 			<div id="myMovementDropdown" class="dropdown-content">
-				<select name="q" size="15" multiple>
+				<select size="15" tabindex="-1" onchange="setMovementDropdown(this)">
+					{% for movement in movement_list %}
+						<option>{{ movement.name }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" onclick="myMovementDropdown2()" id="myMovementInput2" onkeyup="filterMovementFunction2()">
+			<div id="myMovementDropdown2" class="dropdown-content">
+				<select  size="15" tabindex="-1" onchange="setMovementDropdown2(this)">
 					{% for movement in movement_list %}
 						<option>{{ movement.name }}</option>
 					{% endfor %}
@@ -80,7 +109,7 @@
 			</div>
 			<input type="text" class = "textinput" placeholder="Search Classifications.."  name="z" onclick="myClassificationDropdown()" id="myClassificationInput" onkeyup="filterClassificationFunction()">
 			<div id="myClassificationDropdown" class="dropdown-content">
-				<select name="z" size="5">
+				<select size="5" tabindex="-1" onchange="setClassificationDropdown(this)">
 					{% for classification in classification_list %}
 						<option>{{ classification.name }}</option>
 					{% endfor %}
@@ -89,6 +118,7 @@
 			<input type='submit' class='button'>
 		</form>
 	</div>
+	{% if workout_list %}
 	<ul>
 		{% for workout in workout_list %}
 			<li>
@@ -103,8 +133,6 @@
 		<p>There are no workouts in the database.</p>
 	{% endif %}
 <script>
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
 function myMovementDropdown() {
   document.getElementById("myMovementDropdown").classList.add("show");
 }
@@ -113,11 +141,31 @@ function myClassificationDropdown() {
   document.getElementById("myClassificationDropdown").classList.add("show");
 }
 
+function myMovementDropdown2() {
+  document.getElementById("myMovementDropdown2").classList.add("show");
+}
+
 function filterMovementFunction() {
   var input, filter, ul, li, option, i;
   input = document.getElementById("myMovementInput");
   filter = input.value.toUpperCase();
   div = document.getElementById("myMovementDropdown");
+  option = div.getElementsByTagName("option");
+  for (i = 0; i < option.length; i++) {
+    txtValue = option[i].textContent || option[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      option[i].style.display = "";
+    } else {
+      option[i].style.display = "none";
+    }
+  }
+}
+
+function filterMovementFunction2() {
+  var input, filter, ul, li, option, i;
+  input = document.getElementById("myMovementInput2");
+  filter = input.value.toUpperCase();
+  div = document.getElementById("myMovementDropdown2");
   option = div.getElementsByTagName("option");
   for (i = 0; i < option.length; i++) {
     txtValue = option[i].textContent || option[i].innerText;
@@ -158,6 +206,25 @@ window.onclick = function(event) {
   }
 }
 
+function setMovementDropdown(sel) {
+  var selectedOption = sel.options[sel.selectedIndex];
+  var textValue = selectedOption.text;
+  var textBox = document.getElementById("myMovementInput");
+  textBox.value = textValue;
+}
 
+function setMovementDropdown2(sel) {
+  var selectedOption = sel.options[sel.selectedIndex];
+  var textValue = selectedOption.text;
+  var textBox = document.getElementById("myMovementInput2");
+  textBox.value = textValue;
+}
+
+function setClassificationDropdown(sel) {
+  var selectedOption = sel.options[sel.selectedIndex];
+  var textValue = selectedOption.text;
+  var textBox = document.getElementById("myClassificationInput");
+  textBox.value = textValue;
+}
 </script>
 {% endblock %}
