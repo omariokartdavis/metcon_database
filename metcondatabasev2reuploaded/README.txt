@@ -11,7 +11,8 @@ Functionality completed on 5/10/2019:
                 https://www.w3schools.com/howto/howto_js_filter_lists.asp
                 https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
 - Dropdowns now close when clicking out of all search boxes
-- Allow for database updating of movement tags for all workouts at once when a new movement is added
+- Allow for database updating of movement tags for all workouts at once when a new movement is added (file:
+                update_all_workout_movement_and_class_tags)
 
 Functionality to add:
 - make one dropdown close if you click on the other
