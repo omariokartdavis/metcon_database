@@ -91,7 +91,7 @@
 
 	<div class="dropdown">
 		<form method='GET'>
-			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" onclick="myMovementDropdown()" id="myMovementInput" onkeyup="filterMovementFunction()">
+			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" onclick="myDropdown(this)" id="myMovementInput" onkeyup="filterMovementFunction()">
 			<div id="myMovementDropdown" class="dropdown-content">
 				<select size="15" tabindex="-1" onchange="setMovementDropdown(this)">
 					{% for movement in movement_list %}
@@ -99,7 +99,7 @@
 					{% endfor %}
 				</select>
 			</div>
-			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" onclick="myMovementDropdown2()" id="myMovementInput2" onkeyup="filterMovementFunction2()">
+			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" onclick="myDropdown(this)" id="myMovementInput2" onkeyup="filterMovementFunction2()">
 			<div id="myMovementDropdown2" class="dropdown-content">
 				<select  size="15" tabindex="-1" onchange="setMovementDropdown2(this)">
 					{% for movement in movement_list %}
@@ -107,7 +107,7 @@
 					{% endfor %}
 				</select>
 			</div>
-			<input type="text" class = "textinput" placeholder="Search Classifications.."  name="z" onclick="myClassificationDropdown()" id="myClassificationInput" onkeyup="filterClassificationFunction()">
+			<input type="text" class = "textinput" placeholder="Search Classifications.."  name="z" onclick="myDropdown(this)" id="myClassificationInput" onkeyup="filterClassificationFunction()">
 			<div id="myClassificationDropdown" class="dropdown-content">
 				<select size="5" tabindex="-1" onchange="setClassificationDropdown(this)">
 					{% for classification in classification_list %}
@@ -133,18 +133,10 @@
 		<p>There are no workouts in the database.</p>
 	{% endif %}
 <script>
-function myMovementDropdown() {
-  document.getElementById("myMovementDropdown").classList.add("show");
+function myDropdown(sel) {
+  sel.nextSibling.nextSibling.classList.add("show");
 }
-
-function myClassificationDropdown() {
-  document.getElementById("myClassificationDropdown").classList.add("show");
-}
-
-function myMovementDropdown2() {
-  document.getElementById("myMovementDropdown2").classList.add("show");
-}
-
+  
 function filterMovementFunction() {
   var input, filter, ul, li, option, i;
   input = document.getElementById("myMovementInput");
@@ -194,9 +186,10 @@ function filterClassificationFunction() {
 }
 
 window.onclick = function(event) {
+  //use console.log(event) and possibly event.nextSibling etc. to see what element is being triggered by clicking on things.
+  var dropdowns = document.getElementsByClassName("dropdown-content");
+  var i;
   if (!event.target.matches('.textinput')) {
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
     for (i = 0; i < dropdowns.length; i++) {
       var openDropdown = dropdowns[i];
       if (openDropdown.classList.contains('show')) {
@@ -204,6 +197,14 @@ window.onclick = function(event) {
       }
     }
   }
+  else {
+    for (i=0; i < dropdowns.length; i++) {
+	  var openDropdown = dropdowns[i];
+	  if (openDropdown != event.target.nextSibling.nextSibling) {
+	    openDropdown.classList.remove("show");
+	  }
+	}
+  }    
 }
 
 function setMovementDropdown(sel) {
