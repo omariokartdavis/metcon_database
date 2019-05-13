@@ -1,5 +1,5 @@
 Edited files on 5/13/2019:
-workouts_list.html (downloaded at home)
+workouts_list.html (uploaded at home)
 
 
 Functionality completed on 5/13/2019:
