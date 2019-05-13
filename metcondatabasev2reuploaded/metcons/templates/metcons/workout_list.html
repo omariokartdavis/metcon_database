@@ -91,31 +91,31 @@
 
 	<div class="dropdown">
 		<form method='GET'>
-			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" onclick="myDropdown(this)" id="myMovementInput" onkeyup="filterMovementFunction()">
+			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" id="myMovementInput">
 			<div id="myMovementDropdown" class="dropdown-content">
-				<select size="15" tabindex="-1" onchange="setMovementDropdown(this)">
+				<select class= "dropdown-selection" size="15" tabindex="-1">
 					{% for movement in movement_list %}
 						<option>{{ movement.name }}</option>
 					{% endfor %}
 				</select>
 			</div>
-			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" onclick="myDropdown(this)" id="myMovementInput2" onkeyup="filterMovementFunction2()">
+			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" id="myMovementInput2">
 			<div id="myMovementDropdown2" class="dropdown-content">
-				<select  size="15" tabindex="-1" onchange="setMovementDropdown2(this)">
+				<select  class= "dropdown-selection" size="15" tabindex="-1">
 					{% for movement in movement_list %}
 						<option>{{ movement.name }}</option>
 					{% endfor %}
 				</select>
 			</div>
-			<input type="text" class = "textinput" placeholder="Search Classifications.."  name="z" onclick="myDropdown(this)" id="myClassificationInput" onkeyup="filterClassificationFunction()">
+			<input type="text" class = "textinput" placeholder="Search Classifications.."  name="z" id="myClassificationInput">
 			<div id="myClassificationDropdown" class="dropdown-content">
-				<select size="5" tabindex="-1" onchange="setClassificationDropdown(this)">
+				<select class= "dropdown-selection" size="5" tabindex="-1">
 					{% for classification in classification_list %}
 						<option>{{ classification.name }}</option>
 					{% endfor %}
 				</select>
 			</div>
-			<input type='submit' class='button'>
+			<input type='submit' class='button' id='filtersubmitbutton'>
 		</form>
 	</div>
 	{% if workout_list %}
@@ -133,15 +133,40 @@
 		<p>There are no workouts in the database.</p>
 	{% endif %}
 <script>
-function myDropdown(sel) {
-  sel.nextSibling.nextSibling.classList.add("show");
+function Dropdown() {
+  //this event is only on the textinput boxes so I can't close dropdowns when the submit button is focused.
+  //using onblur makes the setDropdown Selection function not work because the moment you click out of the text input the dropdown disappears. making it as if you didnt
+  // click a selection in the dropdown.
+  // add an onfocus for the submit button to close all dropdowns is simplest way to avoid dropdowns staying up when tabbing through elements.
+  // can't add onfocus for the sidebar nav so shift tabbing back to nav from first input box leaves dropdown up currently.
+  var dropdowns = document.getElementsByClassName("dropdown-content");
+  var i;
+  for (i = 0; i < dropdowns.length; i++) {
+    if (dropdowns[i] != this.nextSibling.nextSibling) {
+	  if (dropdowns[i].classList.contains("show")) {
+	    dropdowns[i].classList.remove("show");
+	  }
+	}
+  }
+  this.nextSibling.nextSibling.classList.add("show");
 }
-  
-function filterMovementFunction() {
+
+
+function DropdownExit() {
+  var dropdowns = document.getElementsByClassName("dropdown-content");
+  var i;
+  for (i = 0; i < dropdowns.length; i++) {
+	if (dropdowns[i].classList.contains("show")) {
+	  dropdowns[i].classList.remove("show");
+	}
+  }
+}
+
+function Filter() {
   var input, filter, ul, li, option, i;
-  input = document.getElementById("myMovementInput");
-  filter = input.value.toUpperCase();
-  div = document.getElementById("myMovementDropdown");
+  input = this;
+  filter = this.value.toUpperCase();
+  div = input.nextSibling.nextSibling;
   option = div.getElementsByTagName("option");
   for (i = 0; i < option.length; i++) {
     txtValue = option[i].textContent || option[i].innerText;
@@ -153,37 +178,30 @@ function filterMovementFunction() {
   }
 }
 
-function filterMovementFunction2() {
-  var input, filter, ul, li, option, i;
-  input = document.getElementById("myMovementInput2");
-  filter = input.value.toUpperCase();
-  div = document.getElementById("myMovementDropdown2");
-  option = div.getElementsByTagName("option");
-  for (i = 0; i < option.length; i++) {
-    txtValue = option[i].textContent || option[i].innerText;
-    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-      option[i].style.display = "";
-    } else {
-      option[i].style.display = "none";
-    }
+function setDropdownSelection() {
+  var selectedOption = this.options[this.selectedIndex];
+  var textValue = selectedOption.text;
+  var textBox = this.parentNode.previousSibling.previousSibling;
+  textBox.value = textValue;
+}
+
+var textinputs = document.getElementsByClassName("textinput");
+var i;
+if (textinputs) {
+  for (i = 0; i < textinputs.length; i++) {
+    textinputs[i].addEventListener("focus", Dropdown, false);
+	textinputs[i].addEventListener("keyup", Filter, false);
   }
 }
 
-function filterClassificationFunction() {
-  var input, filter, ul, li, option, i;
-  input = document.getElementById("myClassificationInput");
-  filter = input.value.toUpperCase();
-  div = document.getElementById("myClassificationDropdown");
-  option = div.getElementsByTagName("option");
-  for (i = 0; i < option.length; i++) {
-    txtValue = option[i].textContent || option[i].innerText;
-    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-      option[i].style.display = "";
-    } else {
-      option[i].style.display = "none";
-    }
+var dropdownselects = document.getElementsByClassName("dropdown-selection");
+if (dropdownselects) {
+  for (i = 0; i < dropdownselects.length; i++) {
+    dropdownselects[i].addEventListener("change", setDropdownSelection, false);
   }
 }
+
+document.getElementById("filtersubmitbutton").addEventListener('focus', DropdownExit, false);
 
 window.onclick = function(event) {
   //use console.log(event) and possibly event.nextSibling etc. to see what element is being triggered by clicking on things.
@@ -196,36 +214,7 @@ window.onclick = function(event) {
         openDropdown.classList.remove('show');
       }
     }
-  }
-  else {
-    for (i=0; i < dropdowns.length; i++) {
-	  var openDropdown = dropdowns[i];
-	  if (openDropdown != event.target.nextSibling.nextSibling) {
-	    openDropdown.classList.remove("show");
-	  }
-	}
-  }    
-}
-
-function setMovementDropdown(sel) {
-  var selectedOption = sel.options[sel.selectedIndex];
-  var textValue = selectedOption.text;
-  var textBox = document.getElementById("myMovementInput");
-  textBox.value = textValue;
-}
-
-function setMovementDropdown2(sel) {
-  var selectedOption = sel.options[sel.selectedIndex];
-  var textValue = selectedOption.text;
-  var textBox = document.getElementById("myMovementInput2");
-  textBox.value = textValue;
-}
-
-function setClassificationDropdown(sel) {
-  var selectedOption = sel.options[sel.selectedIndex];
-  var textValue = selectedOption.text;
-  var textBox = document.getElementById("myClassificationInput");
-  textBox.value = textValue;
+  }   
 }
 </script>
 {% endblock %}
