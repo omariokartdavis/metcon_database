@@ -1,19 +1,9 @@
-Edited files on 5/11/2019:
-workouts_list.html (downloaded at work)
-views.py (downloaded at work)
-models.py (downloaded at work)
-admin.py (downloaded at work)
-mainsite_workouts.py (downloaded at work)
-movements_list.py (downloaded at work)
+Edited files on 5/13/2019:
+workouts_list.html (uploaded at work, haven't downloaded at home)
 
-Functionality completed on 5/11/2019:
-- multiple search boxes for movements added
-- populate search box with chosen filters
-- don't hide dropdown when reclicking in search box. only hide on clicking out of all search boxes
-- added workout instance model
-- added workout instance completed dates model
-- added workout instance count to workout model
-        - also displayed on admin page
+
+Functionality completed on 5/13/2019:
+- hide dropdown when clicking in different dropdown
         
 Functionality to add:
 - make one dropdown close if you click on the other
