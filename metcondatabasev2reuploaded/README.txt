@@ -21,6 +21,15 @@ Functionality to add:
         - can potentially use this.nextSibling on text input to get the dropdown menu and can standardize 1 function for all dropdowns.
                 see here: https://www.w3schools.com/js/js_htmldom_navigation.asp
         - may also need to stop propagation: https://www.w3schools.com/jsref/event_stoppropagation.asp
+        - change dropdown function to this (requires adding a function input like: myFunc(sel)):
+                first line is close other dropdowns:
+                        dropdowns = document.getelementsbyclassname(dropdowns)
+                        for dropdown in dropdowns:
+                        if dropdown.classlist.contains(show):
+                        dropdown.classlist.remove(show)
+                then show current dropdown:
+                        this.nextSibling.classlist.add(show)
+        - the above should be able to be a generalized function that would work for all dropdowns
 - consolidate javascript code on workouts_list.html
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
