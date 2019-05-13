@@ -1,10 +1,10 @@
 Edited files on 5/11/2019:
-workouts_list.html (haven't downloaded)
-views.py (haven't downloaded)
-models.py (haven't downloaded)
-admin.py (haven't downloaded)
-mainsite_workouts.py (haven't downloaded)
-movements_list.py (haven't downloaded)
+workouts_list.html (haven't downloaded at work)
+views.py (haven't downloaded at work)
+models.py (haven't downloaded at work)
+admin.py (haven't downloaded at work)
+mainsite_workouts.py (haven't downloaded at work)
+movements_list.py (haven't downloaded at work)
 
 Functionality completed on 5/11/2019:
 - multiple search boxes for movements added
