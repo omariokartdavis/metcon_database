@@ -20,6 +20,7 @@ Functionality to add:
         - likely have to make all dropdowns a different class for this to work.
         - can potentially use this.nextSibling on text input to get the dropdown menu and can standardize 1 function for all dropdowns.
                 see here: https://www.w3schools.com/js/js_htmldom_navigation.asp
+        - may also need to stop propagation: https://www.w3schools.com/jsref/event_stoppropagation.asp
 - consolidate javascript code on workouts_list.html
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
