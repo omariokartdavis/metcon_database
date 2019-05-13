@@ -25,6 +25,7 @@ Functionality to add:
                 first line is close other dropdowns:
                         dropdowns = document.getelementsbyclassname(dropdowns)
                         for dropdown in dropdowns:
+                        if dropdown is not this:
                         if dropdown.classlist.contains(show):
                         dropdown.classlist.remove(show)
                 then show current dropdown:
