@@ -34,7 +34,7 @@ Functionality to add:
         - can likely generalize the filter function like this as well.
                 input = this.parent.parent.previousSibling (something like this since <option> is what is selected)
                         might need another .parent in there
-                div = 
+                div = this.parent.parent
 - consolidate javascript code on workouts_list.html
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
