@@ -31,6 +31,10 @@ Functionality to add:
                 then show current dropdown:
                         this.nextSibling.classlist.add(show)
         - the above should be able to be a generalized function that would work for all dropdowns
+        - can likely generalize the filter function like this as well.
+                input = this.parent.parent.previousSibling (something like this since <option> is what is selected)
+                        might need another .parent in there
+                div = 
 - consolidate javascript code on workouts_list.html
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
