@@ -1,5 +1,5 @@
 Edited files on 5/14/2019:
-models.py (haven't uploaded from work)
+models.py (haven't uploaded from work) (doesn't require migration)
 workout_detail.html (haven't uploaded from work)
 workout_list.html (haven't uploaded from work)
 
@@ -40,7 +40,9 @@ Functionality to add:
                 by "workout " + str(id)
         -would also change def __str__ to if statement on if name exists otherwise same as above
 - Add search and filter functionality for duration of workout
-        -requires adding range functionality
+        - requires adding range functionality
+        - have 2 input boxes for min and max time.
+        - in the view, filter through workouts that have a time included in the range from min-max
 - Add filters currently active below search boxes after a filter is chosen
 - Add back button to previous search after filtering
 - Add abbreviations to some movements?
