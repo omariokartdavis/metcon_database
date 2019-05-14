@@ -1,10 +1,9 @@
 Edited files on 5/14/2019:
-workouts_list.html (downloaded at work)
+models.py (haven't uploaded from work)
 
 
-Functionality completed on 5/13/2019:
-- hide dropdown when clicking in different dropdown
-- consolidate javascript code on workouts_list.html
+Functionality completed on 5/14/2019:
+
 
 Functionality to add:
 - Endless Scroll of workouts
