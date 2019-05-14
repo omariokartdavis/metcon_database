@@ -17,8 +17,11 @@ Functionality to add:
 - add results textfield to workoutinstance to store peoples results of their workouts (weights, videos, description of difficulty)
         - time workout completed in can still be stored in instances duration.
 - Endless Scroll of workouts
-- ?Make movement tags match movement names by regex full match?
-        - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
+- ?Make movement tags only match full movement name?
+        - could probably find a way that after movements are added, create list of movements names. search through list for a specific
+                movement name and if it appears twice (Clean, Clean and Jerk) remove the movement (clean gets removed).
+        - not sure if this is a good idea on second thought as this would mean workouts with Power Snatch are no longer tagged
+                as Snatch. may be better to just leave as is.
 - Add search and filter for popularity of workout.
         - only possible after adding count variables for base workout and workoutinstance
 - Create a user homepage
