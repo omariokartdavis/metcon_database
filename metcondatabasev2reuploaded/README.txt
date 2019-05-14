@@ -22,8 +22,11 @@ Functionality to add:
                 movement name and if it appears twice (Clean, Clean and Jerk) remove the movement (clean gets removed).
         - not sure if this is a good idea on second thought as this would mean workouts with Power Snatch are no longer tagged
                 as Snatch. may be better to just leave as is.
-- Add search and filter for popularity of workout.
+- Add filter for popularity of workout.
         - only possible after adding count variables for base workout and workoutinstance
+        - would simply change ordering to order by number of times completed or number of instances created.
+- Add search for a specific users workouts
+        - search for workouts mat fraser has done
 - Create a user homepage
 - Create user accounts and login page
 - Change create movement page to a popup page when link is clicked (this should allow for on page adding and refreshing of movements)
