@@ -18,6 +18,19 @@
 
 .textinput:focus {outline: 3px solid #ddd;}
 
+.durationinput {
+  border-box: box-sizing;
+  background-position: 14px 12px;
+  background-repeat: no-repeat;
+  font-size: 16px;
+  padding: 14px 0px 12px 10px;
+  border: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  width: 125px;
+}
+
+.durationinput:focus {outline: 3px solid #ddd;}
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -75,6 +88,8 @@
 					{% endfor %}
 				</select>
 			</div>
+			<input type="number" class="durationinput" placeholder="Min Duration.." name="x" id="minDurationInput">
+			<input type="number" class="durationinput" placeholder="Max Duration.." name="y" id="maxDurationInput">
 			<input type="text" class = "textinput" placeholder="Search Classifications.."  name="z" id="myClassificationInput">
 			<div id="myClassificationDropdown" class="dropdown-content">
 				<select class= "dropdown-selection" size="5" tabindex="-1">
@@ -98,7 +113,7 @@
 		{% endfor %}
 	</ul>
 	{% else %}
-		<p>There are no workouts in the database.</p>
+		<p>There are no workouts in the database with those filters.</p>
 	{% endif %}
 <script>
 function Dropdown() {
