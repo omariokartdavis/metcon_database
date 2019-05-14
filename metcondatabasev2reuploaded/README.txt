@@ -1,31 +1,12 @@
-Edited files on 5/13/2019:
+Edited files on 5/14/2019:
 workouts_list.html (downloaded at work)
 
 
 Functionality completed on 5/13/2019:
 - hide dropdown when clicking in different dropdown
-        
-Functionality to add:
-- make one dropdown close if you click on the other
-        - likely have to make all dropdowns a different class for this to work.
-        - can potentially use this.nextSibling on text input to get the dropdown menu and can standardize 1 function for all dropdowns.
-                see here: https://www.w3schools.com/js/js_htmldom_navigation.asp
-        - may also need to stop propagation: https://www.w3schools.com/jsref/event_stoppropagation.asp
-        - change dropdown function to this (requires adding a function input like: myFunc(sel)):
-                first line is close other dropdowns:
-                        dropdowns = document.getelementsbyclassname(dropdowns)
-                        for dropdown in dropdowns:
-                        if dropdown is not this:
-                        if dropdown.classlist.contains(show):
-                        dropdown.classlist.remove(show)
-                then show current dropdown:
-                        this.nextSibling.classlist.add(show)
-        - the above should be able to be a generalized function that would work for all dropdowns
-        - can likely generalize the filter function like this as well.
-                input = this.parent.parent.previousSibling (something like this since <option> is what is selected)
-                        might need another .parent in there
-                div = this.parent.parent
 - consolidate javascript code on workouts_list.html
+
+Functionality to add:
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
@@ -33,8 +14,10 @@ Functionality to add:
         - ?keep count variable and create a method that updates that count variable based on all count variables in instances?
                 - ?maybe only calls update when an instance is updated?
                 - ?maybe only called once a night overnight?
+        - done but not sure if works
 - change number of times completed in instance to be specific to that instance
         - ?keep count variable and create a method that updates the count variable whenever a box is checked?
+        - done but not sure if works
 - Add search and filter for popularity of workout.
         - only possible after adding count variables for base workout and workoutinstance
 - Create a user homepage
