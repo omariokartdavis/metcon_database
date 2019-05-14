@@ -12,6 +12,7 @@ class Classification(models.Model):
             ('Lower Body', 'Lower Body'),
             ('Total Body', 'Total Body'),
             ('Cardio', 'Cardio'),
+	    ('Core', 'Core'),
             )
         
         name = models.CharField(max_length=20,
