@@ -35,6 +35,8 @@ class WorkoutListView(generic.ListView):
         object_list = Workout.objects.all()
         query1 = self.request.GET.getlist('q')
         query2 = self.request.GET.get('z')
+        query3 = self.request.GET.get('x')
+        query4 = self.request.GET.get('y')
         if query1:
             for i in query1:
                 if i != '':
@@ -45,7 +47,16 @@ class WorkoutListView(generic.ListView):
         if query2:
             if query2.islower():
                 query2 = query2.title()
-            object_list = object_list.filter(classification__name = query2)        
+            object_list = object_list.filter(classification__name = query2)
+        #could get rid of this ifand and just do if 3/if4 but I think the ifand will save
+        # time by performing the queries at once rather than seperate
+        if query3 and query4:
+            object_list = object_list.filter(estimated_duration_in_minutes__gte=query3,
+                                             estimated_duration_in_minutes__lte=query4)
+        elif query3:
+            object_list = object_list.filter(estimated_duration_in_minutes__gte=query3)
+        elif query4:
+            object_list = object_list.filter(estimated_duration_in_minutes__lte=query4)
         return object_list
     
 class WorkoutDetailView(generic.DetailView):
