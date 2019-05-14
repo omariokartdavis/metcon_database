@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 
-#myMovementInput {
+.textinput {
   border-box: box-sizing;
   background-position: 14px 12px;
   background-repeat: no-repeat;
@@ -16,31 +16,7 @@
   border-bottom: 1px solid #ddd;
 }
 
-#myMovementInput:focus {outline: 3px solid #ddd;}
-
-#myMovementInput2 {
-  border-box: box-sizing;
-  background-position: 14px 12px;
-  background-repeat: no-repeat;
-  font-size: 16px;
-  padding: 14px 20px 12px 45px;
-  border: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-}
-
-#myMovementInput2:focus {outline: 3px solid #ddd;}
-
-#myClassificationInput {
-  border-box: box-sizing;
-  background-position: 14px 12px;
-  background-repeat: no-repeat;
-  font-size: 16px;
-  padding: 14px 20px 12px 45px;
-  border: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-}
-
-#myClassificationInput:focus {outline: 3px solid #ddd;}
+.textinput:focus {outline: 3px solid #ddd;}
 
 .dropdown {
   position: relative;
@@ -49,30 +25,22 @@
 
 .dropdown-content {
   display: none;
+  position: absolute;
+  background-color: #f6f6f6;
+  border: 1px solid #ddd;
+  z-index: 1;
 }
 
 #myMovementDropdown {
-  position: absolute;
   left: 60px;
-  background-color: #f6f6f6;
-  border: 1px solid #ddd;
-  z-index: 1;
 }
 
 #myMovementDropdown2 {
-  position: absolute;
   left: 326px;
-  background-color: #f6f6f6;
-  border: 1px solid #ddd;
-  z-index: 1;
 }
 
 #myClassificationDropdown {
-  position: absolute;
   right: 61px;
-  background-color: #f6f6f6;
-  border: 1px solid #ddd;
-  z-index: 1;
 }
 
 .dropdown-content option {
@@ -123,9 +91,9 @@
 		{% for workout in workout_list %}
 			<li>
 				<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
-				<br />Classification: {{ workout.classification }}
-				<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}
-				<br />Description: {{ workout.workout_text|linebreaks }}</p>
+				<br />{{ workout.workout_text|linebreaks }}
+				Classification: {{ workout.classification }}
+				<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 			</li>
 		{% endfor %}
 	</ul>
@@ -150,7 +118,6 @@ function Dropdown() {
   }
   this.nextSibling.nextSibling.classList.add("show");
 }
-
 
 function DropdownExit() {
   var dropdowns = document.getElementsByClassName("dropdown-content");
