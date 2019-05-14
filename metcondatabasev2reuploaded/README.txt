@@ -9,6 +9,10 @@ Functionality completed on 5/14/2019:
 - increment_number_of_times_completed in WorkoutInstance works and is proper
 - update_number_of_times_completed in Workout works and is proper
 
+Notes:
+- can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
+        some restriction where if the workoutinstance with that specific workout already exists for that user it just pulls that up.
+        this will likely have to be handled in the views.py
 Functionality to add:
 - regex search for "in xx minutes of:" could add duration to amrap workouts from mainsite
 - add workout to a users page
