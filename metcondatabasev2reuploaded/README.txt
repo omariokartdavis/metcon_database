@@ -10,6 +10,7 @@ Functionality completed on 5/14/2019:
 - update_number_of_times_completed in Workout works and is proper
 
 Functionality to add:
+- regex search for "in xx minutes of:" could add duration to amrap workouts from mainsite
 - add workout to a users page
         - would be a form on the workout_detail.html page
         - could also be a link next to the workout on the workout_list.html page
