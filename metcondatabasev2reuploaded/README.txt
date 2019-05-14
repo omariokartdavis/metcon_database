@@ -6,16 +6,17 @@ Functionality completed on 5/14/2019:
 - add_date_completed for WorkoutInstance works
 - refresh page on update Workout button click on workout_detail page
 - increment_number_of_times_completed in WorkoutInstance works and is proper
-- update_number_of_times_completed in Workout works but may not be proper
-        - is currently called everytime a WorkoutInstance is saved. May need to move this to event function that calls
-                once a night overnight etc.
+- update_number_of_times_completed in Workout works and is proper
 
 Functionality to add:
+- add workout to a users page
+        - creates an instance for that specific user with no completed dates. 
+                can then ask if they have already completed this workout and would like to log when and what their time/performance was
+- add results textfield to workoutinstance to store peoples results of their workouts (weights, videos, description of difficulty)
+        - time workout completed in can still be stored in instances duration.
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
-- change update_times_completed in base workout model to be proper
-        - not sure what proper is. asked question on stackoverflow. waiting for response
 - Add search and filter for popularity of workout.
         - only possible after adding count variables for base workout and workoutinstance
 - Create a user homepage
