@@ -3,7 +3,7 @@ from django.urls import reverse
 import datetime
 import uuid
 from django.conf import settings
-from django.db.models import Count
+from django.db.models import Count, F, Sum
 
 class Classification(models.Model):
         """Model representing a classification of a movement"""
@@ -45,14 +45,13 @@ class Movement(models.Model):
 class Workout(models.Model):
         """Model representing a workout."""
         #when creating a model from the admin page, the model will not set the classifications/movements itself.
-        #each workout needs an instance model in order to track number of times completed for each user
         date_created = models.DateField(default=datetime.date.today)
         date_added_to_database = models.DateField(auto_now_add = True)
-        number_of_times_completed = models.IntegerField(default=0)
+        number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         workout_text = models.TextField(max_length=2000)
         scaling_or_description_text = models.TextField(max_length=4000, null=True, blank=True)
         what_website_workout_came_from = models.CharField(max_length=200, null=True, blank=True)
-        estimated_duration_in_minutes = models.IntegerField(default=0, null=True, blank=True)
+        estimated_duration_in_minutes = models.IntegerField(default=0, verbose_name='Duration (min)', null=True, blank=True)
         created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
                 
         movements = models.ManyToManyField(Movement, blank=True)
@@ -60,20 +59,16 @@ class Workout(models.Model):
         classification = models.ForeignKey(Classification, default=3, blank=True, null=True, on_delete=models.CASCADE)
 
         
-        #Required for running both functions on click in html
-        #next step is to transfer this to javascript so you can also force page reload at the same time
         def update_movements_and_classification(self):
                 self.update_movements()
                 self.update_classification()
                 self.save()
                 
-        #This is called from the create workout form.
         def update_movements(self):
                 for i in Movement.objects.all():
                         if i.name.lower() in self.workout_text.lower():
                                 self.movements.add(i)
         
-        #This is called from the create workout form.
         def update_classification(self):                 
             movement_classifications = []
             for movement in self.movements.all():
@@ -94,14 +89,16 @@ class Workout(models.Model):
             else:
                 self.classification = None
 
-        def increment_times_completed_counter(self):
-                #not sure if this is the proper way to do this
-                self.number_of_times_completed += 1
+        def update_times_completed(self):
+                self.number_of_times_completed = WorkoutInstance.objects.filter(workout__id=self.id).aggregate(
+                        times_completed=Sum('number_of_times_completed'))['times_completed']
                 self.save()
-            
+                
         def number_of_instances(self):
                 count = WorkoutInstance.objects.filter(workout__id = self.id).count()
                 return count
+
+        number_of_instances.short_description = 'Instances'
         
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_created', '-id']
@@ -150,28 +147,28 @@ class WorkoutInstance(models.Model):
         dates_workout_completed = models.ManyToManyField(WorkoutInstanceCompletedDate, blank=True)
         date_added_by_user = models.DateField(auto_now_add=True)
         workout = models.ForeignKey(Workout, on_delete=models.SET_NULL, null=True)
-        number_of_times_completed = models.IntegerField(default=0)
-        duration_in_minutes = models.IntegerField(default=0, null=True, blank=True)
+        number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
+        duration_in_minutes = models.IntegerField(default=0, verbose_name = 'Duration', null=True, blank=True)
         current_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name = 'User', null=True, blank=True)
-
+        
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
                 
         def add_date_completed(self, date):
-                #need to work on this as not currently sure what type I want date input to be. should it be a string or datetime object? datetime object likely easier but how do I get it into
-                # that form?
-                all_current_dates = WorkoutInstanceCompletedDate.objects.all()
-                if date in all_current_dates:
-                        self.dates_workout_completed.add(date)
+                #date needs to be in datetime.date.today() format.
+                new_date = WorkoutInstanceCompletedDate.objects.filter(date_completed=date)
+                if new_date:
+                        new_date = WorkoutInstanceCompletedDate.objects.get(date_completed=date)
                 else:
                         new_date = WorkoutInstanceCompletedDate(date_completed = date)
-                        self.dates_workout_completed.add(new_date)
+                        new_date.save()
+                self.dates_workout_completed.add(new_date)
+                self.save()
                         
         def increment_times_completed(self):
-                #not sure if this works or is proper
-                self.number_of_times_completed += 1
+                self.number_of_times_completed = F('number_of_times_completed') + 1
                 self.save()
-                self.workout.increment_times_completed_counter()
+                self.refresh_from_db()
                 
         def display_name(self):
                 name = self.workout.display_name()
@@ -186,3 +183,7 @@ class WorkoutInstance(models.Model):
         def __str__(self):
                 name = self.workout.display_name()
                 return name
+
+        def save(self, *args, **kwargs):
+                super().save(*args, **kwargs)
+                self.workout.update_times_completed()
