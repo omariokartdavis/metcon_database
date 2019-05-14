@@ -16,7 +16,7 @@ Notes:
         this will likely have to be handled in the views.py
         
 Functionality to add:
-- regex search for "in xx minutes of:" could add duration to amrap workouts from mainsite
+- regex search for "as many rounds as possible in xx minutes of:" could add duration to amrap workouts from mainsite
 - add workout to a users page
         - would be a form on the workout_detail.html page
         - could also be a link next to the workout on the workout_list.html page
