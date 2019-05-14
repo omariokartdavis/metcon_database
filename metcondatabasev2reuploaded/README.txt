@@ -1,5 +1,6 @@
 Edited files on 5/14/2019:
 models.py (uploaded at home) (doesn't require migration)
+view.py (haven't uploaded at home)
 workout_list.html (haven't uploaded at home)
 
 Functionality completed on 5/14/2019:
@@ -7,11 +8,13 @@ Functionality completed on 5/14/2019:
 - refresh page on update Workout button click on workout_detail page
 - increment_number_of_times_completed in WorkoutInstance works and is proper
 - update_number_of_times_completed in Workout works and is proper
+- Add filter for duration of workout
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
         some restriction where if the workoutinstance with that specific workout already exists for that user it just pulls that up.
         this will likely have to be handled in the views.py
+        
 Functionality to add:
 - regex search for "in xx minutes of:" could add duration to amrap workouts from mainsite
 - add workout to a users page
@@ -44,10 +47,6 @@ Functionality to add:
         -add name to workout model or workoutinstance model and allow for blank/null. If name exists list by name otherwise list
                 by "workout " + str(id)
         -would also change def __str__ to if statement on if name exists otherwise same as above
-- Add search and filter functionality for duration of workout
-        - requires adding range functionality
-        - have 2 input boxes for min and max time.
-        - in the view, filter through workouts that have a time included in the range from min-max
 - Add abbreviations to some movements?
         could change movement_list to a list of lists:
         movement_list = [
