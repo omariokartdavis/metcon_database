@@ -1,7 +1,6 @@
 Edited files on 5/14/2019:
 models.py (uploaded at home) (doesn't require migration)
-workout_detail.html (downloaded at home)
-workout_list.html (downloaded at home)
+workout_list.html (haven't uploaded at home)
 
 Functionality completed on 5/14/2019:
 - add_date_completed for WorkoutInstance works
