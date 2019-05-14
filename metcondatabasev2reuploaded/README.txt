@@ -1,6 +1,7 @@
 Edited files on 5/14/2019:
 models.py (haven't uploaded from work)
 workout_detail.html (haven't uploaded from work)
+workout_list.html (haven't uploaded from work)
 
 Functionality completed on 5/14/2019:
 - add_date_completed for WorkoutInstance works
@@ -10,6 +11,7 @@ Functionality completed on 5/14/2019:
 
 Functionality to add:
 - add workout to a users page
+        - I believe has to be done in views.py
         - creates an instance for that specific user with no completed dates. 
                 can then ask if they have already completed this workout and would like to log when and what their time/performance was
 - add results textfield to workoutinstance to store peoples results of their workouts (weights, videos, description of difficulty)
