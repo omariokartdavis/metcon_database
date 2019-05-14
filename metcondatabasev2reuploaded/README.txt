@@ -5,19 +5,17 @@ workout_detail.html (haven't uploaded from work)
 Functionality completed on 5/14/2019:
 - add_date_completed for WorkoutInstance works
 - refresh page on update Workout button click on workout_detail page
+- increment_number_of_times_completed in WorkoutInstance works and is proper
+- update_number_of_times_completed in Workout works but may not be proper
+        - is currently called everytime a WorkoutInstance is saved. May need to move this to event function that calls
+                once a night overnight etc.
 
 Functionality to add:
 - Endless Scroll of workouts
 - ?Make movement tags match movement names by regex full match?
         - don't think this will help as 'Squat Snatch' will still regex as 'Squat' and 'Snatch'
-- change number of times completed in base workout model to add together all times that workout was completed from all instances
-        - ?keep count variable and create a method that updates that count variable based on all count variables in instances?
-                - ?maybe only calls update when an instance is updated?
-                - ?maybe only called once a night overnight?
-        - done but not sure if works
-- change number of times completed in instance to be specific to that instance
-        - ?keep count variable and create a method that updates the count variable whenever a box is checked?
-        - done but not sure if works
+- change update_times_completed in base workout model to be proper
+        - not sure what proper is. asked question on stackoverflow. waiting for response
 - Add search and filter for popularity of workout.
         - only possible after adding count variables for base workout and workoutinstance
 - Create a user homepage
