@@ -11,7 +11,9 @@ Functionality completed on 5/14/2019:
 
 Functionality to add:
 - add workout to a users page
-        - I believe has to be done in views.py
+        - would be a form on the workout_detail.html page
+        - could also be a link next to the workout on the workout_list.html page
+        - Creation has to be done in views.py
         - creates an instance for that specific user with no completed dates. 
                 can then ask if they have already completed this workout and would like to log when and what their time/performance was
 - add results textfield to workoutinstance to store peoples results of their workouts (weights, videos, description of difficulty)
