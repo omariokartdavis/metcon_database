@@ -2,7 +2,6 @@ Edited files on 5/14/2019:
 models.py (haven't uploaded from work)
 workout_detail.html (haven't uploaded from work)
 
-
 Functionality completed on 5/14/2019:
 - add_date_completed for WorkoutInstance works
 - refresh page on update Workout button click on workout_detail page
