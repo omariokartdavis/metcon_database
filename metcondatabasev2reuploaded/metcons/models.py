@@ -152,10 +152,8 @@ class WorkoutInstance(models.Model):
         workout = models.ForeignKey(Workout, on_delete=models.SET_NULL, null=True)
         number_of_times_completed = models.IntegerField(default=0)
         duration_in_minutes = models.IntegerField(default=0, null=True, blank=True)
-        current_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+        current_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name = 'User', null=True, blank=True)
 
-        current_user.short_description = 'User'
-        
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
                 
