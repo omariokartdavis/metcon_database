@@ -14,5 +14,12 @@
 	<form action="{% url 'movement_create' %}">
 		<input type="submit" value="Create Movement" />
 	</form>
-	<button onclick= {{ workout.update_movements_and_classification }} >Update Workout</button><p>Click update workout and then refresh page to update movement tags</p>
+	<button id="UpdateWorkoutButton" onclick= {{ workout.update_movements_and_classification }} >Update Workout</button>
+<script>
+function refreshPage() {
+	window.location.reload();
+}
+
+document.getElementById("UpdateWorkoutButton").addEventListener('click', refreshPage, false);
+</script>
 {% endblock %}
