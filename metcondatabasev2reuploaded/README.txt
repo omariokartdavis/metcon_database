@@ -1,9 +1,11 @@
 Edited files on 5/14/2019:
 models.py (haven't uploaded from work)
+workout_detail.html (haven't uploaded from work)
 
 
 Functionality completed on 5/14/2019:
-
+- add_date_completed for WorkoutInstance works
+- refresh page on update Workout button click on workout_detail page
 
 Functionality to add:
 - Endless Scroll of workouts
@@ -22,8 +24,7 @@ Functionality to add:
 - Create a user homepage
 - Create user accounts and login page
 - Change create movement page to a popup page when link is clicked (this should allow for on page adding and refreshing of movements)
-- Allow for on page refreshing of movement tags/classifications
-        -should be doable with javascript to refresh page after updating.
+- Combine Create Movement and Update Workout buttons into a popup:
         -on create movement button click open a popup to add movement. on save click run three functions:
                 -save movement
                 -update current workout
