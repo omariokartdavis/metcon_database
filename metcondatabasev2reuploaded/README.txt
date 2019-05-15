@@ -2,6 +2,8 @@ Edited files on 5/14/2019:
 models.py (uploaded at home)
 view.py (uploaded at home)
 workout_list.html (uploaded at home)
+metcondatabasev2reuploaded/metcondatabasev2/urls.py (haven't uploaded at home)
+created projectroot/templates/registration (haven't uploaded at home)
 
 Functionality completed on 5/14/2019:
 - add_date_completed for WorkoutInstance works
