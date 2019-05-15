@@ -10,15 +10,21 @@ Notes:
         this will likely have to be handled in the views.py
         
 Functionality to add:
-- regex search for "as many rounds as possible in xx minutes of:" could add duration to amrap workouts from mainsite
+- when creating a new workout, create a new instance as well for that user
+        - workout(info), workout.save(), workoutInstance(info), workoutInstance.save()
+- can use .aggregate(AVG) for estimated duration which will average all durations of instances and put them into
+        the base workout. This way as more users complete a workout the duration gets updated.
+        - should work just like SUM of times completed
 - add workout to a users page
         - would be a form on the workout_detail.html page
         - could also be a link next to the workout on the workout_list.html page
         - Creation has to be done in views.py
         - creates an instance for that specific user with no completed dates. 
                 can then ask if they have already completed this workout and would like to log when and what their time/performance was
-- add results textfield to workoutinstance to store peoples results of their workouts (weights, videos, description of difficulty)
+- add results model and foreign key it to workoutinstance to store peoples results of their workouts (weights, videos, description of difficulty)
         - time workout completed in can still be stored in instances duration.
+        - date of results and a textfield will be important.
+        - ?allow for pictures and videos how?
 - ?Make movement tags only match full movement name?
         - could probably find a way that after movements are added, create list of movements names. search through list for a specific
                 movement name and if it appears twice (Clean, Clean and Jerk) remove the movement (clean gets removed).
@@ -30,7 +36,7 @@ Functionality to add:
         - search for workouts mat fraser has done
         - filter for workouts whose workout instances have users of xx name
                 - maybe this is a subquery?
-- Create a user homepage (accounts/profile/)
+- Create a user homepage (xx.com/accounts/profile/)
 - Combine Create Movement and Update Workout buttons into a popup:
         -on create movement button click open a popup to add movement. on save click run three functions:
                 -save movement
