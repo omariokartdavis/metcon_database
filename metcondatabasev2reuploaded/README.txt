@@ -2,9 +2,9 @@ Edited files on 5/14/2019:
 models.py (uploaded at home)
 view.py (uploaded at home)
 workout_list.html (uploaded at home)
-metcondatabasev2reuploaded/metcondatabasev2/urls.py (haven't uploaded at home)
-metcondatabasev2reuploaded/metcondatabasev2/settings.py (haven't uploaded at home)
-created projectroot/templates/registration (haven't uploaded at home)
+metcondatabasev2reuploaded/metcondatabasev2/urls.py (uploaded at home)
+metcondatabasev2reuploaded/metcondatabasev2/settings.py (uploaded at home)
+created projectroot/templates/registration (uploaded at home)
 
 Functionality completed on 5/14/2019:
 - add_date_completed for WorkoutInstance works
@@ -12,6 +12,7 @@ Functionality completed on 5/14/2019:
 - increment_number_of_times_completed in WorkoutInstance works and is proper
 - update_number_of_times_completed in Workout works and is proper
 - Add filter for duration of workout
+- create some user accounts and login page
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
@@ -39,8 +40,7 @@ Functionality to add:
         - search for workouts mat fraser has done
         - filter for workouts whose workout instances have users of xx name
                 - maybe this is a subquery?
-- Create a user homepage
-- Create user accounts and login page
+- Create a user homepage (accounts/profile/)
 - Combine Create Movement and Update Workout buttons into a popup:
         -on create movement button click open a popup to add movement. on save click run three functions:
                 -save movement
