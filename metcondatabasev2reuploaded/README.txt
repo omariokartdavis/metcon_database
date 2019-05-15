@@ -1,18 +1,8 @@
-Edited files on 5/14/2019:
-models.py (downloaded at home)
-view.py (downloaded at home)
-workout_list.html (downloaded at home)
-metcondatabasev2reuploaded/metcondatabasev2/urls.py (downloaded at home)
-metcondatabasev2reuploaded/metcondatabasev2/settings.py (downloaded at home)
-created projectroot/templates/registration (downloaded at home)
+Edited files on 5/15/2019:
+mainsite_workouts.py (haven't uploaded at work) (requires deleting and redownloading all workouts)
 
-Functionality completed on 5/14/2019:
-- add_date_completed for WorkoutInstance works
-- refresh page on update Workout button click on workout_detail page
-- increment_number_of_times_completed in WorkoutInstance works and is proper
-- update_number_of_times_completed in Workout works and is proper
-- Add filter for duration of workout
-- create some user accounts and login page
+Functionality completed on 5/15/2019:
+- added durations for all amraps from crossfit mainsite
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
