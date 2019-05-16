@@ -2,9 +2,13 @@ Edited files on 5/15/2019:
 mainsite_workouts.py (downloaded at home) (done)
 views.py (haven't uploaded at home)
 urls.py (haven't uploaded at home)
+settings.py (haven't uploaded at home)
+created templates/profile.html (haven't uploaded at home)
 
 Functionality completed on 5/15/2019:
 - added durations for all amraps from crossfit mainsite
+- Create a user homepage (redirects to this page after login)
+        - shows list of users current workout instances on user homepage
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
@@ -19,6 +23,9 @@ Functionality to add:
         - should work just like SUM of times completed
 - add workout to a users page
         - would be a form on the workout_detail.html page
+                - likely going to be a post form that when clicked creates a workout instance for that user. No info should be needed
+                        all info can come directly from the workout and just add user tag to the instance.
+                        use self.request.user to get the current user in the workout list view
         - could also be a link next to the workout on the workout_list.html page
         - Creation has to be done in views.py
         - creates an instance for that specific user with no completed dates. 
@@ -40,7 +47,6 @@ Functionality to add:
         - search for workouts mat fraser has done
         - filter for workouts whose workout instances have users of xx name
                 - maybe this is a subquery?
-- Create a user homepage (xx.com/accounts/profile/)
 - Combine Create Movement and Update Workout buttons into a popup:
         -on create movement button click open a popup to add movement. on save click run three functions:
                 -save movement
