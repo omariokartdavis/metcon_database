@@ -35,6 +35,10 @@ Notes:
                 - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
+- add user field of "sport" and they can choose between crossfit, bodybuilding, strength training etc.
+        - their choice here will determine their views and workout types shown
+- once the above is added, add ability to switch workout_list searches to different sport types
+        - if an athlete's sport is BB give a dropdown that allows them to switch to Crossfit workouts or other.
 - add click to edit button on workout instance detail page.
         - only edit fields specific to that instance aka duration completed, times completed, dates completed etc.
         - may require an update view
