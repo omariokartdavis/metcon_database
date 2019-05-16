@@ -2,16 +2,21 @@ Edited files on 5/16/2019:
 workoutinstance_detail.html (haven't uploaded at work)
 workout_list.html (haven't uploaded at work)
 views.py (haven't uploaded at work)
+urls.py (haven't uploaded at work)
+workout_detail.html (haven't uploaded at work)
+base_generic.html (haven't uploaded at work)
 
-
-Functionality completed on 5/15/2019:
+Functionality completed on 5/16/2019:
 - if user isn't logged in, workout list page only shows 10 most recent workouts by date created
 - change duration search to be gt=0 instead of gte=1
 - date added to profile in workoutinstance_detail now works properly
 - change home button to not hide if user isn't authenticated but instead takes them to the index page or login page
+- added Add Workout button on workout_detail page.
+        - required changing detail view from a class based view to function based view.
+        - likely have to do the same to allow on workout_list view.
+        - the base render(request, 'page_link') page_link must be = 'metcons/template_name.html'
+        - have to change urls.py as well from class based view to function view
 
-Last working on:
-- add workout to profile button on workout list. need form submit but may need multiple forms on that page.
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
@@ -25,6 +30,8 @@ Notes:
                 - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
+- add click to edit button on workout instance detail page.
+        - only edit fields specific to that instance aka duration completed, times completed, dates completed etc.
 - might need to change ondelete to cascade for workout in workoutinstance.
 - get rid of pagination on workout list if not logged in but keep it if logged in.
         - just adding block pagination endblock gets rid of pagination in both situations
@@ -37,15 +44,6 @@ Functionality to add:
 - can use .aggregate(AVG) for estimated duration which will average all durations of instances and put them into
         the base workout. This way as more users complete a workout the duration gets updated.
         - should work just like SUM of times completed
-- add workout to a users page
-        - would be a form on the workout_detail.html page
-                - likely going to be a post form that when clicked creates a workout instance for that user. No info should be needed
-                        all info can come directly from the workout and just add user tag to the instance.
-                        use self.request.user to get the current user in the workout list view
-        - could also be a link next to the workout on the workout_list.html page
-        - Creation has to be done in views.py
-        - creates an instance for that specific user with no completed dates. 
-                can then ask if they have already completed this workout and would like to log when and what their time/performance was
 - add results model and foreign key it to workoutinstance to store peoples results of their workouts (weights, videos, description of difficulty)
         - time workout completed in can still be stored in instances duration.
         - date of results and a textfield will be important.
