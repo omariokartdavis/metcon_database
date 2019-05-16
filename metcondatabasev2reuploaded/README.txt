@@ -1,6 +1,7 @@
 Edited files on 5/15/2019:
 mainsite_workouts.py (downloaded at home) (done)
 views.py (haven't uploaded at home)
+urls.py (haven't uploaded at home)
 
 Functionality completed on 5/15/2019:
 - added durations for all amraps from crossfit mainsite
