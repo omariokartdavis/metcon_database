@@ -6,7 +6,7 @@ created templates/user_page.html (downloaded at work)
 base_generic.html (downloaded at work)
 models.py (downloaded at work)
 created templates/workoutinstance_detail.html (downloaded at work)
-workout_list.html (uploaded at home)
+workout_list.html (downloaded at work)
 
 Functionality completed on 5/15/2019:
 - added durations for all amraps from crossfit mainsite
