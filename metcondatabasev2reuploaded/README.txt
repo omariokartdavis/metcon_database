@@ -12,7 +12,9 @@ Functionality completed on 5/15/2019:
         - shows list of users current workout instances on user homepage
 - Changed link in sidebar so that Home button goes to users homepage (code on base_generic.html)
         No longer have link to index view (not needed)
-
+- Changed Duration search to always search for workouts greater than or equal to 1 minute
+        This gets rid of the issue of a large number of workouts not having times but still showing up in max duration searches
+        
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
         some restriction where if the workoutinstance with that specific workout already exists for that user it just pulls that up.
