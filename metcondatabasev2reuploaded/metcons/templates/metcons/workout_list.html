@@ -102,6 +102,7 @@
 		</form>
 	</div>
 	{% if workout_list %}
+	<p>Number of workouts with applied filters: {{ num_workouts }}
 	<ul>
 		{% for workout in workout_list %}
 			<li>
