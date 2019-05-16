@@ -6,9 +6,10 @@ views.py (haven't uploaded at work)
 
 Functionality completed on 5/15/2019:
 - if user isn't logged in, workout list page only shows 10 most recent workouts by date created
-        still has pagination though
 - change duration search to be gt=0 instead of gte=1
 - date added to profile in workoutinstance_detail now works properly
+- change home button to not hide if user isn't authenticated but instead takes them to the index page or login page
+
 Last working on:
 - add workout to profile button on workout list. need form submit but may need multiple forms on that page.
 
@@ -26,11 +27,10 @@ Notes:
 Functionality to add:
 - get rid of pagination on workout list if not logged in but keep it if logged in.
         - just adding block pagination endblock gets rid of pagination in both situations
+        - this will likely solve itself when endless scroll is added
 - login url is currently metcons/profile instead of metcons/<username> not sure how to fix this as redirect doesn't seem to be working
-- change home button to not hide if user isn't authenticated but instead takes them to the index page or login page
-- add results section to bottom of workoutinstance detail page for users to add results
-- workouts list page can have a if user.is_authenticated to show all workouts if the user is logged in
-        and if they aren't then only show the 10 most recent workouts completed
+- add login to index page.
+- add results section to bottom of workoutinstance detail page for users to add resultsk
 - when creating a new workout, create a new instance as well for that user
         - workout(info), workout.save(), workoutInstance(info), workoutInstance.save()
 - can use .aggregate(AVG) for estimated duration which will average all durations of instances and put them into
