@@ -35,6 +35,8 @@ Notes:
                 - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
+- only allow user who created base workout in database to edit that workout and only while no one else has added it to their page
+        - if edited after others have it on their profile, it will change everyones workout.
 - add user field of "sport" and they can choose between crossfit, bodybuilding, strength training etc.
         - their choice here will determine their views and workout types shown
 - once the above is added, add ability to switch workout_list searches to different sport types
