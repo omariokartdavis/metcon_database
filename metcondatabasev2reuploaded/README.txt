@@ -22,7 +22,10 @@ Functionality completed on 5/15/2019:
 - Logout button Redirects to index page
 - Link of workout from users homepage goes to workoutinstance for that user only.
         - added functionality to not allow access to that page from other users.
-        
+
+Last working on:
+- add workout to profile button on workout list. need form submit but may need multiple forms on that page.
+
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
         some restriction where if the workoutinstance with that specific workout already exists for that user it just pulls that up.
