@@ -1,5 +1,6 @@
 Edited files on 5/15/2019:
-mainsite_workouts.py (uploaded at work) (requires deleting and redownloading all workouts)
+mainsite_workouts.py (downloaded at home) (done)
+views.py (haven't uploaded at home)
 
 Functionality completed on 5/15/2019:
 - added durations for all amraps from crossfit mainsite
@@ -25,6 +26,7 @@ Functionality to add:
         - time workout completed in can still be stored in instances duration.
         - date of results and a textfield will be important.
         - ?allow for pictures and videos how?
+        - on users workout detail view of their own instance, show results underneath ordered by most recently completed
 - ?Make movement tags only match full movement name?
         - could probably find a way that after movements are added, create list of movements names. search through list for a specific
                 movement name and if it appears twice (Clean, Clean and Jerk) remove the movement (clean gets removed).
