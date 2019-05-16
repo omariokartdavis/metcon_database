@@ -53,7 +53,7 @@ class Workout(models.Model):
         scaling_or_description_text = models.TextField(max_length=4000, null=True, blank=True)
         what_website_workout_came_from = models.CharField(max_length=200, null=True, blank=True)
         estimated_duration_in_minutes = models.IntegerField(default=0, verbose_name='Duration (min)', null=True, blank=True)
-        created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+        created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
                 
         movements = models.ManyToManyField(Movement, blank=True)
 
@@ -102,7 +102,7 @@ class Workout(models.Model):
         number_of_instances.short_description = 'Instances'
         
         class Meta:
-                ordering = ['-number_of_times_completed', '-date_created', '-id']
+                ordering = ['-date_created', '-number_of_times_completed', '-id']
 
         def display_name(self):
                 name = "Workout " + str(self.id)
@@ -150,7 +150,7 @@ class WorkoutInstance(models.Model):
         workout = models.ForeignKey(Workout, on_delete=models.SET_NULL, null=True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         duration_in_minutes = models.IntegerField(default=0, verbose_name = 'Duration', null=True, blank=True)
-        current_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name = 'User', null=True, blank=True)
+        current_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name = 'User', null=True, blank=True)
         
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
@@ -172,7 +172,8 @@ class WorkoutInstance(models.Model):
                 self.refresh_from_db()
                 
         def display_name(self):
-                name = self.workout.display_name()
+                if self.workout:
+                        name = self.workout.display_name()
                 return name
 
         def display_dates_completed(self):
@@ -182,7 +183,8 @@ class WorkoutInstance(models.Model):
         display_dates_completed.short_description = 'Dates Completed'
         
         def __str__(self):
-                name = self.workout.display_name()
+                if self.workout:
+                        name = self.workout.display_name()
                 return name
 
         def save(self, *args, **kwargs):
