@@ -15,13 +15,16 @@
 						<li><a href="{% url 'profile' user.username %}">Home</a></li>
 						<li><a href="{% url 'logout' %}">Logout</a></li>
 					{% else %}
+						<li><a href="{% url 'index' %}">Home</a></li>
 						<li><a href="{% url 'login' %}">Login</a></li>
 					{% endif %}
 					</br >
 					<li><a href="{% url 'workouts' %}">All Workouts</a></li>
 					<li><a href="{% url 'movements' %}">All Movements</a></li>
-					<li><a href="{% url 'workout_create' %}">Create Workout</a></li>
-					<li><a href="{% url 'movement_create' %}">Create Movement</a></li>
+					{% if user.is_authenticated %}
+						<li><a href="{% url 'workout_create' %}">Create Workout</a></li>
+						<li><a href="{% url 'movement_create' %}">Create Movement</a></li>
+					{% endif %}
 
 				</ul>
 			{% endblock %}
