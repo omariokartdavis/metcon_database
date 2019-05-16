@@ -25,6 +25,7 @@ Notes:
                 - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
+- might need to change ondelete to cascade for workout in workoutinstance.
 - get rid of pagination on workout list if not logged in but keep it if logged in.
         - just adding block pagination endblock gets rid of pagination in both situations
         - this will likely solve itself when endless scroll is added
