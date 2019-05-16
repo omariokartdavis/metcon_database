@@ -2,6 +2,14 @@
 
 {% block content %}
 	<h1>{{ workout.display_name }}</h1>
+	
+	<form method='POST'>
+		{% csrf_token %}
+		<input type="hidden" name="workout" value= {{ workout.id }}>
+		<input type="hidden" name="currentuser" value= {{ user.username }}>
+		<input type="submit" value="Add Workout to Profile">
+	</form>
+	
 	<h3>Classification: {{ workout.classification }}</h3>
 	<h4>Date Created: {{ workout.date_created }}</h4>
 	<p><strong>Description:</strong> {{ workout.workout_text|linebreaks }}</p>
