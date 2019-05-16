@@ -1,21 +1,14 @@
 Edited files on 5/16/2019:
-workoutinstance_detail.html (haven't uploaded at work) (made date added to profile work)
+workoutinstance_detail.html (haven't uploaded at work)
+workout_list.html (haven't uploaded at work)
+views.py (haven't uploaded at work)
 
 
 Functionality completed on 5/15/2019:
-- added durations for all amraps from crossfit mainsite
-- Create a user homepage (redirects to this page after login)
-        - shows list of users current workout instances on user homepage
-- Changed link in sidebar so that Home button goes to users homepage (code on base_generic.html)
-        No longer have link to index view (not needed)
-- Changed Duration search to always search for workouts greater than or equal to 1 minute
-        This gets rid of the issue of a large number of workouts not having times but still showing up in max duration searches
-- Changed homepage link to have url of username
-        - hides home link if not logged in
-- Logout button Redirects to index page
-- Link of workout from users homepage goes to workoutinstance for that user only.
-        - added functionality to not allow access to that page from other users.
-
+- if user isn't logged in, workout list page only shows 10 most recent workouts by date created
+        still has pagination though
+- change duration search to be gt=0 instead of gte=1
+- date added to profile in workoutinstance_detail now works properly
 Last working on:
 - add workout to profile button on workout list. need form submit but may need multiple forms on that page.
 
@@ -31,8 +24,8 @@ Notes:
                 - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
--get rid of pagination on non-logged in workout page
-- change duration search to be gt=0 instead of gte=1
+- get rid of pagination on workout list if not logged in but keep it if logged in.
+        - just adding block pagination endblock gets rid of pagination in both situations
 - login url is currently metcons/profile instead of metcons/<username> not sure how to fix this as redirect doesn't seem to be working
 - change home button to not hide if user isn't authenticated but instead takes them to the index page or login page
 - add results section to bottom of workoutinstance detail page for users to add results
