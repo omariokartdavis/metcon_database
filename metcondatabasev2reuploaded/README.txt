@@ -32,6 +32,7 @@ Functionality to add:
                 as Snatch. may be better to just leave as is.
 - Add filter for popularity of workout.
         - would simply change ordering to order by number of times completed or number of instances created.
+        - Workout.objects.order_by('number_of_times_completed') or 'number_of_instances'
 - Add search for a specific users workouts
         - search for workouts mat fraser has done
         - filter for workouts whose workout instances have users of xx name
