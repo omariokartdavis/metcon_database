@@ -38,6 +38,7 @@ Notes:
                 - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
+- change duration search to be gt=0 instead of gte=1
 - login url is currently metcons/profile instead of metcons/<username> not sure how to fix this as redirect doesn't seem to be working
 - change home button to not hide if user isn't authenticated but instead takes them to the index page or login page
 - add results section to bottom of workoutinstance detail page for users to add results
