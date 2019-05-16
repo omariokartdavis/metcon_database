@@ -1,12 +1,12 @@
 Edited files on 5/16/2019:
-workoutinstance_detail.html (haven't uploaded at work)
-workout_list.html (haven't uploaded at work)
-views.py (haven't uploaded at work)
-urls.py (haven't uploaded at work)
-workout_detail.html (haven't uploaded at work)
-base_generic.html (haven't uploaded at work)
-models.py (haven't uploaded at work) (requires makemigrations/migrate, doesn't required database reset)
-user_page.html (haven't uploaded at work)
+workoutinstance_detail.html (uploaded at work)
+workout_list.html (uploaded at work)
+views.py (uploaded at work)
+urls.py (uploaded at work)
+workout_detail.html (uploaded at work)
+base_generic.html (uploaded at work)
+models.py (uploaded at work) (requires makemigrations/migrate, doesn't required database reset)
+user_page.html (uploaded at work)
 
 Functionality completed on 5/16/2019:
 - if user isn't logged in, workout list page only shows 10 most recent workouts by date created
