@@ -1,13 +1,13 @@
 Edited files on 5/15/2019:
 mainsite_workouts.py (downloaded at home) (done)
-views.py (haven't uploaded at home)
-urls.py (haven't uploaded at home)
-settings.py (haven't uploaded at home)
-created templates/profile.html (haven't uploaded at home)
-base_generic.html (haven't uploaded at home)
-models.py (haven't uploaded at home) (no database reset required)
-created templates/workoutinstance_detail.html (haven't uploaded at home)
-workout_list.html (haven't uploaded at home)
+views.py (uploaded at home)
+urls.py (uploaded at home)
+settings.py (uploaded at home)
+created templates/user_page.html (uploaded at home)
+base_generic.html (uploaded at home)
+models.py (uploaded at home) (no database reset required)
+created templates/workoutinstance_detail.html (uploaded at home)
+workout_list.html uploaded at home)
 
 Functionality completed on 5/15/2019:
 - added durations for all amraps from crossfit mainsite
