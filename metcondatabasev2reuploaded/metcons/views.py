@@ -1,14 +1,15 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from metcons.models import Classification, Movement, Workout, WorkoutInstance
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
-
+from django.contrib.auth.models import User
 from metcons.forms import CreateWorkoutForm
-from django.db.models import Q
+import re
+
 
 def index(request):
     """View function for home page of site"""
@@ -23,7 +24,7 @@ def index(request):
 
 @login_required
 def profile(request, username):
-    users_workouts = WorkoutInstance.objects.filter(current_user=request.user).order_by('date_added_by_user')
+    users_workouts = WorkoutInstance.objects.filter(current_user=request.user).order_by('-date_added_by_user')
 
     context = {
         'users_workouts': users_workouts,
@@ -39,7 +40,9 @@ class WorkoutListView(generic.ListView):
         context.update({
             'movement_list': Movement.objects.all(),
             'classification_list': Classification.objects.all(),
-            'num_workouts': self.get_queryset().count(),
+            'num_workouts_filtered': self.get_queryset().count(),
+            'most_recent_workouts': Workout.objects.order_by('-date_created')[:10],
+            'num_workouts_total': Workout.objects.all().count(),
         })
         return context
 
@@ -49,6 +52,8 @@ class WorkoutListView(generic.ListView):
         query2 = self.request.GET.get('z')
         query3 = self.request.GET.get('x')
         query4 = self.request.GET.get('y')
+        query5 = self.request.GET.get('t')
+        
         if query1:
             for i in query1:
                 if i != '':
@@ -69,12 +74,33 @@ class WorkoutListView(generic.ListView):
             object_list = object_list.filter(estimated_duration_in_minutes__gte=query3)
         elif query4:
             object_list = object_list.filter(estimated_duration_in_minutes__lte=query4,
-                                             estimated_duration_in_minutes__gte=1)
+                                             estimated_duration_in_minutes__gt=0)
+        if query5:
+            object_list = object_list.order_by('-number_of_times_completed')
         return object_list
     
-class WorkoutDetailView(generic.DetailView):
-    model = Workout
+def workoutdetailview(request, pk):
+    workout = Workout.objects.get(id=pk)
+    
+    context = {
+        'workout': workout,
+        }
 
+    if request.method == 'POST':
+        workout = Workout.objects.get(id=str(request.POST['workout']))
+        current_user = User.objects.get(username=str(request.POST['currentuser']))
+        duration=0
+        if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
+            r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
+            duration=int(re.split('\s', r1[0])[3])
+        instance = WorkoutInstance(workout=workout, current_user = current_user,
+                                   duration_in_minutes=duration)
+        instance.save()
+
+        return HttpResponseRedirect(instance.get_absolute_url())
+    
+    return render(request, 'metcons/workout_detail.html', context=context)
+    
 class WorkoutInstanceDetailView(LoginRequiredMixin, generic.DetailView):
     model = WorkoutInstance
     
@@ -100,8 +126,18 @@ def create_workout(request):
                               )
             workout.save()
             workout.update_movements_and_classification()
+
+            current_user = User.objects.get(username=request.user.username)
+            duration=0
+            if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
+                r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
+                duration=int(re.split('\s', r1[0])[3])
+                
+            instance = WorkoutInstance(workout=workout, current_user=current_user,
+                                       duration_in_minutes=duration)
+            instance.save()
             
-            return HttpResponseRedirect(workout.get_absolute_url())
+            return HttpResponseRedirect(instance.get_absolute_url())
 
     else:
         form = CreateWorkoutForm()
