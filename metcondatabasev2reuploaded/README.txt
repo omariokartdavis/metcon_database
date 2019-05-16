@@ -7,6 +7,7 @@ created templates/profile.html (haven't uploaded at home)
 base_generic.html (haven't uploaded at home)
 models.py (haven't uploaded at home) (no database reset required)
 created templates/workoutinstance_detail.html (haven't uploaded at home)
+workout_list.html (haven't uploaded at home)
 
 Functionality completed on 5/15/2019:
 - added durations for all amraps from crossfit mainsite
@@ -16,16 +17,26 @@ Functionality completed on 5/15/2019:
         No longer have link to index view (not needed)
 - Changed Duration search to always search for workouts greater than or equal to 1 minute
         This gets rid of the issue of a large number of workouts not having times but still showing up in max duration searches
+- Changed homepage link to have url of username
+        - hides home link if not logged in
+- Logout button Redirects to index page
+- Link of workout from users homepage goes to workoutinstance for that user only.
+        - added functionality to not allow access to that page from other users.
         
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
         some restriction where if the workoutinstance with that specific workout already exists for that user it just pulls that up.
         this will likely have to be handled in the views.py
+- to allow urls to extend with info, the get_absolute_url function must be in the model isntance and you must pass the arguments
+        for each specification before it. otherwise you will get a reverse match not found on the template link.
+        - see workout instance get_absolute_url for example
+        - if using function based views, the argument must also be passed in the view function
+                - see profile view as example
+                - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
-- change link from users homepage clicking on a workout to go to a instance page for that workout.
-        - likely need to create a new detail page for workoutinstances. can be nearly identical to regular workout detail
-                but should have a section at the bottom that is update-able for duration and results.
+- change home button to not hide if user isn't authenticated but instead takes them to the index page or login page
+- add results section to bottom of workoutinstance detail page for users to add results
 - workouts list page can have a if user.is_authenticated to show all workouts if the user is logged in
         and if they aren't then only show the 10 most recent workouts completed
 - when creating a new workout, create a new instance as well for that user
