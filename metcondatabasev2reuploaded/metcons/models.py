@@ -188,3 +188,7 @@ class WorkoutInstance(models.Model):
         def save(self, *args, **kwargs):
                 super().save(*args, **kwargs)
                 self.workout.update_times_completed()
+
+        def get_absolute_url(self):
+                """Returns the url to access a detail record for this workout."""
+                return reverse('workoutinstance-detail', args=[str(self.current_user.username), str(self.id)])
