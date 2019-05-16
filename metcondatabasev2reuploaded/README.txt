@@ -4,11 +4,14 @@ views.py (haven't uploaded at home)
 urls.py (haven't uploaded at home)
 settings.py (haven't uploaded at home)
 created templates/profile.html (haven't uploaded at home)
+base_generic.html
 
 Functionality completed on 5/15/2019:
 - added durations for all amraps from crossfit mainsite
 - Create a user homepage (redirects to this page after login)
         - shows list of users current workout instances on user homepage
+- Changed link in sidebar so that Home button goes to users homepage (code on base_generic.html)
+        No longer have link to index view (not needed)
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
