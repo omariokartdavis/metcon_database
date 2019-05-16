@@ -19,6 +19,9 @@ Notes:
         this will likely have to be handled in the views.py
         
 Functionality to add:
+- change link from users homepage clicking on a workout to go to a instance page for that workout.
+        - likely need to create a new detail page for workoutinstances. can be nearly identical to regular workout detail
+                but should have a section at the bottom that is update-able for duration and results.
 - workouts list page can have a if user.is_authenticated to show all workouts if the user is logged in
         and if they aren't then only show the 10 most recent workouts completed
 - when creating a new workout, create a new instance as well for that user
