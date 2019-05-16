@@ -16,6 +16,7 @@ Functionality completed on 5/16/2019:
         - likely have to do the same to allow on workout_list view.
         - the base render(request, 'page_link') page_link must be = 'metcons/template_name.html'
         - have to change urls.py as well from class based view to function view
+- added sort by popularity checkbox
 
 
 Notes:
