@@ -4,7 +4,9 @@ views.py (haven't uploaded at home)
 urls.py (haven't uploaded at home)
 settings.py (haven't uploaded at home)
 created templates/profile.html (haven't uploaded at home)
-base_generic.html
+base_generic.html (haven't uploaded at home)
+models.py (haven't uploaded at home) (no database reset required)
+created templates/workoutinstance_detail.html (haven't uploaded at home)
 
 Functionality completed on 5/15/2019:
 - added durations for all amraps from crossfit mainsite
