@@ -20,6 +20,8 @@ Functionality completed on 5/16/2019:
         - have to change urls.py as well from class based view to function view
 - added sort by popularity checkbox
 - changed foreignkey models to on_delete=null in workout and workoutinstance
+- when creating a new workout, create a new instance as well for that user
+        - creating a workout now sends you to your instance page after workout creation. not the workout detail page itself.
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
@@ -42,8 +44,6 @@ Functionality to add:
 - login url is currently metcons/profile instead of metcons/<username> not sure how to fix this as redirect doesn't seem to be working
 - add login to index page.
 - add results section to bottom of workoutinstance detail page for users to add resultsk
-- when creating a new workout, create a new instance as well for that user
-        - workout(info), workout.save(), workoutInstance(info), workoutInstance.save()
 - can use .aggregate(AVG) for estimated duration which will average all durations of instances and put them into
         the base workout. This way as more users complete a workout the duration gets updated.
         - should work just like SUM of times completed
