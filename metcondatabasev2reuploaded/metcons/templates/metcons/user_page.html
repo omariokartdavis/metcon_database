@@ -1,0 +1,20 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<h1>{{ user.username }}'s Homepage</h1>
+	
+	{% if users_workouts %}
+	<ul>
+		{% for instance in users_workouts %}
+			<li>
+				<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>
+				<br />{{ instance.workout.workout_text|linebreaks }}
+				Classification: {{ instance.workout.classification }}
+				<br />Movements: {% for movement in instance.workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+			</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+		<p>{{ user.username }}, you have no workouts saved.</p>
+	{% endif %}
+{% endblock %}
