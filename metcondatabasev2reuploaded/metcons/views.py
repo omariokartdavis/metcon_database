@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from metcons.models import Classification, Movement, Workout
+from metcons.models import Classification, Movement, Workout, WorkoutInstance
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 
 from metcons.forms import CreateWorkoutForm
 from django.db.models import Q
@@ -19,6 +21,15 @@ def index(request):
         }
     return render(request, 'index.html', context=context)
 
+@login_required
+def profile(request, username):
+    users_workouts = WorkoutInstance.objects.filter(current_user=request.user).order_by('date_added_by_user')
+
+    context = {
+        'users_workouts': users_workouts,
+        }
+    return render(request, 'metcons/user_page.html', context=context)
+    
 class WorkoutListView(generic.ListView):
     model = Workout
     paginate_by = 10
@@ -28,6 +39,7 @@ class WorkoutListView(generic.ListView):
         context.update({
             'movement_list': Movement.objects.all(),
             'classification_list': Classification.objects.all(),
+            'num_workouts': self.get_queryset().count(),
         })
         return context
 
@@ -56,12 +68,16 @@ class WorkoutListView(generic.ListView):
         elif query3:
             object_list = object_list.filter(estimated_duration_in_minutes__gte=query3)
         elif query4:
-            object_list = object_list.filter(estimated_duration_in_minutes__lte=query4)
+            object_list = object_list.filter(estimated_duration_in_minutes__lte=query4,
+                                             estimated_duration_in_minutes__gte=1)
         return object_list
     
 class WorkoutDetailView(generic.DetailView):
     model = Workout
 
+class WorkoutInstanceDetailView(LoginRequiredMixin, generic.DetailView):
+    model = WorkoutInstance
+    
 class MovementListView(generic.ListView):
     model = Movement
     paginate_by = 10
