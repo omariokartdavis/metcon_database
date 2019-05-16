@@ -69,52 +69,69 @@
 </style>
 </head>
 	<h1>Workout List</h1>
-
-	<div class="dropdown">
-		<form method='GET'>
-			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" id="myMovementInput">
-			<div id="myMovementDropdown" class="dropdown-content">
-				<select class= "dropdown-selection" size="15" tabindex="-1">
-					{% for movement in movement_list %}
-						<option>{{ movement.name }}</option>
-					{% endfor %}
-				</select>
-			</div>
-			<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" id="myMovementInput2">
-			<div id="myMovementDropdown2" class="dropdown-content">
-				<select  class= "dropdown-selection" size="15" tabindex="-1">
-					{% for movement in movement_list %}
-						<option>{{ movement.name }}</option>
-					{% endfor %}
-				</select>
-			</div>
-			<input type="number" class="durationinput" placeholder="Min Duration.." name="x" id="minDurationInput">
-			<input type="number" class="durationinput" placeholder="Max Duration.." name="y" id="maxDurationInput">
-			<input type="text" class = "textinput" placeholder="Search Classifications.."  name="z" id="myClassificationInput">
-			<div id="myClassificationDropdown" class="dropdown-content">
-				<select class= "dropdown-selection" size="5" tabindex="-1">
-					{% for classification in classification_list %}
-						<option>{{ classification.name }}</option>
-					{% endfor %}
-				</select>
-			</div>
-			<input type='submit' class='button' id='filtersubmitbutton'>
-		</form>
-	</div>
-	{% if workout_list %}
-	<p>Number of workouts with applied filters: {{ num_workouts }}
-	<ul>
-		{% for workout in workout_list %}
-			<li>
-				<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
-				<br />{{ workout.workout_text|linebreaks }}
-				Classification: {{ workout.classification }}
-				<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-			</li>
-		{% endfor %}
-	</ul>
+	{% if user.is_authenticated %}
+		<div class="dropdown">
+			<form method='GET'>
+				<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" id="myMovementInput">
+				<div id="myMovementDropdown" class="dropdown-content">
+					<select class= "dropdown-selection" size="15" tabindex="-1">
+						{% for movement in movement_list %}
+							<option>{{ movement.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" id="myMovementInput2">
+				<div id="myMovementDropdown2" class="dropdown-content">
+					<select  class= "dropdown-selection" size="15" tabindex="-1">
+						{% for movement in movement_list %}
+							<option>{{ movement.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<input type="number" class="durationinput" placeholder="Min Duration.." name="x" id="minDurationInput">
+				<input type="number" class="durationinput" placeholder="Max Duration.." name="y" id="maxDurationInput">
+				<input type="text" class = "textinput" placeholder="Search Classifications.."  name="z" id="myClassificationInput">
+				<div id="myClassificationDropdown" class="dropdown-content">
+					<select class= "dropdown-selection" size="5" tabindex="-1">
+						{% for classification in classification_list %}
+							<option>{{ classification.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<input type='submit' class='button' id='filtersubmitbutton'>
+				<br /><input type="checkbox" class="checkboxinput" name="t" id="popularitycheckbox">Sort By Most Popular
+			</form>
+		</div>
+		{% if workout_list %}
+			<p>Number of workouts with applied filters: {{ num_workouts_filtered }}
+			<ul>
+				{% for workout in workout_list %}
+					<li>
+						<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>						
+						<br />{{ workout.workout_text|linebreaks }}
+						Classification: {{ workout.classification }}
+						<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+					</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<p>There are no workouts in the database with those filters.</p>
+		{% endif %}
 	{% else %}
-		<p>There are no workouts in the database with those filters.</p>
+		<p>Showing 10 most recent workouts added to database. To view all workouts in database please login or signup.</p>
+		{% if most_recent_workouts %}
+			<p>Total Number of Workouts in Database: {{ num_workouts_total }}
+			<ul>
+				{% for workout in most_recent_workouts %}
+					<li>
+						<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
+						<br />{{ workout.workout_text|linebreaks }}
+						Classification: {{ workout.classification }}
+						<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+					</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
 	{% endif %}
 <script>
 function Dropdown() {
@@ -184,7 +201,10 @@ if (dropdownselects) {
   }
 }
 
-document.getElementById("filtersubmitbutton").addEventListener('focus', DropdownExit, false);
+var filterSubmitButton = document.getElementById("filtersubmitbutton");
+if (filterSubmitButton) {
+  filterSubmitButton.addEventListener('focus', DropdownExit, false);
+}
 
 window.onclick = function(event) {
   //use console.log(event) and possibly event.nextSibling etc. to see what element is being triggered by clicking on things.
