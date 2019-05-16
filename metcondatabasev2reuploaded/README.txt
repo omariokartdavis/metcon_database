@@ -19,6 +19,8 @@ Notes:
         this will likely have to be handled in the views.py
         
 Functionality to add:
+- workouts list page can have a if user.is_authenticated to show all workouts if the user is logged in
+        and if they aren't then only show the 10 most recent workouts completed
 - when creating a new workout, create a new instance as well for that user
         - workout(info), workout.save(), workoutInstance(info), workoutInstance.save()
 - can use .aggregate(AVG) for estimated duration which will average all durations of instances and put them into
