@@ -5,6 +5,8 @@ views.py (haven't uploaded at work)
 urls.py (haven't uploaded at work)
 workout_detail.html (haven't uploaded at work)
 base_generic.html (haven't uploaded at work)
+models.py (haven't uploaded at work) (requires makemigrations/migrate, doesn't required database reset)
+user_page.html (haven't uploaded at work)
 
 Functionality completed on 5/16/2019:
 - if user isn't logged in, workout list page only shows 10 most recent workouts by date created
@@ -17,7 +19,7 @@ Functionality completed on 5/16/2019:
         - the base render(request, 'page_link') page_link must be = 'metcons/template_name.html'
         - have to change urls.py as well from class based view to function view
 - added sort by popularity checkbox
-
+- changed models to on_delete=null
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
@@ -33,6 +35,7 @@ Notes:
 Functionality to add:
 - add click to edit button on workout instance detail page.
         - only edit fields specific to that instance aka duration completed, times completed, dates completed etc.
+        - may require an update view
 - might need to change ondelete to cascade for workout in workoutinstance.
 - get rid of pagination on workout list if not logged in but keep it if logged in.
         - just adding block pagination endblock gets rid of pagination in both situations
