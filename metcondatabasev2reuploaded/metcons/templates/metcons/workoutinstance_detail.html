@@ -5,7 +5,7 @@
 		{% if user.username == workoutinstance.current_user.username %}
 			<h1>{{ workoutinstance.workout.display_name }}</h1>
 			<h3>Classification: {{ workoutinstance.workout.classification }}</h3>
-			<h4>Date Added to Profile: {{ workoutinstance.workout.date_added_by_user }}</h4>
+			<h4>Date Added to Profile: {{ workoutinstance.date_added_by_user }}</h4>
 			<p><strong>Description:</strong> {{ workoutinstance.workout.workout_text|linebreaks }}</p>
 			<p><strong>Scaling:</strong> {{ workoutinstance.workout.scaling_or_description_text|linebreaks }}</p>
 			<p><strong>Movements:</strong> {% for movement in workoutinstance.workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
