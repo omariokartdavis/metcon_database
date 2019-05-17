@@ -1,9 +1,12 @@
 Edited files on 5/17/2019:
-views.py (uploaded at work)
+views.py (haven't uploaded at work)
+urls.py (haven't uploaded at work)
+workout_list.html (haven't uploaded at work)
 
 Functionality completed on 5/17/2019:
 - added an if function on workoutdetailview add workout to profile button
         - if instance already exists for user, go to that instance page. Otherwise create instance and go.
+- changed workoutlistview to function view and added add workout to profile button
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
@@ -17,6 +20,9 @@ Notes:
                 - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
+- change date added/created fields on all models to datetime fields to allow for most accurate tracking
+        - will require reset of database and changing of mainsite_workouts to put datetime instead of just date.
+        - will also likely require change of movements_list instance completed dates.
 - only allow user who created base workout in database to edit that workout and only while no one else has added it to their page
         - if edited after others have it on their profile, it will change everyones workout.
 - add user field of "sport" and they can choose between crossfit, bodybuilding, strength training etc.
@@ -26,8 +32,11 @@ Functionality to add:
 - add click to edit button on workout instance detail page.
         - only edit fields specific to that instance aka duration completed, times completed, dates completed etc.
         - may require an update view
-- get rid of pagination on workout list if not logged in but keep it if logged in.
-        - just adding block pagination endblock gets rid of pagination in both situations
+- Pagination:
+        - add pagination to workout list and profile page.
+                - workout list pagination got removed becuase I changed it to a function view to allow POST forms
+        - get rid of pagination on workout list if not logged in but keep it if logged in.
+                - just adding block pagination endblock gets rid of pagination in both situations
         - this will likely solve itself when endless scroll is added
 - login url is currently metcons/profile instead of metcons/<username> not sure how to fix this as redirect doesn't seem to be working
 - add login to index page.
