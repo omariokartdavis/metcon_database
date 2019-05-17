@@ -23,6 +23,7 @@ Notes:
         
 Functionality to add:
 - ?add user authentication check to movements list?
+        - or just hide movements list sidebar button from base_generic.html if not authenticated
 - change date added/created fields on all models to datetime fields to allow for most accurate tracking
         - will require reset of database and changing of mainsite_workouts to put datetime instead of just date.
         - will also likely require change of movements_list instance completed dates.
