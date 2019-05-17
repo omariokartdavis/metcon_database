@@ -1,27 +1,9 @@
-Edited files on 5/16/2019:
-workoutinstance_detail.html (downloaded at home)
-workout_list.html (downloaded at home)
-views.py (downloaded at home)
-urls.py (downloaded at home)
-workout_detail.html (downloaded at home)
-base_generic.html (downloaded at home)
-models.py (downloaded at home)
-user_page.html (downloaded at home)
+Edited files on 5/17/2019:
+views.py (haven't uploaded at work)
 
-Functionality completed on 5/16/2019:
-- if user isn't logged in, workout list page only shows 10 most recent workouts by date created
-- change duration search to be gt=0 instead of gte=1
-- date added to profile in workoutinstance_detail now works properly
-- change home button to not hide if user isn't authenticated but instead takes them to the index page or login page
-- added Add Workout button on workout_detail page.
-        - required changing detail view from a class based view to function based view.
-        - likely have to do the same to allow on workout_list view.
-        - the base render(request, 'page_link') page_link must be = 'metcons/template_name.html'
-        - have to change urls.py as well from class based view to function view
-- added sort by popularity checkbox
-- changed foreignkey models to on_delete=null in workout and workoutinstance
-- when creating a new workout, create a new instance as well for that user
-        - creating a workout now sends you to your instance page after workout creation. not the workout detail page itself.
+Functionality completed on 5/17/2019:
+- added an if function on workoutdetailview add workout to profile button
+        - if instance already exists for user, go to that instance page. Otherwise create instance and go.
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
