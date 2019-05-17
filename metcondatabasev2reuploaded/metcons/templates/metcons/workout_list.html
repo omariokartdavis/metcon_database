@@ -65,6 +65,14 @@
 
 .dropdown option:hover {background-color: #ddd;}
 
+.post_workout_form {
+  display: inline;
+}
+
+.workout_display_name {
+  display: inline;
+}
+
 .show {display: block;}
 </style>
 </head>
@@ -74,7 +82,7 @@
 			<form method='GET'>
 				<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" id="myMovementInput">
 				<div id="myMovementDropdown" class="dropdown-content">
-					<select class= "dropdown-selection" size="15" tabindex="-1">
+					<select class= "dropdown-selection" size="13" tabindex="-1">
 						{% for movement in movement_list %}
 							<option>{{ movement.name }}</option>
 						{% endfor %}
@@ -82,7 +90,7 @@
 				</div>
 				<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" id="myMovementInput2">
 				<div id="myMovementDropdown2" class="dropdown-content">
-					<select  class= "dropdown-selection" size="15" tabindex="-1">
+					<select  class= "dropdown-selection" size="13" tabindex="-1">
 						{% for movement in movement_list %}
 							<option>{{ movement.name }}</option>
 						{% endfor %}
@@ -107,7 +115,13 @@
 			<ul>
 				{% for workout in workout_list %}
 					<li>
-						<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>						
+						<p class="workout_display_name"><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
+						<form class="post_workout_form" method='POST'>
+							{% csrf_token %}
+							<input type="hidden" name="workout" value= {{ workout.id }}>
+							<input type="hidden" name="currentuser" value= {{ user.username }}>
+							<input type="submit" value="Add Workout to Profile" name="add_workout_to_profile">
+						</form>
 						<br />{{ workout.workout_text|linebreaks }}
 						Classification: {{ workout.classification }}
 						<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
