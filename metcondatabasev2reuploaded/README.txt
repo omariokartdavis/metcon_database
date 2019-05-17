@@ -2,11 +2,13 @@ Edited files on 5/17/2019:
 views.py (haven't uploaded at work)
 urls.py (haven't uploaded at work)
 workout_list.html (haven't uploaded at work)
+workout_detail.html (haven't uploaded at work)
 
 Functionality completed on 5/17/2019:
 - added an if function on workoutdetailview add workout to profile button
         - if instance already exists for user, go to that instance page. Otherwise create instance and go.
 - changed workoutlistview to function view and added add workout to profile button
+- added user authentication check to workout detail
 
 Notes:
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
