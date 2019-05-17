@@ -2,13 +2,14 @@
 
 {% block content %}
 	<h1>{{ workout.display_name }}</h1>
-	
-	<form method='POST'>
-		{% csrf_token %}
-		<input type="hidden" name="workout" value= {{ workout.id }}>
-		<input type="hidden" name="currentuser" value= {{ user.username }}>
-		<input type="submit" value="Add Workout to Profile">
-	</form>
+	{% if user.is_authenticated %}
+		<form method='POST'>
+			{% csrf_token %}
+			<input type="hidden" name="workout" value= {{ workout.id }}>
+			<input type="hidden" name="currentuser" value= {{ user.username }}>
+			<input type="submit" value="Add Workout to Profile">
+		</form>
+	{% endif %}
 	
 	<h3>Classification: {{ workout.classification }}</h3>
 	<h4>Date Created: {{ workout.date_created }}</h4>
@@ -18,16 +19,20 @@
 	<p><strong>Estimated Duration:</strong> {{ workout.estimated_duration_in_minutes }}</p>
 	<p><strong>Number of Times Completed:</strong> {{ workout.number_of_times_completed }}</p>
 	
-	<p>Movement isn't tagged?</p>
-	<form action="{% url 'movement_create' %}">
-		<input type="submit" value="Create Movement" />
-	</form>
-	<button id="UpdateWorkoutButton" onclick= {{ workout.update_movements_and_classification }} >Update Workout</button>
+	{% if user.is_authenticated %}
+		<p>Movement isn't tagged?</p>
+		<form action="{% url 'movement_create' %}">
+			<input type="submit" value="Create Movement" />
+		</form>
+		<button id="UpdateWorkoutButton" onclick= {{ workout.update_movements_and_classification }} >Update Workout</button>
+	{% endif %}
 <script>
 function refreshPage() {
 	window.location.reload();
 }
-
-document.getElementById("UpdateWorkoutButton").addEventListener('click', refreshPage, false);
+var updateWorkoutButton = document.getElementById("UpdateWorkoutButton");
+if (updateWorkoutButton) {
+	updateWorkoutButton.addEventListener('click', refreshPage, false);
+}
 </script>
 {% endblock %}
