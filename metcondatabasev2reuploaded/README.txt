@@ -1,5 +1,5 @@
 Edited files on 5/17/2019:
-views.py (haven't uploaded at work)
+views.py (uploaded at work)
 
 Functionality completed on 5/17/2019:
 - added an if function on workoutdetailview add workout to profile button
