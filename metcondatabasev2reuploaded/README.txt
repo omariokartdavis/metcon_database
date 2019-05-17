@@ -25,6 +25,7 @@ Notes:
                 - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
+- ?put filter searches on base_generic page and do {% block filters %}{% endblock %} if you don't want them to come up?
 - change date added/created fields on all models to datetime fields to allow for most accurate tracking
         - will require reset of database and changing of mainsite_workouts to put datetime instead of just date.
         - will also likely require change of movements_list instance completed dates.
