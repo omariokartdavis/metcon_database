@@ -46,9 +46,6 @@ Functionality to add:
                 movement name and if it appears twice (Clean, Clean and Jerk) remove the movement (clean gets removed).
         - not sure if this is a good idea on second thought as this would mean workouts with Power Snatch are no longer tagged
                 as Snatch. may be better to just leave as is.
-- Add filter for popularity of workout.
-        - would simply change ordering to order by number of times completed or number of instances created.
-        - Workout.objects.order_by('number_of_times_completed') or 'number_of_instances'
 - Add search for a specific users workouts
         - search for workouts mat fraser has done
         - filter for workouts whose workout instances have users of xx name
