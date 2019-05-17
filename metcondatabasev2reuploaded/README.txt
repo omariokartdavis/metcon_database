@@ -3,12 +3,14 @@ views.py (haven't uploaded at work)
 urls.py (haven't uploaded at work)
 workout_list.html (haven't uploaded at work)
 workout_detail.html (haven't uploaded at work)
+base_generic.html (haven't uploaded at work)
 
 Functionality completed on 5/17/2019:
 - added an if function on workoutdetailview add workout to profile button
         - if instance already exists for user, go to that instance page. Otherwise create instance and go.
 - changed workoutlistview to function view and added add workout to profile button
 - added user authentication check to workout detail
+- add user authentication check to movements list sidebar button
 
 Notes:
 - currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
@@ -23,8 +25,6 @@ Notes:
                 - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
-- ?add user authentication check to movements list?
-        - or just hide movements list sidebar button from base_generic.html if not authenticated
 - change date added/created fields on all models to datetime fields to allow for most accurate tracking
         - will require reset of database and changing of mainsite_workouts to put datetime instead of just date.
         - will also likely require change of movements_list instance completed dates.
