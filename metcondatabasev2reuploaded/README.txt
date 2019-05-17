@@ -35,6 +35,7 @@ Functionality to add:
 - can use .aggregate(AVG) for estimated duration which will average all durations of instances and put them into
         the base workout. This way as more users complete a workout the duration gets updated.
         - should work just like SUM of times completed
+        - can use .filter(duration_gt=0).aggregate(AVG()) to exclude instances where duration hasn't been changed
 - add results model and foreign key it to workoutinstance to store peoples results of their workouts (weights, videos, description of difficulty)
         - time workout completed in can still be stored in instances duration.
         - date of results and a textfield will be important.
