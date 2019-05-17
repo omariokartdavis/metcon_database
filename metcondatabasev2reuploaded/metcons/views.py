@@ -31,53 +31,66 @@ def profile(request, username):
         }
     return render(request, 'metcons/user_page.html', context=context)
     
-class WorkoutListView(generic.ListView):
-    model = Workout
-    paginate_by = 10
-    
-    def get_context_data(self, **kwargs):
-        context = super(WorkoutListView, self).get_context_data(**kwargs)
-        context.update({
-            'movement_list': Movement.objects.all(),
-            'classification_list': Classification.objects.all(),
-            'num_workouts_filtered': self.get_queryset().count(),
-            'most_recent_workouts': Workout.objects.order_by('-date_created')[:10],
-            'num_workouts_total': Workout.objects.all().count(),
-        })
-        return context
+def workoutlistview(request):
 
-    def get_queryset(self):           
-        object_list = Workout.objects.all()
-        query1 = self.request.GET.getlist('q')
-        query2 = self.request.GET.get('z')
-        query3 = self.request.GET.get('x')
-        query4 = self.request.GET.get('y')
-        query5 = self.request.GET.get('t')
+    object_list = Workout.objects.all()
+    query1 = request.GET.getlist('q')
+    query2 = request.GET.get('z')
+    query3 = request.GET.get('x')
+    query4 = request.GET.get('y')
+    query5 = request.GET.get('t')
+    
+    if query1:
+        for i in query1:
+            if i != '':
+                object_list2 = object_list.filter(movements__name = i)
+                if not object_list2:
+                    object_list2 = object_list.filter(movements__name = i.title())
+                object_list = object_list2
+    if query2:
+        if query2.islower():
+            query2 = query2.title()
+        object_list = object_list.filter(classification__name = query2)
+    #could get rid of this ifand and just do if 3/if4 but I think the ifand will save
+    # time by performing the queries at once rather than seperate
+    if query3 and query4:
+        object_list = object_list.filter(estimated_duration_in_minutes__gte=query3,
+                                         estimated_duration_in_minutes__lte=query4)
+    elif query3:
+        object_list = object_list.filter(estimated_duration_in_minutes__gte=query3)
+    elif query4:
+        object_list = object_list.filter(estimated_duration_in_minutes__lte=query4,
+                                         estimated_duration_in_minutes__gt=0)
+    if query5:
+        object_list = object_list.order_by('-number_of_times_completed')
         
-        if query1:
-            for i in query1:
-                if i != '':
-                    object_list2 = object_list.filter(movements__name = i)
-                    if not object_list2:
-                        object_list2 = object_list.filter(movements__name = i.title())
-                    object_list = object_list2
-        if query2:
-            if query2.islower():
-                query2 = query2.title()
-            object_list = object_list.filter(classification__name = query2)
-        #could get rid of this ifand and just do if 3/if4 but I think the ifand will save
-        # time by performing the queries at once rather than seperate
-        if query3 and query4:
-            object_list = object_list.filter(estimated_duration_in_minutes__gte=query3,
-                                             estimated_duration_in_minutes__lte=query4)
-        elif query3:
-            object_list = object_list.filter(estimated_duration_in_minutes__gte=query3)
-        elif query4:
-            object_list = object_list.filter(estimated_duration_in_minutes__lte=query4,
-                                             estimated_duration_in_minutes__gt=0)
-        if query5:
-            object_list = object_list.order_by('-number_of_times_completed')
-        return object_list
+
+    context = {
+        'workout_list': object_list,
+        'num_workouts_filtered': object_list.count(),
+        'movement_list': Movement.objects.all(),
+        'classification_list': Classification.objects.all(),
+        'most_recent_workouts': Workout.objects.order_by('-date_created')[:10],
+        'num_workouts_total': Workout.objects.all().count(),
+        }
+
+    if request.method == 'POST':
+        if 'add_workout_to_profile' in request.POST:
+            workout = Workout.objects.get(id=str(request.POST['workout']))
+            current_user = User.objects.get(username=str(request.POST['currentuser']))
+            if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
+                duration=0
+                if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
+                    r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
+                    duration=int(re.split('\s', r1[0])[3])
+                instance = WorkoutInstance(workout=workout, current_user = current_user,
+                                           duration_in_minutes=duration)
+                instance.save()
+            else:
+                instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
+            return HttpResponseRedirect(instance.get_absolute_url())
+        
+    return render(request, 'metcons/workout_list.html', context = context)
     
 def workoutdetailview(request, pk):
     workout = Workout.objects.get(id=pk)
@@ -97,11 +110,9 @@ def workoutdetailview(request, pk):
             instance = WorkoutInstance(workout=workout, current_user = current_user,
                                        duration_in_minutes=duration)
             instance.save()
-
-            return HttpResponseRedirect(instance.get_absolute_url())
         else:
             instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
-            return HttpResponseRedirect(instance.get_absolute_url())
+        return HttpResponseRedirect(instance.get_absolute_url())
     
     return render(request, 'metcons/workout_detail.html', context=context)
     
