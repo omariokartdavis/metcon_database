@@ -1,9 +1,9 @@
 Edited files on 5/17/2019:
-views.py (haven't uploaded at work)
-urls.py (haven't uploaded at work)
-workout_list.html (haven't uploaded at work)
-workout_detail.html (haven't uploaded at work)
-base_generic.html (haven't uploaded at work)
+views.py (uploaded at work)
+urls.py (uploaded at work)
+workout_list.html (uploaded at work)
+workout_detail.html (uploaded at work)
+base_generic.html (uploaded at work)
 
 Functionality completed on 5/17/2019:
 - added an if function on workoutdetailview add workout to profile button
