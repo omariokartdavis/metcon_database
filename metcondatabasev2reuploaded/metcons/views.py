@@ -89,15 +89,19 @@ def workoutdetailview(request, pk):
     if request.method == 'POST':
         workout = Workout.objects.get(id=str(request.POST['workout']))
         current_user = User.objects.get(username=str(request.POST['currentuser']))
-        duration=0
-        if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
-            r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
-            duration=int(re.split('\s', r1[0])[3])
-        instance = WorkoutInstance(workout=workout, current_user = current_user,
-                                   duration_in_minutes=duration)
-        instance.save()
+        if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
+            duration=0
+            if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
+                r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
+                duration=int(re.split('\s', r1[0])[3])
+            instance = WorkoutInstance(workout=workout, current_user = current_user,
+                                       duration_in_minutes=duration)
+            instance.save()
 
-        return HttpResponseRedirect(instance.get_absolute_url())
+            return HttpResponseRedirect(instance.get_absolute_url())
+        else:
+            instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
+            return HttpResponseRedirect(instance.get_absolute_url())
     
     return render(request, 'metcons/workout_detail.html', context=context)
     
@@ -118,16 +122,17 @@ def create_workout(request):
         form = CreateWorkoutForm(request.POST)
 
         if form.is_valid():
+            current_user = User.objects.get(username=request.user.username)
             workout = Workout(workout_text=form.cleaned_data['workout_text'],
                               scaling_or_description_text=form.cleaned_data['workout_scaling'],
                               estimated_duration_in_minutes=form.cleaned_data['estimated_duration'],
                               what_website_workout_came_from=form.cleaned_data['what_website_workout_came_from'],
                               classification=None,
+                              created_by_user = current_user,
                               )
             workout.save()
             workout.update_movements_and_classification()
 
-            current_user = User.objects.get(username=request.user.username)
             duration=0
             if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
                 r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
