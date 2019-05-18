@@ -8,6 +8,7 @@ models.py (haven't uploaded at home) requires database reset
 Functionality completed on 5/18/2019:
 - login redirects to url with username in it
         - urls.py path to redirect page had to be at the top of the list of paths.
+- added datetime field for workout and instance creation
 
 Notes:
 - currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
