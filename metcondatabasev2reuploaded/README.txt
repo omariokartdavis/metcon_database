@@ -1,16 +1,12 @@
-Edited files on 5/17/2019:
-views.py (downloaded at home)
-urls.py (downloaded at home))
-workout_list.html (downloaded at home)
-workout_detail.html (downloaded at home)
-base_generic.html (downloaded at home)
+Edited files on 5/18/2019:
+views.py (haven't uploaded at home)
+urls.py (haven't uploaded at home)
+settings.py (haven't uploaded at home)
+login.html (haven't uploaded at home)
 
-Functionality completed on 5/17/2019:
-- added an if function on workoutdetailview add workout to profile button
-        - if instance already exists for user, go to that instance page. Otherwise create instance and go.
-- changed workoutlistview to function view and added add workout to profile button
-- added user authentication check to workout detail
-- add user authentication check to movements list sidebar button
+Functionality completed on 5/18/2019:
+- login redirects to url with username in it
+        - urls.py path to redirect page had to be at the top of the list of paths.
 
 Notes:
 - currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
@@ -44,7 +40,6 @@ Functionality to add:
         - get rid of pagination on workout list if not logged in but keep it if logged in.
                 - just adding block pagination endblock gets rid of pagination in both situations
         - this will likely solve itself when endless scroll is added
-- login url is currently metcons/profile instead of metcons/<username> not sure how to fix this as redirect doesn't seem to be working
 - add login to index page.
 - add results section to bottom of workoutinstance detail page for users to add resultsk
 - can use .aggregate(AVG) for estimated duration which will average all durations of instances and put them into
