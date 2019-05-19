@@ -4,6 +4,7 @@ import datetime
 import uuid
 from django.conf import settings
 from django.db.models import Count, F, Sum
+from django.utils.timezone import now
 
 class Classification(models.Model):
         """Model representing a classification of a movement"""
@@ -46,8 +47,8 @@ class Movement(models.Model):
 class Workout(models.Model):
         """Model representing a workout."""
         #when creating a model from the admin page, the model will not set the classifications/movements itself.
-        date_created = models.DateField(default=datetime.date.today)
-        date_added_to_database = models.DateField(auto_now_add = True)
+        date_created = models.DateTimeField(default=now)
+        date_added_to_database = models.DateTimeField(auto_now_add = True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         workout_text = models.TextField(max_length=2000)
         scaling_or_description_text = models.TextField(max_length=4000, null=True, blank=True)
@@ -146,7 +147,7 @@ class WorkoutInstance(models.Model):
         """Model representing a specific Users Workout Instance"""
         id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text = 'Unique ID for this particular workout')
         dates_workout_completed = models.ManyToManyField(WorkoutInstanceCompletedDate, blank=True)
-        date_added_by_user = models.DateField(auto_now_add=True)
+        date_added_by_user = models.DateTimeField(auto_now_add=True)
         workout = models.ForeignKey(Workout, on_delete=models.SET_NULL, null=True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         duration_in_minutes = models.IntegerField(default=0, verbose_name = 'Duration', null=True, blank=True)
@@ -174,7 +175,9 @@ class WorkoutInstance(models.Model):
         def display_name(self):
                 if self.workout:
                         name = self.workout.display_name()
-                return name
+                        return name
+                else:
+                        return 'Workout Deleted'
 
         def display_dates_completed(self):
                 """Create a string for the classification. required to display classificaitons in admin site"""
@@ -185,7 +188,9 @@ class WorkoutInstance(models.Model):
         def __str__(self):
                 if self.workout:
                         name = self.workout.display_name()
-                return name
+                        return name
+                else:
+                        return 'Workout Deleted'
 
         def save(self, *args, **kwargs):
                 super().save(*args, **kwargs)
