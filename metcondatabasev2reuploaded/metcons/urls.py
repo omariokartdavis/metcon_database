@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('profileredirect/', views.profileredirect),
     path('', views.index, name='index'),
     path('workouts/', views.workoutlistview, name='workouts'),
     path('workout/<int:pk>', views.workoutdetailview, name='workout-detail'),
