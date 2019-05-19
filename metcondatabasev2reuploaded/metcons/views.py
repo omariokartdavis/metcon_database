@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from metcons.models import Classification, Movement, Workout, WorkoutInstance
@@ -30,7 +30,11 @@ def profile(request, username):
         'users_workouts': users_workouts,
         }
     return render(request, 'metcons/user_page.html', context=context)
-    
+
+@login_required
+def profileredirect(request):
+    return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
 def workoutlistview(request):
 
     object_list = Workout.objects.all()
@@ -79,12 +83,8 @@ def workoutlistview(request):
             workout = Workout.objects.get(id=str(request.POST['workout']))
             current_user = User.objects.get(username=str(request.POST['currentuser']))
             if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
-                duration=0
-                if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
-                    r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
-                    duration=int(re.split('\s', r1[0])[3])
                 instance = WorkoutInstance(workout=workout, current_user = current_user,
-                                           duration_in_minutes=duration)
+                                           duration_in_minutes=workout.estimated_duration_in_minutes)
                 instance.save()
             else:
                 instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
@@ -103,12 +103,8 @@ def workoutdetailview(request, pk):
         workout = Workout.objects.get(id=str(request.POST['workout']))
         current_user = User.objects.get(username=str(request.POST['currentuser']))
         if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
-            duration=0
-            if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
-                r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
-                duration=int(re.split('\s', r1[0])[3])
             instance = WorkoutInstance(workout=workout, current_user = current_user,
-                                       duration_in_minutes=duration)
+                                       duration_in_minutes=workout.estimated_duration_in_minutes)
             instance.save()
         else:
             instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
@@ -134,24 +130,31 @@ def create_workout(request):
 
         if form.is_valid():
             current_user = User.objects.get(username=request.user.username)
-            workout = Workout(workout_text=form.cleaned_data['workout_text'],
-                              scaling_or_description_text=form.cleaned_data['workout_scaling'],
-                              estimated_duration_in_minutes=form.cleaned_data['estimated_duration'],
-                              what_website_workout_came_from=form.cleaned_data['what_website_workout_came_from'],
-                              classification=None,
-                              created_by_user = current_user,
-                              )
-            workout.save()
-            workout.update_movements_and_classification()
-
-            duration=0
-            if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
-                r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
-                duration=int(re.split('\s', r1[0])[3])
-                
-            instance = WorkoutInstance(workout=workout, current_user=current_user,
-                                       duration_in_minutes=duration)
-            instance.save()
+            if not Workout.objects.filter(workout_text=form.cleaned_data['workout_text']):
+                workout = Workout(workout_text=form.cleaned_data['workout_text'],
+                                  scaling_or_description_text=form.cleaned_data['workout_scaling'],
+                                  estimated_duration_in_minutes=form.cleaned_data['estimated_duration'],
+                                  what_website_workout_came_from=form.cleaned_data['what_website_workout_came_from'],
+                                  classification=None,
+                                  created_by_user = current_user,
+                                  )
+                if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
+                    r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
+                    workout.estimated_duration_in_minutes=int(re.split('\s', r1[0])[3])
+                workout.save()
+                workout.update_movements_and_classification()
+                    
+                instance = WorkoutInstance(workout=workout, current_user=current_user,
+                                           duration_in_minutes=workout.estimated_duration_in_minutes)
+                instance.save()
+            else:
+                workout = Workout.objects.get(workout_text=form.cleaned_data['workout_text'])
+                if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
+                    instance = WorkoutInstance(workout=workout, current_user = current_user,
+                                               duration_in_minutes=workout.estimated_duration_in_minutes)
+                    instance.save()
+                else:
+                    instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
             
             return HttpResponseRedirect(instance.get_absolute_url())
 
