@@ -23,7 +23,7 @@ while year >= 2018:
             for day in eachworkout.select('h3'):
                 day_and_date = day.get_text()
                 date = day_and_date[-6:]
-                date_in_datetime = dt.datetime.strptime(date, "%y%m%d").date()
+                date_in_datetime = dt.datetime.strptime(date, "%y%m%d")
             for div in eachworkout.select('div[class="col-sm-6"]'):
                 if div.find_all(string=re.compile(r'^Scaling$')):
                     scaling_text = div.get_text()
