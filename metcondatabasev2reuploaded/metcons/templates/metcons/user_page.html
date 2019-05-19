@@ -6,7 +6,7 @@
 	{% if users_workouts %}
 	<ul>
 		{% for instance in users_workouts %}
-			{% if instance %}
+			{% if instance.workout %}
 				<li>
 					<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>
 					<br />{{ instance.workout.workout_text|linebreaks }}
