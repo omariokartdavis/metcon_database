@@ -138,10 +138,10 @@ def create_workout(request):
                                   classification=None,
                                   created_by_user = current_user,
                                   )
-                if re.findall(r'as possible in \d+ minutes of', workout.workout_text):
+                workout.save()
+                if Workout.objects.filter(id=workout.id, workout_text__iregex=r'as possible in \d+ minutes of'):
                     r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
                     workout.estimated_duration_in_minutes=int(re.split('\s', r1[0])[3])
-                workout.save()
                 workout.update_movements_and_classification()
                     
                 instance = WorkoutInstance(workout=workout, current_user=current_user,
