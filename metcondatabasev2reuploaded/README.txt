@@ -26,9 +26,8 @@ Notes:
         
 Functionality to add:
 - ?put filter searches on base_generic page and do {% block filters %}{% endblock %} if you don't want them to come up?
-- change date added/created fields on all models to datetime fields to allow for most accurate tracking
-        - will require reset of database and changing of mainsite_workouts to put datetime instead of just date.
-        - will also likely require change of movements_list instance completed dates.
+- need to list workouts on user_page by dates completed not just added to user date.
+        - maybe only by dates completed if there is one?
 - only allow user who created base workout in database to edit that workout and only while no one else has added it to their page
         - if edited after others have it on their profile, it will change everyones workout.
 - add user field of "sport" and they can choose between crossfit, bodybuilding, strength training etc.
