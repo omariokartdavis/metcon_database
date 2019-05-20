@@ -30,7 +30,7 @@ Functionality to add:
         - maybe only by dates completed if there is one?
 - only allow user who created base workout in database to edit that workout and only while no one else has added it to their page
         - if edited after others have it on their profile, it will change everyones workout.
-- add user field of "sport" and they can choose between crossfit, bodybuilding, strength training etc.
+- add user field and workout field of "sport" and they can choose between crossfit, bodybuilding, strength training etc.
         - their choice here will determine their views and workout types shown
 - once the above is added, add ability to switch workout_list searches to different sport types
         - if an athlete's sport is BB give a dropdown that allows them to switch to Crossfit workouts or other.
