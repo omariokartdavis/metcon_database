@@ -3,6 +3,7 @@ models.py (haven't uploaded at home)
 views.py
 forms.py
 mainsite_workouts.py
+admin.py
 workout_detail
 workoutinstance_detail
 
