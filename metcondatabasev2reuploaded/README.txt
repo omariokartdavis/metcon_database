@@ -59,6 +59,7 @@ Functionality to add:
         - search for workouts mat fraser has done
         - filter for workouts whose workout instances have users of xx name
                 - maybe this is a subquery?
+- Add privacy setting so users can set their profile/workouts to private and therefore others can search for/see them.
 - Combine Create Movement and Update Workout buttons into a popup:
         -on create movement button click open a popup to add movement. on save click run three functions:
                 -save movement
