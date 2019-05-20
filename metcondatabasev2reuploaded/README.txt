@@ -1,17 +1,17 @@
-Edited files on 5/18/2019:
-views.py (downloaded at work)
-urls.py (downloaded at work)
-settings.py (downloaded at work)
-models.py (downloaded at work) requires database reset
-mainsite_workouts.py (downloaded at work)
-user_page.html (downloaded at work)
-login.html (downloaded at work)
+Edited files on 5/20/2019:
+models.py (haven't uploaded at work) does not require database reset
+views.py (haven't uploaded at work)
+workout_detail.html (haven't uploaded at work)
+workoutinstance_detail.html (haven't uploaded at work)
 
-Functionality completed on 5/18/2019:
-- login redirects to url with username in it
-        - urls.py path to redirect page had to be at the top of the list of paths.
-- added datetime field for workout and instance creation
-
+Functionality completed on 5/20/2019:
+- .aggregate(AVG()) to update workout duration upon adding instances.
+        - not sure if this is a good idea but it is done
+- change (if complete as many rounds as possible) to be faster:
+        - changed it from a regex search on workout_text to a filter for workouts with workout.id and iregex text
+- changed workout_detail and instance_detail to show date created as date only not date and time.
+        - only need time for ordering purposes
+        
 Notes:
 - currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
@@ -45,10 +45,6 @@ Functionality to add:
         - this will likely solve itself when endless scroll is added
 - add login to index page.
 - add results section to bottom of workoutinstance detail page for users to add resultsk
-- can use .aggregate(AVG) for estimated duration which will average all durations of instances and put them into
-        the base workout. This way as more users complete a workout the duration gets updated.
-        - should work just like SUM of times completed
-        - can use .filter(duration_gt=0).aggregate(AVG()) to exclude instances where duration hasn't been changed
 - add results model and foreign key it to workoutinstance to store peoples results of their workouts (weights, videos, description of difficulty)
         - time workout completed in can still be stored in instances duration.
         - date of results and a textfield will be important.
