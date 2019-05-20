@@ -3,7 +3,7 @@ from django.urls import reverse
 import datetime
 import uuid
 from django.conf import settings
-from django.db.models import Count, F, Sum
+from django.db.models import Count, F, Sum, Avg
 from django.utils.timezone import now
 
 class Classification(models.Model):
@@ -91,6 +91,13 @@ class Workout(models.Model):
             else:
                 self.classification = None
 
+        def update_estimated_duration(self):
+                self.estimated_duration_in_minutes = WorkoutInstance.objects.filter(
+                        workout__id=self.id,
+                        duration_in_minutes__gt=0).aggregate(
+                                duration=Avg('duration_in_minutes'))['duration']
+                self.save()
+                
         def update_times_completed(self):
                 self.number_of_times_completed = WorkoutInstance.objects.filter(workout__id=self.id).aggregate(
                         times_completed=Sum('number_of_times_completed'))['times_completed']
@@ -195,6 +202,7 @@ class WorkoutInstance(models.Model):
         def save(self, *args, **kwargs):
                 super().save(*args, **kwargs)
                 self.workout.update_times_completed()
+                self.workout.update_estimated_duration()
 
         def get_absolute_url(self):
                 """Returns the url to access a detail record for this workout."""
