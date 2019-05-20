@@ -1,11 +1,11 @@
 Edited files on 5/18/2019:
-views.py (haven't uploaded at home)
-urls.py (haven't uploaded at home)
-settings.py (haven't uploaded at home)
-models.py (haven't uploaded at home) requires database reset
-mainsite_workouts.py (haven't uploaded at homw)
-user_page.html (haven't uploaded at home)
-login.html (haven't uploaded at home)
+views.py (downloaded at work)
+urls.py (downloaded at work)
+settings.py (downloaded at work)
+models.py (downloaded at work) requires database reset
+mainsite_workouts.py (downloaded at work)
+user_page.html (downloaded at work)
+login.html (downloaded at work)
 
 Functionality completed on 5/18/2019:
 - login redirects to url with username in it
