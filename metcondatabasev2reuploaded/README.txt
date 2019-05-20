@@ -1,5 +1,10 @@
 Edited files on 5/20/2019:
 models.py (haven't uploaded at home)
+views.py
+forms.py
+mainsite_workouts.py
+workout_detail
+workoutinstance_detail
 
 Functionality completed on 5/20/2019:
 - .aggregate(AVG()) to update workout duration upon adding instances.
@@ -8,6 +13,9 @@ Functionality completed on 5/20/2019:
         - changed it from a regex search on workout_text to a filter for workouts with workout.id and iregex text
 - changed workout_detail and instance_detail to show date created as date only not date and time.
         - only need time for ordering purposes
+- added results model
+- added resultsfile model to handle pictures/videos
+- changed duration to seconds on all models
         
 Notes:
 - currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
@@ -22,6 +30,10 @@ Notes:
                 - class based views take this into account with the models get_aboslute_url
         
 Functionality to add:
+- change duration on all models to be an IntegerField.
+        - already is. just have to changed the fact that its stored in seconds not minutes and update views to reflect
+        - use the views to convert the inputs (minutes+ seconds) to just seconds to store. convert back to minutes/seconds to display
+        - can use % to get remainder (254seconds = 254 // 60minutes + 254 % 60 seconds)(// is floor division (round down))
 - ?put filter searches on base_generic page and do {% block filters %}{% endblock %} if you don't want them to come up?
 - need to list workouts on user_page by dates completed not just added to user date.
         - maybe only by dates completed if there is one?
