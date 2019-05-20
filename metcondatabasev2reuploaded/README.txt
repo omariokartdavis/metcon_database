@@ -1,8 +1,8 @@
 Edited files on 5/20/2019:
-models.py (haven't uploaded at work) does not require database reset
-views.py (haven't uploaded at work)
-workout_detail.html (haven't uploaded at work)
-workoutinstance_detail.html (haven't uploaded at work)
+models.py (uploaded at work) does not require database reset
+views.py (uploaded at work)
+workout_detail.html (uploaded at work)
+workoutinstance_detail.html (uploaded at work)
 
 Functionality completed on 5/20/2019:
 - .aggregate(AVG()) to update workout duration upon adding instances.
