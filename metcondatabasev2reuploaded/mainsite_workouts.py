@@ -48,7 +48,7 @@ while year >= 2018:
                 workout_text = '\n'.join(w)
                 if re.findall(r'as possible in \d+ minutes of', workout_text):
                     r1=re.findall(r'as possible in \d+ minutes of', workout_text)
-                    duration=int(re.split('\s', r1[0])[3])                    
+                    duration=60*(int(re.split('\s', r1[0])[3]))           
                 else:
                     duration=0
             workout = Workout(workout_text=workout_text,
@@ -56,7 +56,7 @@ while year >= 2018:
                               what_website_workout_came_from='Crossfit Mainsite',
                               classification=None,
                               date_created=date_in_datetime,
-                              estimated_duration_in_minutes=duration,
+                              estimated_duration_in_seconds=duration,
                               created_by_user=user,
                               )
             workout.save()
