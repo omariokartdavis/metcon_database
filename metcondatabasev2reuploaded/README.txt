@@ -39,6 +39,8 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
+- add duration field in results. update workoutinstance whenever results are saved to call an update_duration on instance
+        - just like instance does to base workout
 - change result create url to have username first, then workoutid, then result/create/
 - have to embed in the result create page, the resultfiles create
 - order workouts on users page based on results dates or date_completed dates on instance
