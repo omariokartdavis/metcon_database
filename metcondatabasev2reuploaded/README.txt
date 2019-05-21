@@ -4,8 +4,12 @@ models.py (requires makemigrations before adding media files)
 views.py
 urls.py
 forms.py
+admin.py
+base/urls.py
+base/settings.py
 workoutinstance_detail.html
 create_result.html (changed name and code of result_form.html)
+created rootdir/media folder to populate uploads to.
 
 Functionality completed on 5/21/2019:
 - add duration field in results. update workoutinstance whenever results are saved to call an update_duration on instance
@@ -13,7 +17,15 @@ Functionality completed on 5/21/2019:
 - change result create url to have username first, then workoutid, then result/create/
 - adding a result with a new duration now updates the instance to the new duration
         - always updates instance duration to the latest results duration
-
+- change results create view to be function based and hide instance choice and set default to the instance that was just on.
+        - the function can take three args (request, user, uuid).
+        - can use user and uuid for url and then use uuid for finding the instance.
+        - httpresponseredirect(instance.get_absolute_url())
+        - then have two inputs, one for minutes and one for seconds. use the form to validate. then use the view to transfer into only
+                seconds for storing in duration field.
+        - also allows files
+- embed create resultfile in create result page
+- display files in results
 
 Notes:
 - currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
@@ -31,13 +43,6 @@ Notes:
 Functionality to add:
 - ?only update base workout times counted and duration at midnight?
 - add click to hide/show scaling on workout detail and instance detail pages.
-- change results create view to be function based and hide instance choice and set default to the instance that was just on.
-        - the function can take three args (request, user, uuid).
-        - can use user and uuid for url and then use uuid for finding the instance.
-        - httpresponseredirect(instance.get_absolute_url())
-        - then have two inputs, one for minutes and one for seconds. use the form to validate. then use the view to transfer into only
-                seconds for storing in duration field.
-- have to embed in the result create page, the resultfiles create
 - order workouts on users page based on results dates or date_completed dates on instance
         - only if there are results
 - add filter on workout instance detail page to filter results by date
