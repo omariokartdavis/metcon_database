@@ -8,6 +8,8 @@ admin.py
 base/urls.py
 base/settings.py
 workoutinstance_detail.html
+movement_form.html
+create_workout.html
 create_result.html (changed name and code of result_form.html)
 created rootdir/media folder to populate uploads to.
 
