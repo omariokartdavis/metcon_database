@@ -1,5 +1,6 @@
 Edited files on 5/20/2019:
-models.py (haven't uploaded at home) requires deleting and readding workouts and instances only
+(uploaded at home)
+models.py requires deleting and readding workouts and instances only
 views.py
 forms.py
 mainsite_workouts.py
