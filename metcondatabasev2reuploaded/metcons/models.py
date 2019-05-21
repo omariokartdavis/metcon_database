@@ -173,7 +173,13 @@ class WorkoutInstance(models.Model):
                         new_date.save()
                 self.dates_workout_completed.add(new_date)
                 self.save()
-                        
+
+        def update_duration(self):
+                result = Result.objects.filter(workoutinstance__id = self.id).latest('date_created')
+                if self.duration_in_seconds and self.duration_in_seconds > 0:
+                        self.duration_in_seconds = result.duration_in_seconds
+                        self.save()
+                
         def increment_times_completed(self):
                 self.number_of_times_completed = F('number_of_times_completed') + 1
                 self.save()
@@ -215,12 +221,29 @@ class Result(models.Model):
         result_text = models.TextField(max_length=2000, null=True, blank = True)
         duration_in_seconds = models.IntegerField(default=0, verbose_name='Duration (sec)', null=True, blank=True)
 
-        def get_absolute_url(self):
-                return reverse('workoutinstance-detail', args=[str(self.workoutinstance.current_user.username), str(self.workoutinstance.id)])
+        def duration_in_minutes(self):
+                #for template display
+                duration = self.duration_in_seconds // 60
+                return duration
+
+        def duration_remainder(self):
+                #for template display
+                remainder = self.duration_in_seconds % 60
+                return remainder
         
-class ResultFiles(models.Model):
+        def get_absolute_url(self):
+                """Returns the results instace detail page since a result will not have its own page. maybe change this later"""
+                return reverse('workoutinstance-detail', args=[str(self.workoutinstance.current_user.username),
+                                                               str(self.workoutinstance.id)])
+
+        def save(self, *args, **kwargs):
+                super().save(*args, **kwargs)
+                self.workoutinstance.update_duration()
+        
+class ResultFile(models.Model):
         #can be images or videos
         date_created = models.DateTimeField(auto_now_add=True)
         file = models.FileField(upload_to='uploads/%Y/%m/%d/')
         caption = models.TextField(max_length=250, null=True, blank=True)
         result = models.ForeignKey(Result, on_delete=models.SET_NULL, null=True)
+        content_type = models.CharField(max_length=100, blank=True, null=True)
