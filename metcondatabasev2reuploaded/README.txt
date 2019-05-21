@@ -27,6 +27,7 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
+- ?only update base workout times counted and duration at midnight?
 - add click to hide/show scaling on workout detail and instance detail pages.
 - change results create view to be function based and hide instance choice and set default to the instance that was just on.
         - the function can take three args (request, user, uuid).
@@ -55,12 +56,6 @@ Functionality to add:
                 - just adding block pagination endblock gets rid of pagination in both situations
         - this will likely solve itself when endless scroll is added
 - add login to index page.
-- add results section to bottom of workoutinstance detail page for users to add resultsk
-- add results model and foreign key it to workoutinstance to store peoples results of their workouts (weights, videos, description of difficulty)
-        - time workout completed in can still be stored in instances duration.
-        - date of results and a textfield will be important.
-        - ?allow for pictures and videos how?
-        - on users workout detail view of their own instance, show results underneath ordered by most recently completed
 - ?Make movement tags only match full movement name?
         - could probably find a way that after movements are added, create list of movements names. search through list for a specific
                 movement name and if it appears twice (Clean, Clean and Jerk) remove the movement (clean gets removed).
