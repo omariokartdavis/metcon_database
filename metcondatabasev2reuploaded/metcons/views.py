@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from metcons.models import Classification, Movement, Workout, WorkoutInstance
+from metcons.models import Classification, Movement, Workout, WorkoutInstance, Result, ResultFiles
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -43,7 +43,11 @@ def workoutlistview(request):
     query3 = request.GET.get('x')
     query4 = request.GET.get('y')
     query5 = request.GET.get('t')
-    
+    if query3:
+        query3 = int(query3) * 60
+    if query4:
+        query4 = int(query4) * 60
+        
     if query1:
         for i in query1:
             if i != '':
@@ -58,13 +62,14 @@ def workoutlistview(request):
     #could get rid of this ifand and just do if 3/if4 but I think the ifand will save
     # time by performing the queries at once rather than seperate
     if query3 and query4:
-        object_list = object_list.filter(estimated_duration_in_minutes__gte=query3,
-                                         estimated_duration_in_minutes__lte=query4)
+        #likely have to change query3 and 4 to be *60
+        object_list = object_list.filter(estimated_duration_in_seconds__gte=query3,
+                                         estimated_duration_in_seconds__lte=query4)
     elif query3:
-        object_list = object_list.filter(estimated_duration_in_minutes__gte=query3)
+        object_list = object_list.filter(estimated_duration_in_seconds__gte=query3)
     elif query4:
-        object_list = object_list.filter(estimated_duration_in_minutes__lte=query4,
-                                         estimated_duration_in_minutes__gt=0)
+        object_list = object_list.filter(estimated_duration_in_seconds__lte=query4,
+                                         estimated_duration_in_seconds__gt=0)
     if query5:
         object_list = object_list.order_by('-number_of_times_completed')
         
@@ -84,7 +89,7 @@ def workoutlistview(request):
             current_user = User.objects.get(username=str(request.POST['currentuser']))
             if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
                 instance = WorkoutInstance(workout=workout, current_user = current_user,
-                                           duration_in_minutes=workout.estimated_duration_in_minutes)
+                                           duration_in_seconds=workout.estimated_duration_in_seconds)
                 instance.save()
             else:
                 instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
@@ -94,26 +99,39 @@ def workoutlistview(request):
     
 def workoutdetailview(request, pk):
     workout = Workout.objects.get(id=pk)
-    
+    duration_in_seconds = workout.estimated_duration_in_seconds
+    duration_in_minutes = (duration_in_seconds // 60)
     context = {
         'workout': workout,
+        'estimated_duration': duration_in_minutes,
         }
 
     if request.method == 'POST':
-        workout = Workout.objects.get(id=str(request.POST['workout']))
-        current_user = User.objects.get(username=str(request.POST['currentuser']))
-        if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
-            instance = WorkoutInstance(workout=workout, current_user = current_user,
-                                       duration_in_minutes=workout.estimated_duration_in_minutes)
-            instance.save()
-        else:
-            instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
-        return HttpResponseRedirect(instance.get_absolute_url())
+        if 'add_workout_to_profile' in request.POST:
+            workout = Workout.objects.get(id=str(request.POST['workout']))
+            current_user = User.objects.get(username=str(request.POST['currentuser']))
+            if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
+                instance = WorkoutInstance(workout=workout, current_user = current_user,
+                                           duration_in_seconds=workout.estimated_duration_in_seconds)
+                instance.save()
+            else:
+                instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
+            return HttpResponseRedirect(instance.get_absolute_url())
     
     return render(request, 'metcons/workout_detail.html', context=context)
     
 class WorkoutInstanceDetailView(LoginRequiredMixin, generic.DetailView):
     model = WorkoutInstance
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        instance = self.get_object()
+        duration_in_seconds = instance.duration_in_seconds
+        duration_in_minutes = (duration_in_seconds // 60)
+        context['estimated_duration'] = duration_in_minutes
+        result_list = Result.objects.filter(workoutinstance = instance)
+        context['result_list'] = result_list
+        return context
     
 class MovementListView(generic.ListView):
     model = Movement
@@ -122,6 +140,13 @@ class MovementListView(generic.ListView):
 class MovementDetailView(generic.DetailView):
     model = Movement
 
+class ResultCreate(CreateView):
+    # change this to a function view and change value for duration to seconds to store in database
+    # ask for value in minutes and seconds
+    # also hide workout choice and set it as default to the previous workout (already passing instance.id to the link for the url. should be able to use it here)
+    model = Result
+    fields = '__all__'
+    
 def create_workout(request):
     """View function for creating a new workout"""
 
@@ -133,7 +158,7 @@ def create_workout(request):
             if not Workout.objects.filter(workout_text=form.cleaned_data['workout_text']):
                 workout = Workout(workout_text=form.cleaned_data['workout_text'],
                                   scaling_or_description_text=form.cleaned_data['workout_scaling'],
-                                  estimated_duration_in_minutes=form.cleaned_data['estimated_duration'],
+                                  estimated_duration_in_seconds=(form.cleaned_data['estimated_duration']) * 60,
                                   what_website_workout_came_from=form.cleaned_data['what_website_workout_came_from'],
                                   classification=None,
                                   created_by_user = current_user,
@@ -141,17 +166,17 @@ def create_workout(request):
                 workout.save()
                 if Workout.objects.filter(id=workout.id, workout_text__iregex=r'as possible in \d+ minutes of'):
                     r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
-                    workout.estimated_duration_in_minutes=int(re.split('\s', r1[0])[3])
+                    workout.estimated_duration_in_seconds=int(re.split('\s', r1[0])[3])
                 workout.update_movements_and_classification()
                     
                 instance = WorkoutInstance(workout=workout, current_user=current_user,
-                                           duration_in_minutes=workout.estimated_duration_in_minutes)
+                                           duration_in_seconds=workout.estimated_duration_in_seconds)
                 instance.save()
             else:
                 workout = Workout.objects.get(workout_text=form.cleaned_data['workout_text'])
                 if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
                     instance = WorkoutInstance(workout=workout, current_user = current_user,
-                                               duration_in_minutes=workout.estimated_duration_in_minutes)
+                                               duration_in_seconds=workout.estimated_duration_in_seconds)
                     instance.save()
                 else:
                     instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
