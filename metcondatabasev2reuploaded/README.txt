@@ -45,6 +45,8 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
+- increment instance number of times completed everytime a result is saved
+        - possibly also add a instance completed date to instance file when result is saved?
 - figure out how to hide video if file is image and vis versa
 - ?only update base workout times counted and duration at midnight?
 - add click to hide/show scaling on workout detail and instance detail pages.
