@@ -53,7 +53,7 @@ class Workout(models.Model):
         workout_text = models.TextField(max_length=2000)
         scaling_or_description_text = models.TextField(max_length=4000, null=True, blank=True)
         what_website_workout_came_from = models.CharField(max_length=200, null=True, blank=True)
-        estimated_duration_in_minutes = models.IntegerField(default=0, verbose_name='Duration (min)', null=True, blank=True)
+        estimated_duration_in_seconds = models.IntegerField(default=0, verbose_name='Duration (sec)', null=True, blank=True)
         created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
                 
         movements = models.ManyToManyField(Movement, blank=True)
@@ -92,10 +92,10 @@ class Workout(models.Model):
                 self.classification = None
 
         def update_estimated_duration(self):
-                self.estimated_duration_in_minutes = WorkoutInstance.objects.filter(
+                self.estimated_duration_in_seconds = WorkoutInstance.objects.filter(
                         workout__id=self.id,
-                        duration_in_minutes__gt=0).aggregate(
-                                duration=Avg('duration_in_minutes'))['duration']
+                        duration_in_seconds__gt=0).aggregate(
+                                duration=Avg('duration_in_seconds'))['duration']
                 self.save()
                 
         def update_times_completed(self):
@@ -157,7 +157,7 @@ class WorkoutInstance(models.Model):
         date_added_by_user = models.DateTimeField(auto_now_add=True)
         workout = models.ForeignKey(Workout, on_delete=models.SET_NULL, null=True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
-        duration_in_minutes = models.IntegerField(default=0, verbose_name = 'Duration', null=True, blank=True)
+        duration_in_seconds = models.IntegerField(default=0, verbose_name = 'Duration (sec)', null=True, blank=True)
         current_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name = 'User', null=True, blank=True)
         
         class Meta:
@@ -207,3 +207,20 @@ class WorkoutInstance(models.Model):
         def get_absolute_url(self):
                 """Returns the url to access a detail record for this workout."""
                 return reverse('workoutinstance-detail', args=[str(self.current_user.username), str(self.id)])
+
+class Result(models.Model):
+        date_created = models.DateTimeField(auto_now_add=True)
+        date_workout_completed = models.DateTimeField(default=now)
+        workoutinstance = models.ForeignKey(WorkoutInstance, on_delete=models.SET_NULL, null = True)
+        result_text = models.TextField(max_length=2000, null=True, blank = True)
+        duration_in_seconds = models.IntegerField(default=0, verbose_name='Duration (sec)', null=True, blank=True)
+
+        def get_absolute_url(self):
+                return reverse('workoutinstance-detail', args=[str(self.workoutinstance.current_user.username), str(self.workoutinstance.id)])
+        
+class ResultFiles(models.Model):
+        #can be images or videos
+        date_created = models.DateTimeField(auto_now_add=True)
+        file = models.FileField(upload_to='uploads/%Y/%m/%d/')
+        caption = models.TextField(max_length=250, null=True, blank=True)
+        result = models.ForeignKey(Result, on_delete=models.SET_NULL, null=True)
