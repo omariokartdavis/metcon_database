@@ -41,6 +41,7 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
+- figure out how to hide video if file is image and vis versa
 - ?only update base workout times counted and duration at midnight?
 - add click to hide/show scaling on workout detail and instance detail pages.
 - order workouts on users page based on results dates or date_completed dates on instance
