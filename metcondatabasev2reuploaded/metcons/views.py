@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from metcons.models import Classification, Movement, Workout, WorkoutInstance, Result, ResultFiles
+from metcons.models import Classification, Movement, Workout, WorkoutInstance, Result, ResultFile
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
-from metcons.forms import CreateWorkoutForm
+from metcons.forms import CreateWorkoutForm, CreateResultForm
+from django.utils.timezone import now
 import re
 
 
@@ -127,10 +128,13 @@ class WorkoutInstanceDetailView(LoginRequiredMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         instance = self.get_object()
         duration_in_seconds = instance.duration_in_seconds
-        duration_in_minutes = (duration_in_seconds // 60)
-        context['estimated_duration'] = duration_in_minutes
-        result_list = Result.objects.filter(workoutinstance = instance)
+        duration_minutes = (duration_in_seconds // 60)
+        duration_seconds = duration_in_seconds % 60
+        context['duration_minutes'] = duration_minutes
+        context['duration_seconds'] = duration_seconds
+        result_list = Result.objects.filter(workoutinstance = instance).order_by('-date_created')
         context['result_list'] = result_list
+            
         return context
     
 class MovementListView(generic.ListView):
@@ -140,12 +144,36 @@ class MovementListView(generic.ListView):
 class MovementDetailView(generic.DetailView):
     model = Movement
 
-class ResultCreate(CreateView):
-    # change this to a function view and change value for duration to seconds to store in database
-    # ask for value in minutes and seconds
-    # also hide workout choice and set it as default to the previous workout (already passing instance.id to the link for the url. should be able to use it here)
-    model = Result
-    fields = '__all__'
+def create_result(request, username, pk):
+    instance = WorkoutInstance.objects.get(id=pk)
+    if request.method == 'POST':
+        if 'add result to instance' in request.POST:
+            form = CreateResultForm(request.POST, request.FILES)
+
+            if form.is_valid():
+                duration_in_seconds = ((form.cleaned_data['duration_minutes']) * 60) + form.cleaned_data['duration_seconds']
+                result = Result(workoutinstance=instance,
+                                result_text=form.cleaned_data['result_text'],
+                                duration_in_seconds=duration_in_seconds)
+                result.save()
+                if request.FILES:
+                    resultfile = ResultFile(result=result,
+                                        caption = form.cleaned_data['media_file_caption'],
+                                        file=request.FILES['media_file'],
+                                        content_type = request.FILES['media_file'].content_type)
+                    resultfile.save()                                            
+
+                return HttpResponseRedirect(instance.get_absolute_url())
+    else:
+        form = CreateResultForm()
+
+    context = {
+        'form': form,
+        'instance': instance,
+        }
+
+    return render(request, 'metcons/create_result.html', context)
+                                
     
 def create_workout(request):
     """View function for creating a new workout"""
