@@ -1,10 +1,16 @@
 Edited files on 5/21/2019:
 (haven't uploaded at work)
 models.py doesn't require reset
+views.py
+urls.py
+workoutinstance_detail.html
 
 Functionality completed on 5/21/2019:
 - add duration field in results. update workoutinstance whenever results are saved to call an update_duration on instance
         - just like instance does to base workout
+- change result create url to have username first, then workoutid, then result/create/
+- adding a result with a new duration now updates the instance to the new duration
+        - always updates instance duration to the latest results duration
 
 
 Notes:
@@ -21,18 +27,18 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
+- add click to hide/show scaling on workout detail and instance detail pages.
 - change results create view to be function based and hide instance choice and set default to the instance that was just on.
         - the function can take three args (request, user, uuid).
         - can use user and uuid for url and then use uuid for finding the instance.
+        - httpresponseredirect(instance.get_absolute_url())
         - then have two inputs, one for minutes and one for seconds. use the form to validate. then use the view to transfer into only
                 seconds for storing in duration field.
-- change result create url to have username first, then workoutid, then result/create/
 - have to embed in the result create page, the resultfiles create
 - order workouts on users page based on results dates or date_completed dates on instance
+        - only if there are results
 - add filter on workout instance detail page to filter results by date
 - ?put filter searches on base_generic page and do {% block filters %}{% endblock %} if you don't want them to come up?
-- need to list workouts on user_page by dates completed not just added to user date.
-        - maybe only by dates completed if there is one?
 - only allow user who created base workout in database to edit that workout and only while no one else has added it to their page
         - if edited after others have it on their profile, it will change everyones workout.
 - add user field and workout field of "sport" and they can choose between crossfit, bodybuilding, strength training etc.
