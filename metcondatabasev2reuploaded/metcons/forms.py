@@ -3,7 +3,7 @@ from django import forms
 class CreateWorkoutForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, help_text="Enter your workout")
     workout_scaling = forms.CharField(widget=forms.Textarea, help_text='Enter any scaling options', required=False)
-    estimated_duration = forms.IntegerField(help_text='Enter how long it will take to complete the workout', required=False)
+    estimated_duration = forms.IntegerField(help_text='Enter an estimate of how long it will take to complete the workout in minutes (whole numbers only)', required=False)
     what_website_workout_came_from = forms.CharField(max_length=200, required=False)
 
     def clean_workout_text(self):
