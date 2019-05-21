@@ -9,20 +9,30 @@
 			<p><strong>Description:</strong> {{ workoutinstance.workout.workout_text|linebreaks }}</p>
 			<p><strong>Scaling:</strong> {{ workoutinstance.workout.scaling_or_description_text|linebreaks }}</p>
 			<p><strong>Movements:</strong> {% for movement in workoutinstance.workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-			<p><strong>Estimated Duration:</strong> {{ estimated_duration }} minutes</p>
+			<p><strong>Duration:</strong> {{ duration_minutes }} minutes {% if duration_seconds > 0 %} {{ duration_seconds }} seconds {% endif %}</p>
 			<p><strong>Number of Times Completed:</strong> {{ workoutinstance.number_of_times_completed }}</p>
 			
-			<p><a href = "{% url 'result_create' workoutinstance.id %}">Add Result</a></p>
+			<p><a href = "{% url 'result_create' user.username workoutinstance.id %}">Add Result</a></p>
 			{% if result_list %}
 			<p><strong>Results:</strong></p>
 				<ul>
 					{% for result in result_list %}
 						<li>
-							<p>{{ result.date_workout_completed }}</p>
+							<p><strong>{{ result.date_workout_completed }}</strong></p>
+							<p>{% if result.duration_in_minutes > 0 %} {{ result.duration_in_minutes }} minutes {% endif %}{% if result.duration_remainder > 0 %} {{ result.duration_remainder }} seconds {% endif %}</p>
 							<p>{{ result.result_text }}</p>
-							{% if result.resultfiles_set.all %}
-								{% for file in result.resultfiles_set.all %}
-									<p>{{ file }}<p>
+							{% if result.resultfile_set.all %}
+								{% for resultfile in result.resultfile_set.all %}
+									{% if resultfile.content_type == "image/png" or resultfile.content_type == "image/jpeg" or resultfile.content_type == "image/gif" %}
+										<img src="{{ resultfile.file.url }}" />
+									{% elif resultfile.content_type == "video/mp4" %}
+										<video controls>
+											<source src="{{ MEDIA_URL }}{{ resultfile.file }}">
+										</video>
+									{% else %}
+										<p>Content Type: {{ resultfile.content_type }}</p>
+									{% endif %}
+									<p>Caption: {{ resultfile.caption }}</p>
 								{% endfor %}
 							{% endif %}
 						</li>
@@ -30,9 +40,9 @@
 				</ul>
 			{% endif %}
 		{% else %}
-			<p>You do not have permission to view this page</p>
+			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
 		{% endif %}
 	{% else %}
-		<p>Please login to view this page. Please login with an account that has proper permissions.</p>
+		<p>Please login to view this page.</p>
 	{% endif %}
 {% endblock %}
