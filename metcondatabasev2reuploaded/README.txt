@@ -1,9 +1,11 @@
 Edited files on 5/21/2019:
 (haven't uploaded at work)
-models.py doesn't require reset
+models.py (requires makemigrations before adding media files)
 views.py
 urls.py
+forms.py
 workoutinstance_detail.html
+create_result.html (changed name and code of result_form.html)
 
 Functionality completed on 5/21/2019:
 - add duration field in results. update workoutinstance whenever results are saved to call an update_duration on instance
