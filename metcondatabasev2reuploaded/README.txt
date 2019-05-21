@@ -58,7 +58,7 @@ Functionality to add:
         - only edit fields specific to that instance aka duration completed, times completed, dates completed etc.
         - may require an update view
 - Pagination:
-        - add pagination to workout list and profile page.
+        - add pagination to workout list, profile page, and instace detail page for results.
                 - workout list pagination got removed becuase I changed it to a function view to allow POST forms
         - get rid of pagination on workout list if not logged in but keep it if logged in.
                 - just adding block pagination endblock gets rid of pagination in both situations
