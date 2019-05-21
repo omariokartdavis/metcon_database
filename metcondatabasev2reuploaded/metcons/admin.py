@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Classification, Movement, Workout, WorkoutInstance, WorkoutInstanceCompletedDate
+from .models import Classification, Movement, Workout, WorkoutInstance, WorkoutInstanceCompletedDate, Result, ResultFile
 
 admin.site.register(Classification)
 
@@ -33,7 +33,7 @@ class MovementAdmin(admin.ModelAdmin):
 
     
 @admin.register(WorkoutInstance)
-class WorkoutInstance(admin.ModelAdmin):
+class WorkoutInstanceAdmin(admin.ModelAdmin):
     list_display = ('display_name',
                     'current_user',
                     'display_dates_completed',
@@ -43,6 +43,17 @@ class WorkoutInstance(admin.ModelAdmin):
                     'duration_in_seconds',
                     )
 
-                    
+@admin.register(Result)
+class ResultAdmin(admin.ModelAdmin):
+    list_display = ('date_created',
+                    'workoutinstance',
+                    )
+
+@admin.register(ResultFile)
+class ResultFileAdmin(admin.ModelAdmin):
+    list_display = ('date_created',
+                    'result',
+                    'caption',
+                    )      
 admin.site.register(WorkoutInstanceCompletedDate)
     
