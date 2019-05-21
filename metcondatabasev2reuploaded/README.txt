@@ -1,28 +1,10 @@
-Edited files on 5/20/2019:
-(uploaded at home)
-models.py requires deleting and readding workouts and instances only
-views.py
-forms.py
-mainsite_workouts.py
-admin.py
-urls.py
-workout_detail
-workoutinstance_detail
-result_form.html
+Edited files on 5/21/2019:
+(haven't uploaded at work)
+models.py doesn't require reset
 
-Functionality completed on 5/20/2019:
-- .aggregate(AVG()) to update workout duration upon adding instances.
-        - not sure if this is a good idea but it is done
-- change (if complete as many rounds as possible) to be faster:
-        - changed it from a regex search on workout_text to a filter for workouts with workout.id and iregex text
-- changed workout_detail and instance_detail to show date created as date only not date and time.
-        - only need time for ordering purposes
-- added results model
-- added resultsfile model to handle pictures/videos
-- changed duration to seconds on all models
-        - all views have been updated except for resultcreate view
-- added list of results underneath workoutinstance description
-- undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
+Functionality completed on 5/21/2019:
+- add duration field in results. update workoutinstance whenever results are saved to call an update_duration on instance
+        - just like instance does to base workout
 
 
 Notes:
@@ -39,11 +21,11 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
-- change results create view to function based and hide instance choice and set default to the instance that was just on.
+- change results create view to be function based and hide instance choice and set default to the instance that was just on.
         - the function can take three args (request, user, uuid).
         - can use user and uuid for url and then use uuid for finding the instance.
-- add duration field in results. update workoutinstance whenever results are saved to call an update_duration on instance
-        - just like instance does to base workout
+        - then have two inputs, one for minutes and one for seconds. use the form to validate. then use the view to transfer into only
+                seconds for storing in duration field.
 - change result create url to have username first, then workoutid, then result/create/
 - have to embed in the result create page, the resultfiles create
 - order workouts on users page based on results dates or date_completed dates on instance
