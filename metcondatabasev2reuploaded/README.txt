@@ -1,5 +1,5 @@
 Edited files on 5/21/2019:
-(haven't uploaded at work)
+(uploaded at work)
 models.py (requires makemigrations before adding media files)
 views.py
 urls.py
