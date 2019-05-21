@@ -39,6 +39,9 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
+- change results create view to function based and hide instance choice and set default to the instance that was just on.
+        - the function can take three args (request, user, uuid).
+        - can use user and uuid for url and then use uuid for finding the instance.
 - add duration field in results. update workoutinstance whenever results are saved to call an update_duration on instance
         - just like instance does to base workout
 - change result create url to have username first, then workoutid, then result/create/
