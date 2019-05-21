@@ -5,12 +5,30 @@
 		{% if user.username == workoutinstance.current_user.username %}
 			<h1>{{ workoutinstance.workout.display_name }}</h1>
 			<h3>Classification: {{ workoutinstance.workout.classification }}</h3>
-			<h4>Date Added to Profile: {{ workoutinstance.date_added_by_user.date }}</h4>
+			<h4>Date Added to Profile: <time>{{ workoutinstance.date_added_by_user }}</time></h4>
 			<p><strong>Description:</strong> {{ workoutinstance.workout.workout_text|linebreaks }}</p>
 			<p><strong>Scaling:</strong> {{ workoutinstance.workout.scaling_or_description_text|linebreaks }}</p>
 			<p><strong>Movements:</strong> {% for movement in workoutinstance.workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-			<p><strong>Estimated Duration:</strong> {{ workoutinstance.workout.estimated_duration_in_minutes }}</p>
+			<p><strong>Estimated Duration:</strong> {{ estimated_duration }} minutes</p>
 			<p><strong>Number of Times Completed:</strong> {{ workoutinstance.number_of_times_completed }}</p>
+			
+			<p><a href = "{% url 'result_create' workoutinstance.id %}">Add Result</a></p>
+			{% if result_list %}
+			<p><strong>Results:</strong></p>
+				<ul>
+					{% for result in result_list %}
+						<li>
+							<p>{{ result.date_workout_completed }}</p>
+							<p>{{ result.result_text }}</p>
+							{% if result.resultfiles_set.all %}
+								{% for file in result.resultfiles_set.all %}
+									<p>{{ file }}<p>
+								{% endfor %}
+							{% endif %}
+						</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
 		{% else %}
 			<p>You do not have permission to view this page</p>
 		{% endif %}
