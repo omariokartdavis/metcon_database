@@ -28,7 +28,10 @@ Functionality completed on 5/21/2019:
         - also allows files
 - embed create resultfile in create result page
 - display files in results
-
+- figure out how to hide video if file is image and vis versa
+        - added content_type charfield to resultfile model that checks the type of file uploaded
+                - this is not great as it relies on file extension/header and can be manipulated. but its what I've got for now
+                
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
         "an established connection was aborted by the software in your host machine"
@@ -47,22 +50,20 @@ Notes:
 Functionality to add:
 - increment instance number of times completed everytime a result is saved
         - possibly also add a instance completed date to instance file when result is saved?
-- figure out how to hide video if file is image and vis versa
 - ?only update base workout times counted and duration at midnight?
 - add click to hide/show scaling on workout detail and instance detail pages.
+        - set default to hidden
 - order workouts on users page based on results dates or date_completed dates on instance
         - only if there are results
 - add filter on workout instance detail page to filter results by date
 - ?put filter searches on base_generic page and do {% block filters %}{% endblock %} if you don't want them to come up?
-- only allow user who created base workout in database to edit that workout and only while no one else has added it to their page
+- only allow user who created base workout to edit that workout and only while no one else has added it to their page
         - if edited after others have it on their profile, it will change everyones workout.
-- add user field and workout field of "sport" and they can choose between crossfit, bodybuilding, strength training etc.
-        - their choice here will determine their views and workout types shown
-- once the above is added, add ability to switch workout_list searches to different sport types
-        - if an athlete's sport is BB give a dropdown that allows them to switch to Crossfit workouts or other.
+        - if user == Workout.created_by_user (or user.username == Workout.created_by_user.username):
+                - if not WorkoutInstance.objects.filter(workout=workout): allow edits
+                - else: nah
 - add click to edit button on workout instance detail page.
         - only edit fields specific to that instance aka duration completed, times completed, dates completed etc.
-        - may require an update view
 - Pagination:
         - add pagination to workout list, profile page, and instace detail page for results.
                 - workout list pagination got removed becuase I changed it to a function view to allow POST forms
@@ -70,35 +71,42 @@ Functionality to add:
                 - just adding block pagination endblock gets rid of pagination in both situations
         - this will likely solve itself when endless scroll is added
 - add login to index page.
-- ?Make movement tags only match full movement name?
-        - could probably find a way that after movements are added, create list of movements names. search through list for a specific
-                movement name and if it appears twice (Clean, Clean and Jerk) remove the movement (clean gets removed).
-        - not sure if this is a good idea on second thought as this would mean workouts with Power Snatch are no longer tagged
-                as Snatch. may be better to just leave as is.
 - Add search for a specific users workouts
         - search for workouts mat fraser has done
         - filter for workouts whose workout instances have users of xx name
                 - maybe this is a subquery?
-- Add privacy setting so users can set their profile/workouts to private and therefore others can search for/see them.
+- Add privacy setting so users can set their profile/workouts to private and therefore others cant search for/see them.
 - Combine Create Movement and Update Workout buttons into a popup:
         -on create movement button click open a popup to add movement. on save click run three functions:
                 -save movement
                 -update current workout
                 -refresh page
+- update Workout tags on all Workouts at midnight if there has been an added movement
+- Better define the help text for creating a movement.
+        - make sure it is clear how to type/format the word (title case, no hyphens or anything, words seperated by 1 space)
+        - importance of proper classification
+- Add some way to alert me when people add movements so I can check them.
+        - can do this in the save function of movements. everytime a movement is saved send notification somehow
 - Come up with a better way to list workouts instead of by workout number
         -add name to workout model or workoutinstance model and allow for blank/null. If name exists list by name otherwise list
                 by "workout " + str(id)
         -would also change def __str__ to if statement on if name exists otherwise same as above
-- Add abbreviations to some movements?
-        could change movement_list to a list of lists:
-        movement_list = [
-                ['Pull Up', 'Upper Body', ['abbrvs']],...]
-         then in the for loop just use:
-         for i in all_movements:
-                for x, y, z in i:
-                        movement = Movement(name=x,
-                                        classification = Classification.objects.get(name=y),
-                                        abbreviations = [a for a in z]
+For multiple sports:
+- maybe just add a foreignkey field in current Workout model of "sport" that has different sport choices.
+        - Would likely make filtering workout_list easier
+        - All baseline fields in model like date_created and user can still be required.
+                But all other defining fields will have to be not required
+        - add all fields for all workouts to the current workout model (sets, reps, weights) and leave them as blank=True, null=True
+        - on the create workout template, create a dropdown that can switch between different forms for different workout types
+                - name all forms so the view can be seperated
+                - have the default form be based on users default sport
+                - could also just use multiple create workout buttons for different types. I like dropdown idea better if it can work
+        - on the create_workout_view, handle the post requests based on form name
+        - on the results and create_workout results, base the form and template off the workoutinstance.workout.sport with if statements
+        - on the workout_list create a dropdown that can choose between any or all sports. default to users sport
+- create a field on user model that has choices of different sports
+        - whatever sport they choose will be their default createworkout model and default workout list to search through
+        - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
 Styling:
 - Create stylebook for all screens
