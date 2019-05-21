@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% if user.is_authenticated %}
+		{% if user.username == instance.current_user.username %}
+			<h1> Add Result</h1>
+			
+			<form action="" method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+				<table>
+				{{ form.as_table }}
+				</table>
+				<input type="submit" value="Submit" name="add result to instance">
+				<input type="hidden" name="next" value="{{ request.path }}">
+			</form>
+		{% else %}
+			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
+		{% endif %}
+	{% else %}
+		<p>Please login to view this page.</p>
+	{% endif %}
+{% endblock %}
