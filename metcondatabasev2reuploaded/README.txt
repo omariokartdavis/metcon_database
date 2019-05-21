@@ -38,6 +38,7 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
+- change result create url to have username first, then workoutid, then result/create/
 - have to embed in the result create page, the resultfiles create
 - order workouts on users page based on results dates or date_completed dates on instance
 - add filter on workout instance detail page to filter results by date
