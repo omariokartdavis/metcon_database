@@ -10,6 +10,7 @@ urlpatterns = [
     path('movement/<int:pk>', views.MovementDetailView.as_view(), name='movement-detail'),
     path('workout/create/', views.create_workout, name='workout_create'),
     path('movement/create/', views.MovementCreate.as_view(), name='movement_create'),
+    path('<uuid:pk>/result/create/', views.ResultCreate.as_view(), name='result_create'),
     path('<username>/', views.profile, name='profile'),
     path('<username>/workout/<uuid:pk>', views.WorkoutInstanceDetailView.as_view(), name='workoutinstance-detail'),
 ]
