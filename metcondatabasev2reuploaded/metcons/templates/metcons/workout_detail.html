@@ -7,16 +7,16 @@
 			{% csrf_token %}
 			<input type="hidden" name="workout" value= {{ workout.id }}>
 			<input type="hidden" name="currentuser" value= {{ user.username }}>
-			<input type="submit" value="Add Workout to Profile">
+			<input type="submit" value="Add Workout to Profile" name="add_workout_to_profile">
 		</form>
 	{% endif %}
 	
 	<h3>Classification: {{ workout.classification }}</h3>
-	<h4>Date Created: {{ workout.date_created.date }}</h4>
+	<h4>Date Created: {{ workout.date_created }}</h4>
 	<p><strong>Description:</strong> {{ workout.workout_text|linebreaks }}</p>
 	<p><strong>Scaling:</strong> {{ workout.scaling_or_description_text|linebreaks }}</p>
 	<p><strong>Movements:</strong> {% for movement in workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-	<p><strong>Estimated Duration:</strong> {{ workout.estimated_duration_in_minutes }}</p>
+	<p><strong>Estimated Duration:</strong> {{ estimated_duration }} minutes</p>
 	<p><strong>Number of Times Completed:</strong> {{ workout.number_of_times_completed }}</p>
 	
 	{% if user.is_authenticated %}
