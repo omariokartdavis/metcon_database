@@ -36,20 +36,47 @@ Notes:
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
         
 Functionality to add:
+- add ability to "schedule" a workout in the future.
+- cannot use result model to schedule workouts for the future.
+        - might have to create new manytomany field on instances that is date_to_be_completed
+                - many to many field allows workout to be scheduled multiple times in the future
+                - can schedule same workout over and over again for the next weeks/months/whatever
+        - this would allow any workout that has a date_to_be_completed to be put on the "future workouts" tab
+                - for i in instance.date_to_be_completed.all(): if i > timezone.now(), put on future tab then break.
+                        - may be a faster way to write this but this would work.
+                - maybe instead of the for loop do:
+                        - future workouts = wi.objects.filter(dates_to_be_completed__date_completed__gte=timezone.now()).distinct()
+                                - might need to add an annotate before the filter to be able to order properly after
+                                - timezone.now() must be created already [now = timezone.now()] then pass now in to filter
+                        - do this in views then pass future_workouts to context
+        - "past workouts" tab will order by recently completed dates.
+                - will only update if people put results in but thats okay.
+                        - ?how are they ordered if past results date_workout_completed are all the same time? (time= 0:00)
+        - add a add_date_to_be_completed() function to model similar to add_date_completed()
+        - ?add a delete_date_to_be_completed() function that removes dates to be completed from the instance if in the past?
+                - can call every time instance is saved currently but in future would happen at midnight or weekly
 - add a tabbed view on user page
         - one for future workouts that are planned
-        - one for past workouts to look at history
-        - can handle this in views/templates as for dates in the future (date_completed - today > 0)
-                or dates in the past (date_completed - today < 0)
-                - pass as two different filters. "Future_workouts" "Past_workouts"
-                - order future workouts by closeness to today
-                - order past workouts by most recent
+        - one for recent past workouts (within 2 weeks using dates_workout_completed)
+                - recent_workouts = wi.objects.filter(dates_workout_completed__date_completed__lt=timezone.now(),
+                                                      dates_workout_completed__date_completed__gtetimezone.now() - timedelta(days=14))
+                                                                                                                        .distinct()
+                        - timezone.now() must be created already [now = timezone.now()] then pass now in to filter
+                                - timezone.timedelta as well
+                - pass to views context as recently_completed_workouts
+        - one for long past workouts (2+ weeks back using dates_workout_completed)
+                - same as above as long_past_workouts
+        - ordering will likely require annotates (see current user profile view)
+        - order future workouts by closeness to today (opposite of how user profile is currently ordered [
+                - .annotate(min_date=Min('dates_to_be_completed__date_completed').filter().order_by('min_date')
+                        - may need (-) on order_by('min_date')
+        - order past workouts by most recent (currently how user profile is ordered)
 - if date in the future is chosen for workout creation, treat it as not completed
-- add ability to "schedule" a workout in the future. basically creates a result or something in the future
 - add create workout link to workout list page
         - under user authentication in template
-- add ability to choose dates completed when creating workout
-        - will be on the create workout form and will be used to create the instance off of that workout
+- add ability to schedule workout during workout creation
+        - on workout create form have date field to schedule workout for (default today, just like result form)
+        - take date and put it into date_to_be_completed of instance
 - when creating a new workout, offer users a choice to add a result of this workout immediately.
         - popup: "Have you completed this workout recently (within last week)?" with links y/n
                 - if y go to add results page/popup (need choice of when did you complete this workout)
