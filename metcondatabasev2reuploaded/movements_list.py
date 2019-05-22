@@ -1,6 +1,7 @@
 #imports all movements and classifications listed below as well as adds the past year of dates
 # to possible workout instance completed dates
 
+
 class MovementList:
     u = 'Upper Body'
     t = 'Total Body'
@@ -98,7 +99,8 @@ class ClassificationList:
 # exec(open('movements_list.py').read())
 
 from metcons.models import Classification, Movement, Workout, WorkoutInstanceCompletedDate
-import datetime as dt
+from django.utils import timezone
+#import datetime as dt
 
 ##all_wicd = WorkoutInstanceCompletedDate.objects.all()
 ##wicd_dates = []
@@ -106,7 +108,7 @@ import datetime as dt
 ##    wicd_dates.append(i.date_completed)
 
 for i in range(366):
-    date = dt.date.today() - dt.timedelta(days=i)
+    date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=i) #dt.date.today() - dt.timedelta(days=i)
     new_date = WorkoutInstanceCompletedDate(date_completed=date)
     new_date.save()
 
