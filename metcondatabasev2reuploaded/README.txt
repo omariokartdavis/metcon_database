@@ -1,13 +1,9 @@
 Edited files on 5/22/2019:
-(uploaded at work)
-movements_list.py
-models.py requires makemigrations and acceptances
+(haven't uploaded at home)
 views.py
-forms.py
-urls.py
+models.py doesn't require anything
+user_page.html
 workoutinstance_detail.html
-workout_detail.html
-created schedule_instance.html
 
 Functionality completed on 5/22/2019:
 - fixed date display. need to pass as filter not attribute
@@ -20,26 +16,6 @@ Functionality completed on 5/22/2019:
                 - if the value is left as today then the timezone.now() datetime is used.
 - added dates_to_be_completed field to instance model
 - addded view and templates and form for scheduling workout
-        
-Notes:
-- work computer currently has issues displaying video. it will display fine but the command window will show errors that
-        "an established connection was aborted by the software in your host machine"
-        - happened on home computer but not first time page/video was viewed. (idk whats going on)
-        - maybe this has to do with the video not being saved to cache properly
-                - pictures save to cache and get response 304 when viewed multiple times, the video is getting 200 everytime
-- currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
-- can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
-        some restriction where if the workoutinstance with that specific workout already exists for that user it just pulls that up.
-        this will likely have to be handled in the views.py
-- to allow urls to extend with info, the get_absolute_url function must be in the model isntance and you must pass the arguments
-        for each specification before it. otherwise you will get a reverse match not found on the template link.
-        - see workout instance get_absolute_url for example
-        - if using function based views, the argument must also be passed in the view function
-                - see profile view as example
-                - class based views take this into account with the models get_aboslute_url
-- need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
-        
-Functionality to add:
 - change user_page.html to show future workouts
         - requires passing future workouts to the view
 - cannot use result model to schedule workouts for the future.
@@ -77,6 +53,28 @@ Functionality to add:
                         - may need (-) on order_by('min_date')
         - order past workouts by most recent (currently how user profile is ordered)
 - if date in the future is chosen for workout creation, treat it as not completed
+
+Notes:
+- work computer currently has issues displaying video. it will display fine but the command window will show errors that
+        "an established connection was aborted by the software in your host machine"
+        - happened on home computer but not first time page/video was viewed. (idk whats going on)
+        - maybe this has to do with the video not being saved to cache properly
+                - pictures save to cache and get response 304 when viewed multiple times, the video is getting 200 everytime
+- currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
+- can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
+        some restriction where if the workoutinstance with that specific workout already exists for that user it just pulls that up.
+        this will likely have to be handled in the views.py
+- to allow urls to extend with info, the get_absolute_url function must be in the model isntance and you must pass the arguments
+        for each specification before it. otherwise you will get a reverse match not found on the template link.
+        - see workout instance get_absolute_url for example
+        - if using function based views, the argument must also be passed in the view function
+                - see profile view as example
+                - class based views take this into account with the models get_aboslute_url
+- need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
+        
+Functionality to add:
+- fix get_earliest_to_completed date in instance model.
+        - not currently working, test in shell
 - add create workout link to workout list page
         - under user authentication in template
 - add ability to schedule workout during workout creation
@@ -167,3 +165,4 @@ Styling:
 - add click to hide/show scaling on workout detail and instance detail pages.
         - set default to hidden
 - ?remove number of times completed counter from instance_detail page?
+- style future/recent/past workouts as tabs on user page
