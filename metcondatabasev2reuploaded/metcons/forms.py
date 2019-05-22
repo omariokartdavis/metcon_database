@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.timezone import now
+from django.utils import timezone
 
 class CreateWorkoutForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, help_text="Enter your workout")
@@ -26,3 +26,7 @@ class CreateResultForm(forms.Form):
     duration_seconds = forms.IntegerField(initial=0, required = False)
     media_file = forms.FileField(required=False, help_text='Attach any pictures or videos')
     media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable')
+    date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=timezone.now, required=False, help_text='When did you complete this workout?')
+
+class ScheduleInstanceForm(forms.Form):
+    date_to_be_completed1 = forms.DateField(widget=forms.SelectDateWidget(), initial=timezone.now, help_text='When will you complete this workout?')
