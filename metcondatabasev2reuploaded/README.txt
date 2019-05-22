@@ -28,10 +28,11 @@ Notes:
         - if using function based views, the argument must also be passed in the view function
                 - see profile view as example
                 - class based views take this into account with the models get_aboslute_url
-- undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
+- need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
         
 Functionality to add:
 - change date_workout_completed on create result form to just DateField
+        - set initial to today
         - add a time of midnight afterwards unless its today, then assume its timezone.now
         - this is only for the form and view not the actual model
 - add ability to choose dates completed when creating workout
