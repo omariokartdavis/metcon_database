@@ -12,7 +12,7 @@
 	{% endif %}
 	
 	<h3>Classification: {{ workout.classification }}</h3>
-	<h4>Date Created: {{ workout.date_created }}</h4>
+	<h4>Date Created: {{ workout.date_created|date:"F j, Y" }}</h4>
 	<p><strong>Description:</strong> {{ workout.workout_text|linebreaks }}</p>
 	<p><strong>Scaling:</strong> {{ workout.scaling_or_description_text|linebreaks }}</p>
 	<p><strong>Movements:</strong> {% for movement in workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
