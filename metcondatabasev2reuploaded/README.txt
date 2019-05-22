@@ -1,5 +1,5 @@
 Edited files on 5/22/2019:
-(haven't uploaded at work)
+(uploaded at work)
 movements_list.py
 models.py requires makemigrations and acceptances
 views.py
