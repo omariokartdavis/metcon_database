@@ -17,6 +17,7 @@ Functionality completed on 5/22/2019:
         - result form now has an initial date of today and then if a different date is chosen the "time" of that date is set to 0:00
                 - if the value is left as today then the timezone.now() datetime is used.
 - added dates_to_be_completed field to instance model
+- addded view and templates and form for scheduling workout
         
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
@@ -37,7 +38,8 @@ Notes:
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
         
 Functionality to add:
-- add ability to "schedule" a workout in the future.
+- change user_page.html to show future workouts
+        - requires passing future workouts to the view
 - cannot use result model to schedule workouts for the future.
         - might have to create new manytomany field on instances that is date_to_be_completed
                 - many to many field allows workout to be scheduled multiple times in the future
