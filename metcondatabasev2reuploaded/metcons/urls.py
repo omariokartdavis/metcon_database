@@ -11,6 +11,7 @@ urlpatterns = [
     path('workout/create/', views.create_workout, name='workout_create'),
     path('movement/create/', views.MovementCreate.as_view(), name='movement_create'),
     path('<username>/workout/<uuid:pk>/result/create/', views.create_result, name='result_create'),
+    path('<username>/workout/<uuid:pk>/scheduleworkout/', views.schedule_instance, name='schedule_instance'),
     path('<username>/', views.profile, name='profile'),
     path('<username>/workout/<uuid:pk>', views.WorkoutInstanceDetailView.as_view(), name='workoutinstance-detail'),
 ]
