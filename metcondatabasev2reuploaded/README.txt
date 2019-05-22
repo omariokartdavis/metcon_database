@@ -1,11 +1,13 @@
 Edited files on 5/22/2019:
 (haven't uploaded at work)
 movements_list.py
-models.py
+models.py requires makemigrations and acceptances
 views.py
 forms.py
+urls.py
 workoutinstance_detail.html
 workout_detail.html
+created schedule_instance.html
 
 Functionality completed on 5/22/2019:
 - fixed date display. need to pass as filter not attribute
