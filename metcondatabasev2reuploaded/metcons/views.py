@@ -7,8 +7,9 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
-from metcons.forms import CreateWorkoutForm, CreateResultForm
-from django.utils.timezone import now
+from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm
+from django.utils import timezone
+import datetime as dt
 from django.db.models import Max
 import re
 
@@ -28,6 +29,7 @@ def index(request):
 def profile(request, username):
     #new order function orders by latest completed date on workout instance
     #if there isn't a completed date it is last then filtered by date_added_by_user
+    # might need the opposite of this for future scheduled workouts
     users_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user).order_by('-max_date', '-date_added_by_user')
     #old order function:
     #WorkoutInstance.objects.filter(current_user=request.user).order_by('-date_added_by_user')
@@ -135,8 +137,12 @@ class WorkoutInstanceDetailView(LoginRequiredMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         instance = self.get_object()
         duration_in_seconds = instance.duration_in_seconds
-        duration_minutes = (duration_in_seconds // 60)
-        duration_seconds = duration_in_seconds % 60
+        if duration_in_seconds:
+            duration_minutes = (duration_in_seconds // 60)
+            duration_seconds = duration_in_seconds % 60
+        else:
+            duration_minutes = 0
+            duration_seconds = 0
         context['duration_minutes'] = duration_minutes
         context['duration_seconds'] = duration_seconds
         result_list = Result.objects.filter(workoutinstance = instance).order_by('-date_created')
@@ -151,6 +157,32 @@ class MovementListView(generic.ListView):
 class MovementDetailView(generic.DetailView):
     model = Movement
 
+def schedule_instance(request, username, pk):
+    instance = WorkoutInstance.objects.get(id=pk)
+    if request.method == 'POST':
+        if 'schedule instance' in request.POST:
+            form = ScheduleInstanceForm(request.POST)
+            if form.is_valid():
+                if form.cleaned_data['date_to_be_completed1'] == dt.date.today():
+                    aware_datetime = timezone.now()
+                else:
+                    date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_completed1'], dt.datetime.min.time())
+                    aware_datetime = timezone.make_aware(date_in_datetime)
+
+                local_date = timezone.localtime(aware_datetime).date()
+                instance.add_date_to_be_completed(local_date)
+                
+                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+    else:
+        form = ScheduleInstanceForm()
+
+    context = {
+        'form': form,
+        'instance': instance,
+        }
+
+    return render(request, 'metcons/schedule_instance.html', context)
+                
 def create_result(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
     if request.method == 'POST':
@@ -159,9 +191,15 @@ def create_result(request, username, pk):
 
             if form.is_valid():
                 duration_in_seconds = ((form.cleaned_data['duration_minutes']) * 60) + form.cleaned_data['duration_seconds']
+                if form.cleaned_data['date_completed'] == dt.date.today():
+                    aware_datetime = timezone.now()
+                else:
+                    date_in_datetime = dt.datetime.combine(form.cleaned_data['date_completed'], dt.datetime.min.time())
+                    aware_datetime=timezone.make_aware(date_in_datetime)
                 result = Result(workoutinstance=instance,
                                 result_text=form.cleaned_data['result_text'],
-                                duration_in_seconds=duration_in_seconds)
+                                duration_in_seconds=duration_in_seconds,
+                                date_workout_completed=aware_datetime)
                 result.save()
                 if request.FILES:
                     resultfile = ResultFile(result=result,
