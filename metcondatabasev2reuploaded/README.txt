@@ -19,9 +19,14 @@ Functionality completed on 5/21/2019:
         - also allows files
 - embed create resultfile in create result page
 - display files in results
-- figure out how to hide video if file is image and vis versa
+- figured out how to hide video if file is image and vis versa
         - added content_type charfield to resultfile model that checks the type of file uploaded
                 - this is not great as it relies on file extension/header and can be manipulated. but its what I've got for now
+- increment instance number of times completed everytime a result is saved
+        - possibly also add a instance completed date to instance file when result is saved?
+- workouts on user page are ordered by latest date completed.
+        - if no date completed they are last and then ordered by date_added_by_user
+        - requires users to add results or mark instance with a date completed otherwise will show as last
                 
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
@@ -42,9 +47,12 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
-- increment instance number of times completed everytime a result is saved
-        - possibly also add a instance completed date to instance file when result is saved?
-                - could then order workouts on user page by instance completed dates
+- add ability to choose dates completed when creating workout
+        - will be on the create workout form and will be used to create the instance off of that workout
+- when creating a new workout, offer users a choice to add a result of this workout immediately.
+        - popup: "Have you already completed this workout?" with linkes y/n
+                - if y go to add results page/popup (need choice of when did you complete this workout)
+                - if no go to instance detail page
 - ?only update base workout times counted and duration at midnight?
 - add click to hide/show scaling on workout detail and instance detail pages.
         - set default to hidden
