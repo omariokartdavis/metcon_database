@@ -47,6 +47,8 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
+- change date_workout_completed on create result form to just DateField
+        - add a time of midnight afterwards unless its today, then assume its timezone.now
 - add ability to choose dates completed when creating workout
         - will be on the create workout form and will be used to create the instance off of that workout
 - when creating a new workout, offer users a choice to add a result of this workout immediately.
