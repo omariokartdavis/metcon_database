@@ -2,8 +2,59 @@
 
 {% block content %}
 	<h1>{{ user.username }}'s Homepage</h1>
-	
+	{% if future_workouts %}
+		<h2>Scheduled Workouts</h2>
+		
+		<ul>
+			{% for future_instance in future_workouts %}
+				{% if future_instance.workout %}
+					<li>
+						<p><a href="{{ future_instance.get_absolute_url }}">{{ future_instance.workout.display_name }}</a>
+						<br />Scheduled for: {{ future_instance.get_earliest_scheduled_date|date:"l" }}
+						<br />{{ future_instance.workout.workout_text|linebreaks }}
+						Classification: {{ future_instance.workout.classification }}
+						<br />Movements: {% for movement in future_instance.workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	{% endif %}
+	{% if recent_past_workouts %}
+		<h2>Recent Workouts</h2>
+		
+		<ul>
+			{% for recent_instance in recent_past_workouts %}
+				{% if recent_instance.workout %}
+					<li>
+						<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>
+						<br />Scheduled for: {{ recent_instance.get_earliest_scheduled_date|date:"l" }}
+						<br />{{ recent_instance.workout.workout_text|linebreaks }}
+						Classification: {{ recent_instance.workout.classification }}
+						<br />Movements: {% for movement in recent_instance.workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	{% endif %}
+	{% if long_past_workouts %}
+		<h2>Past Workouts</h2>
+		
+		<ul>
+			{% for past_instance in long_past_workouts %}
+				{% if past_instance.workout %}
+					<li>
+						<p><a href="{{ past_instance.get_absolute_url }}">{{ past_instance.workout.display_name }}</a>
+						<br />Scheduled for: {{ past_instance.get_earliest_scheduled_date|date:"l" }}
+						<br />{{ past_instance.workout.workout_text|linebreaks }}
+						Classification: {{ past_instance.workout.classification }}
+						<br />Movements: {% for movement in past_instance.workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	{% endif %}
 	{% if users_workouts %}
+	<h2>Users Workouts</h2>
 	<ul>
 		{% for instance in users_workouts %}
 			{% if instance.workout %}
