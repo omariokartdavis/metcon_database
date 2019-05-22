@@ -191,12 +191,18 @@ class WorkoutInstance(models.Model):
 
         def remove_date_to_be_completed(self, date):
                 #date needs to be in datetime.date() format.
+                #make this remove any dates in the past
                 removed_date = WorkoutInstanceCompletedDate.objects.filter(date_completed=date)
                 if removed_date:
                         removed_date = WorkoutInstanceCompletedDate.objects.get(date_completed=date)
                         self.dates_to_be_completed.remove(removed_date)
                         self.save()
                         
+        def get_earliest_scheduled_date(self):
+                #this currently isn't working
+                # test this in shell
+                return self.dates_to_be_completed.earliest('date_completed')
+                
         def update_duration(self):
                 result = Result.objects.filter(workoutinstance__id = self.id).latest('date_created')
                 self.duration_in_seconds = result.duration_in_seconds
