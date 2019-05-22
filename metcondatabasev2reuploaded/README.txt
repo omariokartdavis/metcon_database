@@ -1,17 +1,8 @@
 Edited files on 5/21/2019:
-(uploaded at work)
-models.py (requires makemigrations before adding media files)
+(haven't uploaded at home)
+models.py
 views.py
-urls.py
-forms.py
 admin.py
-base/urls.py
-base/settings.py
-workoutinstance_detail.html
-movement_form.html
-create_workout.html
-create_result.html (changed name and code of result_form.html)
-created rootdir/media folder to populate uploads to.
 
 Functionality completed on 5/21/2019:
 - add duration field in results. update workoutinstance whenever results are saved to call an update_duration on instance
@@ -35,6 +26,7 @@ Functionality completed on 5/21/2019:
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
         "an established connection was aborted by the software in your host machine"
+        - did not occur at home so assuming this is a work only issue.
 - currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
         some restriction where if the workoutinstance with that specific workout already exists for that user it just pulls that up.
@@ -50,6 +42,7 @@ Notes:
 Functionality to add:
 - increment instance number of times completed everytime a result is saved
         - possibly also add a instance completed date to instance file when result is saved?
+                - could then order workouts on user page by instance completed dates
 - ?only update base workout times counted and duration at midnight?
 - add click to hide/show scaling on workout detail and instance detail pages.
         - set default to hidden
