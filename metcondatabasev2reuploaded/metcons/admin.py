@@ -31,10 +31,13 @@ class MovementAdmin(admin.ModelAdmin):
     list_filter = ['classification']
 
 
+class ResultInline(admin.TabularInline):
+    model = Result
+    extra = 0
     
 @admin.register(WorkoutInstance)
 class WorkoutInstanceAdmin(admin.ModelAdmin):
-    list_display = ('display_name',
+    list_display = ('display_workout',
                     'current_user',
                     'display_dates_completed',
                     'date_added_by_user',
@@ -42,18 +45,26 @@ class WorkoutInstanceAdmin(admin.ModelAdmin):
                     'number_of_times_completed',
                     'duration_in_seconds',
                     )
-
+    inlines = [ResultInline]
+    
+class ResultFileInline(admin.TabularInline):
+    model = ResultFile
+    extra = 0
+    
 @admin.register(Result)
 class ResultAdmin(admin.ModelAdmin):
     list_display = ('date_created',
                     'workoutinstance',
                     )
-
+    inlines = [ResultFileInline]
+    
 @admin.register(ResultFile)
 class ResultFileAdmin(admin.ModelAdmin):
     list_display = ('date_created',
                     'result',
                     'caption',
-                    )      
+                    'display_workout',
+                    )
+    
 admin.site.register(WorkoutInstanceCompletedDate)
     
