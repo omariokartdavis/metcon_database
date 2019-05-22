@@ -31,6 +31,8 @@ Notes:
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
         
 Functionality to add:
+- add create workout link to workout list page
+        - under user authentication
 - change date_workout_completed on create result form to just DateField
         - set initial to today
         - add a time of midnight afterwards unless its today, then assume its timezone.now
