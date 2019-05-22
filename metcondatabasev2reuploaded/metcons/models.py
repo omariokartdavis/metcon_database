@@ -185,12 +185,14 @@ class WorkoutInstance(models.Model):
                 self.save()
                 self.refresh_from_db()
                 
-        def display_name(self):
+        def display_workout(self):
                 if self.workout:
                         name = self.workout.display_name()
                         return name
                 else:
                         return 'Workout Deleted'
+
+        display_workout.short_description = 'Workout'
 
         def display_dates_completed(self):
                 """Create a string for the classification. required to display classificaitons in admin site"""
@@ -235,10 +237,20 @@ class Result(models.Model):
                 """Returns the results instace detail page since a result will not have its own page. maybe change this later"""
                 return reverse('workoutinstance-detail', args=[str(self.workoutinstance.current_user.username),
                                                                str(self.workoutinstance.id)])
+        
+        def display_workout(self):
+                if self.workoutinstance:
+                        name = self.workoutinstance.display_workout()
+                        return name
+                else:
+                        return 'Workout Deleted'
+        display_workout.short_description = 'Workout'
 
         def save(self, *args, **kwargs):
                 super().save(*args, **kwargs)
                 self.workoutinstance.update_duration()
+                self.workoutinstance.increment_times_completed()
+                self.workoutinstance.add_date_completed(self.date_workout_completed.date())
         
 class ResultFile(models.Model):
         #can be images or videos
@@ -247,3 +259,12 @@ class ResultFile(models.Model):
         caption = models.TextField(max_length=250, null=True, blank=True)
         result = models.ForeignKey(Result, on_delete=models.SET_NULL, null=True)
         content_type = models.CharField(max_length=100, blank=True, null=True)
+
+        def display_workout(self):
+                if self.result:
+                        name = self.result.display_workout()
+                        return name
+                else:
+                        return 'Workout Deleted'
+                
+        display_workout.short_description = 'Workout'
