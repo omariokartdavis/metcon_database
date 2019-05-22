@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from metcons.forms import CreateWorkoutForm, CreateResultForm
 from django.utils.timezone import now
+from django.db.models import Max
 import re
 
 
@@ -25,8 +26,11 @@ def index(request):
 
 @login_required
 def profile(request, username):
-    users_workouts = WorkoutInstance.objects.filter(current_user=request.user).order_by('-date_added_by_user')
-
+    #new order function orders by latest completed date on workout instance
+    #if there isn't a completed date it is last then filtered by date_added_by_user
+    users_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user).order_by('-max_date', '-date_added_by_user')
+    #old order function:
+    #WorkoutInstance.objects.filter(current_user=request.user).order_by('-date_added_by_user')
     context = {
         'users_workouts': users_workouts,
         }
@@ -101,7 +105,10 @@ def workoutlistview(request):
 def workoutdetailview(request, pk):
     workout = Workout.objects.get(id=pk)
     duration_in_seconds = workout.estimated_duration_in_seconds
-    duration_in_minutes = (duration_in_seconds // 60)
+    if duration_in_seconds:
+        duration_in_minutes = (duration_in_seconds // 60)
+    else:
+        duration_in_minutes = 0
     context = {
         'workout': workout,
         'estimated_duration': duration_in_minutes,
