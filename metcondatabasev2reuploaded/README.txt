@@ -1,5 +1,6 @@
 Edited files on 5/22/2019:
 (haven't uploaded at work)
+movements_list.py
 models.py
 workoutinstance_detail.html
 workout_detail.html
