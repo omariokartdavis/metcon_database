@@ -98,6 +98,17 @@ Functionality to add:
         -would also change def __str__ to if statement on if name exists otherwise same as above
 For multiple sports:
 - maybe just add a foreignkey field in current Workout model of "sport" that has different sport choices.
+        -  should probably still create a different model for individual strength workout
+                - holds one movement with as many sets/reps/weights as need
+                - has manytomany with workout. (Should likely be a field in Workout model)
+        - number of sets as integer field
+                - this number from text input or dropdown would decide how many input boxes appear
+                        - use javascript to hide input boxes until this box losses focus
+                        - use javascript to prepopulate movement into boxes
+                        - use javascript to potentially include supersetting
+                        - have checkboxes for same weight for every set, same reps for every set so they can be autofilled
+                                - if supersetting they apply to each movement individually
+                                        - (movement 1 all sets will have same weight and reps, movement 2 all sets will have same)
         - Would likely make filtering workout_list easier
         - All baseline fields in model like date_created and user can still be required.
                 But all other defining fields will have to be not required
