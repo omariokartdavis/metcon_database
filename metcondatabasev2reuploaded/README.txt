@@ -1,32 +1,10 @@
-Edited files on 5/21/2019:
+Edited files on 5/22/2019:
 (uploaded at home)
-models.py
-views.py
-admin.py
+workoutinstance_detail.html
 
-Functionality completed on 5/21/2019:
-- add duration field in results. update workoutinstance whenever results are saved to call an update_duration on instance
-        - just like instance does to base workout
-- change result create url to have username first, then workoutid, then result/create/
-- adding a result with a new duration now updates the instance to the new duration
-        - always updates instance duration to the latest results duration
-- change results create view to be function based and hide instance choice and set default to the instance that was just on.
-        - the function can take three args (request, user, uuid).
-        - can use user and uuid for url and then use uuid for finding the instance.
-        - httpresponseredirect(instance.get_absolute_url())
-        - then have two inputs, one for minutes and one for seconds. use the form to validate. then use the view to transfer into only
-                seconds for storing in duration field.
-        - also allows files
-- embed create resultfile in create result page
-- display files in results
-- figured out how to hide video if file is image and vis versa
-        - added content_type charfield to resultfile model that checks the type of file uploaded
-                - this is not great as it relies on file extension/header and can be manipulated. but its what I've got for now
-- increment instance number of times completed everytime a result is saved
-        - possibly also add a instance completed date to instance file when result is saved?
-- workouts on user page are ordered by latest date completed.
-        - if no date completed they are last and then ordered by date_added_by_user
-        - requires users to add results or mark instance with a date completed otherwise will show as last
+Functionality completed on 5/22/2019:
+- fixed date display. need to pass as filter not attribute
+        - somedate|date:"format" not somedate.date
                 
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
@@ -47,6 +25,8 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
+- change result model function for adding date workout_completed to workoutinstance by:
+        timezone.localtime(self.date_workout_completed).date
 - change date_workout_completed on create result form to just DateField
         - add a time of midnight afterwards unless its today, then assume its timezone.now
 - add ability to choose dates completed when creating workout
