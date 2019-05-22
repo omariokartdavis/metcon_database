@@ -26,7 +26,7 @@ Functionality completed on 5/21/2019:
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
         "an established connection was aborted by the software in your host machine"
-        - did not occur at home so assuming this is a work only issue.
+        - happened on home computer but not first time page/video was viewed. (idk whats going on)
 - currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
 - can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
         some restriction where if the workoutinstance with that specific workout already exists for that user it just pulls that up.
