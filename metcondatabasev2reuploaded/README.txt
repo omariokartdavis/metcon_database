@@ -1,6 +1,8 @@
 Edited files on 5/22/2019:
 (haven't uploaded at work)
+models.py
 workoutinstance_detail.html
+workout_detail.html
 
 Functionality completed on 5/22/2019:
 - fixed date display. need to pass as filter not attribute
