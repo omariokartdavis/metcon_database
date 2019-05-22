@@ -31,6 +31,15 @@ Notes:
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
         
 Functionality to add:
+- add a tabbed view on user page
+        - one for future workouts that are planned
+        - one for past workouts to look at history
+        - can handle this in views/templates as for dates in the future (date_completed - today > 0)
+                or dates in the past (date_completed - today < 0)
+                - pass as two different filters. "Future_workouts" "Past_workouts"
+                - order future workouts by closeness to today
+                - order past workouts by most recent
+- if date in the future is chosen for workout creation, treat it as not completed
 - add create workout link to workout list page
         - under user authentication
 - change date_workout_completed on create result form to just DateField
