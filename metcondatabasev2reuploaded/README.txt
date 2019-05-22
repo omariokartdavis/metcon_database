@@ -16,6 +16,7 @@ Functionality completed on 5/22/2019:
 - change date_workout_completed on create result form to just DateField
         - result form now has an initial date of today and then if a different date is chosen the "time" of that date is set to 0:00
                 - if the value is left as today then the timezone.now() datetime is used.
+- added dates_to_be_completed field to instance model
         
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
