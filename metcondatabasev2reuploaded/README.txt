@@ -1,5 +1,5 @@
 Edited files on 5/22/2019:
-(uploaded at home)
+(haven't uploaded at work)
 workoutinstance_detail.html
 
 Functionality completed on 5/22/2019:
