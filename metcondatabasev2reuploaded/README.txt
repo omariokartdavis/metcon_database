@@ -3,6 +3,7 @@ Edited files on 5/22/2019:
 movements_list.py
 models.py
 views.py
+forms.py
 workoutinstance_detail.html
 workout_detail.html
 
@@ -12,7 +13,10 @@ Functionality completed on 5/22/2019:
 - changed workoutinstancecompleteddate to have default of timezone.localtime
 - changed save function of result to add wicd to instance as timezone.localtime.date
         - if doing timezone.date instead it will save the date from UTC date which will be wrong (ahead of my localtime)
-                
+- change date_workout_completed on create result form to just DateField
+        - result form now has an initial date of today and then if a different date is chosen the "time" of that date is set to 0:00
+                - if the value is left as today then the timezone.now() datetime is used.
+        
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
         "an established connection was aborted by the software in your host machine"
@@ -41,12 +45,9 @@ Functionality to add:
                 - order future workouts by closeness to today
                 - order past workouts by most recent
 - if date in the future is chosen for workout creation, treat it as not completed
+- add ability to "schedule" a workout in the future. basically creates a result or something in the future
 - add create workout link to workout list page
-        - under user authentication
-- change date_workout_completed on create result form to just DateField
-        - set initial to today
-        - add a time of midnight afterwards unless its today, then assume its timezone.now
-        - this is only for the form and view not the actual model
+        - under user authentication in template
 - add ability to choose dates completed when creating workout
         - will be on the create workout form and will be used to create the instance off of that workout
 - when creating a new workout, offer users a choice to add a result of this workout immediately.
