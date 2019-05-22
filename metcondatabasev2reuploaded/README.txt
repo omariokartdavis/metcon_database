@@ -41,10 +41,7 @@ Functionality to add:
                 - if y go to add results page/popup (need choice of when did you complete this workout)
                 - if no go to instance detail page
 - ?only update base workout times counted and duration at midnight?
-- add click to hide/show scaling on workout detail and instance detail pages.
-        - set default to hidden
-- order workouts on users page based on results dates or date_completed dates on instance
-        - only if there are results
+        - will help speed up workout creation and all instance updates/saves
 - add filter on workout instance detail page to filter results by date
 - ?put filter searches on base_generic page and do {% block filters %}{% endblock %} if you don't want them to come up?
 - only allow user who created base workout to edit that workout and only while no one else has added it to their page
@@ -120,3 +117,7 @@ Styling:
 - Endless Scroll of workouts
 - Add back button to previous search after filtering
 - Add filters currently active below search boxes after a filter is chosen
+- set maximum video and image size for displaying on webpage
+- add click to hide/show scaling on workout detail and instance detail pages.
+        - set default to hidden
+- ?remove number of times completed counter from instance_detail page?
