@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm
 from django.utils import timezone
 import datetime as dt
-from django.db.models import Max
+from django.db.models import Max, Min
 import re
 
 
@@ -31,10 +31,22 @@ def profile(request, username):
     #if there isn't a completed date it is last then filtered by date_added_by_user
     # might need the opposite of this for future scheduled workouts
     users_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user).order_by('-max_date', '-date_added_by_user')
+    now = timezone.now()
+    future_workouts = WorkoutInstance.objects.annotate(min_date=Min('dates_to_be_completed__date_completed')).filter(current_user=request.user,
+                                                                                                                     dates_to_be_completed__date_completed__gte=now).distinct().order_by('min_date')
+    recent_time = now - timezone.timedelta(days=14)
+    recent_past_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user,
+                                                                                                                            dates_workout_completed__date_completed__lt=now,
+                                                                                                                            dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('-max_date')
+    long_past_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user,
+                                                                                                                          dates_workout_completed__date_completed__lt=recent_time).distinct().order_by('-max_date')
     #old order function:
     #WorkoutInstance.objects.filter(current_user=request.user).order_by('-date_added_by_user')
     context = {
         'users_workouts': users_workouts,
+        'future_workouts': future_workouts,
+        'recent_past_workouts': recent_past_workouts,
+        'long_past_workouts': long_past_workouts,
         }
     return render(request, 'metcons/user_page.html', context=context)
 
