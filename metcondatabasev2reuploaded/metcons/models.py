@@ -4,7 +4,10 @@ import datetime
 import uuid
 from django.conf import settings
 from django.db.models import Count, F, Sum, Avg
-from django.utils.timezone import now
+from django.utils import timezone
+
+def get_default_localtime_date():
+        return timezone.localtime(timezone.now()).date()
 
 class Classification(models.Model):
         """Model representing a classification of a movement"""
@@ -47,12 +50,12 @@ class Movement(models.Model):
 class Workout(models.Model):
         """Model representing a workout."""
         #when creating a model from the admin page, the model will not set the classifications/movements itself.
-        date_created = models.DateTimeField(default=now)
+        date_created = models.DateTimeField(default=timezone.now)
         date_added_to_database = models.DateTimeField(auto_now_add = True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         workout_text = models.TextField(max_length=2000)
-        scaling_or_description_text = models.TextField(max_length=4000, null=True, blank=True)
-        what_website_workout_came_from = models.CharField(max_length=200, null=True, blank=True)
+        scaling_or_description_text = models.TextField(max_length=4000, blank=True)
+        what_website_workout_came_from = models.CharField(max_length=200, blank=True)
         estimated_duration_in_seconds = models.IntegerField(default=0, verbose_name='Duration (sec)', null=True, blank=True)
         created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
                 
@@ -141,7 +144,7 @@ class Workout(models.Model):
         
 class WorkoutInstanceCompletedDate(models.Model):
         """Dates of when workout instances are completed"""
-        date_completed = models.DateField(default=datetime.date.today)
+        date_completed = models.DateField(default=get_default_localtime_date)
 
         class Meta:
                 ordering = ['-date_completed']
@@ -153,7 +156,8 @@ class WorkoutInstanceCompletedDate(models.Model):
 class WorkoutInstance(models.Model):
         """Model representing a specific Users Workout Instance"""
         id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text = 'Unique ID for this particular workout')
-        dates_workout_completed = models.ManyToManyField(WorkoutInstanceCompletedDate, blank=True)
+        dates_workout_completed = models.ManyToManyField(WorkoutInstanceCompletedDate, related_name="dates_workout_completed", blank=True)
+        dates_to_be_completed = models.ManyToManyField(WorkoutInstanceCompletedDate, related_name="dates_to_be_completed", blank=True)
         date_added_by_user = models.DateTimeField(auto_now_add=True)
         workout = models.ForeignKey(Workout, on_delete=models.SET_NULL, null=True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
@@ -164,7 +168,7 @@ class WorkoutInstance(models.Model):
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
                 
         def add_date_completed(self, date):
-                #date needs to be in datetime.date.today() format.
+                #date needs to be in datetime.date() format.
                 new_date = WorkoutInstanceCompletedDate.objects.filter(date_completed=date)
                 if new_date:
                         new_date = WorkoutInstanceCompletedDate.objects.get(date_completed=date)
@@ -174,11 +178,29 @@ class WorkoutInstance(models.Model):
                 self.dates_workout_completed.add(new_date)
                 self.save()
 
+        def add_date_to_be_completed(self, date):
+                #date needs to be in datetime.date() format.
+                new_date = WorkoutInstanceCompletedDate.objects.filter(date_completed=date)
+                if new_date:
+                        new_date = WorkoutInstanceCompletedDate.objects.get(date_completed=date)
+                else:
+                        new_date = WorkoutInstanceCompletedDate(date_completed = date)
+                        new_date.save()
+                self.dates_to_be_completed.add(new_date)
+                self.save()
+
+        def remove_date_to_be_completed(self, date):
+                #date needs to be in datetime.date() format.
+                removed_date = WorkoutInstanceCompletedDate.objects.filter(date_completed=date)
+                if removed_date:
+                        removed_date = WorkoutInstanceCompletedDate.objects.get(date_completed=date)
+                        self.dates_to_be_completed.remove(removed_date)
+                        self.save()
+                        
         def update_duration(self):
                 result = Result.objects.filter(workoutinstance__id = self.id).latest('date_created')
-                if self.duration_in_seconds and self.duration_in_seconds > 0:
-                        self.duration_in_seconds = result.duration_in_seconds
-                        self.save()
+                self.duration_in_seconds = result.duration_in_seconds
+                self.save()
                 
         def increment_times_completed(self):
                 self.number_of_times_completed = F('number_of_times_completed') + 1
@@ -218,9 +240,9 @@ class WorkoutInstance(models.Model):
 
 class Result(models.Model):
         date_created = models.DateTimeField(auto_now_add=True)
-        date_workout_completed = models.DateTimeField(default=now)
+        date_workout_completed = models.DateTimeField(default=timezone.now)
         workoutinstance = models.ForeignKey(WorkoutInstance, on_delete=models.SET_NULL, null = True)
-        result_text = models.TextField(max_length=2000, null=True, blank = True)
+        result_text = models.TextField(max_length=2000, blank = True)
         duration_in_seconds = models.IntegerField(default=0, verbose_name='Duration (sec)', null=True, blank=True)
 
         def duration_in_minutes(self):
@@ -233,6 +255,10 @@ class Result(models.Model):
                 remainder = self.duration_in_seconds % 60
                 return remainder
         
+        def update_instance_duration(self):
+                if self.duration_in_seconds and self.duration_in_seconds > 0:
+                        self.workoutinstance.update_duration()
+
         def get_absolute_url(self):
                 """Returns the results instace detail page since a result will not have its own page. maybe change this later"""
                 return reverse('workoutinstance-detail', args=[str(self.workoutinstance.current_user.username),
@@ -248,17 +274,17 @@ class Result(models.Model):
 
         def save(self, *args, **kwargs):
                 super().save(*args, **kwargs)
-                self.workoutinstance.update_duration()
+                self.update_instance_duration()
                 self.workoutinstance.increment_times_completed()
-                self.workoutinstance.add_date_completed(self.date_workout_completed.date())
+                self.workoutinstance.add_date_completed(timezone.localtime(self.date_workout_completed).date())
         
 class ResultFile(models.Model):
         #can be images or videos
         date_created = models.DateTimeField(auto_now_add=True)
         file = models.FileField(upload_to='uploads/%Y/%m/%d/')
-        caption = models.TextField(max_length=250, null=True, blank=True)
+        caption = models.TextField(max_length=250, blank=True)
         result = models.ForeignKey(Result, on_delete=models.SET_NULL, null=True)
-        content_type = models.CharField(max_length=100, blank=True, null=True)
+        content_type = models.CharField(max_length=100, blank=True)
 
         def display_workout(self):
                 if self.result:
