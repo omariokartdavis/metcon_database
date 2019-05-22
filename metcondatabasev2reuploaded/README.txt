@@ -1,5 +1,5 @@
 Edited files on 5/21/2019:
-(haven't uploaded at home)
+(uploaded at home)
 models.py
 views.py
 admin.py
