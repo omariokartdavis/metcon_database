@@ -109,6 +109,10 @@ For multiple sports:
                         - have checkboxes for same weight for every set, same reps for every set so they can be autofilled
                                 - if supersetting they apply to each movement individually
                                         - (movement 1 all sets will have same weight and reps, movement 2 all sets will have same)
+        - weights and reps as manytomany fields?
+                - Weight model has value and unit
+                        -pre create common weights? 135/225/315/405lbs? 60/100/125/140kg?
+                - reps can be pre created up to 50 just like movements/classifications
         - Would likely make filtering workout_list easier
         - All baseline fields in model like date_created and user can still be required.
                 But all other defining fields will have to be not required
