@@ -8,6 +8,9 @@ workout_detail.html
 Functionality completed on 5/22/2019:
 - fixed date display. need to pass as filter not attribute
         - somedate|date:"format" not somedate.date
+- changed workoutinstancecompleteddate to have default of timezone.localtime
+- changed save function of result to add wicd to instance as timezone.localtime.date
+        - if doing timezone.date instead it will save the date from UTC date which will be wrong (ahead of my localtime)
                 
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
@@ -28,14 +31,13 @@ Notes:
 - undid workoutdetail.date and instance.date because its rounding dates forward to the next day.
         
 Functionality to add:
-- change result model function for adding date workout_completed to workoutinstance by:
-        timezone.localtime(self.date_workout_completed).date
 - change date_workout_completed on create result form to just DateField
         - add a time of midnight afterwards unless its today, then assume its timezone.now
+        - this is only for the form and view not the actual model
 - add ability to choose dates completed when creating workout
         - will be on the create workout form and will be used to create the instance off of that workout
 - when creating a new workout, offer users a choice to add a result of this workout immediately.
-        - popup: "Have you already completed this workout?" with linkes y/n
+        - popup: "Have you completed this workout recently (within last week)?" with links y/n
                 - if y go to add results page/popup (need choice of when did you complete this workout)
                 - if no go to instance detail page
 - ?only update base workout times counted and duration at midnight?
