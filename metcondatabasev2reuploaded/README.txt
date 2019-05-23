@@ -2,6 +2,8 @@ Edited files on 5/23/2019:
 (haven't uploaded at work)
 views.py
 models.py requires deleting instances and results and running make migrations
+admin.py
+movements_list.py
 workoutinstance_detail.html
 user_page.html
 schedule_instance.html
@@ -24,6 +26,9 @@ Functionality completed on 5/23/2019:
 - added workout description to results add page
         
 Notes:
+- can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
+        - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
+        - might be a good idea as database gets bigger
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
         "an established connection was aborted by the software in your host machine"
         - happened on home computer but not first time page/video was viewed. (idk whats going on)
