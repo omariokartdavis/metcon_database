@@ -28,7 +28,8 @@ Functionality completed on 5/23/2019:
 - added workout description to results add page
 - change mainsite_workouts datetime to timezone.make_aware(datetime)
         - don't think I need localtime on this
-        
+- removed update functions from save function in instance and results
+        - all update functions now live in the respective views.
 Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
         - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
@@ -56,6 +57,8 @@ Notes:
         - not necessary anyway
         
 Functionality to add:
+- when creating update views and delete views make sure the view calls the proper update functions on each model because
+        I took them out of the save functions.
 - modify result delete method so it calls update_times completed on instance
 - give available dates to schedule form and create result form
         - create result should only have past
