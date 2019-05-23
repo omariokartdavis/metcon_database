@@ -56,6 +56,7 @@ Notes:
         - not necessary anyway
         
 Functionality to add:
+- modify result delete method so it calls update_times completed on instance
 - give available dates to schedule form and create result form
         - create result should only have past
         - schedule should only have future
