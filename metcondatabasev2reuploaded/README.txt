@@ -4,6 +4,7 @@ Run remove_old_scheduled_dates.py everyday
 Edited files on 5/23/2019:
 (uploaded at home)
 models.py requires deleting instances and results and running make migrations
+workoutinstance_detail.html
 
 Functionality completed on 5/23/2019:
 - added youngest_scheduled_date and oldest_completed_date fields to instance model
@@ -27,6 +28,8 @@ Notes:
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
         
 Functionality to add:
+- add function that returns all instance scheduled dates that are in the future
+        - use this for schedule workout form "By the way you have this workout scheduled for..."
 - might need to create new field in workout instance called "youngest" as datefield.
         - set it default to blank/null and call function below whenever an instance is saved
         - can then order by this date.
