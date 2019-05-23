@@ -8,11 +8,13 @@
 		<ul>
 			{% for future_instance in future_workouts %}
 				{% if future_instance.workout %}
-					<li>
-						<p><a href="{{ future_instance.get_absolute_url }}">{{ future_instance.workout.display_name }}</a>
-						<br /><strong>Scheduled for: {{ future_instance.get_earliest_scheduled_date|date:"l, F j, Y" }}</strong>
-						<br />{{ future_instance.workout.workout_text|linebreaks }}</p>
-					</li>
+					{% if future_instance.youngest_scheduled_date %}
+						<li>
+							<p><a href="{{ future_instance.get_absolute_url }}">{{ future_instance.workout.display_name }}</a>
+							<br /><strong>Scheduled for: {{ future_instance.youngest_scheduled_date.date_completed|date:"l, F j, Y" }}</strong>
+							<br />{{ future_instance.workout.workout_text|linebreaks }}</p>
+						</li>
+					{% endif %}
 				{% endif %}
 			{% endfor %}
 		</ul>
@@ -25,7 +27,7 @@
 				{% if recent_instance.workout %}
 					<li>
 						<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>
-						<br /><strong>Last Completed On: {{ recent_instance.get_latest_date_completed|date:"l, F j, Y" }}</strong>
+						<br /><strong>Last Completed On: {{ recent_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
 						<br />{{ recent_instance.workout.workout_text|linebreaks }}</p>
 					</li>
 				{% endif %}
@@ -40,7 +42,7 @@
 				{% if past_instance.workout %}
 					<li>
 						<p><a href="{{ past_instance.get_absolute_url }}">{{ past_instance.workout.display_name }}</a>
-						<br /><strong>Last Completed On: {{ past_instance.get_latest_date_completed|date:"l, F j, Y" }}</strong>
+						<br /><strong>Last Completed On: {{ past_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
 						<br />{{ past_instance.workout.workout_text|linebreaks }}</p>
 					</li>
 				{% endif %}
@@ -48,14 +50,16 @@
 		</ul>
 	{% endif %}
 	{% if users_workouts %}
-	<h2>All Users Workouts</h2>
+	<h2>Workouts That Haven't Been Completed Or Scheduled</h2>
 	<ul>
 		{% for instance in users_workouts %}
-			{% if instance.workout %}
-				<li>
-					<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>
-					<br />{{ instance.workout.workout_text|linebreaks }}</p>
-				</li>
+			{% if instance not in future_workouts and instance not in recent_past_workouts and instance not in long_past_workouts %}
+				{% if instance.workout %}
+					<li>
+						<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>
+						<br />{{ instance.workout.workout_text|linebreaks }}</p>
+					</li>
+				{% endif %}
 			{% endif %}
 		{% endfor %}
 	</ul>
