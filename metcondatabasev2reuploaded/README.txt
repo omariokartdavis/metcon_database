@@ -19,6 +19,7 @@ Functionality completed on 5/23/2019:
         - delete every one that is > 1 week old?
 - add function that returns all instance scheduled dates that are in the future
         - use this for schedule workout form "By the way you have this workout scheduled for..."
+- changed order of result lists on instance detail page to be ordered by "-date_workout_completed" instead of "-date_created"
         
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
