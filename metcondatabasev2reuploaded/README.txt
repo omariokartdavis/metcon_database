@@ -5,6 +5,7 @@ models.py requires deleting instances and results and running make migrations
 workoutinstance_detail.html
 user_page.html
 schedule_instance.html
+create_result.html
 
 Functionality completed on 5/23/2019:
 - added youngest_scheduled_date and oldest_completed_date fields to instance model
@@ -20,6 +21,7 @@ Functionality completed on 5/23/2019:
 - add function that returns all instance scheduled dates that are in the future
         - use this for schedule workout form "By the way you have this workout scheduled for..."
 - changed order of result lists on instance detail page to be ordered by "-date_workout_completed" instead of "-date_created"
+- added workout description to results add page
         
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
