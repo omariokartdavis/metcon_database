@@ -1,11 +1,13 @@
 When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movementslist. mainsite workouts.
 Edited files on 5/23/2019:
 (haven't uploaded at work)
+update_all_workout_movement...py
+mainsite_workouts.py
+movements_list.py
+created update_instance_dates.py
 views.py
 models.py requires deleting database and all migrations
 admin.py
-movements_list.py
-mainsite_workouts.py
 workoutinstance_detail.html
 user_page.html
 schedule_instance.html
@@ -30,6 +32,9 @@ Functionality completed on 5/23/2019:
         - don't think I need localtime on this
 - removed update functions from save function in instance and results
         - all update functions now live in the respective views.
+- used .iterator() and .exists() on applicable functions
+- changed update_youngest_scheduled_date to not fail if there is no option.
+        instead sets to null
 Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
         - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
@@ -57,8 +62,7 @@ Notes:
         - not necessary anyway
         
 Functionality to add:
-- need to run update youngest/oldest dates on instances every new day
-- look into using .iterator() and .exists() in updatemovemens and classifications
+- need to run update_instance_dates every new day
 - add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
         - all crossfit mainsite workouts are both
 - change all users workouts list on user page to "Other workouts" and have it only list workouts that haven't been completed
