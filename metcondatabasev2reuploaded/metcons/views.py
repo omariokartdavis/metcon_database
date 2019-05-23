@@ -27,19 +27,25 @@ def index(request):
 
 @login_required
 def profile(request, username):
-    #new order function orders by latest completed date on workout instance
     #if there isn't a completed date it is last then filtered by date_added_by_user
-    # might need the opposite of this for future scheduled workouts
     users_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user).order_by('-max_date', '-date_added_by_user')
-    now = timezone.now()
+    #the future_workouts filter filters by workouts with a scheduled date either today or in the future.
+    #   if the workout has a scheduled date of today and a completed date of today it is assumed complete and will move it to the "recent workouts" filter.
+    now = timezone.localtime(timezone.now()).date()
     future_workouts = WorkoutInstance.objects.annotate(min_date=Min('dates_to_be_completed__date_completed')).filter(current_user=request.user,
-                                                                                                                     dates_to_be_completed__date_completed__gte=now).distinct().order_by('min_date')
+                                                                                                                     dates_to_be_completed__date_completed__gte=now).exclude(
+                                                                                                                                dates_workout_completed__date_completed=now,
+                                                                                                                                dates_to_be_completed__date_completed=now).distinct().order_by('min_date')
     recent_time = now - timezone.timedelta(days=14)
-    recent_past_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user,
+    recent_past_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed'),
+                                                            min_date=Min('dates_to_be_completed__date_completed')).filter(current_user=request.user,
                                                                                                                             dates_workout_completed__date_completed__lt=now,
-                                                                                                                            dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('-max_date')
+                                                                                                                            dates_workout_completed__date_completed__gte=recent_time
+                                                                                                                          ).distinct().order_by('-max_date', 'min_date')
+    
     long_past_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user,
-                                                                                                                          dates_workout_completed__date_completed__lt=recent_time).distinct().order_by('-max_date')
+                                                                                                                          dates_workout_completed__date_completed__lt=recent_time).exclude(
+                                                                                                                              dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('-max_date')
     #old order function:
     #WorkoutInstance.objects.filter(current_user=request.user).order_by('-date_added_by_user')
     context = {
