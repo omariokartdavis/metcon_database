@@ -39,9 +39,8 @@ Notes:
         - maybe this has to do with the video not being saved to cache properly
                 - pictures save to cache and get response 304 when viewed multiple times, the video is getting 200 everytime
 - currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
-- can't use onetoone between user and workoutinstance because then they can't have multiple workouts. has to be foreign key and create
-        some restriction where if the workoutinstance with that specific workout already exists for that user it just pulls that up.
-        this will likely have to be handled in the views.py
+- workout 96 doesn't have a proper description. Scaling info is the description and scaling is none
+        - not sure why it got pulled from the website this way.
 - to allow urls to extend with info, the get_absolute_url function must be in the model isntance and you must pass the arguments
         for each specification before it. otherwise you will get a reverse match not found on the template link.
         - see workout instance get_absolute_url for example
