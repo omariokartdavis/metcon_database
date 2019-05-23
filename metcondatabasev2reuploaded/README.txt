@@ -87,6 +87,12 @@ Notes:
         
 Functionality to add:
 - run remove_dates_to_be_completed_in_past() on instances everyday.
+        - the reason this needs to be done is if someone has a workout scheduled in the future and in the past it will
+                show up first on the scheduled workouts list and have a scheduled for date in the past.
+        - one solution to this is to change dates_to_be_completed to be a foreign key and only allow scheduling once at a time
+- to avoid having to remove dates to be completed everyday, figure out a way to order by and get the "min" date that is still
+        greater than or equal to today.
+        
 - create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
         - have add result button that has default date of previous day
 - add create workout link to workout list page
