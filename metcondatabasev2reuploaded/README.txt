@@ -40,6 +40,10 @@ Notes:
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
 - wicd.objects.filter(dates_to_be_completed=instance, date_completed__gte=now).earliest('date_completed')
         - gives wicd object that is the earliest date from datestobecompleted from instance that also has date gte now
+- can't get rid of distinct on user_page filters for future/recent/past workouts
+        - if removed it will list every workout over and over again based on the number of dates it has in the future/recent/past
+                but they will be ordered based on their youngest/oldest dates only. 
+        - not necessary anyway
         
 Functionality to add:
 - create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
