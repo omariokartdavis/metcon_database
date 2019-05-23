@@ -98,18 +98,18 @@ class ClassificationList:
 # python manage.py shell
 # exec(open('movements_list.py').read())
 
-from metcons.models import Classification, Movement, Workout, WorkoutInstanceCompletedDate
+from metcons.models import Classification, Movement, Workout, Date
 from django.utils import timezone
 #import datetime as dt
 
-##all_wicd = WorkoutInstanceCompletedDate.objects.all()
+##all_wicd = Date.objects.all()
 ##wicd_dates = []
 ##for i in all_wicd:
 ##    wicd_dates.append(i.date_completed)
 
 for i in range(366):
     date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=i) #dt.date.today() - dt.timedelta(days=i)
-    new_date = WorkoutInstanceCompletedDate(date_completed=date)
+    new_date = Date(date_completed=date)
     new_date.save()
 
 all_classifications = ClassificationList()
