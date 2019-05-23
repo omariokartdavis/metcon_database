@@ -9,5 +9,5 @@ from metcons.models import Classification, Movement, Workout
 
 all_workouts = Workout.objects.all()
 
-for i in all_workouts:
+for i in all_workouts.iterator():
     i.update_movements_and_classification()
