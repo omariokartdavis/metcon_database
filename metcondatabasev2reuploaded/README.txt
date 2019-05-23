@@ -1,9 +1,11 @@
+When deleting database: delete migrations too, run makemigrations and migrate. createsuperuser. movementslist. mainsite workouts.
 Edited files on 5/23/2019:
 (haven't uploaded at work)
 views.py
-models.py requires deleting instances and results and running make migrations
+models.py requires deleting database and all migrations
 admin.py
 movements_list.py
+mainsite_workouts.py
 workoutinstance_detail.html
 user_page.html
 schedule_instance.html
@@ -24,6 +26,8 @@ Functionality completed on 5/23/2019:
         - use this for schedule workout form "By the way you have this workout scheduled for..."
 - changed order of result lists on instance detail page to be ordered by "-date_workout_completed" instead of "-date_created"
 - added workout description to results add page
+- change mainsite_workouts datetime to timezone.make_aware(datetime)
+        - don't think I need localtime on this
         
 Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -53,6 +57,9 @@ Notes:
         - not necessary anyway
         
 Functionality to add:
+- give available dates to schedule form and create result form
+        - create result should only have past
+        - schedule should only have future
 - create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
         - have add result button that has default date of previous day
 - add create workout link to workout list page
