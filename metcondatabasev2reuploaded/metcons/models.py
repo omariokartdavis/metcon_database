@@ -189,19 +189,20 @@ class WorkoutInstance(models.Model):
                 self.dates_to_be_completed.add(new_date)
                 self.save()
 
-        def remove_date_to_be_completed(self, date):
-                #date needs to be in datetime.date() format.
-                #make this remove any dates in the past
-                removed_date = WorkoutInstanceCompletedDate.objects.filter(date_completed=date)
-                if removed_date:
-                        removed_date = WorkoutInstanceCompletedDate.objects.get(date_completed=date)
-                        self.dates_to_be_completed.remove(removed_date)
-                        self.save()
-                        
+        def remove_dates_to_be_completed_in_past(self):
+                #need to run this after every day.
+                for i in self.dates_to_be_completed.all():
+                        if i.date_completed < timezone.localtime(timezone.now()).date():
+                                self.dates_to_be_completed.remove(i)
+                #self.save()
+                #cant include save here if I'm calling the function on itself as it makes a loop
+                #have to call super.save in save function
+
+        def get_latest_date_completed(self):
+                return self.dates_workout_completed.latest('date_completed').date_completed
+        
         def get_earliest_scheduled_date(self):
-                #this currently isn't working
-                # test this in shell
-                return self.dates_to_be_completed.earliest('date_completed')
+                return self.dates_to_be_completed.earliest('date_completed').date_completed
                 
         def update_duration(self):
                 result = Result.objects.filter(workoutinstance__id = self.id).latest('date_created')
@@ -239,6 +240,8 @@ class WorkoutInstance(models.Model):
                 super().save(*args, **kwargs)
                 self.workout.update_times_completed()
                 self.workout.update_estimated_duration()
+                self.remove_dates_to_be_completed_in_past()
+                super().save(*args, **kwargs)
 
         def get_absolute_url(self):
                 """Returns the url to access a detail record for this workout."""
