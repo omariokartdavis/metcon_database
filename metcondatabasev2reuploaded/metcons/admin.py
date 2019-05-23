@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Classification, Movement, Workout, WorkoutInstance, WorkoutInstanceCompletedDate, Result, ResultFile
+from .models import Classification, Movement, Workout, WorkoutInstance, Date, Result, ResultFile
 
 admin.site.register(Classification)
 
@@ -66,5 +66,5 @@ class ResultFileAdmin(admin.ModelAdmin):
                     'display_workout',
                     )
     
-admin.site.register(WorkoutInstanceCompletedDate)
+admin.site.register(Date)
     
