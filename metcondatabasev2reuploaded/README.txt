@@ -2,12 +2,23 @@ Run remove_old_scheduled_dates.py everyday
         - this is currently run on every instance when that instance is saved.
         
 Edited files on 5/23/2019:
-(uploaded at home)
+(haven't uploaded at work)
+views.py
 models.py requires deleting instances and results and running make migrations
 workoutinstance_detail.html
+user_page.html
+schedule_instance.html
 
 Functionality completed on 5/23/2019:
 - added youngest_scheduled_date and oldest_completed_date fields to instance model
+- order by youngest_scheduled_date and oldest_completed_date on user page
+        - also displays those dates for scheduled for: completed on:
+- added function to update youngest/oldest dates and call it on every save\
+- added function to get all dates in future
+        - for scheduled date form page to list dates in future scheduled.
+- should no longer have to remove dates from dates_to_be_completed
+        - might still want to so the list comprehensions stay small
+        - delete every one that is > 1 week old?
 
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
@@ -26,6 +37,16 @@ Notes:
                 - see profile view as example
                 - class based views take this into account with the models get_aboslute_url
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
+        
+wicd.objects.filter(dates_to_be_completed=instance)
+        -gives you a query set of all wicd objects that are in dates to be completed for that instance
+wicd.objects.filter(dates_to_be_complete__lt=instance)
+        -gives queryset of all wicd objects that are less than the dates to be completed for that instance.
+                also includes the dates to be completed of that instance
+wicd.objects.filter(dates_to_be_completed=instance, date_completed__gt=now)
+        -gives queryset of wicd objects in datestobecompleted for instance that also have a date greater than now
+wicd.objects.filter(dates_to_be_completed=instance, date_completed__gte=now).earliest('date_completed')
+        -gives wicd object that is the earliest date from datestobecompleted from instance that also has date gte now
         
 Functionality to add:
 - add function that returns all instance scheduled dates that are in the future
