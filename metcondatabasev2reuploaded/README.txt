@@ -1,9 +1,13 @@
+Run remove_old_scheduled_dates.py everyday
+
 Edited files on 5/22/2019:
 (haven't uploaded at home)
+created remove_old_scheduled_dates.py in rootdir
 views.py
 models.py doesn't require anything
 user_page.html
 workoutinstance_detail.html
+workout_detail.html
 
 Functionality completed on 5/22/2019:
 - fixed date display. need to pass as filter not attribute
@@ -80,6 +84,7 @@ Notes:
 Functionality to add:
 - run remove_dates_to_be_completed_in_past() on instances everyday.
 - create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
+        - have add result button that has default date of previous day
 - add a line on the schedule workout page that says "by the way, you have this workout scheduled for:... dates"
 - add create workout link to workout list page
         - under user authentication in template
