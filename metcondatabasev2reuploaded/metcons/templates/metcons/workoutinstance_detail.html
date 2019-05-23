@@ -6,14 +6,11 @@
 			<form action="{% url 'schedule_instance' user.username workoutinstance.id %}">
 				<input type="submit" value="Schedule Workout" />
 			</form>
-			<h1>{{ workoutinstance.workout.display_name }}</h1>
-			<h3>Classification: {{ workoutinstance.workout.classification }}</h3>
-			<h4>Date Added to Profile: {{ workoutinstance.date_added_by_user|date:"F j, Y" }}</h4>
+			<h1>{{ workoutinstance.workout.display_name }}</h1><p> - Last Completed: {{ workoutinstance.get_latest_date_completed|date:"l, F j, Y" }}
 			<p><strong>Description:</strong> {{ workoutinstance.workout.workout_text|linebreaks }}</p>
 			<p><strong>Scaling:</strong> {{ workoutinstance.workout.scaling_or_description_text|linebreaks }}</p>
-			<p><strong>Movements:</strong> {% for movement in workoutinstance.workout.movements.all %} {{movement}}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 			<p><strong>Duration:</strong> {{ duration_minutes }} minutes {% if duration_seconds > 0 %} {{ duration_seconds }} seconds {% endif %}</p>
-			<p><strong>Number of Times Completed:</strong> {{ workoutinstance.number_of_times_completed }}</p>
+			<p><strong>Number of Times You've Completed:</strong> {{ workoutinstance.number_of_times_completed }}</p>
 			
 			<form action="{% url 'result_create' user.username workoutinstance.id %}">
 				<input type="submit" value="Add Result" />
