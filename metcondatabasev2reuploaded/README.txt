@@ -1,7 +1,8 @@
 Run remove_old_scheduled_dates.py everyday
-
+        - this is currently run on every instance when that instance is saved.
+        
 Edited files on 5/22/2019:
-(haven't uploaded at home)
+(uploaded at home)
 created remove_old_scheduled_dates.py in rootdir
 views.py
 models.py doesn't require anything
