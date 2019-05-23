@@ -87,6 +87,9 @@ Notes:
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
         
 Functionality to add:
+- might need to create new field in workout instance called "youngest" as datefield.
+        - set it default to blank/null and call function below whenever an instance is saved
+        - can then order by this date.
 - maybe in get earliest scheduled date use:
         youngest = min(i.date_completed for i in self.dates_to_be_completed.all() if
                                                                 i.date_completed > timezone.localtime(timezone.now()).date()
