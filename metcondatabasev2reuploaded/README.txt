@@ -1,72 +1,12 @@
 Run remove_old_scheduled_dates.py everyday
         - this is currently run on every instance when that instance is saved.
         
-Edited files on 5/22/2019:
+Edited files on 5/23/2019:
 (uploaded at home)
-created remove_old_scheduled_dates.py in rootdir
-views.py
-models.py doesn't require anything
-forms.py
-user_page.html
-workoutinstance_detail.html
-workout_detail.html
-schedule_instance.html
+models.py requires deleting instances and results and running make migrations
 
-Functionality completed on 5/22/2019:
-- fixed date display. need to pass as filter not attribute
-        - somedate|date:"format" not somedate.date
-- changed workoutinstancecompleteddate to have default of timezone.localtime
-- changed save function of result to add wicd to instance as timezone.localtime.date
-        - if doing timezone.date instead it will save the date from UTC date which will be wrong (ahead of my localtime)
-- change date_workout_completed on create result form to just DateField
-        - result form now has an initial date of today and then if a different date is chosen the "time" of that date is set to 0:00
-                - if the value is left as today then the timezone.now() datetime is used.
-- added dates_to_be_completed field to instance model
-- addded view and templates and form for scheduling workout
-- change user_page.html to show future workouts
-        - requires passing future workouts to the view
-- cannot use result model to schedule workouts for the future.
-        - might have to create new manytomany field on instances that is date_to_be_completed
-                - many to many field allows workout to be scheduled multiple times in the future
-                - can schedule same workout over and over again for the next weeks/months/whatever
-        - this would allow any workout that has a date_to_be_completed to be put on the "future workouts" tab
-                - for i in instance.date_to_be_completed.all(): if i > timezone.now(), put on future tab then break.
-                        - may be a faster way to write this but this would work.
-                - maybe instead of the for loop do:
-                        - future workouts = wi.objects.filter(dates_to_be_completed__date_completed__gte=timezone.now()).distinct()
-                                - might need to add an annotate before the filter to be able to order properly after
-                                - timezone.now() must be created already [now = timezone.now()] then pass now in to filter
-                        - do this in views then pass future_workouts to context
-        - "past workouts" tab will order by recently completed dates.
-                - will only update if people put results in but thats okay.
-                        - ?how are they ordered if past results date_workout_completed are all the same time? (time= 0:00)
-        - add a add_date_to_be_completed() function to model similar to add_date_completed()
-        - ?add a delete_date_to_be_completed() function that removes dates to be completed from the instance if in the past?
-                - can call every time instance is saved currently but in future would happen at midnight or weekly
-- add a tabbed view on user page
-        - one for future workouts that are planned
-        - one for recent past workouts (within 2 weeks using dates_workout_completed)
-                - recent_workouts = wi.objects.filter(dates_workout_completed__date_completed__lt=timezone.now(),
-                                                      dates_workout_completed__date_completed__gtetimezone.now() - timedelta(days=14))
-                                                                                                                        .distinct()
-                        - timezone.now() must be created already [now = timezone.now()] then pass now in to filter
-                                - timezone.timedelta as well
-                - pass to views context as recently_completed_workouts
-        - one for long past workouts (2+ weeks back using dates_workout_completed)
-                - same as above as long_past_workouts
-        - ordering will likely require annotates (see current user profile view)
-        - order future workouts by closeness to today (opposite of how user profile is currently ordered [
-                - .annotate(min_date=Min('dates_to_be_completed__date_completed').filter().order_by('min_date')
-                        - may need (-) on order_by('min_date')
-        - order past workouts by most recent (currently how user profile is ordered)
-- get rid of classification and movements on workout and instance detail pages.
-- get rid of dates on workout and instance detail pages
-- add date of last completed to instance detail page next to workout title
-        - "Workout 278 - *greyed out*Last Completed: Date*greyed out*
-- fix get_earliest_to_completed date in instance model.
-        - forgot to add .date() to the end so it was returning the model not the actual date
-- add a line on the schedule workout page that says "by the way, you have this workout scheduled for:... dates"
-- changed forms initial date on resultform and scheduled date to be timezone dependent (was UTC timezone.now)
+Functionality completed on 5/23/2019:
+- added youngest_scheduled_date and oldest_completed_date fields to instance model
 
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
@@ -194,6 +134,8 @@ Styling:
         - set default to hidden
 - ?remove number of times completed counter from instance_detail page?
 - style future/recent/past workouts as tabs on user page
+        - default to future workouts if they have any, then recent, then past, then All Workouts if
+                they have none scheduled and none completed
 - create a calendar dropdown for scheduling workouts
         - when you try and schedule a workout again you should have the dates highlighted that it is already scheduled
         - and have a line detailing that highlighted dates have already been scheduled
