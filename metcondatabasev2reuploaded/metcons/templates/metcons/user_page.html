@@ -10,10 +10,8 @@
 				{% if future_instance.workout %}
 					<li>
 						<p><a href="{{ future_instance.get_absolute_url }}">{{ future_instance.workout.display_name }}</a>
-						<br />Scheduled for: {{ future_instance.get_earliest_scheduled_date|date:"l" }}
-						<br />{{ future_instance.workout.workout_text|linebreaks }}
-						Classification: {{ future_instance.workout.classification }}
-						<br />Movements: {% for movement in future_instance.workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+						<br /><strong>Scheduled for: {{ future_instance.get_earliest_scheduled_date|date:"l, F j, Y" }}</strong>
+						<br />{{ future_instance.workout.workout_text|linebreaks }}</p>
 					</li>
 				{% endif %}
 			{% endfor %}
@@ -27,10 +25,8 @@
 				{% if recent_instance.workout %}
 					<li>
 						<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>
-						<br />Scheduled for: {{ recent_instance.get_earliest_scheduled_date|date:"l" }}
-						<br />{{ recent_instance.workout.workout_text|linebreaks }}
-						Classification: {{ recent_instance.workout.classification }}
-						<br />Movements: {% for movement in recent_instance.workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+						<br /><strong>Last Completed On: {{ recent_instance.get_latest_date_completed|date:"l, F j, Y" }}</strong>
+						<br />{{ recent_instance.workout.workout_text|linebreaks }}</p>
 					</li>
 				{% endif %}
 			{% endfor %}
@@ -44,25 +40,21 @@
 				{% if past_instance.workout %}
 					<li>
 						<p><a href="{{ past_instance.get_absolute_url }}">{{ past_instance.workout.display_name }}</a>
-						<br />Scheduled for: {{ past_instance.get_earliest_scheduled_date|date:"l" }}
-						<br />{{ past_instance.workout.workout_text|linebreaks }}
-						Classification: {{ past_instance.workout.classification }}
-						<br />Movements: {% for movement in past_instance.workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+						<br /><strong>Last Completed On: {{ past_instance.get_latest_date_completed|date:"l, F j, Y" }}</strong>
+						<br />{{ past_instance.workout.workout_text|linebreaks }}</p>
 					</li>
 				{% endif %}
 			{% endfor %}
 		</ul>
 	{% endif %}
 	{% if users_workouts %}
-	<h2>Users Workouts</h2>
+	<h2>All Users Workouts</h2>
 	<ul>
 		{% for instance in users_workouts %}
 			{% if instance.workout %}
 				<li>
 					<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>
-					<br />{{ instance.workout.workout_text|linebreaks }}
-					Classification: {{ instance.workout.classification }}
-					<br />Movements: {% for movement in instance.workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+					<br />{{ instance.workout.workout_text|linebreaks }}</p>
 				</li>
 			{% endif %}
 		{% endfor %}
