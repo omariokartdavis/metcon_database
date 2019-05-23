@@ -28,6 +28,8 @@ Functionality completed on 5/23/2019:
                 - this shouldn't ever happen due to the update_youngest_scheduled_date function but just in case
         - and exclude if youngest_scheduled_date is None/Null  
                 - this is what should happen if the first statement was true in the update_youngest_date func
+- added default value for duration in result create form
+        - based on instance.duration. if exists it is equal to that. if not it is 0
                 
 Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
