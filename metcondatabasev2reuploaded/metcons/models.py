@@ -54,7 +54,7 @@ class Workout(models.Model):
         date_added_to_database = models.DateTimeField(auto_now_add = True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         workout_text = models.TextField(max_length=2000)
-        scaling_or_description_text = models.TextField(max_length=4000, blank=True)
+        scaling_or_description_text = models.TextField(max_length=4000, blank=True, null=True)
         what_website_workout_came_from = models.CharField(max_length=200, blank=True)
         estimated_duration_in_seconds = models.IntegerField(default=0, verbose_name='Duration (sec)', null=True, blank=True)
         created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
@@ -76,7 +76,7 @@ class Workout(models.Model):
         
         def update_classification(self):                 
             movement_classifications = []
-            for movement in self.movements.all():
+            for movement in self.movements.all().iterator():
                 movement_classifications.append(movement.classification.name)
             if 'Total Body' in movement_classifications:
                 self.classification = Classification.objects.get(name='Total Body') 
@@ -142,7 +142,7 @@ class Workout(models.Model):
                 name = "Workout " + str(self.id)
                 return name
         
-class WorkoutInstanceCompletedDate(models.Model):
+class Date(models.Model):
         """Dates of when workout instances are completed"""
         date_completed = models.DateField(default=get_default_localtime_date)
 
@@ -156,63 +156,100 @@ class WorkoutInstanceCompletedDate(models.Model):
 class WorkoutInstance(models.Model):
         """Model representing a specific Users Workout Instance"""
         id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text = 'Unique ID for this particular workout')
-        dates_workout_completed = models.ManyToManyField(WorkoutInstanceCompletedDate, related_name="dates_workout_completed", blank=True)
-        dates_to_be_completed = models.ManyToManyField(WorkoutInstanceCompletedDate, related_name="dates_to_be_completed", blank=True)
+        dates_workout_completed = models.ManyToManyField(Date, related_name="dates_workout_completed", blank=True)
+        dates_to_be_completed = models.ManyToManyField(Date, related_name="dates_to_be_completed", blank=True)
         date_added_by_user = models.DateTimeField(auto_now_add=True)
         workout = models.ForeignKey(Workout, on_delete=models.SET_NULL, null=True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         duration_in_seconds = models.IntegerField(default=0, verbose_name = 'Duration (sec)', null=True, blank=True)
         current_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name = 'User', null=True, blank=True)
-        
+        youngest_scheduled_date = models.ForeignKey(Date, related_name="youngest_scheduled_date", on_delete=models.SET_NULL, null=True, blank=True)
+        oldest_completed_date = models.ForeignKey(Date, related_name="oldest_completed_date", on_delete=models.SET_NULL, null=True, blank=True)
+
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
                 
         def add_date_completed(self, date):
                 #date needs to be in datetime.date() format.
-                new_date = WorkoutInstanceCompletedDate.objects.filter(date_completed=date)
-                if new_date:
-                        new_date = WorkoutInstanceCompletedDate.objects.get(date_completed=date)
+                new_date = Date.objects.filter(date_completed=date)
+                if new_date.exists():
+                        new_date = Date.objects.get(date_completed=date)
                 else:
-                        new_date = WorkoutInstanceCompletedDate(date_completed = date)
+                        new_date = Date(date_completed = date)
                         new_date.save()
                 self.dates_workout_completed.add(new_date)
+                self.update_oldest_completed_date()
+                self.update_youngest_scheduled_date()
                 self.save()
 
         def add_date_to_be_completed(self, date):
                 #date needs to be in datetime.date() format.
-                new_date = WorkoutInstanceCompletedDate.objects.filter(date_completed=date)
-                if new_date:
-                        new_date = WorkoutInstanceCompletedDate.objects.get(date_completed=date)
+                new_date = Date.objects.filter(date_completed=date)
+                if new_date.exists():
+                        new_date = Date.objects.get(date_completed=date)
                 else:
-                        new_date = WorkoutInstanceCompletedDate(date_completed = date)
+                        new_date = Date(date_completed = date)
                         new_date.save()
                 self.dates_to_be_completed.add(new_date)
+                self.update_youngest_scheduled_date()
                 self.save()
 
-        def remove_dates_to_be_completed_in_past(self):
-                #need to run this after every day.
-                for i in self.dates_to_be_completed.all():
-                        if i.date_completed < timezone.localtime(timezone.now()).date():
-                                self.dates_to_be_completed.remove(i)
-                #self.save()
-                #cant include save here if I'm calling the function on itself as it makes a loop
-                #have to call super.save in save function
+        def update_youngest_scheduled_date(self):
+                if self.dates_to_be_completed.all().exists():
+                        youngest_date_excluding_today = Date.objects.filter(dates_to_be_completed=self,
+                                                                                        date_completed__gte=timezone.localtime(timezone.now()).date()
+                                                                                        ).exclude(dates_workout_completed=self,
+                                                                                 date_completed=timezone.localtime(timezone.now()).date())
+                        if youngest_date_excluding_today:
+                                self.youngest_scheduled_date = youngest_date_excluding_today.earliest('date_completed')
+                        else:
+                                self.youngest_scheduled_date=None
+                        
+                        
+        def update_oldest_completed_date(self):
+                if self.dates_workout_completed.all().exists():
+                        oldest_completed_date = Date.objects.filter(dates_workout_completed=self,
+                                                                                                 date_completed__lte=timezone.localtime(timezone.now()).date()
+                                                                                                 )
+                        if oldest_completed_date:
+                                self.oldest_completed_date = oldest_completed_date.latest('date_completed')
 
-        def get_latest_date_completed(self):
-                return self.dates_workout_completed.latest('date_completed').date_completed
-        
-        def get_earliest_scheduled_date(self):
-                return self.dates_to_be_completed.earliest('date_completed').date_completed
+        def remove_all_dates_scheduled(self):
+                #for testing purposes
+                for i in self.dates_to_be_completed.all().iterator():
+                        self.dates_to_be_completed.remove(i)
+                self.update_youngest_scheduled_date()
+                self.save()
+                
+        def get_scheduled_dates_in_future(self):
+                if self.dates_to_be_completed.all().exists():
+                        return Date.objects.filter(dates_to_be_completed=self,
+                                                                           date_completed__gte=timezone.localtime(timezone.now()).date())
+
+        def get_dates_completed_in_past(self):
+                if self.dates_workout_completed.all().exists():
+                        return Date.objects.filter(dates_workout_completed=self,
+                                                                           date_completed__lte=timezone.localtime(timezone.now()).date())
+                
+        def remove_dates_to_be_completed_in_past(self):
+                #don't need to run this at all anymore.
+                if self.dates_to_be_completed.all().exists():
+                        for i in self.dates_to_be_completed.all().iterator():
+                                if i.date_completed < timezone.localtime(timezone.now()).date():
+                                        self.dates_to_be_completed.remove(i)
+                self.update_youngest_scheduled_date()
+                self.save()
                 
         def update_duration(self):
-                result = Result.objects.filter(workoutinstance__id = self.id).latest('date_created')
+                result = Result.objects.filter(workoutinstance__id = self.id).latest('date_workout_completed', 'date_created')
                 self.duration_in_seconds = result.duration_in_seconds
                 self.save()
+                self.workout.update_estimated_duration()
                 
-        def increment_times_completed(self):
-                self.number_of_times_completed = F('number_of_times_completed') + 1
+        def update_times_completed(self):
+                self.number_of_times_completed = Result.objects.filter(workoutinstance=self).count()
                 self.save()
-                self.refresh_from_db()
+                self.workout.update_times_completed()
                 
         def display_workout(self):
                 if self.workout:
@@ -235,13 +272,6 @@ class WorkoutInstance(models.Model):
                         return name
                 else:
                         return 'Workout Deleted'
-
-        def save(self, *args, **kwargs):
-                super().save(*args, **kwargs)
-                self.workout.update_times_completed()
-                self.workout.update_estimated_duration()
-                self.remove_dates_to_be_completed_in_past()
-                super().save(*args, **kwargs)
 
         def get_absolute_url(self):
                 """Returns the url to access a detail record for this workout."""
@@ -280,12 +310,6 @@ class Result(models.Model):
                 else:
                         return 'Workout Deleted'
         display_workout.short_description = 'Workout'
-
-        def save(self, *args, **kwargs):
-                super().save(*args, **kwargs)
-                self.update_instance_duration()
-                self.workoutinstance.increment_times_completed()
-                self.workoutinstance.add_date_completed(timezone.localtime(self.date_workout_completed).date())
         
 class ResultFile(models.Model):
         #can be images or videos
