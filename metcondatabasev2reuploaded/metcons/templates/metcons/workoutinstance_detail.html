@@ -6,7 +6,7 @@
 			<form action="{% url 'schedule_instance' user.username workoutinstance.id %}">
 				<input type="submit" value="Schedule Workout" />
 			</form>
-			<h1>{{ workoutinstance.workout.display_name }}</h1><p> - Last Completed: {{ workoutinstance.get_latest_date_completed|date:"l, F j, Y" }}
+			<h1>{{ workoutinstance.workout.display_name }}</h1><p> - Last Completed: {% if workoutinstance.oldest_completed_date %}{{ workoutinstance.oldest_completed_date.date_completed|date:"l, F j, Y" }}{% else %} Never {% endif %}</p>
 			<p><strong>Description:</strong> {{ workoutinstance.workout.workout_text|linebreaks }}</p>
 			<p><strong>Scaling:</strong> {{ workoutinstance.workout.scaling_or_description_text|linebreaks }}</p>
 			<p><strong>Duration:</strong> {{ duration_minutes }} minutes {% if duration_seconds > 0 %} {{ duration_seconds }} seconds {% endif %}</p>
