@@ -30,7 +30,9 @@ Functionality completed on 5/23/2019:
                 - this is what should happen if the first statement was true in the update_youngest_date func
 - added default value for duration in result create form
         - based on instance.duration. if exists it is equal to that. if not it is 0
-                
+- changed all users workouts list on user page to "Other workouts" and have it only list workouts that haven't been completed
+        but also haven't been scheduled
+        
 Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
         - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
@@ -61,11 +63,14 @@ Functionality to add:
 - need to run update_instance_dates every new day
 - add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
         - all crossfit mainsite workouts are both
-- change all users workouts list on user page to "Other workouts" and have it only list workouts that haven't been completed
-        but also haven't been scheduled
+        - ?could possibly do it just like movement tags instead of create a field?
+                - could add Men, Women, Man, Woman to movement tags and have their classificaion be Gender or Male/Female
+                        - probably better to do something similar but create new field in workout model anyway. simpler
 - when creating update views and delete views make sure the view calls the proper update functions on each model because
         I took them out of the save functions.
 - modify result delete method so it calls update_times completed on instance
+        - do this in the delete view rather than the delete method.
+                upon hitting delete, delete the result, then run updates like remove date completed etc.
 - use jquery UI datepicker for date choices in schedule and result forms
         - look at top answer from this question: https://stackoverflow.com/questions/12884638/select-future-dates-only-django-form
         - can give available dates to schedule form and create result form
