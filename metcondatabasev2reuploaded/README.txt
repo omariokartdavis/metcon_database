@@ -90,6 +90,7 @@ Functionality to add:
 - maybe in get earliest scheduled date use:
         youngest = min(i.date_completed for i in self.dates_to_be_completed.all() if
                                                                 i.date_completed > timezone.localtime(timezone.now()).date()
+        - figure out a way to order by this function ^
 - run remove_dates_to_be_completed_in_past() on instances everyday.
         - the reason this needs to be done is if someone has a workout scheduled in the future and in the past it will
                 show up first on the scheduled workouts list and have a scheduled for date in the past.
