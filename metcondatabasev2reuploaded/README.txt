@@ -1,17 +1,7 @@
 When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movements_list. mainsite_workouts.
 Edited files on 5/23/2019:
-(haven't uploaded at work)
-update_all_workout_movement...py
-mainsite_workouts.py
-movements_list.py
-created update_instance_dates.py
+(haven't uploaded at home)
 views.py
-models.py requires deleting database and all migrations
-admin.py
-workoutinstance_detail.html
-user_page.html
-schedule_instance.html
-create_result.html
 
 Functionality completed on 5/23/2019:
 - added youngest_scheduled_date and oldest_completed_date fields to instance model
