@@ -171,3 +171,6 @@ Styling:
         - set default to hidden
 - ?remove number of times completed counter from instance_detail page?
 - style future/recent/past workouts as tabs on user page
+- create a calendar dropdown for scheduling workouts
+        - when you try and schedule a workout again you should have the dates highlighted that it is already scheduled
+        - and have a line detailing that highlighted dates have already been scheduled
