@@ -12,10 +12,8 @@ Functionality completed on 5/23/2019:
 - added function to get all dates in future
         - for scheduled date form page to list dates in future scheduled.
 - should no longer have to remove dates from dates_to_be_completed
-        - might still want to so the list comprehensions stay small
+        - might still want anyway
         - delete every one that is > 1 week old?
-- add function that returns all instance scheduled dates that are in the future
-        - use this for schedule workout form "By the way you have this workout scheduled for..."
 - changed order of result lists on instance detail page to be ordered by "-date_workout_completed" instead of "-date_created"
 - added workout description to results add page
 - change mainsite_workouts datetime to timezone.make_aware(datetime)
@@ -25,6 +23,12 @@ Functionality completed on 5/23/2019:
 - used .iterator() and .exists() on applicable functions
 - changed update_youngest_scheduled_date to not fail if there is no option.
         instead sets to null
+- changed user_profile view to exclude workouts from future workouts if:
+        - the youngest_scheduled_date = date_workout_completed=today
+                - this shouldn't ever happen due to the update_youngest_scheduled_date function but just in case
+        - and exclude if youngest_scheduled_date is None/Null  
+                - this is what should happen if the first statement was true in the update_youngest_date func
+                
 Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
         - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
