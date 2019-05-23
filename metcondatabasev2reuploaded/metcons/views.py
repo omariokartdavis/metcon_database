@@ -29,25 +29,20 @@ def index(request):
 def profile(request, username):
     #if there isn't a completed date it is last then filtered by date_added_by_user
     users_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user).order_by('-max_date', '-date_added_by_user')
-    #the future_workouts filter filters by workouts with a scheduled date either today or in the future.
-    #   if the workout has a scheduled date of today and a completed date of today it is assumed complete and will move it to the "recent workouts" filter.
+
     now = timezone.localtime(timezone.now()).date()
-    future_workouts = WorkoutInstance.objects.annotate(min_date=Min('dates_to_be_completed__date_completed')).filter(current_user=request.user,
-                                                                                                                     dates_to_be_completed__date_completed__gte=now).exclude(
-                                                                                                                                dates_workout_completed__date_completed=now,
-                                                                                                                                dates_to_be_completed__date_completed=now).distinct().order_by('min_date')
+    future_workouts = WorkoutInstance.objects.filter(current_user=request.user,
+                                                     dates_to_be_completed__date_completed__gte=now).distinct().order_by('-youngest_scheduled_date')
+
     recent_time = now - timezone.timedelta(days=14)
-    recent_past_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed'),
-                                                            min_date=Min('dates_to_be_completed__date_completed')).filter(current_user=request.user,
-                                                                                                                            dates_workout_completed__date_completed__lt=now,
-                                                                                                                            dates_workout_completed__date_completed__gte=recent_time
-                                                                                                                          ).distinct().order_by('-max_date', 'min_date')
+    recent_past_workouts = WorkoutInstance.objects.filter(current_user=request.user,
+                                                          dates_workout_completed__date_completed__lte=now,
+                                                          dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('oldest_completed_date', '-youngest_scheduled_date')
     
-    long_past_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user,
-                                                                                                                          dates_workout_completed__date_completed__lt=recent_time).exclude(
-                                                                                                                              dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('-max_date')
-    #old order function:
-    #WorkoutInstance.objects.filter(current_user=request.user).order_by('-date_added_by_user')
+    long_past_workouts = WorkoutInstance.objects.filter(current_user=request.user,
+                                                        dates_workout_completed__date_completed__lt=recent_time).exclude(
+                                                            dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('oldest_completed_date')
+
     context = {
         'users_workouts': users_workouts,
         'future_workouts': future_workouts,
@@ -163,7 +158,7 @@ class WorkoutInstanceDetailView(LoginRequiredMixin, generic.DetailView):
             duration_seconds = 0
         context['duration_minutes'] = duration_minutes
         context['duration_seconds'] = duration_seconds
-        result_list = Result.objects.filter(workoutinstance = instance).order_by('-date_created')
+        result_list = Result.objects.filter(workoutinstance = instance).order_by('-date_workout_completed', '-date_created')
         context['result_list'] = result_list
             
         return context
@@ -219,6 +214,10 @@ def create_result(request, username, pk):
                                 duration_in_seconds=duration_in_seconds,
                                 date_workout_completed=aware_datetime)
                 result.save()
+                instance.add_date_completed(timezone.localtime(result.date_workout_completed).date())
+                result.update_instance_duration()
+                instance.update_times_completed()
+                
                 if request.FILES:
                     resultfile = ResultFile(result=result,
                                         caption = form.cleaned_data['media_file_caption'],
