@@ -87,6 +87,9 @@ Notes:
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
         
 Functionality to add:
+- maybe in get earliest scheduled date use:
+        youngest = min(i.date_completed for i in self.dates_to_be_completed.all() if
+                                                                i.date_completed > timezone.localtime(timezone.now()).date()
 - run remove_dates_to_be_completed_in_past() on instances everyday.
         - the reason this needs to be done is if someone has a workout scheduled in the future and in the past it will
                 show up first on the scheduled workouts list and have a scheduled for date in the past.
