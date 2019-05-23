@@ -57,6 +57,7 @@ Notes:
         - not necessary anyway
         
 Functionality to add:
+- look into using .iterator() and .exists() in updatemovemens and classifications
 - add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
         - all crossfit mainsite workouts are both
 - change all users workouts list on user page to "Other workouts" and have it only list workouts that haven't been completed
@@ -64,7 +65,9 @@ Functionality to add:
 - when creating update views and delete views make sure the view calls the proper update functions on each model because
         I took them out of the save functions.
 - modify result delete method so it calls update_times completed on instance
-- give available dates to schedule form and create result form
+- use jquery UI datepicker for date choices in schedule and result forms
+        - look at top answer from this question: https://stackoverflow.com/questions/12884638/select-future-dates-only-django-form
+        - can give available dates to schedule form and create result form
         - create result should only have past
         - schedule should only have future
 - create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
