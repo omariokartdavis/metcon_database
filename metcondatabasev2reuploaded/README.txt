@@ -52,8 +52,13 @@ Functionality completed on 5/22/2019:
                 - .annotate(min_date=Min('dates_to_be_completed__date_completed').filter().order_by('min_date')
                         - may need (-) on order_by('min_date')
         - order past workouts by most recent (currently how user profile is ordered)
-- if date in the future is chosen for workout creation, treat it as not completed
-
+- get rid of classification and movements on workout and instance detail pages.
+- get rid of dates on workout and instance detail pages
+- add date of last completed to instance detail page next to workout title
+        - "Workout 278 - *greyed out*Last Completed: Date*greyed out*
+- fix get_earliest_to_completed date in instance model.
+        - forgot to add .date() to the end so it was returning the model not the actual date
+        
 Notes:
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
         "an established connection was aborted by the software in your host machine"
@@ -73,13 +78,9 @@ Notes:
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
         
 Functionality to add:
+- run remove_dates_to_be_completed_in_past() on instances everyday.
+- create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
 - add a line on the schedule workout page that says "by the way, you have this workout scheduled for:... dates"
-- get rid of classification and movements on workout and instance detail pages.
-- get rid of dates on workout and instance detail pages
-- add date of last completed to instance detail page next to workout title
-        - "Workout 278 - *greyed out*Last Completed: Date*greyed out*
-- fix get_earliest_to_completed date in instance model.
-        - not currently working, test in shell
 - add create workout link to workout list page
         - under user authentication in template
 - add ability to schedule workout during workout creation
@@ -174,3 +175,6 @@ Styling:
 - create a calendar dropdown for scheduling workouts
         - when you try and schedule a workout again you should have the dates highlighted that it is already scheduled
         - and have a line detailing that highlighted dates have already been scheduled
+- move "last completed" on instancedetail page to next to the title like so:
+        Workout 287 - Last Completed: Date
+        - Grey the text for last completed out and make it smaller than workout number.
