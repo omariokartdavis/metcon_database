@@ -5,6 +5,7 @@
 		{% if user.username == instance.current_user.username %}
 			<h1> Add Result</h1>
 			
+			<p><strong>Workout Description:</strong> {{ instance.workout.workout_text|linebreaks }}</p>
 			<form action="" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
 				<table>
