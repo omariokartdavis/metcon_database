@@ -57,6 +57,7 @@ Notes:
         - not necessary anyway
         
 Functionality to add:
+- need to run update youngest/oldest dates on instances every new day
 - look into using .iterator() and .exists() in updatemovemens and classifications
 - add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
         - all crossfit mainsite workouts are both
