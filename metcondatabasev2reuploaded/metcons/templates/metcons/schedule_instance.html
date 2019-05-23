@@ -5,7 +5,7 @@
 		{% if user.username == instance.current_user.username %}
 			<h1>Schedule Workout</h1>
 			<p>By the way, you have this workout scheduled for: </p>
-			<p>{% for i in instance.dates_to_be_completed.all %} {{ i.date_completed|date:"l, F j, Y" }}{% if not forloop.last %}, {% endif %}{% endfor %}
+			<p>{% for i in instance.get_scheduled_dates_in_future %} {{ i.date_completed|date:"l, F j, Y" }}{% if not forloop.last %}, {% endif %}{% endfor %}
 			
 			<form action="" method="post">
 				{% csrf_token %}
