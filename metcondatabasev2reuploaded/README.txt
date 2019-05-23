@@ -1,4 +1,4 @@
-When deleting database: delete migrations too, run makemigrations and migrate. createsuperuser. movementslist. mainsite workouts.
+When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movementslist. mainsite workouts.
 Edited files on 5/23/2019:
 (haven't uploaded at work)
 views.py
