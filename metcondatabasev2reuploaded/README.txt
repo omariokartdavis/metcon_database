@@ -57,6 +57,8 @@ Notes:
         - not necessary anyway
         
 Functionality to add:
+- add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
+        - all crossfit mainsite workouts are both
 - change all users workouts list on user page to "Other workouts" and have it only list workouts that haven't been completed
         but also haven't been scheduled
 - when creating update views and delete views make sure the view calls the proper update functions on each model because
