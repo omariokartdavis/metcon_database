@@ -73,6 +73,11 @@ Notes:
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
         
 Functionality to add:
+- add a line on the schedule workout page that says "by the way, you have this workout scheduled for:... dates"
+- get rid of classification and movements on workout and instance detail pages.
+- get rid of dates on workout and instance detail pages
+- add date of last completed to instance detail page next to workout title
+        - "Workout 278 - *greyed out*Last Completed: Date*greyed out*
 - fix get_earliest_to_completed date in instance model.
         - not currently working, test in shell
 - add create workout link to workout list page
