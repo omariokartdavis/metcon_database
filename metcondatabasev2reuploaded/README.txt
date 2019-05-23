@@ -57,6 +57,8 @@ Notes:
         - not necessary anyway
         
 Functionality to add:
+- change all users workouts list on user page to "Other workouts" and have it only list workouts that haven't been completed
+        but also haven't been scheduled
 - when creating update views and delete views make sure the view calls the proper update functions on each model because
         I took them out of the save functions.
 - modify result delete method so it calls update_times completed on instance
