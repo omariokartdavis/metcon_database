@@ -61,7 +61,8 @@ Edited files on 5/23/2019:
   - schedule should only have future
 - create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
   - if WorkoutInstance.objects.filter(current_user=user,
-        dates_to_be_completed__date_completed=yesterday).exclude(dates_workout_completed__date_completed=yesterday).distinct()
+        dates_to_be_completed__date_completed=yesterday).exclude(
+        dates_workout_completed__date_completed=yesterday).distinct()
   - have add result button that has default date of previous day
 - add create workout link to workout list page
   - under user authentication in template
