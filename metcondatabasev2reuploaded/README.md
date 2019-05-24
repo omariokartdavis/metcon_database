@@ -3,11 +3,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # Run update_instance_dates every day
 
 Edited files on 5/23/2019:
-
-(haven't uploaded at work)
-views.py
-models.py doesn't require anything
-workout_list.html
+- (haven't uploaded at work)
+- views.py
+- models.py doesn't require anything
+- workout_list.html
 
 ## Functionality completed on 5/24/2019:
 - added checkbox filter for including workouts you have completed in workout_list display
