@@ -32,6 +32,8 @@ Functionality completed on 5/23/2019:
         - based on instance.duration. if exists it is equal to that. if not it is 0
 - changed all users workouts list on user page to "Other workouts" and have it only list workouts that haven't been completed
         but also haven't been scheduled
+- created remove date workout completed and date to be completed functions for future on instance
+        - can call these when deleting a result or getting rid of a scheduled date.
         
 Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
