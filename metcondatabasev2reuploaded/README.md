@@ -8,11 +8,11 @@ views.py
 models.py doesn't require anything
 workout_list.html
 
-Functionality completed on 5/23/2019:
+## Functionality completed on 5/23/2019:
 - added checkbox filter for including workouts you have completed in workout_list display
         - default now only shows workouts you haven't completed
         
-Notes:
+#### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
         - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
         - might be a good idea as database gets bigger
@@ -39,7 +39,7 @@ Notes:
                 but they will be ordered based on their youngest/oldest dates only. 
         - not necessary anyway
         
-Functionality to add:
+## Functionality to add:
 - need to run update_instance_dates every new day
 - add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
         - all crossfit mainsite workouts are both
@@ -78,7 +78,7 @@ Functionality to add:
                 - else: nah
 - add click to edit button on workout instance detail page.
         - only edit fields specific to that instance aka duration completed, times completed, dates completed etc.
-- Pagination:
+### Pagination:
         - add pagination to workout list, profile page, and instace detail page for results.
                 - workout list pagination got removed becuase I changed it to a function view to allow POST forms
         - get rid of pagination on workout list if not logged in but keep it if logged in.
@@ -105,7 +105,7 @@ Functionality to add:
         -add name to workout model or workoutinstance model and allow for blank/null. If name exists list by name otherwise list
                 by "workout " + str(id)
         -would also change def __str__ to if statement on if name exists otherwise same as above
-For multiple sports:
+### For multiple sports:
 - maybe just add a foreignkey field in current Workout model of "sport" that has different sport choices.
         -  should probably still create a different model for individual strength workout
                 - holds one movement with as many sets/reps/weights as need
@@ -137,7 +137,7 @@ For multiple sports:
         - whatever sport they choose will be their default createworkout model and default workout list to search through
         - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
-Styling:
+## Styling:
 - Create stylebook for all screens
 - Create table for viewing workouts
         similar to the styling of this: https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
