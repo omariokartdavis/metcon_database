@@ -2,38 +2,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 Edited files on 5/23/2019:
 (haven't uploaded at work)
 views.py
+models.py doesn't require anything
+workout_list.html
 
 Functionality completed on 5/23/2019:
-- added youngest_scheduled_date and oldest_completed_date fields to instance model
-- order by youngest_scheduled_date and oldest_completed_date on user page
-        - also displays those dates for scheduled for: completed on:
-- added function to update youngest/oldest dates and call it on every save\
-        - changed these functions to use database filters to be much faster
-- added function to get all dates in future
-        - for scheduled date form page to list dates in future scheduled.
-- should no longer have to remove dates from dates_to_be_completed
-        - might still want anyway
-        - delete every one that is > 1 week old?
-- changed order of result lists on instance detail page to be ordered by "-date_workout_completed" instead of "-date_created"
-- added workout description to results add page
-- change mainsite_workouts datetime to timezone.make_aware(datetime)
-        - don't think I need localtime on this
-- removed update functions from save function in instance and results
-        - all update functions now live in the respective views.
-- used .iterator() and .exists() on applicable functions
-- changed update_youngest_scheduled_date to not fail if there is no option.
-        instead sets to null
-- changed user_profile view to exclude workouts from future workouts if:
-        - the youngest_scheduled_date = date_workout_completed=today
-                - this shouldn't ever happen due to the update_youngest_scheduled_date function but just in case
-        - and exclude if youngest_scheduled_date is None/Null  
-                - this is what should happen if the first statement was true in the update_youngest_date func
-- added default value for duration in result create form
-        - based on instance.duration. if exists it is equal to that. if not it is 0
-- changed all users workouts list on user page to "Other workouts" and have it only list workouts that haven't been completed
-        but also haven't been scheduled
-- created remove date workout completed and date to be completed functions for future on instance
-        - can call these when deleting a result or getting rid of a scheduled date.
+- added checkbox filter for including workouts you have completed in workout_list display
+        - default now only shows workouts you haven't completed
         
 Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
