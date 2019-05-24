@@ -48,6 +48,7 @@ Notes:
 - currently slow to load metcons/workouts because it is not paginated and is loading all workouts in the database
 - workout 96 doesn't have a proper description. Scaling info is the description and scaling is none
         - not sure why it got pulled from the website this way.
+        - same with Workout 266
 - to allow urls to extend with info, the get_absolute_url function must be in the model isntance and you must pass the arguments
         for each specification before it. otherwise you will get a reverse match not found on the template link.
         - see workout instance get_absolute_url for example
