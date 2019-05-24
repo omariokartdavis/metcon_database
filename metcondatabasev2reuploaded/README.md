@@ -1,6 +1,6 @@
 When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movements_list. mainsite_workouts.
 
-**Run update_instance_dates every day**
+# Run update_instance_dates every day
 
 Edited files on 5/23/2019:
 (haven't uploaded at work)
@@ -8,9 +8,11 @@ views.py
 models.py doesn't require anything
 workout_list.html
 
-## Functionality completed on 5/23/2019:
+## Functionality completed on 5/24/2019:
 - added checkbox filter for including workouts you have completed in workout_list display
         - default now only shows workouts you haven't completed
+- added get_scheduled_dates_in_past func on instances for testing purposes.
+        - show it on schedule form page.
         
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
