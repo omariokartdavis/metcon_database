@@ -212,9 +212,9 @@ class WorkoutInstance(models.Model):
         def update_youngest_scheduled_date(self):
                 if self.dates_to_be_completed.all().exists():
                         youngest_date_excluding_today = Date.objects.filter(dates_to_be_completed=self,
-                                                                                        date_completed__gte=timezone.localtime(timezone.now()).date()
-                                                                                        ).exclude(dates_workout_completed=self,
-                                                                                 date_completed=timezone.localtime(timezone.now()).date())
+                                                                            date_completed__gte=timezone.localtime(timezone.now()).date()
+                                                                            ).exclude(dates_workout_completed=self,
+                                                                                      date_completed=timezone.localtime(timezone.now()).date())
                         if youngest_date_excluding_today:
                                 self.youngest_scheduled_date = youngest_date_excluding_today.earliest('date_completed')
                         else:
@@ -224,8 +224,7 @@ class WorkoutInstance(models.Model):
         def update_oldest_completed_date(self):
                 if self.dates_workout_completed.all().exists():
                         oldest_completed_date = Date.objects.filter(dates_workout_completed=self,
-                                                                                                 date_completed__lte=timezone.localtime(timezone.now()).date()
-                                                                                                 )
+                                                                    date_completed__lte=timezone.localtime(timezone.now()).date())
                         if oldest_completed_date:
                                 self.oldest_completed_date = oldest_completed_date.latest('date_completed')
 
@@ -239,12 +238,17 @@ class WorkoutInstance(models.Model):
         def get_scheduled_dates_in_future(self):
                 if self.dates_to_be_completed.all().exists():
                         return Date.objects.filter(dates_to_be_completed=self,
-                                                                           date_completed__gte=timezone.localtime(timezone.now()).date())
+                                                   date_completed__gte=timezone.localtime(timezone.now()).date())
+
+        def get_scheduled_dates_in_past(self):
+                if self.dates_to_be_completed.all().exists():
+                        return Date.objects.filter(dates_to_be_completed=self,
+                                                   date_completed__lt=timezone.localtime(timezone.now()).date())
 
         def get_dates_completed_in_past(self):
                 if self.dates_workout_completed.all().exists():
                         return Date.objects.filter(dates_workout_completed=self,
-                                                                           date_completed__lte=timezone.localtime(timezone.now()).date())
+                                                   date_completed__lte=timezone.localtime(timezone.now()).date())
                 
         def remove_dates_to_be_completed_in_past(self):
                 #don't need to run this at all anymore.
