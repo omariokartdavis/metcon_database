@@ -17,8 +17,8 @@ Edited files on 5/23/2019:
         
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
-        - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
-        - might be a good idea as database gets bigger
+  - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
+  - might be a good idea as database gets bigger
 - work computer currently has issues displaying video. it will display fine but the command window will show errors that
         "an established connection was aborted by the software in your host machine"
         - happened on home computer but not first time page/video was viewed. (idk whats going on)
