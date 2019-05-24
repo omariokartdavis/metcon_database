@@ -50,7 +50,7 @@
 		</ul>
 	{% endif %}
 	{% if users_workouts %}
-	<h2>Workouts That Haven't Been Completed Or Scheduled</h2>
+	<h2>Workouts That Haven't Been Completed Or Are Currently Not Scheduled</h2>
 	<ul>
 		{% for instance in users_workouts %}
 			{% if instance not in future_workouts and instance not in recent_past_workouts and instance not in long_past_workouts %}
