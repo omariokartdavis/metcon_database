@@ -78,12 +78,6 @@ workout_list.html
                 - else: nah
 - add click to edit button on workout instance detail page.
         - only edit fields specific to that instance aka duration completed, times completed, dates completed etc.
-### Pagination:
-        - add pagination to workout list, profile page, and instace detail page for results.
-                - workout list pagination got removed becuase I changed it to a function view to allow POST forms
-        - get rid of pagination on workout list if not logged in but keep it if logged in.
-                - just adding block pagination endblock gets rid of pagination in both situations
-        - this will likely solve itself when endless scroll is added
 - add login to index page.
 - Add search for a specific users workouts
         - search for workouts mat fraser has done
@@ -105,6 +99,12 @@ workout_list.html
         -add name to workout model or workoutinstance model and allow for blank/null. If name exists list by name otherwise list
                 by "workout " + str(id)
         -would also change def __str__ to if statement on if name exists otherwise same as above
+### Pagination:
+- add pagination to workout list, profile page, and instace detail page for results.
+- workout list pagination got removed becuase I changed it to a function view to allow POST forms
+- get rid of pagination on workout list if not logged in but keep it if logged in.
+        - just adding block pagination endblock gets rid of pagination in both situations
+- this will likely solve itself when endless scroll is added
 ### For multiple sports:
 - maybe just add a foreignkey field in current Workout model of "sport" that has different sport choices.
         -  should probably still create a different model for individual strength workout
