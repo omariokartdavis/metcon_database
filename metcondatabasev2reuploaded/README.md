@@ -4,7 +4,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## Edited files on 5/24/2019:
 
-(haven't uploaded at work)
+(uploaded at work)
 - views.py
 - models.py doesn't require anything
 - workout_list.html
