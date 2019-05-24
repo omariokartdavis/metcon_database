@@ -5,7 +5,7 @@
 		{% if user.username == instance.current_user.username %}
 			<h1>Schedule Workout</h1>
 			<p>By the way, you have this workout scheduled for: </p>
-			<p>{% for i in instance.get_scheduled_dates_in_future %} {{ i.date_completed|date:"l, F j, Y" }}{% if not forloop.last %}, {% endif %}{% endfor %}
+			<p>{% for i in instance.get_scheduled_dates_in_future %}{{ i.date_completed|date:"l, F j, Y" }}{% if not forloop.last %}, {% endif %}{% endfor %}
 			
 			<form action="" method="post">
 				{% csrf_token %}
@@ -14,6 +14,8 @@
 				</table>
 				<input type="submit" value="Submit" name="schedule instance">
 			</form>
+			<br /><br /><br /><br /><br /><br /><p>For testing purposes only. This workout has been scheduled for the following past dates: </p>
+			<p>{% for i in instance.get_scheduled_dates_in_past %}{{ i.date_completed|date:"l, F j, Y" }}{% if not forloop.last %}, {% endif %}{% endfor %}
 		{% else %}
 			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
 		{% endif %}
