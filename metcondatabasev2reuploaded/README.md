@@ -8,6 +8,7 @@ Edited files on 5/23/2019:
 - views.py
 - models.py doesn't require anything
 - workout_list.html
+- schedule_instance.html
 
 ## Functionality completed on 5/24/2019:
 - added checkbox filter for including workouts you have completed in workout_list display
@@ -43,7 +44,6 @@ Edited files on 5/23/2019:
   - not necessary anyway
         
 ## Functionality to add:
-- need to run update_instance_dates every new day
 - add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
   - all crossfit mainsite workouts are both
   - ?could possibly do it just like movement tags instead of create a field?
@@ -53,13 +53,15 @@ Edited files on 5/23/2019:
         I took them out of the save functions.
 - modify result delete method so it calls update_times completed on instance
   - do this in the delete view rather than the delete method.
-        upon hitting delete, delete the result, then run updates like remove date completed etc.
+        upon hitting delete, run updates like remove date completed from instance etc., then delete the result
 - use jquery UI datepicker for date choices in schedule and result forms
   - look at top answer from this question: https://stackoverflow.com/questions/12884638/select-future-dates-only-django-form
   - can give available dates to schedule form and create result form
   - create result should only have past
   - schedule should only have future
 - create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
+  - if WorkoutInstance.objects.filter(current_user=user,
+        dates_to_be_completed__date_completed=yesterday).exclude(dates_workout_completed__date_completed=yesterday).distinct()
   - have add result button that has default date of previous day
 - add create workout link to workout list page
   - under user authentication in template
