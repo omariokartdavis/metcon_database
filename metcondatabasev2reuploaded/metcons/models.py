@@ -170,7 +170,7 @@ class WorkoutInstance(models.Model):
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
                 
         def add_date_completed(self, date):
-                #date needs to be in datetime.date() format.
+                #date needs to be in timezone.local(datetime).date() format.
                 new_date = Date.objects.filter(date_completed=date)
                 if new_date.exists():
                         new_date = Date.objects.get(date_completed=date)
@@ -183,7 +183,7 @@ class WorkoutInstance(models.Model):
                 self.save()
 
         def add_date_to_be_completed(self, date):
-                #date needs to be in datetime.date() format.
+                #date needs to be in timezone.local(datetime).date() format.
                 new_date = Date.objects.filter(date_completed=date)
                 if new_date.exists():
                         new_date = Date.objects.get(date_completed=date)
@@ -194,6 +194,21 @@ class WorkoutInstance(models.Model):
                 self.update_youngest_scheduled_date()
                 self.save()
 
+        def remove_date_completed(self, date):
+                #date must be a Date object
+                if date and date in self.dates_workout_completed.all():
+                        self.dates_workout_completed.remove(date)
+                        self.update_oldest_completed_date()
+                        self.update_youngest_scheduled_date()
+                        self.save()
+
+        def remove_date_to_be_completed(self, date):
+                #date must be a Date object
+                if date and date in self.dates_to_be_completed.all():
+                        self.dates_to_be_completed.remove(date)
+                        self.update_youngest_scheduled_date()
+                        self.save()
+                        
         def update_youngest_scheduled_date(self):
                 if self.dates_to_be_completed.all().exists():
                         youngest_date_excluding_today = Date.objects.filter(dates_to_be_completed=self,
