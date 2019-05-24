@@ -1,4 +1,7 @@
 When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movements_list. mainsite_workouts.
+
+**Run update_instance_dates every day**
+
 Edited files on 5/23/2019:
 (haven't uploaded at work)
 views.py
