@@ -32,7 +32,10 @@ def profile(request, username):
 
     now = timezone.localtime(timezone.now()).date()
     future_workouts = WorkoutInstance.objects.filter(current_user=request.user,
-                                                     dates_to_be_completed__date_completed__gte=now).distinct().order_by('-youngest_scheduled_date')
+                                                     dates_to_be_completed__date_completed__gte=now).exclude(
+                                                         youngest_scheduled_date__date_completed=now,
+                                                         dates_workout_completed__date_completed=now).exclude(
+                                                             youngest_scheduled_date=None).distinct().order_by('-youngest_scheduled_date')
 
     recent_time = now - timezone.timedelta(days=14)
     recent_past_workouts = WorkoutInstance.objects.filter(current_user=request.user,
@@ -227,7 +230,13 @@ def create_result(request, username, pk):
 
                 return HttpResponseRedirect(instance.get_absolute_url())
     else:
-        form = CreateResultForm()
+        if instance.duration_in_seconds:
+            duration_minutes=instance.duration_in_seconds // 60
+            duration_seconds=instance.duration_in_seconds % 60
+        else:
+            duration_minutes=0
+            duration_seconds=0
+        form = CreateResultForm(initial={'duration_minutes': duration_minutes, 'duration_seconds': duration_seconds})
 
     context = {
         'form': form,
