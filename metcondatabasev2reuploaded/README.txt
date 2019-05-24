@@ -2,7 +2,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 Edited files on 5/23/2019:
 (haven't uploaded at home)
 views.py
-models.py
+models.py doesn't require anything
 
 Functionality completed on 5/23/2019:
 - added youngest_scheduled_date and oldest_completed_date fields to instance model
