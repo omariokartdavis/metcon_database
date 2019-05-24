@@ -59,18 +59,23 @@ def profileredirect(request):
     return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
 def workoutlistview(request):
-
-    object_list = Workout.objects.all()
+    # default object list is filtered with users workouts that have been completed, excluded.
+    object_list = Workout.objects.all().exclude(workoutinstance__current_user=request.user,
+                                          workoutinstance__dates_workout_completed__isnull=False)
     query1 = request.GET.getlist('q')
     query2 = request.GET.get('z')
     query3 = request.GET.get('x')
     query4 = request.GET.get('y')
     query5 = request.GET.get('t')
+    query6 = request.GET.get('s')
+    
     if query3:
         query3 = int(query3) * 60
     if query4:
         query4 = int(query4) * 60
-        
+
+    if query6:
+        object_list = Workout.objects.all()
     if query1:
         for i in query1:
             if i != '':
@@ -82,15 +87,9 @@ def workoutlistview(request):
         if query2.islower():
             query2 = query2.title()
         object_list = object_list.filter(classification__name = query2)
-    #could get rid of this ifand and just do if 3/if4 but I think the ifand will save
-    # time by performing the queries at once rather than seperate
-    if query3 and query4:
-        #likely have to change query3 and 4 to be *60
-        object_list = object_list.filter(estimated_duration_in_seconds__gte=query3,
-                                         estimated_duration_in_seconds__lte=query4)
-    elif query3:
+    if query3:
         object_list = object_list.filter(estimated_duration_in_seconds__gte=query3)
-    elif query4:
+    if query4:
         object_list = object_list.filter(estimated_duration_in_seconds__lte=query4,
                                          estimated_duration_in_seconds__gt=0)
     if query5:
