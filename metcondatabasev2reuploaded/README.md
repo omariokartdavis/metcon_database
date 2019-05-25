@@ -4,12 +4,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## Edited files on 5/24/2019:
 
-(uploaded at work)
-- views.py
-- models.py doesn't require anything
-- workout_list.html
-- schedule_instance.html
-- user_page.html
+(haven't uploaded at home)
+
 
 ## Functionality completed on 5/24/2019:
 - added checkbox filter for including workouts you have completed in workout_list display
@@ -45,6 +41,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- break future workouts into days/this week so I can seperate better on template.
+  - requires adding more view filters likely and breaking them into future_tomorrow, future_nextweek etc.
+- may need to add edited_workout_text and edited_workout_scaling to instance field so people can edit their own posts
+  - if they edit their post and no one else has downloaded their workout then it edits the base workout to be equal
+        otherwise it only edits their page
 - add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
   - all crossfit mainsite workouts are both
   - ?could possibly do it just like movement tags instead of create a field?
@@ -65,8 +66,13 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
         dates_to_be_completed__date_completed=yesterday).exclude(
         dates_workout_completed__date_completed=yesterday).distinct()
   - have add result button that has default date of previous day
+- add a change scheduled date button on instances
+  - removes the date they don't want and adds new one
 - add create workout link to workout list page
   - under user authentication in template
+- create popup when workout is added to profile to ask if they want to schedule it for today or another day
+  - if they click today add today to their scheduled workouts, otherwise send them to schedule screen
+- ?possibly add a list of their schedules workouts for the next week on the schedule workout form?
 - add ability to schedule workout during workout creation
   - on workout create form have date field to schedule workout for (default today, just like result form)
   - take date and put it into date_to_be_completed of instance
