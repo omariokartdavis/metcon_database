@@ -2,7 +2,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## Edited files on 5/24/2019:
+## Edited files on 5/25/2019:
 
 (haven't uploaded at home)
 
