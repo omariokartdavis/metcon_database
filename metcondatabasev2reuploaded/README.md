@@ -1,17 +1,30 @@
 When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movements_list. mainsite_workouts.
 
 # Run update_instance_dates every day
+# Run update_edited_instance_texts once on work computer then delete this message
 
-## Edited files on 5/25/2019:
+## Edited files on 5/26/2019:
 
 (haven't uploaded at home)
+- created update_edited_instance_texts.py in root directory
+- models.py (doesn't require anything)
+- views.py
+- forms.py
+- urls.py
+- workoutinstance_detail.html
+- user_page.html
+- created edit_instance.html
+- workout_list.html
+- created delete_instance.html
 
-
-## Functionality completed on 5/24/2019:
-- added checkbox filter for including workouts you have completed in workout_list display
-        - default now only shows workouts you haven't completed
-- added get_scheduled_dates_in_past func on instances for testing purposes.
-        - show it on schedule form page.
+## Functionality completed on 5/26/2019:
+- added edited_workout_text and scaling_text to instance model
+- all views that create instances now run update_edited_workout_text etc. to set the edited_texts to default of the workout_text
+- all views that display instances now display their edited_workout_text etc. instead of their workout.workout_text
+- created edit instance view/url/form/template
+  - editing instance edits base if no one else has downloaded and user is creator, otherwise only edits your copy
+- created delete instance view/url/form/template
+  - deleting instance removes the instance from users page and updates base_workout duration and times completed
         
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -41,11 +54,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- add filter for workout id on workout list page
+- add ability to repeat schedule weekly, monthly etc on schedule form 
+- add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
 - break future workouts into days/this week so I can seperate better on template.
   - requires adding more view filters likely and breaking them into future_tomorrow, future_nextweek etc.
-- may need to add edited_workout_text and edited_workout_scaling to instance field so people can edit their own posts
-  - if they edit their post and no one else has downloaded their workout then it edits the base workout to be equal
-        otherwise it only edits their page
 - add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
   - all crossfit mainsite workouts are both
   - ?could possibly do it just like movement tags instead of create a field?
@@ -70,9 +83,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - removes the date they don't want and adds new one
 - add create workout link to workout list page
   - under user authentication in template
-- create popup when workout is added to profile to ask if they want to schedule it for today or another day
+- create popup when workout is added to profile to ask if they just copmleted it/want to schedule it for today or another day
   - if they click today add today to their scheduled workouts, otherwise send them to schedule screen
-- ?possibly add a list of their schedules workouts for the next week on the schedule workout form?
 - add ability to schedule workout during workout creation
   - on workout create form have date field to schedule workout for (default today, just like result form)
   - take date and put it into date_to_be_completed of instance
@@ -84,13 +96,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - will help speed up workout creation and all instance updates/saves
 - add filter on workout instance detail page to filter results by date
 - ?put filter searches on base_generic page and do {% block filters %}{% endblock %} if you don't want them to come up?
-- only allow user who created base workout to edit that workout and only while no one else has added it to their page
-  - if edited after others have it on their profile, it will change everyones workout.
-  - if user == Workout.created_by_user (or user.username == Workout.created_by_user.username):
-    - if not WorkoutInstance.objects.filter(workout=workout): allow edits
-    - else: nah
-- add click to edit button on workout instance detail page.
-  - only edit fields specific to that instance aka duration completed, times completed, dates completed etc.
 - add login to index page.
 - Add search for a specific users workouts
   - search for workouts mat fraser has done
