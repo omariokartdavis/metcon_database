@@ -95,15 +95,19 @@ class Workout(models.Model):
                 self.classification = None
 
         def update_estimated_duration(self):
-                self.estimated_duration_in_seconds = WorkoutInstance.objects.filter(
-                        workout__id=self.id,
-                        duration_in_seconds__gt=0).aggregate(
-                                duration=Avg('duration_in_seconds'))['duration']
-                self.save()
+                instances = WorkoutInstance.objects.filter(workout__id=self.id, duration_in_seconds__gt=0)
+                if instances:
+                        self.estimated_duration_in_seconds = instances.aggregate(
+                                        duration=Avg('duration_in_seconds'))['duration']
+                        self.save()
                 
         def update_times_completed(self):
-                self.number_of_times_completed = WorkoutInstance.objects.filter(workout__id=self.id).aggregate(
-                        times_completed=Sum('number_of_times_completed'))['times_completed']
+                instances = WorkoutInstance.objects.filter(workout__id=self.id)
+                if instances:
+                        self.number_of_times_completed = instances.aggregate(
+                                times_completed=Sum('number_of_times_completed'))['times_completed']
+                else:
+                        self.number_of_times_completed = 0
                 self.save()
                 
         def number_of_instances(self):
@@ -165,9 +169,21 @@ class WorkoutInstance(models.Model):
         current_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name = 'User', null=True, blank=True)
         youngest_scheduled_date = models.ForeignKey(Date, related_name="youngest_scheduled_date", on_delete=models.SET_NULL, null=True, blank=True)
         oldest_completed_date = models.ForeignKey(Date, related_name="oldest_completed_date", on_delete=models.SET_NULL, null=True, blank=True)
+        edited_workout_text = models.TextField(max_length=2000, blank=True, null=True)
+        edited_scaling_text = models.TextField(max_length=4000, blank=True, null=True)
 
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
+
+        def update_edited_workout_text(self):
+                #This sets edited_text to workout_text, use this on workout creation to set it as default. from there it will be changed on udpates
+                if self.workout:
+                        self.edited_workout_text = self.workout.workout_text
+
+        def update_edited_scaling_text(self):
+                #same as above
+                if self.workout:
+                        self.edited_scaling_text = self.workout.scaling_or_description_text
                 
         def add_date_completed(self, date):
                 #date needs to be in timezone.local(datetime).date() format.
@@ -195,12 +211,15 @@ class WorkoutInstance(models.Model):
                 self.save()
 
         def remove_date_completed(self, date):
-                #date must be a Date object
-                if date and date in self.dates_workout_completed.all():
-                        self.dates_workout_completed.remove(date)
-                        self.update_oldest_completed_date()
-                        self.update_youngest_scheduled_date()
-                        self.save()
+                #date must be a timezone.local(datetime).date() format.
+                removed_date = Date.objects.filter(date_completed=date)
+                if removed_date.exists():
+                        removed_date=Date.objects.get(date_completed=date)
+                        if removed_date in self.dates_workout_completed.all():
+                                self.dates_workout_completed.remove(removed_date)
+                                self.update_oldest_completed_date()
+                                self.update_youngest_scheduled_date()
+                                self.save()
 
         def remove_date_to_be_completed(self, date):
                 #date must be a Date object
@@ -227,6 +246,10 @@ class WorkoutInstance(models.Model):
                                                                     date_completed__lte=timezone.localtime(timezone.now()).date())
                         if oldest_completed_date:
                                 self.oldest_completed_date = oldest_completed_date.latest('date_completed')
+                        else:
+                                self.oldest_completed_date=None
+                else:
+                        self.oldest_completed_date = None
 
         def remove_all_dates_scheduled(self):
                 #for testing purposes
@@ -260,10 +283,17 @@ class WorkoutInstance(models.Model):
                 self.save()
                 
         def update_duration(self):
-                result = Result.objects.filter(workoutinstance__id = self.id).latest('date_workout_completed', 'date_created')
-                self.duration_in_seconds = result.duration_in_seconds
-                self.save()
-                self.workout.update_estimated_duration()
+                result = Result.objects.filter(workoutinstance__id = self.id)
+                if result:
+                        result = result.latest('date_workout_completed', 'date_created')
+                        if self.duration_in_seconds != result.duration_in_seconds:
+                                self.duration_in_seconds = result.duration_in_seconds
+                                self.save()
+                                self.workout.update_estimated_duration()
+                else:
+                        self.duration_in_seconds = 0
+                        self.save()
+                        self.workout.update_estimated_duration()
                 
         def update_times_completed(self):
                 self.number_of_times_completed = Result.objects.filter(workoutinstance=self).count()
@@ -284,6 +314,11 @@ class WorkoutInstance(models.Model):
                 return ', '.join(str(date) for date in self.dates_workout_completed.all()[:3])
 
         display_dates_completed.short_description = 'Dates Completed'
+
+        def display_dates_scheduled(self):
+                return ', '.join(str(date) for date in self.dates_to_be_completed.all()[:3])
+
+        display_dates_scheduled.short_description = 'Dates Scheduled'
         
         def __str__(self):
                 if self.workout:
