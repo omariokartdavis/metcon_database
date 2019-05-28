@@ -55,7 +55,7 @@ class Workout(models.Model):
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         workout_text = models.TextField(max_length=2000)
         scaling_or_description_text = models.TextField(max_length=4000, blank=True, null=True)
-        what_website_workout_came_from = models.CharField(max_length=200, blank=True)
+        where_workout_came_from = models.CharField(max_length=200, blank=True)
         estimated_duration_in_seconds = models.IntegerField(default=0, verbose_name='Duration (sec)', null=True, blank=True)
         created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
                 
@@ -198,15 +198,16 @@ class WorkoutInstance(models.Model):
                 self.update_youngest_scheduled_date()
                 self.save()
 
-        def add_date_to_be_completed(self, date):
-                #date needs to be in timezone.local(datetime).date() format.
-                new_date = Date.objects.filter(date_completed=date)
-                if new_date.exists():
-                        new_date = Date.objects.get(date_completed=date)
-                else:
-                        new_date = Date(date_completed = date)
-                        new_date.save()
-                self.dates_to_be_completed.add(new_date)
+        def add_date_to_be_completed(self, *args):
+                #dates need to be in timezone.local(datetime).date() format.
+                for i in args:
+                        new_date = Date.objects.filter(date_completed=i)
+                        if new_date.exists():
+                                new_date = Date.objects.get(date_completed=i)
+                        else:
+                                new_date = Date(date_completed = i)
+                                new_date.save()
+                        self.dates_to_be_completed.add(new_date)
                 self.update_youngest_scheduled_date()
                 self.save()
 
