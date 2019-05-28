@@ -114,7 +114,7 @@
 			</form>
 		</div>
 		{% if workout_list %}
-			<p>Number of workouts with applied filters: {{ num_workouts_filtered }}
+			<p>Number of workouts with applied filters: {{ num_workouts_filtered }}/{{ num_workouts_total }}
 			<ul>
 				{% for workout in workout_list %}
 					<li>
