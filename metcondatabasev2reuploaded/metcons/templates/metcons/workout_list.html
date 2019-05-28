@@ -109,8 +109,10 @@
 				<input type='submit' class='button' id='filtersubmitbutton'>
 				<br /><input type="checkbox" class="checkboxinput" name="t" id="popularitycheckbox">
 				<label for="popularitycheckbox">Sort By Most Popular</label>
-				<input type="checkbox" class="checkboxinput" name="s" id="exclude_completed_checkbox">
-				<label for="exclude_completed_checkbox">Include Workouts You Have Completed</label>
+				<input type="checkbox" class="checkboxinput" name="s" id="include_completed_checkbox">
+				<label for="include_completed_checkbox">Include Workouts You Have Completed</label>
+				<input type="checkbox" class="checkboxinput" name="f" id="include_user_created_checkbox">
+				<label for="include_user_created_checkbox">Include Workouts Other Users Created</label>
 			</form>
 		</div>
 		{% if workout_list %}
