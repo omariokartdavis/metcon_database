@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
-from django.urls import reverse
-from metcons.models import Classification, Movement, Workout, WorkoutInstance, Result, ResultFile
+from django.urls import reverse, reverse_lazy
+from metcons.models import Classification, Movement, Workout, WorkoutInstance, Result, ResultFile, Date
 from django.views import generic
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
-from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm
+from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm, EditInstanceForm, EditResultForm
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Max, Min
@@ -28,7 +28,7 @@ def index(request):
 @login_required
 def profile(request, username):
     #if there isn't a completed date it is last then filtered by date_added_by_user
-    users_workouts = WorkoutInstance.objects.annotate(max_date=Max('dates_workout_completed__date_completed')).filter(current_user=request.user).order_by('-max_date', '-date_added_by_user')
+    users_workouts = WorkoutInstance.objects.filter(current_user=request.user)
 
     now = timezone.localtime(timezone.now()).date()
     future_workouts = WorkoutInstance.objects.filter(current_user=request.user,
@@ -45,12 +45,16 @@ def profile(request, username):
     long_past_workouts = WorkoutInstance.objects.filter(current_user=request.user,
                                                         dates_workout_completed__date_completed__lt=recent_time).exclude(
                                                             dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('oldest_completed_date')
+    other_workouts = WorkoutInstance.objects.filter(current_user=request.user,
+                                                    dates_to_be_completed=None,
+                                                    dates_workout_completed=None).distinct().order_by('date_added_by_user')
 
     context = {
         'users_workouts': users_workouts,
         'future_workouts': future_workouts,
         'recent_past_workouts': recent_past_workouts,
         'long_past_workouts': long_past_workouts,
+        'other_workouts': other_workouts,
         }
     return render(request, 'metcons/user_page.html', context=context)
 
@@ -113,6 +117,9 @@ def workoutlistview(request):
                 instance = WorkoutInstance(workout=workout, current_user = current_user,
                                            duration_in_seconds=workout.estimated_duration_in_seconds)
                 instance.save()
+                instance.update_edited_workout_text()
+                instance.update_edited_scaling_text()
+                instance.save()
             else:
                 instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
             return HttpResponseRedirect(instance.get_absolute_url())
@@ -139,12 +146,15 @@ def workoutdetailview(request, pk):
                 instance = WorkoutInstance(workout=workout, current_user = current_user,
                                            duration_in_seconds=workout.estimated_duration_in_seconds)
                 instance.save()
+                instance.update_edited_workout_text()
+                instance.update_edited_scaling_text()
+                instance.save()
             else:
                 instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
             return HttpResponseRedirect(instance.get_absolute_url())
     
     return render(request, 'metcons/workout_detail.html', context=context)
-    
+
 class WorkoutInstanceDetailView(LoginRequiredMixin, generic.DetailView):
     model = WorkoutInstance
 
@@ -172,6 +182,7 @@ class MovementListView(generic.ListView):
 class MovementDetailView(generic.DetailView):
     model = Movement
 
+@login_required
 def schedule_instance(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
     if request.method == 'POST':
@@ -197,7 +208,72 @@ def schedule_instance(request, username, pk):
         }
 
     return render(request, 'metcons/schedule_instance.html', context)
-                
+
+@login_required
+def edit_instance(request, username, pk):
+    instance = WorkoutInstance.objects.get(id=pk)
+
+    if request.method == 'POST':
+        if 'edit instance' in request.POST:
+            form = EditInstanceForm(request.POST)
+            if form.is_valid():
+                base_workout = instance.workout
+                instance.edited_workout_text = form.cleaned_data['workout_text']
+                instance.edited_scaling_text = form.cleaned_data['scaling_text']
+                instance.duration_in_seconds = ((form.cleaned_data['duration_minutes'])*60) + form.cleaned_data['duration_seconds']
+                instance.save()
+                if base_workout:
+                    if request.user == base_workout.created_by_user:
+                        if base_workout.number_of_instances() == 1:
+                            base_workout.workout_text = form.cleaned_data['workout_text']
+                            base_workout.scaling_or_description_text = form.cleaned_data['scaling_text']
+                            base_workout.estimated_duration_in_seconds = ((form.cleaned_data['duration_minutes'])*60) + form.cleaned_data['duration_seconds']
+                            base_workout.save()
+                            base_workout.update_movements_and_classification()
+                        base_workout.update_estimated_duration()
+
+
+                return HttpResponseRedirect(instance.get_absolute_url())
+    else:
+        if instance.duration_in_seconds:
+            duration_minutes=instance.duration_in_seconds // 60
+            duration_seconds=instance.duration_in_seconds % 60
+        else:
+            duration_minutes=0
+            duration_seconds=0
+        form = EditInstanceForm(initial={'duration_minutes': duration_minutes,
+                                         'duration_seconds': duration_seconds,
+                                         'workout_text': instance.edited_workout_text,
+                                         'scaling_text': instance.edited_scaling_text,
+                                         })
+
+    context = {
+        'form': form,
+        'instance': instance,
+        }
+
+    return render(request, 'metcons/edit_instance.html', context)
+
+@login_required
+def delete_instance(request, username, pk):
+    instance = WorkoutInstance.objects.get(id=pk)
+
+    if request.method == 'POST':
+        if request.user == instance.current_user:
+            base_workout = instance.workout
+            instance.delete()
+            base_workout.update_estimated_duration()
+            base_workout.update_times_completed()
+
+            return HttpResponseRedirect(reverse('profile', args=[username]))
+
+    context = {
+        'instance': instance,
+        }
+
+    return render(request, 'metcons/delete_instance.html', context)
+
+@login_required                
 def create_result(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
     if request.method == 'POST':
@@ -243,8 +319,80 @@ def create_result(request, username, pk):
         }
 
     return render(request, 'metcons/create_result.html', context)
-                                
+
+@login_required
+def edit_result(request, username, pk, resultid):
+    #currently not handling edits of resultfiles. add request.FILES into form if going to do so
+    result = Result.objects.get(id=resultid)
+    instance = WorkoutInstance.objects.get(id=pk)
     
+    if request.method == 'POST':
+        if 'edit result' in request.POST:
+            form = EditResultForm(request.POST)
+
+            if form.is_valid():
+                duration_in_seconds = ((form.cleaned_data['duration_minutes']) * 60) + form.cleaned_data['duration_seconds']
+                if form.cleaned_data['date_completed'] == dt.date.today():
+                    aware_datetime = timezone.now()
+                else:
+                    date_in_datetime = dt.datetime.combine(form.cleaned_data['date_completed'], dt.datetime.min.time())
+                    aware_datetime=timezone.make_aware(date_in_datetime)
+                if result.duration_in_seconds != duration_in_seconds:
+                    result.duration_in_seconds = duration_in_seconds
+                if result.result_text != form.cleaned_data['result_text']:
+                    result.result_text = form.cleaned_data['result_text']
+                local_aware_datetime = timezone.localtime(aware_datetime)
+                if timezone.localtime(result.date_workout_completed).date() != local_aware_datetime.date():
+                    instance.remove_date_completed(timezone.localtime(result.date_workout_completed).date())
+                    result.date_workout_completed = aware_datetime
+                result.save()
+                instance.add_date_completed(timezone.localtime(result.date_workout_completed).date())
+                result.update_instance_duration()
+
+                return HttpResponseRedirect(instance.get_absolute_url())
+    else:
+        if result.duration_in_seconds:
+            duration_minutes=result.duration_in_seconds // 60
+            duration_seconds=result.duration_in_seconds % 60
+        else:
+            duration_minutes=0
+            duration_seconds=0
+        form = EditResultForm(initial={'duration_minutes': duration_minutes,
+                                        'duration_seconds': duration_seconds,
+                                        'result_text': result.result_text,
+                                        'date_completed': result.date_workout_completed,
+                                        })
+    context = {
+        'form': form,
+        'instance': instance,
+        'result': result,
+        }
+
+    return render(request, 'metcons/edit_result.html', context)
+
+@login_required
+def delete_result(request, username, pk, resultid):
+    instance = WorkoutInstance.objects.get(id=pk)
+    result = Result.objects.get(id=resultid)
+    
+    if request.method == 'POST':
+        if 'delete result' in request.POST:
+            if request.user == instance.current_user:
+                instance.remove_date_completed(timezone.localtime(result.date_workout_completed).date())
+                result.delete()
+                instance.update_duration()
+                instance.update_times_completed()
+
+                return HttpResponseRedirect(instance.get_absolute_url())
+
+    context = {
+        'instance': instance,
+        'result': result,
+        }
+
+    return render(request, 'metcons/delete_result.html', context)
+
+@login_required    
 def create_workout(request):
     """View function for creating a new workout"""
 
@@ -270,11 +418,17 @@ def create_workout(request):
                 instance = WorkoutInstance(workout=workout, current_user=current_user,
                                            duration_in_seconds=workout.estimated_duration_in_seconds)
                 instance.save()
+                instance.update_edited_workout_text()
+                instance.update_edited_scaling_text()
+                instance.save()
             else:
                 workout = Workout.objects.get(workout_text=form.cleaned_data['workout_text'])
                 if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
                     instance = WorkoutInstance(workout=workout, current_user = current_user,
                                                duration_in_seconds=workout.estimated_duration_in_seconds)
+                    instance.save()
+                    instance.update_edited_workout_text()
+                    instance.update_edited_scaling_text()
                     instance.save()
                 else:
                     instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
@@ -290,7 +444,8 @@ def create_workout(request):
 
     return render(request, 'metcons/create_workout.html', context)
 
-class MovementCreate(CreateView):
+class MovementCreate(LoginRequiredMixin, CreateView):
     model = Movement
     fields = '__all__'
-    
+
+
