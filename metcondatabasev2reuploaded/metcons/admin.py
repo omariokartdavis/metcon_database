@@ -40,6 +40,7 @@ class WorkoutInstanceAdmin(admin.ModelAdmin):
     list_display = ('display_workout',
                     'current_user',
                     'display_dates_completed',
+                    'display_dates_scheduled',
                     'date_added_by_user',
                     'id',
                     'number_of_times_completed',
@@ -54,6 +55,7 @@ class ResultFileInline(admin.TabularInline):
 @admin.register(Result)
 class ResultAdmin(admin.ModelAdmin):
     list_display = ('date_created',
+                    'date_workout_completed',
                     'workoutinstance',
                     )
     inlines = [ResultFileInline]
