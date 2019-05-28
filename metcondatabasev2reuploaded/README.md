@@ -1,38 +1,30 @@
 When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movements_list. mainsite_workouts.
 
 # Run update_instance_dates every day
-# Run update_edited_instance_texts once on work computer then delete this message
 
-## Edited files on 5/26/2019:
+## Edited files on 5/28/2019:
 
-(uploaded at home)
-- created update_edited_instance_texts.py in root directory
-- models.py (doesn't require anything)
+(uploaded at work)
+- mainsite_workouts.py
+- models.py
 - views.py
 - forms.py
-- urls.py
 - admin.py
-- workoutinstance_detail.html
-- user_page.html
-- created edit_instance.html
 - workout_list.html
-- created delete_instance.html
-- created edit_result.html
-- created delete_result.html
 
-## Functionality completed on 5/26/2019 & 5/27:
-- added edited_workout_text and scaling_text to instance model
-- all views that create instances now run update_edited_workout_text etc. to set the edited_texts to default of the workout_text
-- all views that display instances now display their edited_workout_text etc. instead of their workout.workout_text
-- created edit instance view/url/form/template
-  - editing instance edits base if no one else has downloaded and user is creator, otherwise only edits your copy
-- created delete instance view/url/template
-  - deleting instance removes the instance from users page and updates base_workout duration and times completed
-- created edit result view/url/form/template
-  - editing result can edit text, duration, and date completed. did not add edit for reusltfiles yet.
-- now shows instance scheduled dates on admin page
-- created delete result view/url/template
-        
+## Functionality completed on 5/28/2019:
+- renamed what_website_workout_came_from to where_workout_came_from
+- have user created workouts populate the where workout came from field with user_created
+- create filter to show or not show user_created workouts
+- have default workout list not include user_created workouts
+- created form inputs for repeating a scheduled date.
+  - still need to do the view side work.
+- changed add_date_to_be_completed in instance to accept multiple dates (likely required for repeat scheduling)
+
+## currently working on:
+- getting proper view functions on schedule instance to allow for repeat scheduling.
+  - as is will raise typeError saying repeat_length is not valid argument for timezone.timedelta() (requires days/months/years etc)
+  
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
   - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
@@ -61,6 +53,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- ?create warning on user_created workouts list that these workouts have not been vetted for their programming?
+- create dropdown filter for where workouts came from (users, mainsite, comptrain etc.)
 - add ability to edit resultfiles on edit result page
 - add filter for workout id on workout list page
 - add ability to repeat schedule weekly, monthly etc on schedule form 
@@ -76,7 +70,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - look at top answer from this question: https://stackoverflow.com/questions/12884638/select-future-dates-only-django-form
   - can give available dates to schedule form and create result form
   - create result should only have past
-  - schedule should only have future
+  - schedule should only have future dates
 - create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
   - if WorkoutInstance.objects.filter(current_user=user,
         dates_to_be_completed__date_completed=yesterday).exclude(
