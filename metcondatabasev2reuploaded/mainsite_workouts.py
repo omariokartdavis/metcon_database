@@ -54,7 +54,7 @@ while year >= 2018:
                     duration=0
             workout = Workout(workout_text=workout_text,
                               scaling_or_description_text=scaling_text,
-                              what_website_workout_came_from='Crossfit Mainsite',
+                              where_workout_came_from='Crossfit Mainsite',
                               classification=None,
                               date_created=date_in_datetime,
                               estimated_duration_in_seconds=duration,
