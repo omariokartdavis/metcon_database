@@ -5,26 +5,33 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## Edited files on 5/26/2019:
 
-(haven't uploaded at home)
+(uploaded at home)
 - created update_edited_instance_texts.py in root directory
 - models.py (doesn't require anything)
 - views.py
 - forms.py
 - urls.py
+- admin.py
 - workoutinstance_detail.html
 - user_page.html
 - created edit_instance.html
 - workout_list.html
 - created delete_instance.html
+- created edit_result.html
+- created delete_result.html
 
-## Functionality completed on 5/26/2019:
+## Functionality completed on 5/26/2019 & 5/27:
 - added edited_workout_text and scaling_text to instance model
 - all views that create instances now run update_edited_workout_text etc. to set the edited_texts to default of the workout_text
 - all views that display instances now display their edited_workout_text etc. instead of their workout.workout_text
 - created edit instance view/url/form/template
   - editing instance edits base if no one else has downloaded and user is creator, otherwise only edits your copy
-- created delete instance view/url/form/template
+- created delete instance view/url/template
   - deleting instance removes the instance from users page and updates base_workout duration and times completed
+- created edit result view/url/form/template
+  - editing result can edit text, duration, and date completed. did not add edit for reusltfiles yet.
+- now shows instance scheduled dates on admin page
+- created delete result view/url/template
         
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -54,6 +61,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- add ability to edit resultfiles on edit result page
 - add filter for workout id on workout list page
 - add ability to repeat schedule weekly, monthly etc on schedule form 
 - add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
@@ -64,11 +72,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - ?could possibly do it just like movement tags instead of create a field?
     - could add Men, Women, Man, Woman to movement tags and have their classificaion be Gender or Male/Female
       - probably better to do something similar but create new field in workout model anyway. simpler
-- when creating update views and delete views make sure the view calls the proper update functions on each model because
-        I took them out of the save functions.
-- modify result delete method so it calls update_times completed on instance
-  - do this in the delete view rather than the delete method.
-        upon hitting delete, run updates like remove date completed from instance etc., then delete the result
 - use jquery UI datepicker for date choices in schedule and result forms
   - look at top answer from this question: https://stackoverflow.com/questions/12884638/select-future-dates-only-django-form
   - can give available dates to schedule form and create result form
