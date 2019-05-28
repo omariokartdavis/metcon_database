@@ -11,13 +11,13 @@ class WorkoutInstanceInline(admin.TabularInline):
 class WorkoutAdmin(admin.ModelAdmin):
     list_display = ('display_name',
                     'created_by_user',
+                    'where_workout_came_from',
                     'estimated_duration_in_seconds',
                     'display_movement',
                     'classification',
                     'number_of_times_completed',
                     'number_of_instances',
                     'date_created',
-                    'display_classifications_of_movements',
                     'date_added_to_database')
     list_filter = ('classification',
                    'estimated_duration_in_seconds',
