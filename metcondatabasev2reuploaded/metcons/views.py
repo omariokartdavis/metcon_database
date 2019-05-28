@@ -10,8 +10,9 @@ from django.contrib.auth.models import User
 from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm, EditInstanceForm, EditResultForm
 from django.utils import timezone
 import datetime as dt
-from django.db.models import Max, Min
+from django.db.models import Max, Min, Q
 import re
+
 
 
 def index(request):
@@ -63,23 +64,22 @@ def profileredirect(request):
     return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
 def workoutlistview(request):
-    # default object list is filtered with users workouts that have been completed, excluded.
-    object_list = Workout.objects.all().exclude(workoutinstance__current_user=request.user,
-                                          workoutinstance__dates_workout_completed__isnull=False)
+    # default object list excludes users workouts that have been completed.
+    object_list = Workout.objects.all()
+    
     query1 = request.GET.getlist('q')
     query2 = request.GET.get('z')
     query3 = request.GET.get('x')
     query4 = request.GET.get('y')
     query5 = request.GET.get('t')
     query6 = request.GET.get('s')
+    query7 = request.GET.get('f')
     
     if query3:
         query3 = int(query3) * 60
     if query4:
         query4 = int(query4) * 60
 
-    if query6:
-        object_list = Workout.objects.all()
     if query1:
         for i in query1:
             if i != '':
@@ -98,6 +98,13 @@ def workoutlistview(request):
                                          estimated_duration_in_seconds__gt=0)
     if query5:
         object_list = object_list.order_by('-number_of_times_completed')
+    if not query6:
+        object_list = object_list.exclude(workoutinstance__current_user=request.user,
+                                          workoutinstance__dates_workout_completed__isnull=False)
+    if not query7:
+        object_list = object_list.exclude(~Q(created_by_user=request.user),
+                                          where_workout_came_from='User Created')
+        
         
 
     context = {
@@ -194,9 +201,21 @@ def schedule_instance(request, username, pk):
                 else:
                     date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_completed1'], dt.datetime.min.time())
                     aware_datetime = timezone.make_aware(date_in_datetime)
-
                 local_date = timezone.localtime(aware_datetime).date()
-                instance.add_date_to_be_completed(local_date)
+                
+                if form.cleaned_data['repeat_yes'] == True:
+                    repeat_frequency = form.cleaned_data['repeat_frequency']
+                    number_of_repetitions = form.cleaned_data['number_of_repetitions']
+                    repeat_length = form.cleaned_data['repeat_length']
+                    end_repeat_scheduling_date = local_date + timezone.timedelta(repeat_length=number_of_repetitions)
+                    list_of_dates_to_schedule = [local_date]
+                    while local_date < end_repeat_scheduling_date:
+                        list_of_dates_to_schedule.append(local_date + timezone.timedelta(repeat_frequency=1))
+                        local_date += timezone.timedelta(repeat_frequency=1)
+                        
+                print(local_date)
+                print(list_of_dates_to_schedule)
+                #instance.add_date_to_be_completed(local_date)
                 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
     else:
@@ -405,7 +424,7 @@ def create_workout(request):
                 workout = Workout(workout_text=form.cleaned_data['workout_text'],
                                   scaling_or_description_text=form.cleaned_data['workout_scaling'],
                                   estimated_duration_in_seconds=(form.cleaned_data['estimated_duration']) * 60,
-                                  what_website_workout_came_from=form.cleaned_data['what_website_workout_came_from'],
+                                  where_workout_came_from='User Created',
                                   classification=None,
                                   created_by_user = current_user,
                                   )
@@ -447,5 +466,4 @@ def create_workout(request):
 class MovementCreate(LoginRequiredMixin, CreateView):
     model = Movement
     fields = '__all__'
-
 
