@@ -1,0 +1,23 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% if user.is_authenticated %}
+		{% if user.username == instance.current_user.username %}
+			<h1>Delete Result for {{ instance.display_workout }}</h1>
+			
+			<p>Date: {{ result.date_workout_completed|date:"F j, Y" }}</p>
+			<p>{% if result.duration_in_minutes > 0 %} {{ result.duration_in_minutes }} minutes {% endif %}{% if result.duration_remainder > 0 %} {{ result.duration_remainder }} seconds {% endif %}</p>
+			<p>Results: {{ result.result_text }}
+
+			<p>Are you sure you want to remove this result?</p>
+			<form method="post">
+				{% csrf_token %}
+				<input type="submit" value="Delete Result" name="delete result">
+			</form>
+		{% else %}
+			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
+		{% endif %}
+	{% else %}
+		<p>Please login to view this page.</p>
+	{% endif %}
+{% endblock %}
