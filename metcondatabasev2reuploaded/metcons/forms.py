@@ -1,35 +1,66 @@
 from django import forms
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 def get_detault_localtime():
     return timezone.localtime(timezone.now())
 
 class CreateWorkoutForm(forms.Form):
-    workout_text = forms.CharField(widget=forms.Textarea, help_text="Enter your workout")
-    workout_scaling = forms.CharField(widget=forms.Textarea, help_text='Enter any scaling options', required=False)
+    workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your workout")
+    workout_scaling = forms.CharField(widget=forms.Textarea, max_length=4000, help_text='Enter any scaling options', required=False)
     estimated_duration = forms.IntegerField(help_text='Enter an estimate of how long it will take to complete the workout in minutes (whole numbers only)', required=False)
     what_website_workout_came_from = forms.CharField(max_length=200, required=False)
 
-    #can likely delete all these clean statements as calling form.is_valid() from the view cleans all data and passes to cleaned_data attribute
-    def clean_workout_text(self):
-        return self.cleaned_data['workout_text']
-        
-    def clean_workout_scaling(self):
-        return self.cleaned_data['workout_scaling']
-
-    def clean_estimated_duration(self):
-        return self.cleaned_data['estimated_duration']
-
-    def clean_what_website_workout_came_from(self):
-        return self.cleaned_data['what_website_workout_came_from']
-
 class CreateResultForm(forms.Form):
-    result_text = forms.CharField(widget=forms.Textarea, help_text="Enter your results here")
-    duration_minutes = forms.IntegerField(initial=0, required = False)
-    duration_seconds = forms.IntegerField(initial=0, required = False)
+    result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here")
+    duration_minutes = forms.IntegerField(required = False)
+    duration_seconds = forms.IntegerField(required = False)
     media_file = forms.FileField(required=False, help_text='Attach any pictures or videos')
     media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable')
     date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_detault_localtime, required=False, help_text='When did you complete this workout?')
 
 class ScheduleInstanceForm(forms.Form):
     date_to_be_completed1 = forms.DateField(widget=forms.SelectDateWidget(), initial=get_detault_localtime, help_text='When will you complete this workout?')
+
+class EditInstanceForm(forms.Form):
+    workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
+    scaling_text= forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
+    duration_minutes = forms.IntegerField(required=False)
+    duration_seconds = forms.IntegerField(required=False)
+
+    def clean_duration_minutes(self):
+        data = self.cleaned_data['duration_minutes']
+
+        if data < 0:
+            raise ValidationError(_('Invalid duration - duration cannot be negative'))
+        return data
+
+    def clean_duration_seconds(self):
+        data = self.cleaned_data['duration_seconds']
+
+        if data < 0:
+            raise ValidationError(_('Invalid duration - duration cannot be negative'))
+        return data
+
+class EditResultForm(forms.Form):
+    result_text = forms.CharField(widget=forms.Textarea, max_length=2000)
+    duration_minutes = forms.IntegerField(required=False)
+    duration_seconds = forms.IntegerField(required=False)
+    date_completed = forms.DateField(widget=forms.SelectDateWidget(), required=False)
+
+    def clean_duration_minutes(self):
+        data = self.cleaned_data['duration_minutes']
+
+        if data < 0:
+            raise ValidationError(_('Invalid duration - duration cannot be negative'))
+        return data
+
+    def clean_duration_seconds(self):
+        data = self.cleaned_data['duration_seconds']
+
+        if data < 0:
+            raise ValidationError(_('Invalid duration - duration cannot be negative'))
+        return data
+        
+    
