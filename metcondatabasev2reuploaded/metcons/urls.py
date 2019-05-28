@@ -14,4 +14,8 @@ urlpatterns = [
     path('<username>/workout/<uuid:pk>/scheduleworkout/', views.schedule_instance, name='schedule_instance'),
     path('<username>/', views.profile, name='profile'),
     path('<username>/workout/<uuid:pk>', views.WorkoutInstanceDetailView.as_view(), name='workoutinstance-detail'),
+    path('<username>/workout/<uuid:pk>/edit', views.edit_instance, name='edit_instance'),
+    path('<username>/workout/<uuid:pk>/delete', views.delete_instance, name='delete_instance'),
+    path('<username>/workout/<uuid:pk>/result/<int:resultid>/edit', views.edit_result, name='edit_result'),
+    path('<username>/workout/<uuid:pk>/result/<int:resultid>/delete', views.delete_result, name='delete_result'),
 ]
