@@ -202,20 +202,18 @@ def schedule_instance(request, username, pk):
                     date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_completed1'], dt.datetime.min.time())
                     aware_datetime = timezone.make_aware(date_in_datetime)
                 local_date = timezone.localtime(aware_datetime).date()
-                
+                list_of_dates_to_schedule=[local_date]
                 if form.cleaned_data['repeat_yes'] == True:
-                    repeat_frequency = form.cleaned_data['repeat_frequency']
+                    repeat_frequency = int(form.cleaned_data['repeat_frequency'])
                     number_of_repetitions = form.cleaned_data['number_of_repetitions']
-                    repeat_length = form.cleaned_data['repeat_length']
-                    end_repeat_scheduling_date = local_date + timezone.timedelta(repeat_length=number_of_repetitions)
-                    list_of_dates_to_schedule = [local_date]
-                    while local_date < end_repeat_scheduling_date:
-                        list_of_dates_to_schedule.append(local_date + timezone.timedelta(repeat_frequency=1))
-                        local_date += timezone.timedelta(repeat_frequency=1)
-                        
-                print(local_date)
-                print(list_of_dates_to_schedule)
-                #instance.add_date_to_be_completed(local_date)
+                    repeat_length = int(form.cleaned_data['repeat_length'])
+                    end_repeat_scheduling_date = local_date + timezone.timedelta(days=number_of_repetitions*repeat_length)
+                    list_of_dates_to_schedule = []
+                    while local_date <= end_repeat_scheduling_date:
+                        list_of_dates_to_schedule.append(local_date)
+                        local_date += timezone.timedelta(days=repeat_frequency)
+
+                instance.add_date_to_be_completed(*list_of_dates_to_schedule)
                 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
     else:
@@ -466,4 +464,3 @@ def create_workout(request):
 class MovementCreate(LoginRequiredMixin, CreateView):
     model = Movement
     fields = '__all__'
-
