@@ -2,19 +2,20 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## Edited files on 5/28/2019:
+## Edited files on 5/29/2019:
 
-(uploaded at home)
-- views.py
+(uploaded at work)
+- movements_list.py
+- models.py
 - forms.py
+- views.py
+- user_page.html
+- create_result.html
 
 ## Functionality completed on 5/28/2019:
-- renamed what_website_workout_came_from to where_workout_came_from
-- have user created workouts populate the where workout came from field with user_created
-- create filter to show or not show user_created workouts
-- have default workout list not include user_created workouts
-- added ability to schedule workout repeatedly into the future
-- changed add_date_to_be_completed in instance to accept multiple dates (likely required for repeat scheduling)
+- remove_date_to_be_completed can now take multiple args
+- list workouts on user page by day of the week for future workouts
+- added add result button to user_page list of workouts for this weeks workouts only
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -36,21 +37,28 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
     - see profile view as example
     - class based views take this into account with the models get_aboslute_url
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
-- wicd.objects.filter(dates_to_be_completed=instance, date_completed__gte=now).earliest('date_completed')
-  - gives wicd object that is the earliest date from datestobecompleted from instance that also has date gte now
+- Date.objects.filter(dates_to_be_completed=instance, date_completed__gte=now).earliest('date_completed')
+  - gives date object that is the earliest date from datestobecompleted from instance that also has date gte now
 - can't get rid of distinct on user_page filters for future/recent/past workouts
   - if removed it will list every workout over and over again based on the number of dates it has in the future/recent/past
                 but they will be ordered based on their youngest/oldest dates only. 
   - not necessary anyway
         
 ## Functionality to add:
+- create profanity filter for creating workouts but not results
+  - just like movement tags, create function to search for words in workout_text or scaling description
+    - if words are found. delete that workout and give popup saying why
+      - Popup: "This workout was removed from the database for adult language: (list of words used). Please refrain
+          from using this language in your workout descriptions"
+- create vote count for base workout
+  - users can vote up someone elses user created workout if they downloaded it.
+    - after a workout gains enough votes, it shows up in regular database searches.
+  - write functions to increase vote count from instance
 - ?create warning on user_created workouts list that these workouts have not been vetted for their programming?
 - create dropdown filter for where workouts came from (users, mainsite, comptrain etc.)
 - add ability to edit resultfiles on edit result page
 - add filter for workout id on workout list page
 - add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
-- break future workouts into days/this week so I can seperate better on template.
-  - requires adding more view filters likely and breaking them into future_tomorrow, future_nextweek etc.
 - add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
   - all crossfit mainsite workouts are both
   - ?could possibly do it just like movement tags instead of create a field?
@@ -82,13 +90,13 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - ?only update base workout times counted and duration at midnight?
   - will help speed up workout creation and all instance updates/saves
 - add filter on workout instance detail page to filter results by date
-- ?put filter searches on base_generic page and do {% block filters %}{% endblock %} if you don't want them to come up?
 - add login to index page.
 - Add search for a specific users workouts
   - search for workouts mat fraser has done
   - filter for workouts whose workout instances have users of xx name
     - maybe this is a subquery?
 - Add privacy setting so users can set their profile/workouts to private and therefore others cant search for/see them.
+  - default to public
 - Combine Create Movement and Update Workout buttons into a popup:
   -on create movement button click open a popup to add movement. on save click run three functions:
     -save movement
