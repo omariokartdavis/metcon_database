@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from metcons.models import Classification, Movement, Workout, WorkoutInstance, Result, ResultFile, Date
 from django.views import generic
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
@@ -29,14 +29,15 @@ def index(request):
 @login_required
 def profile(request, username):
     #if there isn't a completed date it is last then filtered by date_added_by_user
+    #long future workouts is 1 week forward, long past workouts is 2 weeks back
     users_workouts = WorkoutInstance.objects.filter(current_user=request.user)
 
     now = timezone.localtime(timezone.now()).date()
-    future_workouts = WorkoutInstance.objects.filter(current_user=request.user,
-                                                     dates_to_be_completed__date_completed__gte=now).exclude(
-                                                         youngest_scheduled_date__date_completed=now,
-                                                         dates_workout_completed__date_completed=now).exclude(
-                                                             youngest_scheduled_date=None).distinct().order_by('-youngest_scheduled_date')
+    end_of_week = now + timezone.timedelta(days=7)
+    long_future_workouts = WorkoutInstance.objects.filter(current_user=request.user,
+                                                          youngest_scheduled_date__date_completed__gte=end_of_week).exclude(
+                                                                  youngest_scheduled_date=None).distinct().order_by('-youngest_scheduled_date')
+
 
     recent_time = now - timezone.timedelta(days=14)
     recent_past_workouts = WorkoutInstance.objects.filter(current_user=request.user,
@@ -47,15 +48,33 @@ def profile(request, username):
                                                         dates_workout_completed__date_completed__lt=recent_time).exclude(
                                                             dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('oldest_completed_date')
     other_workouts = WorkoutInstance.objects.filter(current_user=request.user,
-                                                    dates_to_be_completed=None,
+                                                    youngest_scheduled_date=None,
                                                     dates_workout_completed=None).distinct().order_by('date_added_by_user')
 
+    dict_of_this_weeks_workouts = {}
+    todays_workouts = WorkoutInstance.objects.filter(current_user=request.user,
+                                           dates_to_be_completed__date_completed=now).exclude(
+                                               dates_workout_completed__date_completed=now).exclude(
+                                                   youngest_scheduled_date=None).distinct().order_by('-youngest_scheduled_date', 'date_added_by_user')
+    if todays_workouts:
+        dict_of_this_weeks_workouts[now] = todays_workouts
+        
+    date_to_check = now + timezone.timedelta(days=1)
+    while date_to_check < end_of_week:
+        query_of_date = WorkoutInstance.objects.filter(current_user=request.user,
+                                           dates_to_be_completed__date_completed=date_to_check).exclude(
+                                                   youngest_scheduled_date=None).distinct().order_by('-youngest_scheduled_date', 'date_added_by_user')
+        if query_of_date:
+            dict_of_this_weeks_workouts[date_to_check] = query_of_date
+        date_to_check += timezone.timedelta(days=1)
+    
     context = {
         'users_workouts': users_workouts,
-        'future_workouts': future_workouts,
+        'long_future_workouts': long_future_workouts,
         'recent_past_workouts': recent_past_workouts,
         'long_past_workouts': long_past_workouts,
         'other_workouts': other_workouts,
+        'dict_of_this_weeks_workouts': dict_of_this_weeks_workouts,
         }
     return render(request, 'metcons/user_page.html', context=context)
 
@@ -66,6 +85,7 @@ def profileredirect(request):
 def workoutlistview(request):
     # default object list excludes users workouts that have been completed.
     object_list = Workout.objects.all()
+    now = timezone.localtime(timezone.now()).date()
     
     query1 = request.GET.getlist('q')
     query2 = request.GET.get('z')
@@ -74,38 +94,39 @@ def workoutlistview(request):
     query5 = request.GET.get('t')
     query6 = request.GET.get('s')
     query7 = request.GET.get('f')
-    
-    if query3:
-        query3 = int(query3) * 60
-    if query4:
-        query4 = int(query4) * 60
 
-    if query1:
-        for i in query1:
-            if i != '':
-                object_list2 = object_list.filter(movements__name = i)
-                if not object_list2:
-                    object_list2 = object_list.filter(movements__name = i.title())
-                object_list = object_list2
-    if query2:
-        if query2.islower():
-            query2 = query2.title()
-        object_list = object_list.filter(classification__name = query2)
-    if query3:
-        object_list = object_list.filter(estimated_duration_in_seconds__gte=query3)
-    if query4:
-        object_list = object_list.filter(estimated_duration_in_seconds__lte=query4,
-                                         estimated_duration_in_seconds__gt=0)
-    if query5:
-        object_list = object_list.order_by('-number_of_times_completed')
-    if not query6:
-        object_list = object_list.exclude(workoutinstance__current_user=request.user,
-                                          workoutinstance__dates_workout_completed__isnull=False)
-    if not query7:
-        object_list = object_list.exclude(~Q(created_by_user=request.user),
-                                          where_workout_came_from='User Created')
-        
-        
+    if User.objects.filter(username = request.user.username).exists():
+        if query3:
+            query3 = int(query3) * 60
+        if query4:
+            query4 = int(query4) * 60
+
+        if query1:
+            for i in query1:
+                if i != '':
+                    object_list2 = object_list.filter(movements__name = i)
+                    if not object_list2:
+                        object_list2 = object_list.filter(movements__name = i.title())
+                    object_list = object_list2
+        if query2:
+            if query2.islower():
+                query2 = query2.title()
+            object_list = object_list.filter(classification__name = query2)
+        if query3:
+            object_list = object_list.filter(estimated_duration_in_seconds__gte=query3)
+        if query4:
+            object_list = object_list.filter(estimated_duration_in_seconds__lte=query4,
+                                             estimated_duration_in_seconds__gt=0)
+        if query5:
+            object_list = object_list.order_by('-number_of_times_completed')
+        if not query6:
+            current_users_completed_instances = WorkoutInstance.objects.filter(current_user=request.user, dates_workout_completed__isnull=False)
+            object_list = object_list.exclude(workoutinstance__id__in=current_users_completed_instances)
+        if not query7:
+            object_list = object_list.exclude(~Q(created_by_user=request.user),
+                                              where_workout_came_from='User Created')
+            
+            
 
     context = {
         'workout_list': object_list,
@@ -196,10 +217,10 @@ def schedule_instance(request, username, pk):
         if 'schedule instance' in request.POST:
             form = ScheduleInstanceForm(request.POST)
             if form.is_valid():
-                if form.cleaned_data['date_to_be_completed1'] == dt.date.today():
+                if form.cleaned_data['date_to_be_completed'] == dt.date.today():
                     aware_datetime = timezone.now()
                 else:
-                    date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_completed1'], dt.datetime.min.time())
+                    date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_completed'], dt.datetime.min.time())
                     aware_datetime = timezone.make_aware(date_in_datetime)
                 local_date = timezone.localtime(aware_datetime).date()
                 list_of_dates_to_schedule=[local_date]
@@ -225,6 +246,7 @@ def schedule_instance(request, username, pk):
         }
 
     return render(request, 'metcons/schedule_instance.html', context)
+       
 
 @login_required
 def edit_instance(request, username, pk):
@@ -417,7 +439,7 @@ def create_workout(request):
         form = CreateWorkoutForm(request.POST)
 
         if form.is_valid():
-            current_user = User.objects.get(username=request.user.username)
+            current_user = request.user
             if not Workout.objects.filter(workout_text=form.cleaned_data['workout_text']):
                 workout = Workout(workout_text=form.cleaned_data['workout_text'],
                                   scaling_or_description_text=form.cleaned_data['workout_scaling'],
