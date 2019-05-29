@@ -108,7 +108,12 @@ from django.utils import timezone
 ##    wicd_dates.append(i.date_completed)
 
 for i in range(366):
-    date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=i) #dt.date.today() - dt.timedelta(days=i)
+    date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=i)
+    new_date = Date(date_completed=date)
+    new_date.save()
+
+for i in range(366):
+    date = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=i)
     new_date = Date(date_completed=date)
     new_date.save()
 
