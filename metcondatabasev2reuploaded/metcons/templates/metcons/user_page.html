@@ -3,26 +3,50 @@
 {% block content %}
 	<h1>{{ user.username }}'s Homepage</h1>
 	{% if users_workouts %}
-		{% if future_workouts %}
-			<h2>Scheduled Workouts</h2>
-			
-			<ul>
-				{% for future_instance in future_workouts %}
-					{% if future_instance.workout %}
-						{% if future_instance.youngest_scheduled_date %}
-							<li>
-								<p><a href="{{ future_instance.get_absolute_url }}">{{ future_instance.workout.display_name }}</a>
-								<br /><strong>Scheduled for: {{ future_instance.youngest_scheduled_date.date_completed|date:"l, F j, Y" }}</strong>
-								<br />{{ future_instance.edited_workout_text|linebreaks }}</p>
-							</li>
-						{% endif %}
+		{% if future_workouts or dict_of_this_weeks_workouts %}
+			<h2>This Weeks Workouts</h2>
+			{% if dict_of_this_weeks_workouts %}
+				{% for k, v in dict_of_this_weeks_workouts.items %}
+					{% if v %}
+						<h3>{{k|date:"l"}}</h3>
 					{% endif %}
+					<ul>
+						{% for i in v %}
+							{% if i.workout %}
+								{% if i.youngest_scheduled_date %}
+									<li>
+										<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>
+										<br />{{ i.edited_workout_text|linebreaks }}</p>
+										<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+											{% csrf_token %}
+											<input type="submit" value="Add Result" name="add result">
+										</form>
+									</li>
+								{% endif %}
+							{% endif %}
+						{% endfor %}
+					</ul>
 				{% endfor %}
-			</ul>
+			{% endif %}
+			{% if long_future_workouts %}
+				<h2>More Than 1 Week Ahead (Not showing workouts that are also scheduled for the current week)</h2>
+				<ul>
+					{% for future_instance in long_future_workouts %}
+						{% if future_instance.workout %}
+							{% if future_instance.youngest_scheduled_date %}
+								<li>
+									<p><a href="{{ future_instance.get_absolute_url }}">{{ future_instance.workout.display_name }}</a>
+									<br /><strong>Scheduled for: {{ future_instance.youngest_scheduled_date.date_completed|date:"l, F j, Y" }}</strong>
+									<br />{{ future_instance.edited_workout_text|linebreaks }}</p>
+								</li>
+							{% endif %}
+						{% endif %}
+					{% endfor %}
+				</ul>
+			{% endif %}
 		{% endif %}
 		{% if recent_past_workouts %}
 			<h2>Recent Workouts</h2>
-			
 			<ul>
 				{% for recent_instance in recent_past_workouts %}
 					{% if recent_instance.workout %}
@@ -37,7 +61,6 @@
 		{% endif %}
 		{% if long_past_workouts %}
 			<h2>Past Workouts</h2>
-			
 			<ul>
 				{% for past_instance in long_past_workouts %}
 					{% if past_instance.workout %}
