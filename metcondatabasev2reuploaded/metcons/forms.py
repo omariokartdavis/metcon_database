@@ -5,18 +5,18 @@ from django.utils.translation import ugettext_lazy as _
 
 repetition_frequency_choices = [
     ('none', ''),
-    ('days', 'Daily'),
-    ('weeks', 'Weekly'),
-    ('months', 'Monthly'),
-    ('years', 'Yearly'),
+    (1, 'Daily'),
+    (7, 'Weekly'),
+    (28, 'Monthly'),
+    (364, 'Yearly'),
     ]
 
 repetition_length_choices = [
     ('none', ''),
-    ('days', 'Days'),
-    ('weeks', 'Weeks'),
-    ('months', 'Months'),
-    ('years', 'Years'),
+    (1, 'Days'),
+    (7, 'Weeks'),
+    (28, 'Months'),
+    (364, 'Years'),
     ]
 
 def get_default_localtime():
@@ -37,9 +37,9 @@ class CreateResultForm(forms.Form):
 
 class ScheduleInstanceForm(forms.Form):
     date_to_be_completed1 = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
-    repeat_yes = forms.BooleanField(widget=forms.CheckboxInput())
+    repeat_yes = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     repeat_frequency = forms.ChoiceField(widget=forms.Select, choices=repetition_frequency_choices)
-    number_of_repetitions = forms.IntegerField(widget=forms.NumberInput, help_text = 'XX number of times to repeat')
+    number_of_repetitions = forms.IntegerField(widget=forms.NumberInput, required=False, help_text = 'XX number of times to repeat')
     repeat_length = forms.ChoiceField(widget=forms.Select, choices=repetition_length_choices)
 
 class EditInstanceForm(forms.Form):
