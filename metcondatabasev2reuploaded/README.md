@@ -4,26 +4,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## Edited files on 5/28/2019:
 
-(uploaded at work)
-- mainsite_workouts.py
-- models.py
+(uploaded at home)
 - views.py
 - forms.py
-- admin.py
-- workout_list.html
 
 ## Functionality completed on 5/28/2019:
 - renamed what_website_workout_came_from to where_workout_came_from
 - have user created workouts populate the where workout came from field with user_created
 - create filter to show or not show user_created workouts
 - have default workout list not include user_created workouts
-- created form inputs for repeating a scheduled date.
-  - still need to do the view side work.
+- added ability to schedule workout repeatedly into the future
 - changed add_date_to_be_completed in instance to accept multiple dates (likely required for repeat scheduling)
-
-## currently working on:
-- getting proper view functions on schedule instance to allow for repeat scheduling.
-  - as is will raise typeError saying repeat_length is not valid argument for timezone.timedelta() (requires days/months/years etc)
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -57,7 +48,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - create dropdown filter for where workouts came from (users, mainsite, comptrain etc.)
 - add ability to edit resultfiles on edit result page
 - add filter for workout id on workout list page
-- add ability to repeat schedule weekly, monthly etc on schedule form 
 - add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
 - break future workouts into days/this week so I can seperate better on template.
   - requires adding more view filters likely and breaking them into future_tomorrow, future_nextweek etc.
