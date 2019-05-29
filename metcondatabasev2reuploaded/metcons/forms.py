@@ -36,7 +36,7 @@ class CreateResultForm(forms.Form):
     date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
 
 class ScheduleInstanceForm(forms.Form):
-    date_to_be_completed1 = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
+    date_to_be_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
     repeat_yes = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     repeat_frequency = forms.ChoiceField(widget=forms.Select, choices=repetition_frequency_choices)
     number_of_repetitions = forms.IntegerField(widget=forms.NumberInput, required=False, help_text = 'XX number of times to repeat')
@@ -61,6 +61,7 @@ class EditInstanceForm(forms.Form):
         if data < 0:
             raise ValidationError(_('Invalid duration - duration cannot be negative'))
         return data
+
 
 class EditResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000)
