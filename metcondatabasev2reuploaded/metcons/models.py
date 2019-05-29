@@ -200,6 +200,7 @@ class WorkoutInstance(models.Model):
 
         def add_date_to_be_completed(self, *args):
                 #dates need to be in timezone.local(datetime).date() format.
+                #can unpack a list into individual args by entering into func as (*list)
                 for i in args:
                         new_date = Date.objects.filter(date_completed=i)
                         if new_date.exists():
@@ -222,31 +223,37 @@ class WorkoutInstance(models.Model):
                                 self.update_youngest_scheduled_date()
                                 self.save()
 
-        def remove_date_to_be_completed(self, date):
-                #date must be a Date object
-                if date and date in self.dates_to_be_completed.all():
-                        self.dates_to_be_completed.remove(date)
-                        self.update_youngest_scheduled_date()
-                        self.save()
+        def remove_date_to_be_completed(self, *args):
+                #dates need to be in timezone.local(datetime).date() format.
+                for i in args:
+                        removed_date = Date.objects.filter(date_completed=i)
+                        if removed_date.exists():
+                                removed_date=Date.objects.get(date_completed=i)
+                                if removed_date in self.dates_to_be_completed.all():
+                                        self.dates_to_be_completed.remove(removed_date)
+                self.update_youngest_scheduled_date()
+                self.save()
                         
         def update_youngest_scheduled_date(self):
                 if self.dates_to_be_completed.all().exists():
-                        youngest_date_excluding_today = Date.objects.filter(dates_to_be_completed=self,
+                        scheduled_dates_excluding_today = Date.objects.filter(dates_to_be_completed=self,
                                                                             date_completed__gte=timezone.localtime(timezone.now()).date()
                                                                             ).exclude(dates_workout_completed=self,
                                                                                       date_completed=timezone.localtime(timezone.now()).date())
-                        if youngest_date_excluding_today:
-                                self.youngest_scheduled_date = youngest_date_excluding_today.earliest('date_completed')
+                        if scheduled_dates_excluding_today:
+                                self.youngest_scheduled_date = scheduled_dates_excluding_today.earliest('date_completed')
                         else:
                                 self.youngest_scheduled_date=None
+                else:
+                        self.youngest_scheduled_date=None
                         
                         
         def update_oldest_completed_date(self):
                 if self.dates_workout_completed.all().exists():
-                        oldest_completed_date = Date.objects.filter(dates_workout_completed=self,
+                        completed_dates = Date.objects.filter(dates_workout_completed=self,
                                                                     date_completed__lte=timezone.localtime(timezone.now()).date())
-                        if oldest_completed_date:
-                                self.oldest_completed_date = oldest_completed_date.latest('date_completed')
+                        if completed_dates:
+                                self.oldest_completed_date = completed_dates.latest('date_completed')
                         else:
                                 self.oldest_completed_date=None
                 else:
