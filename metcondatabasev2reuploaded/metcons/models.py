@@ -5,9 +5,20 @@ import uuid
 from django.conf import settings
 from django.db.models import Count, F, Sum, Avg
 from django.utils import timezone
+from django.contrib.auth.models import AbstractUser
 
 def get_default_localtime_date():
         return timezone.localtime(timezone.now()).date()
+
+class User(AbstractUser):
+        gender_choices = [
+                ('M', 'Male'),
+                ('F', 'Female'),
+                ]
+
+        gender = models.CharField(max_length=1, blank=True, null=True, choices = gender_choices, default='M',
+                                  help_text='Is this workout (and the weights you have entered) applicable for both Males and Females or only one?')
+
 
 class Classification(models.Model):
         """Model representing a classification of a movement"""
@@ -58,6 +69,16 @@ class Workout(models.Model):
         where_workout_came_from = models.CharField(max_length=200, blank=True)
         estimated_duration_in_seconds = models.IntegerField(default=0, verbose_name='Duration (sec)', null=True, blank=True)
         created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+        gender_choices = [
+                ('M', 'Male'),
+                ('F', 'Female'),
+                ('B', 'Both'),
+                ]
+                
+        gender = models.CharField(max_length=1, blank=True, null=True, choices = gender_choices, default='B',
+                                  help_text='Is this workout applicable for both Males and Females or only one?')
+
+
                 
         movements = models.ManyToManyField(Movement, blank=True)
 
