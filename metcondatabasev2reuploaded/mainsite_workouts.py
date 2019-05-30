@@ -1,9 +1,8 @@
-from metcons.models import Classification, Movement, Workout
+from metcons.models import Classification, Movement, Workout, User
 import datetime as dt
 import urllib.request
 from bs4 import BeautifulSoup as bs
 import re
-from django.contrib.auth.models import User
 from django.utils import timezone
 
 user = User.objects.get(username='odavis')
@@ -59,6 +58,7 @@ while year >= 2018:
                               date_created=date_in_datetime,
                               estimated_duration_in_seconds=duration,
                               created_by_user=user,
+                              gender='B'
                               )
             workout.save()
             workout.update_movements_and_classification()
