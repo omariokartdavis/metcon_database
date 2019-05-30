@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from metcons.models import Classification, Movement, Workout, WorkoutInstance, Result, ResultFile, Date
+from metcons.models import Classification, Movement, Workout, WorkoutInstance, Result, ResultFile, Date, User
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import User
 from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm, EditInstanceForm, EditResultForm
 from django.utils import timezone
 import datetime as dt
@@ -447,6 +446,7 @@ def create_workout(request):
                                   where_workout_came_from='User Created',
                                   classification=None,
                                   created_by_user = current_user,
+                                  gender = form.cleaned_data['gender'],
                                   )
                 workout.save()
                 if Workout.objects.filter(id=workout.id, workout_text__iregex=r'as possible in \d+ minutes of'):
@@ -475,7 +475,8 @@ def create_workout(request):
             return HttpResponseRedirect(instance.get_absolute_url())
 
     else:
-        form = CreateWorkoutForm()
+        form = CreateWorkoutForm(initial={'gender': request.user.gender,
+                                          })
 
     context = {
         'form': form,
