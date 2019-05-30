@@ -19,6 +19,12 @@ repetition_length_choices = [
     (364, 'Years'),
     ]
 
+gender_choices = [
+    ('M', 'Male'),
+    ('F', 'Female'),
+    ('B', 'Both'),
+    ]
+
 def get_default_localtime():
     return timezone.localtime(timezone.now())
 
@@ -26,6 +32,7 @@ class CreateWorkoutForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your workout")
     workout_scaling = forms.CharField(widget=forms.Textarea, max_length=4000, help_text='Enter any scaling options', required=False)
     estimated_duration = forms.IntegerField(help_text='Enter an estimate of how long it will take to complete the workout in minutes (whole numbers only)', required=False)
+    gender = forms.ChoiceField(widget=forms.Select(), choices=gender_choices, help_text='Is this workout (and the weights you have entered) applicable for both Males and Females or only one?')
 
 class CreateResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here")
