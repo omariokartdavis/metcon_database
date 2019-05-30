@@ -1,5 +1,13 @@
 from django.contrib import admin
-from .models import Classification, Movement, Workout, WorkoutInstance, Date, Result, ResultFile
+from .models import Classification, Movement, Workout, WorkoutInstance, Date, Result, ResultFile, User
+from django.contrib.auth.admin import UserAdmin
+
+#admin.site.register(User, UserAdmin)
+@admin.register(User)
+class UserProfileAdmin(UserAdmin):
+    fieldsets = UserAdmin.fieldsets + (
+        (None, {'fields': ('gender',)}),
+        )
 
 admin.site.register(Classification)
 
