@@ -2,20 +2,22 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## Edited files on 5/29/2019:
-
+## Edited files on 5/30/19
 (uploaded at work)
+- mainsite_workouts.py
 - movements_list.py
-- models.py
+- settings.py
+- models.py (requires deleting database and migrations)
 - forms.py
 - views.py
-- user_page.html
-- create_result.html
+- admin.py
 
-## Functionality completed on 5/28/2019:
-- remove_date_to_be_completed can now take multiple args
-- list workouts on user page by day of the week for future workouts
-- added add result button to user_page list of workouts for this weeks workouts only
+## Functionality completed on 5/30/2019:
+- added gender field to workouts and workout creation form
+- created custom user model so I can hold more info like gender etc.
+  - requires deleting database and all migrations
+- changed admin page to show user model and new user fields
+- add initial gender to workout creation to be the gender of the user
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -45,6 +47,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- if a user clicks to be a gym owner or coach, let them select what gender their default workouts will be
 - create profanity filter for creating workouts but not results
   - just like movement tags, create function to search for words in workout_text or scaling description
     - if words are found. delete that workout and give popup saying why
@@ -59,11 +62,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - add ability to edit resultfiles on edit result page
 - add filter for workout id on workout list page
 - add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
-- add a Gender field to workouts that can be M/F/Both signifying if the weights are categorized for males/females
-  - all crossfit mainsite workouts are both
-  - ?could possibly do it just like movement tags instead of create a field?
-    - could add Men, Women, Man, Woman to movement tags and have their classificaion be Gender or Male/Female
-      - probably better to do something similar but create new field in workout model anyway. simpler
 - use jquery UI datepicker for date choices in schedule and result forms
   - look at top answer from this question: https://stackoverflow.com/questions/12884638/select-future-dates-only-django-form
   - can give available dates to schedule form and create result form
