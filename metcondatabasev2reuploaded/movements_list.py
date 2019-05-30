@@ -112,7 +112,7 @@ for i in range(366):
     new_date = Date(date_completed=date)
     new_date.save()
 
-for i in range(366):
+for i in range(1, 366):
     date = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=i)
     new_date = Date(date_completed=date)
     new_date.save()
