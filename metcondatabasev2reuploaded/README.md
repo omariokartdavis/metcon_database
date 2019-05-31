@@ -2,19 +2,19 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## Edited files on 5/30/19
-(uploaded at home)
+## Edited files on 5/31/19
+(uploaded at work)
 - views.py
 - forms.py
 - urls.py
-- created edit_schedule.html
+- created delete_schedule.html
 - user_page.html
+- workoutinstance_detail.html
 
-## Functionality completed on 5/30/2019:
-- added add result and schedule workout buttons to user_page workouts that don't have anything done yet
-- add a change scheduled date button on instances
-  - removes the date they don't want and adds new one
-  - can only currently remove 1 date at a time
+## Functionality completed on 5/31/2019:
+- can choose to remove multiple dates during edit schedule
+- added delete schedule page.
+  - can remove multiple dates at once
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -44,10 +44,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- allow edit schedule page to remove multiple dates and add multiple dates
-  - to remove multiple dates ask if this workout date is repeated and tell them to input frequency as if they were
-    scheduling it.
-    - then remove each date on that frequency.
 - if a user clicks to be a gym owner or coach, let them select what gender their default workouts will be
 - create profanity filter for creating workouts but not results
   - just like movement tags, create function to search for words in workout_text or scaling description
