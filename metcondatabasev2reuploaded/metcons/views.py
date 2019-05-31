@@ -6,7 +6,7 @@ from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
-from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm, EditInstanceForm, EditResultForm, EditScheduleForm
+from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm, EditInstanceForm, EditResultForm, EditScheduleForm, DeleteScheduleForm
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Max, Min, Q
@@ -246,20 +246,23 @@ def schedule_instance(request, username, pk):
 
     return render(request, 'metcons/schedule_instance.html', context)
 
+@login_required
 def edit_schedule(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
     if request.method == 'POST':
         if 'edit schedule' in request.POST:
             form = EditScheduleForm(request.POST)
-            date_to_be_removed = request.POST.get('date_to_be_removed')
-            form.fields['date_to_be_removed'].choices = [(date_to_be_removed, date_to_be_removed)]
+            date_to_be_removed = request.POST.getlist('date_to_be_removed')
+            form.fields['date_to_be_removed'].choices = [(i, i) for i in date_to_be_removed]
             if form.is_valid():
-                if form.cleaned_data['date_to_be_removed'] == dt.date.today():
-                    aware_datetime = timezone.now()
-                else:
-                    date_in_datetime = dt.datetime.strptime(form.cleaned_data['date_to_be_removed'], "%Y-%m-%d")
+                i=0
+                dates_to_be_removed = []
+                while i < len(date_to_be_removed):
+                    date_in_datetime = dt.datetime.strptime(form.cleaned_data['date_to_be_removed'][i], "%Y-%m-%d")
                     aware_datetime = timezone.make_aware(date_in_datetime)
-                local_date_to_be_removed = timezone.localtime(aware_datetime).date()
+                    local_date_to_be_removed = timezone.localtime(aware_datetime).date()
+                    dates_to_be_removed.append(local_date_to_be_removed)
+                    i+=1
                 
                 if form.cleaned_data['date_to_be_added'] == dt.date.today():
                     aware_datetime = timezone.now()
@@ -269,7 +272,7 @@ def edit_schedule(request, username, pk):
                 local_date_to_be_added = timezone.localtime(aware_datetime).date()
                 
                 instance.add_date_to_be_completed(local_date_to_be_added)
-                instance.remove_date_to_be_completed(local_date_to_be_removed)
+                instance.remove_date_to_be_completed(*dates_to_be_removed)
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -284,6 +287,41 @@ def edit_schedule(request, username, pk):
         }
     
     return render(request, 'metcons/edit_schedule.html', context)
+
+@login_required
+def delete_schedule(request, username, pk):
+    instance = WorkoutInstance.objects.get(id=pk)
+    
+    if request.method == 'POST':
+        if 'delete schedule' in request.POST:
+            form = DeleteScheduleForm(request.POST)
+            date_to_be_removed = request.POST.getlist('date_to_be_removed')
+            form.fields['date_to_be_removed'].choices = [(i, i) for i in date_to_be_removed]
+            if form.is_valid():
+                i=0
+                dates_to_be_removed = []
+                while i < len(date_to_be_removed):
+                    date_in_datetime = dt.datetime.strptime(form.cleaned_data['date_to_be_removed'][i], "%Y-%m-%d")
+                    aware_datetime = timezone.make_aware(date_in_datetime)
+                    local_date_to_be_removed = timezone.localtime(aware_datetime).date()
+                    dates_to_be_removed.append(local_date_to_be_removed)
+                    i+=1
+
+                instance.remove_date_to_be_completed(*dates_to_be_removed)
+
+                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    else:
+        form = DeleteScheduleForm()
+        form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.all()]
+        form.fields['date_to_be_removed'].initial = instance.youngest_scheduled_date.date_completed
+
+    context = {
+        'form': form,
+        'instance': instance,
+        }
+    
+    return render(request, 'metcons/delete_schedule.html', context)
 
 @login_required
 def edit_instance(request, username, pk):
