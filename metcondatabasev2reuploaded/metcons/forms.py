@@ -50,8 +50,11 @@ class ScheduleInstanceForm(forms.Form):
     repeat_length = forms.ChoiceField(widget=forms.Select, choices=repetition_length_choices)
 
 class EditScheduleForm(forms.Form):
-    date_to_be_removed = forms.ChoiceField(help_text='What date would you like to remove?')
+    date_to_be_removed = forms.MultipleChoiceField(help_text='What date would you like to remove?')
     date_to_be_added = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
+
+class DeleteScheduleForm(forms.Form):
+    date_to_be_removed = forms.MultipleChoiceField(help_text='What date would you like to remove?')
     
 class EditInstanceForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
