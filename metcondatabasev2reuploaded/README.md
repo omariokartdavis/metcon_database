@@ -3,21 +3,18 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # Run update_instance_dates every day
 
 ## Edited files on 5/30/19
-(uploaded at work)
-- mainsite_workouts.py
-- movements_list.py
-- settings.py
-- models.py (requires deleting database and migrations)
-- forms.py
+(uploaded at home)
 - views.py
-- admin.py
+- forms.py
+- urls.py
+- created edit_schedule.html
+- user_page.html
 
 ## Functionality completed on 5/30/2019:
-- added gender field to workouts and workout creation form
-- created custom user model so I can hold more info like gender etc.
-  - requires deleting database and all migrations
-- changed admin page to show user model and new user fields
-- add initial gender to workout creation to be the gender of the user
+- added add result and schedule workout buttons to user_page workouts that don't have anything done yet
+- add a change scheduled date button on instances
+  - removes the date they don't want and adds new one
+  - can only currently remove 1 date at a time
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -47,6 +44,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- allow edit schedule page to remove multiple dates and add multiple dates
+  - to remove multiple dates ask if this workout date is repeated and tell them to input frequency as if they were
+    scheduling it.
+    - then remove each date on that frequency.
 - if a user clicks to be a gym owner or coach, let them select what gender their default workouts will be
 - create profanity filter for creating workouts but not results
   - just like movement tags, create function to search for words in workout_text or scaling description
@@ -72,8 +73,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
         dates_to_be_completed__date_completed=yesterday).exclude(
         dates_workout_completed__date_completed=yesterday).distinct()
   - have add result button that has default date of previous day
-- add a change scheduled date button on instances
-  - removes the date they don't want and adds new one
 - add create workout link to workout list page
   - under user authentication in template
 - create popup when workout is added to profile to ask if they just copmleted it/want to schedule it for today or another day
