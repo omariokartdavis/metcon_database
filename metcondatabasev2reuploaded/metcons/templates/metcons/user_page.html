@@ -16,7 +16,6 @@
 								{% if i.youngest_scheduled_date %}
 									<li>
 										<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>
-										<br />{{ i.edited_workout_text|linebreaks }}</p>
 										<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 											{% csrf_token %}
 											<input type="submit" value="Add Result" name="add result">
@@ -25,6 +24,11 @@
 											{% csrf_token %}
 											<input type="submit" value="Edit Schedule" name="edit schedule">
 										</form>
+										<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+											{% csrf_token %}
+											<input type="submit" value="Delete Schedule" name="Delete schedule">
+										</form>
+										{{ i.edited_workout_text|linebreaks }}</p>
 									</li>
 								{% endif %}
 							{% endif %}
@@ -41,11 +45,15 @@
 								<li>
 									<p><a href="{{ future_instance.get_absolute_url }}">{{ future_instance.workout.display_name }}</a>
 									<br /><strong>Scheduled for: {{ future_instance.youngest_scheduled_date.date_completed|date:"l, F j, Y" }}</strong>
-									<br />{{ future_instance.edited_workout_text|linebreaks }}</p>
 									<form class="post_workout_form" action="{% url 'edit_schedule' user.username future_instance.id %}">
 										{% csrf_token %}
 										<input type="submit" value="Edit Schedule" name="edit schedule">
 									</form>
+									<form class="post_workout_form" action="{% url 'delete_schedule' user.username future_instance.id %}">
+										{% csrf_token %}
+										<input type="submit" value="Delete Schedule" name="Delete schedule">
+									</form>
+									{{ future_instance.edited_workout_text|linebreaks }}</p>
 								</li>
 							{% endif %}
 						{% endif %}
@@ -60,11 +68,11 @@
 					{% if recent_instance.workout %}
 						<li>
 							<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>
+							<br /><strong>Last Completed On: {{ recent_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
 							<form action="{% url 'schedule_instance' user.username recent_instance.id %}">
 								<input type="submit" value="Schedule Workout" />
 							</form>
-							<br /><strong>Last Completed On: {{ recent_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
-							<br />{{ recent_instance.edited_workout_text|linebreaks }}</p>
+							{{ recent_instance.edited_workout_text|linebreaks }}</p>
 						</li>
 					{% endif %}
 				{% endfor %}
@@ -77,11 +85,11 @@
 					{% if past_instance.workout %}
 						<li>
 							<p><a href="{{ past_instance.get_absolute_url }}">{{ past_instance.workout.display_name }}</a>
+							<br /><strong>Last Completed On: {{ past_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
 							<form action="{% url 'schedule_instance' user.username past_instance.id %}">
 								<input type="submit" value="Schedule Workout" />
 							</form>
-							<br /><strong>Last Completed On: {{ past_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
-							<br />{{ past_instance.edited_workout_text|linebreaks }}</p>
+							{{ past_instance.edited_workout_text|linebreaks }}</p>
 						</li>
 					{% endif %}
 				{% endfor %}
@@ -101,7 +109,7 @@
 							<form action="{% url 'schedule_instance' user.username instance.id %}">
 								<input type="submit" value="Schedule Workout" />
 							</form>
-							<br />{{ instance.edited_workout_text|linebreaks }}</p>
+							{{ instance.edited_workout_text|linebreaks }}</p>
 						</li>
 					{% endif %}
 				{% endfor %}
