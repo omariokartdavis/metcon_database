@@ -43,12 +43,16 @@ class CreateResultForm(forms.Form):
     date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
 
 class ScheduleInstanceForm(forms.Form):
-    date_to_be_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
+    date_to_be_added = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
     repeat_yes = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     repeat_frequency = forms.ChoiceField(widget=forms.Select, choices=repetition_frequency_choices)
     number_of_repetitions = forms.IntegerField(widget=forms.NumberInput, required=False, help_text = 'XX number of times to repeat')
     repeat_length = forms.ChoiceField(widget=forms.Select, choices=repetition_length_choices)
 
+class EditScheduleForm(forms.Form):
+    date_to_be_removed = forms.ChoiceField(help_text='What date would you like to remove?')
+    date_to_be_added = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
+    
 class EditInstanceForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
     scaling_text= forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
