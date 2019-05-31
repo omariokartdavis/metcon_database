@@ -6,6 +6,14 @@
 			<form action="{% url 'schedule_instance' user.username workoutinstance.id %}">
 				<input type="submit" value="Schedule Workout" />
 			</form>
+			<form class="post_workout_form" action="{% url 'edit_schedule' user.username workoutinstance.id %}">
+				{% csrf_token %}
+				<input type="submit" value="Edit Schedule" name="edit schedule">
+			</form>
+			<form class="post_workout_form" action="{% url 'delete_schedule' user.username workoutinstance.id %}">
+				{% csrf_token %}
+				<input type="submit" value="Delete Schedule" name="Delete schedule">
+			</form>
 			<form action="{% url 'edit_instance' user.username workoutinstance.id %}">
 				<input type="submit" value="Edit Workout" />
 			</form>
