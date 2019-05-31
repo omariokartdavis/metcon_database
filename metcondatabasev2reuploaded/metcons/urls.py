@@ -12,6 +12,7 @@ urlpatterns = [
     path('movement/create/', views.MovementCreate.as_view(), name='movement_create'),
     path('<username>/workout/<uuid:pk>/result/create/', views.create_result, name='result_create'),
     path('<username>/workout/<uuid:pk>/scheduleworkout/', views.schedule_instance, name='schedule_instance'),
+    path('<username>/workout/<uuid:pk>/editschedule/', views.edit_schedule, name='edit_schedule'),
     path('<username>/', views.profile, name='profile'),
     path('<username>/workout/<uuid:pk>', views.WorkoutInstanceDetailView.as_view(), name='workoutinstance-detail'),
     path('<username>/workout/<uuid:pk>/edit', views.edit_instance, name='edit_instance'),
