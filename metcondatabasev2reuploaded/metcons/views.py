@@ -6,7 +6,7 @@ from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
-from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm, EditInstanceForm, EditResultForm
+from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm, EditInstanceForm, EditResultForm, EditScheduleForm
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Max, Min, Q
@@ -216,10 +216,10 @@ def schedule_instance(request, username, pk):
         if 'schedule instance' in request.POST:
             form = ScheduleInstanceForm(request.POST)
             if form.is_valid():
-                if form.cleaned_data['date_to_be_completed'] == dt.date.today():
+                if form.cleaned_data['date_to_be_added'] == dt.date.today():
                     aware_datetime = timezone.now()
                 else:
-                    date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_completed'], dt.datetime.min.time())
+                    date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_added'], dt.datetime.min.time())
                     aware_datetime = timezone.make_aware(date_in_datetime)
                 local_date = timezone.localtime(aware_datetime).date()
                 list_of_dates_to_schedule=[local_date]
@@ -234,7 +234,7 @@ def schedule_instance(request, username, pk):
                         local_date += timezone.timedelta(days=repeat_frequency)
 
                 instance.add_date_to_be_completed(*list_of_dates_to_schedule)
-                
+
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
     else:
         form = ScheduleInstanceForm()
@@ -245,7 +245,45 @@ def schedule_instance(request, username, pk):
         }
 
     return render(request, 'metcons/schedule_instance.html', context)
-       
+
+def edit_schedule(request, username, pk):
+    instance = WorkoutInstance.objects.get(id=pk)
+    if request.method == 'POST':
+        if 'edit schedule' in request.POST:
+            form = EditScheduleForm(request.POST)
+            date_to_be_removed = request.POST.get('date_to_be_removed')
+            form.fields['date_to_be_removed'].choices = [(date_to_be_removed, date_to_be_removed)]
+            if form.is_valid():
+                if form.cleaned_data['date_to_be_removed'] == dt.date.today():
+                    aware_datetime = timezone.now()
+                else:
+                    date_in_datetime = dt.datetime.strptime(form.cleaned_data['date_to_be_removed'], "%Y-%m-%d")
+                    aware_datetime = timezone.make_aware(date_in_datetime)
+                local_date_to_be_removed = timezone.localtime(aware_datetime).date()
+                
+                if form.cleaned_data['date_to_be_added'] == dt.date.today():
+                    aware_datetime = timezone.now()
+                else:
+                    date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_added'], dt.datetime.min.time())
+                    aware_datetime = timezone.make_aware(date_in_datetime)
+                local_date_to_be_added = timezone.localtime(aware_datetime).date()
+                
+                instance.add_date_to_be_completed(local_date_to_be_added)
+                instance.remove_date_to_be_completed(local_date_to_be_removed)
+
+                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    else:
+        form = EditScheduleForm()
+        form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.all()]
+        form.fields['date_to_be_removed'].initial = instance.youngest_scheduled_date.date_completed
+
+    context = {
+        'form': form,
+        'instance': instance,
+        }
+    
+    return render(request, 'metcons/edit_schedule.html', context)
 
 @login_required
 def edit_instance(request, username, pk):
