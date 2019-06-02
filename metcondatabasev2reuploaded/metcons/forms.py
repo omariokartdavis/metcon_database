@@ -38,7 +38,7 @@ class CreateResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here")
     duration_minutes = forms.IntegerField(required = False)
     duration_seconds = forms.IntegerField(required = False)
-    media_file = forms.FileField(required=False, help_text='Attach any pictures or videos')
+    media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
     media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable')
     date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
 
