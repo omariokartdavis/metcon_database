@@ -2,19 +2,20 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## Edited files on 5/31/19
-(uploaded at work)
+## Edited files on 6/2/19
+(uploadeded at jome)
 - views.py
-- forms.py
-- urls.py
-- created delete_schedule.html
-- user_page.html
+- edit_schedule.html
+- delete_schedule.html
+- workout_list.html
 - workoutinstance_detail.html
 
-## Functionality completed on 5/31/2019:
-- can choose to remove multiple dates during edit schedule
-- added delete schedule page.
-  - can remove multiple dates at once
+## Functionality completed on 6/2/2019:
+- edit and delete schedules only show dates in the future to be allowed to remove
+- ability to filter workouts by specific user
+  - filters for workouts that that user has added to their profile. not necessarily workouts they created.
+- can upload multiple files when adding result by holding control.
+  - pictures and videos are currently sized to 750x500 on workoutinstance_detail template
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -44,6 +45,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- find a way to add captions to each file uploaded via resulst
 - if a user clicks to be a gym owner or coach, let them select what gender their default workouts will be
 - create profanity filter for creating workouts but not results
   - just like movement tags, create function to search for words in workout_text or scaling description
@@ -59,11 +61,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - add ability to edit resultfiles on edit result page
 - add filter for workout id on workout list page
 - add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
-- use jquery UI datepicker for date choices in schedule and result forms
-  - look at top answer from this question: https://stackoverflow.com/questions/12884638/select-future-dates-only-django-form
-  - can give available dates to schedule form and create result form
-  - create result should only have past
-  - schedule should only have future dates
 - create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
   - if WorkoutInstance.objects.filter(current_user=user,
         dates_to_be_completed__date_completed=yesterday).exclude(
@@ -84,10 +81,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - will help speed up workout creation and all instance updates/saves
 - add filter on workout instance detail page to filter results by date
 - add login to index page.
-- Add search for a specific users workouts
-  - search for workouts mat fraser has done
-  - filter for workouts whose workout instances have users of xx name
-    - maybe this is a subquery?
 - Add privacy setting so users can set their profile/workouts to private and therefore others cant search for/see them.
   - default to public
 - Combine Create Movement and Update Workout buttons into a popup:
@@ -163,3 +156,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - move "last completed" on instancedetail page to next to the title like so:
         Workout 287 - Last Completed: Date
   - Grey the text for last completed out and make it smaller than workout number.
+- use jquery UI datepicker for date choices in schedule and result forms
+  - look at top answer from this question: https://stackoverflow.com/questions/12884638/select-future-dates-only-django-form
+  - can give available dates to schedule form and create result form
+  - create result should only have past
+  - schedule should only have future dates
