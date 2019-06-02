@@ -93,7 +93,8 @@ def workoutlistview(request):
     query5 = request.GET.get('t')
     query6 = request.GET.get('s')
     query7 = request.GET.get('f')
-
+    query8 = request.GET.get('h')
+    
     if User.objects.filter(username = request.user.username).exists():
         if query3:
             query3 = int(query3) * 60
@@ -121,6 +122,10 @@ def workoutlistview(request):
         if not query6:
             current_users_completed_instances = WorkoutInstance.objects.filter(current_user=request.user, dates_workout_completed__isnull=False)
             object_list = object_list.exclude(workoutinstance__id__in=current_users_completed_instances)
+        if query8:
+            #add an exclude to this to not show workouts that people have marked private later on
+            query7 = 'on'
+            object_list = object_list.filter(workoutinstance__current_user__username = query8)
         if not query7:
             object_list = object_list.exclude(~Q(created_by_user=request.user),
                                               where_workout_came_from='User Created')
@@ -277,9 +282,11 @@ def edit_schedule(request, username, pk):
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
     else:
+        now = timezone.localtime(timezone.now()).date()
         form = EditScheduleForm()
-        form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.all()]
-        form.fields['date_to_be_removed'].initial = instance.youngest_scheduled_date.date_completed
+        form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now)]
+        #not sure if I want to have an initial choice here.
+        #form.fields['date_to_be_removed'].initial = instance.youngest_scheduled_date.date_completed
 
     context = {
         'form': form,
@@ -312,9 +319,11 @@ def delete_schedule(request, username, pk):
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
     else:
+        now = timezone.localtime(timezone.now()).date()
         form = DeleteScheduleForm()
-        form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.all()]
-        form.fields['date_to_be_removed'].initial = instance.youngest_scheduled_date.date_completed
+        form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now)]
+        #not sure if I want to have an initial choice here.
+        #form.fields['date_to_be_removed'].initial = instance.youngest_scheduled_date.date_completed
 
     context = {
         'form': form,
@@ -411,11 +420,12 @@ def create_result(request, username, pk):
                 instance.update_times_completed()
                 
                 if request.FILES:
-                    resultfile = ResultFile(result=result,
-                                        caption = form.cleaned_data['media_file_caption'],
-                                        file=request.FILES['media_file'],
-                                        content_type = request.FILES['media_file'].content_type)
-                    resultfile.save()                                            
+                    for i in request.FILES.getlist('media_file'):
+                        resultfile = ResultFile(result=result,
+                                            caption = form.cleaned_data['media_file_caption'],
+                                            file=i,
+                                            content_type = i.content_type)
+                        resultfile.save()                                            
 
                 return HttpResponseRedirect(instance.get_absolute_url())
     else:
