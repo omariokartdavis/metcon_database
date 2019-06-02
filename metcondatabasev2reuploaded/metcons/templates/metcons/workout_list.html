@@ -53,7 +53,11 @@
 }
 
 #myClassificationDropdown {
-  right: 61px;
+  right: 331px;
+}
+
+#filtersubmitbutton {
+  display: inline-block;
 }
 
 .dropdown-content option {
@@ -106,6 +110,7 @@
 						{% endfor %}
 					</select>
 				</div>
+				<input type="text" class = "textinput" placeholder="Search Usernames.."  name="h" id="myUsernameInput">
 				<input type='submit' class='button' id='filtersubmitbutton'>
 				<br /><input type="checkbox" class="checkboxinput" name="t" id="popularitycheckbox">
 				<label for="popularitycheckbox">Sort By Most Popular</label>
@@ -210,6 +215,13 @@ if (textinputs) {
   for (i = 0; i < textinputs.length; i++) {
     textinputs[i].addEventListener("focus", Dropdown, false);
 	textinputs[i].addEventListener("keyup", Filter, false);
+  }
+}
+var durationinputs = document.getElementsByClassName("durationinput");
+var i;
+if (durationinputs) {
+  for (i = 0; i < durationinputs.length; i++) {
+    durationinputs[i].addEventListener("focus", DropdownExit, false);
   }
 }
 
