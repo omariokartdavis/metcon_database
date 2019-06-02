@@ -48,7 +48,7 @@
 							{% if result.resultfile_set.all %}
 								{% for resultfile in result.resultfile_set.all %}
 									{% if resultfile.content_type == "image/png" or resultfile.content_type == "image/jpeg" or resultfile.content_type == "image/gif" %}
-										<img src="{{ resultfile.file.url }}" />
+										<img src="{{ resultfile.file.url }}" width="750" height="500"/>
 									{% elif resultfile.content_type == "video/mp4" %}
 										<video controls>
 											<source src="{{ MEDIA_URL }}{{ resultfile.file }}">
