@@ -10,6 +10,7 @@ from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceF
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Max, Min, Q
+from django.core.paginator import Paginator
 import re
 
 
@@ -66,7 +67,11 @@ def profile(request, username):
         if query_of_date:
             dict_of_this_weeks_workouts[date_to_check] = query_of_date
         date_to_check += timezone.timedelta(days=1)
-    
+
+    yesterday = now - timezone.timedelta(days=1)
+    workouts_with_no_results_yesterday = WorkoutInstance.objects.filter(current_user=request.user,
+                                                                        dates_to_be_completed__date_completed=yesterday).exclude(
+                                                                            dates_workout_completed__date_completed=yesterday).distinct().order_by('-youngest_scheduled_date')
     context = {
         'users_workouts': users_workouts,
         'long_future_workouts': long_future_workouts,
@@ -74,6 +79,7 @@ def profile(request, username):
         'long_past_workouts': long_past_workouts,
         'other_workouts': other_workouts,
         'dict_of_this_weeks_workouts': dict_of_this_weeks_workouts,
+        'workouts_with_no_results_yesterday': workouts_with_no_results_yesterday,
         }
     return render(request, 'metcons/user_page.html', context=context)
 
@@ -129,11 +135,13 @@ def workoutlistview(request):
         if not query7:
             object_list = object_list.exclude(~Q(created_by_user=request.user),
                                               where_workout_came_from='User Created')
-            
-            
+
+    paginator = Paginator(object_list, 10)
+    page = request.GET.get('page')
+    workout_list = paginator.get_page(page)            
 
     context = {
-        'workout_list': object_list,
+        'workout_list': workout_list,
         'num_workouts_filtered': object_list.count(),
         'movement_list': Movement.objects.all(),
         'classification_list': Classification.objects.all(),
@@ -275,9 +283,9 @@ def edit_schedule(request, username, pk):
                     date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_added'], dt.datetime.min.time())
                     aware_datetime = timezone.make_aware(date_in_datetime)
                 local_date_to_be_added = timezone.localtime(aware_datetime).date()
-                
-                instance.add_date_to_be_completed(local_date_to_be_added)
+
                 instance.remove_date_to_be_completed(*dates_to_be_removed)
+                instance.add_date_to_be_completed(local_date_to_be_added)
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -285,8 +293,12 @@ def edit_schedule(request, username, pk):
         now = timezone.localtime(timezone.now()).date()
         form = EditScheduleForm()
         form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now)]
-        #not sure if I want to have an initial choice here.
-        #form.fields['date_to_be_removed'].initial = instance.youngest_scheduled_date.date_completed
+        if 'previous day edit schedule' in request.GET:
+            now = timezone.localtime(timezone.now()).date()
+            yesterday = now - timezone.timedelta(days=1)
+            form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=yesterday)]
+            form.fields['date_to_be_removed'].initial = yesterday
+            form.fields['date_to_be_added'].initial = now
 
     context = {
         'form': form,
@@ -436,6 +448,10 @@ def create_result(request, username, pk):
             duration_minutes=0
             duration_seconds=0
         form = CreateResultForm(initial={'duration_minutes': duration_minutes, 'duration_seconds': duration_seconds})
+        if 'previous day add result' in request.GET:
+            yesterday = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
+            form.fields['date_completed'].initial = yesterday
+
 
     context = {
         'form': form,
