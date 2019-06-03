@@ -2,20 +2,18 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## Edited files on 6/2/19
-(uploadeded at jome)
+## Edited files on 6/3/19
+(uploadeded at home)
 - views.py
-- edit_schedule.html
-- delete_schedule.html
+- user_page.html
 - workout_list.html
-- workoutinstance_detail.html
 
-## Functionality completed on 6/2/2019:
-- edit and delete schedules only show dates in the future to be allowed to remove
-- ability to filter workouts by specific user
-  - filters for workouts that that user has added to their profile. not necessarily workouts they created.
-- can upload multiple files when adding result by holding control.
-  - pictures and videos are currently sized to 750x500 on workoutinstance_detail template
+## Functionality completed on 6/3/2019:
+- added pagination to workout_list.
+  - still can't get it to work with filters
+- create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
+  - add result button that has default date of previous day
+  - edit schedule button has default remove date of yesterday
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -61,11 +59,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - add ability to edit resultfiles on edit result page
 - add filter for workout id on workout list page
 - add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
-- create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
-  - if WorkoutInstance.objects.filter(current_user=user,
-        dates_to_be_completed__date_completed=yesterday).exclude(
-        dates_workout_completed__date_completed=yesterday).distinct()
-  - have add result button that has default date of previous day
 - add create workout link to workout list page
   - under user authentication in template
 - create popup when workout is added to profile to ask if they just copmleted it/want to schedule it for today or another day
