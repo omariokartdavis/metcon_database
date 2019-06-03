@@ -1,9 +1,66 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+<head>
+<style>
+.popup {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: #000000;
+  display: block;
+}
+
+.popup2 {
+  background-color: White;
+  border: 2px solid black;
+  display: block;
+  height: 75%;
+  width: 75%;
+  z-index: 1001;
+  top: 12.5%;
+  left: 12.5%;
+  position: fixed;
+  padding-left: 10px;
+  margin: auto;
+}
+
+.popup2 .popuptext {
+  text-align: center;
+}
+
+.popup .show {
+  visibility: hidden;
+}
+
+</style>
+</head>
 	<h1>{{ user.username }}'s Homepage</h1>
 	{% if users_workouts %}
-		{% if future_workouts or dict_of_this_weeks_workouts %}
+		{% if workouts_with_no_results_yesterday %}
+				<div class="popup">
+					<div class="popup2">
+						<span class="popuptext" id="myPopup">
+							<p>Did you complete these workouts yesterday?<p>
+							{% for i in workouts_with_no_results_yesterday %}
+								<p>{{ i.workout.display_name }}<p>
+								<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+									{% csrf_token %}
+									<input type="submit" value="Yes, Add Result" name="previous day add result">
+								</form>
+								<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+									{% csrf_token %}
+									<input type="submit" value="No, Edit Schedule" name="previous day edit schedule">
+								</form>
+							{% endfor %}
+							<p>Otherwise remove scheduled date (-link to remove the date scheduled for yesterday)<p>
+						</span>
+					</div>
+				</div>
+		{% endif %}
+		{% if long_future_workouts or dict_of_this_weeks_workouts %}
 			<h2>This Weeks Workouts</h2>
 			{% if dict_of_this_weeks_workouts %}
 				{% for k, v in dict_of_this_weeks_workouts.items %}
