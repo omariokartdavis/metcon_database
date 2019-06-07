@@ -2,8 +2,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## Edited files on 6/3/19
-(uploadeded at home)
+## Edited files on 6/3/19 only changed where this was updated at
+(uploadeded at work)
 - views.py
 - user_page.html
 - workout_list.html
