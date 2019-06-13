@@ -7,6 +7,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - views.py
 - user_page.html
 - workout_list.html
+## 6/13/19
+(uploaded at work)
+- views.py
+- urls.py
+- created interim_created_workout.html
 
 ## Functionality completed on 6/3/2019:
 - added pagination to workout_list.
@@ -14,6 +19,28 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - create a popup that asks if they completed a workout the previous day if it was scheduled but they didn't add a result.
   - add result button that has default date of previous day
   - edit schedule button has default remove date of yesterday
+## 6/13/19:
+- when creating a new workout, offer users a choice to add a result of this workout immediately.
+  - after creating a workout, have create workout button link to page asking the following:
+    - Would you like to schedule this workout for the future or have you already completed this workout?
+    - Completed today. Schedule today. Completed in Past. Schedule for Later.
+      - if completed go to add results page
+        - if completed today, autofill date to be today
+          - already set as initial
+      - if completed in past:
+        - leave date completed as whatever it initially is
+        - or potentially set as yesterday.
+          - create result already has an if statement for setting date completed as yesterday. can add an or to this for
+            if 'blah blah' or 'add workout to profile completed in past' in request.GET:
+      - if schedule today
+        - date_to_be_added is already initially set to now
+      - if schedule later
+        - make date_to_be_added initially tomorrow
+          - add an if statement after creating the form in the else .GET response
+          - same as in 'add results for yesterday'
+    - once done. link to instance detail page
+- create popup when workout is added to profile to ask if they just copmleted it/want to schedule it for today or another day
+  - if they click today add today to their scheduled workouts, otherwise send them to schedule screen
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -61,21 +88,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
 - add create workout link to workout list page
   - under user authentication in template
-- create popup when workout is added to profile to ask if they just copmleted it/want to schedule it for today or another day
-  - if they click today add today to their scheduled workouts, otherwise send them to schedule screen
-- add ability to schedule workout during workout creation
-  - on workout create form have date field to schedule workout for (default today, just like result form)
-  - take date and put it into date_to_be_completed of instance
-- when creating a new workout, offer users a choice to add a result of this workout immediately.
-  - popup: "Have you completed this workout recently (within last week)?" with links y/n
-    - if y go to add results page/popup (need choice of when did you complete this workout)
-    - if no go to instance detail page
 - ?only update base workout times counted and duration at midnight?
   - will help speed up workout creation and all instance updates/saves
 - add filter on workout instance detail page to filter results by date
 - add login to index page.
 - Add privacy setting so users can set their profile/workouts to private and therefore others cant search for/see them.
   - default to public
+  - have a setting on each individual workout as well so users can make 1 workout public if they want but the rest of them stay private
+  - public/private does not affect their coach seeing their workouts
 - Combine Create Movement and Update Workout buttons into a popup:
   -on create movement button click open a popup to add movement. on save click run three functions:
     -save movement
