@@ -162,7 +162,7 @@ def workoutlistview(request):
                 instance.save()
             else:
                 instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
-            return HttpResponseRedirect(instance.get_absolute_url())
+            return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
         
     return render(request, 'metcons/workout_list.html', context = context)
     
@@ -191,7 +191,7 @@ def workoutdetailview(request, pk):
                 instance.save()
             else:
                 instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
-            return HttpResponseRedirect(instance.get_absolute_url())
+            return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
     
     return render(request, 'metcons/workout_detail.html', context=context)
 
@@ -251,6 +251,9 @@ def schedule_instance(request, username, pk):
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
     else:
         form = ScheduleInstanceForm()
+        if 'schedule workout for future' in request.GET:
+            tomorrow = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=1)
+            form.fields['date_to_be_added'].initial = tomorrow
 
     context = {
         'form': form,
@@ -448,10 +451,12 @@ def create_result(request, username, pk):
             duration_minutes=0
             duration_seconds=0
         form = CreateResultForm(initial={'duration_minutes': duration_minutes, 'duration_seconds': duration_seconds})
-        if 'previous day add result' in request.GET:
+        if 'created workout today add result' in request.GET:
+            now = timezone.localtime(timezone.now()).date()
+            form.fields['date_completed'].initial = now
+        elif 'previous day add result' in request.GET or 'created workout previous day add result' in request.GET:
             yesterday = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
             form.fields['date_completed'].initial = yesterday
-
 
     context = {
         'form': form,
@@ -574,7 +579,7 @@ def create_workout(request):
                 else:
                     instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
             
-            return HttpResponseRedirect(instance.get_absolute_url())
+            return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
 
     else:
         form = CreateWorkoutForm(initial={'gender': request.user.gender,
@@ -585,6 +590,23 @@ def create_workout(request):
         }
 
     return render(request, 'metcons/create_workout.html', context)
+
+def schedule_recently_created_or_added_workout(request, username, pk):
+    user = request.user
+    instance = WorkoutInstance.objects.get(id=pk)
+
+    if request.method == 'POST':
+        if user == instance.current_user:
+            if 'schedule workout for today' in request.POST:
+                now = timezone.localtime(timezone.now()).date()
+                instance.add_date_to_be_completed(now)
+
+                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    context = {
+        'instance': instance,
+        }
+    return render(request, 'metcons/interim_created_workout.html', context)
 
 class MovementCreate(LoginRequiredMixin, CreateView):
     model = Movement
