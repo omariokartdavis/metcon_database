@@ -12,6 +12,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - views.py
 - urls.py
 - created interim_created_workout.html
+- created metcons/tests folder and started making tests for models
 
 ## Functionality completed on 6/3/2019:
 - added pagination to workout_list.
@@ -41,6 +42,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
     - once done. link to instance detail page
 - create popup when workout is added to profile to ask if they just copmleted it/want to schedule it for today or another day
   - if they click today add today to their scheduled workouts, otherwise send them to schedule screen
+- started adding tests
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -70,6 +72,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- need to add @login_required to interim_created_workout_page view
 - find a way to add captions to each file uploaded via resulst
 - if a user clicks to be a gym owner or coach, let them select what gender their default workouts will be
 - create profanity filter for creating workouts but not results
