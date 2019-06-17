@@ -19,6 +19,53 @@ class User(AbstractUser):
         gender = models.CharField(max_length=1, blank=True, null=True, choices = gender_choices, default='M',
                                   help_text='Is this workout (and the weights you have entered) applicable for both Males and Females or only one?')
 
+        athlete_choices = [
+                ('A', 'Athlete'),
+                ('C', 'Coach'),
+                ('G', 'Gym Owner'),
+                ]
+
+        user_classification = models.CharField(max_length=1, blank=True, null=True, choices = athlete_choices)
+
+        athletes = models.ManyToManyField('self', related_name='listed_athletes', blank=True)
+        coaches = models.ManyToManyField('self', related_name='listed_coaches', blank=True)
+        gym_owner = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='listed_gym_owner', null=True)
+
+        @property
+        def is_athlete(self):
+                if self.user_classification == 'A':
+                        True
+                else:
+                        False
+
+        @property
+        def is_coach(self):
+                if self.user_classification == 'C':
+                        True
+                else:
+                        False
+
+        @property
+        def is_gym_owner(self):
+                if self.user_classification == 'G':
+                        True
+                else:
+                        False
+                        
+##don't think I actually need these models. Made them but never used them.
+##class GymOwner(models.Model):
+##        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+##        coach = models.ForeignKey('Coach', on_delete=models.SET_NULL, null=True)
+##
+##class Coach(Models.Model):
+##        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+##        coach = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+##        gym_owner = models.ForeignKey(GymOwner, on_delete=models.SET_NULL, null=True)
+##        
+##class Athlete(models.Model):
+##        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+##        coach = models.ForeignKey(Coach, on_delete=models.SET_NULL, null=True)
+##        gym_owner = models.ForeignKey(GymOwner, on_delete=models.SET_NULL, null=True)
 
 class Classification(models.Model):
         """Model representing a classification of a movement"""
@@ -82,7 +129,7 @@ class Workout(models.Model):
                 
         movements = models.ManyToManyField(Movement, blank=True)
 
-        classification = models.ForeignKey(Classification, default=3, blank=True, null=True, on_delete=models.CASCADE)
+        classification = models.ForeignKey(Classification, default=3, blank=True, null=True, on_delete=models.SET_NULL)
 
         
         def update_movements_and_classification(self):
@@ -393,6 +440,15 @@ class Result(models.Model):
                 else:
                         return 'Workout Deleted'
         display_workout.short_description = 'Workout'
+
+        def display_result(self):
+                if self.workoutinstance:
+                        name = 'Result ' + str(self.id)
+                        return name
+                else:
+                        return 'Workout Instance Deleted'
+
+        display_result.short_description = 'Result'
         
 class ResultFile(models.Model):
         #can be images or videos
@@ -407,6 +463,13 @@ class ResultFile(models.Model):
                         name = self.result.display_workout()
                         return name
                 else:
-                        return 'Workout Deleted'
+                        return 'Result Deleted'
                 
         display_workout.short_description = 'Workout'
+
+        def display_resultfile(self):
+                if self.result:
+                        name = 'Result File ' + str(self.id)
+                        return name
+                else:
+                        return 'Result Deleted'
