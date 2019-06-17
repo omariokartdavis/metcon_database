@@ -2,36 +2,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## Edited files on 6/3/19 only changed where this was updated at
-
-## 6/13/19
-(uploaded at home)
-- test_models.py
+## 6/17/19
+(uploaded at work)
+- admin.py
+- models.py (required makemigrations and migrate but no reset, added athlete/coach/gym owner to user model)
 
 ## functionality completed on 6/13/19:
-- when creating a new workout, offer users a choice to add a result of this workout immediately.
-  - after creating a workout, have create workout button link to page asking the following:
-    - Would you like to schedule this workout for the future or have you already completed this workout?
-    - Completed today. Schedule today. Completed in Past. Schedule for Later.
-      - if completed go to add results page
-        - if completed today, autofill date to be today
-          - already set as initial
-      - if completed in past:
-        - leave date completed as whatever it initially is
-        - or potentially set as yesterday.
-          - create result already has an if statement for setting date completed as yesterday. can add an or to this for
-            if 'blah blah' or 'add workout to profile completed in past' in request.GET:
-      - if schedule today
-        - date_to_be_added is already initially set to now
-      - if schedule later
-        - make date_to_be_added initially tomorrow
-          - add an if statement after creating the form in the else .GET response
-          - same as in 'add results for yesterday'
-    - once done. link to instance detail page
-- create popup when workout is added to profile to ask if they just copmleted it/want to schedule it for today or another day
-  - if they click today add today to their scheduled workouts, otherwise send them to schedule screen
-- started adding tests
-- added a lot more model tests. into workoutinstance functions now
+- added instance inlines to user admin page
+- added user classification as athlete/coach/gym owner
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
