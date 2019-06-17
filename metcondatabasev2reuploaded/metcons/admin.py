@@ -2,18 +2,30 @@ from django.contrib import admin
 from .models import Classification, Movement, Workout, WorkoutInstance, Date, Result, ResultFile, User
 from django.contrib.auth.admin import UserAdmin
 
-#admin.site.register(User, UserAdmin)
-@admin.register(User)
-class UserProfileAdmin(UserAdmin):
-    fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('gender',)}),
-        )
-
-admin.site.register(Classification)
-
 class WorkoutInstanceInline(admin.TabularInline):
     model = WorkoutInstance
     extra = 0
+
+    fields = ['display_workout', 'number_of_times_completed', 'duration_in_seconds',
+              'youngest_scheduled_date', 'oldest_completed_date',
+              'edited_workout_text',
+              ]
+    readonly_fields = ['display_workout']
+    
+@admin.register(User)
+class UserProfileAdmin(UserAdmin):
+    fieldsets = UserAdmin.fieldsets + (
+        (None, {
+            'fields': ('gender', 'user_classification')
+            }),
+        ('Relationships', {
+            'fields': ('athletes', 'coaches', 'gym_owner')
+            }),
+        )
+
+##    inlines = [WorkoutInstanceInline] very slow and expensive with a lot of instances
+
+admin.site.register(Classification)
     
 @admin.register(Workout)
 class WorkoutAdmin(admin.ModelAdmin):
@@ -21,7 +33,7 @@ class WorkoutAdmin(admin.ModelAdmin):
                     'created_by_user',
                     'where_workout_came_from',
                     'estimated_duration_in_seconds',
-                    'display_movement',
+##                    'display_movement', removed for expensiveness of operation
                     'classification',
                     'number_of_times_completed',
                     'number_of_instances',
@@ -42,13 +54,17 @@ class MovementAdmin(admin.ModelAdmin):
 class ResultInline(admin.TabularInline):
     model = Result
     extra = 0
+
+    fields = ['display_result', 'date_workout_completed', 'result_text', 'duration_in_seconds']
+    readonly_fields = ['display_result']
+    show_change_link = True
     
 @admin.register(WorkoutInstance)
 class WorkoutInstanceAdmin(admin.ModelAdmin):
     list_display = ('display_workout',
                     'current_user',
-                    'display_dates_completed',
-                    'display_dates_scheduled',
+                    'oldest_completed_date',
+                    'youngest_scheduled_date',
                     'date_added_by_user',
                     'id',
                     'number_of_times_completed',
@@ -59,10 +75,15 @@ class WorkoutInstanceAdmin(admin.ModelAdmin):
 class ResultFileInline(admin.TabularInline):
     model = ResultFile
     extra = 0
+
+    fields = ['display_resultfile', 'file', 'caption', 'content_type']
+    readonly_fields = ['display_resultfile']
+    show_change_link = True
     
 @admin.register(Result)
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ('date_created',
+    list_display = ('display_result',
+                    'date_created',
                     'date_workout_completed',
                     'workoutinstance',
                     )
@@ -70,7 +91,8 @@ class ResultAdmin(admin.ModelAdmin):
     
 @admin.register(ResultFile)
 class ResultFileAdmin(admin.ModelAdmin):
-    list_display = ('date_created',
+    list_display = ('display_resultfile',
+                    'date_created',
                     'result',
                     'caption',
                     'display_workout',
