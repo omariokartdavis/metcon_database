@@ -7,9 +7,35 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - admin.py
 - models.py (required makemigrations and migrate but no reset, added athlete/coach/gym owner to user model)
 
-## functionality completed on 6/13/19:
+## 6/18/19
+(not uploaded at work)
+- models.py
+- admin.py
+- views.py
+- forms.py
+- urls.py
+- test_models.py
+- user_page.html
+- created add_athlete_page.html
+- created add_coach_page.html
+- workoutinstance_detail.html
+- delete_instance.html
+- delete_schedule.html
+- edit_instance.html
+- edit_schedule.html
+- schedule_instance.html
+
+## functionality completed on 6/17/19:
 - added instance inlines to user admin page
 - added user classification as athlete/coach/gym owner
+
+## functionality completed on 6/18/19:
+- added @login_required to interim_created_workout_page view
+- added privacy settings to user for user and workouts
+- added gender settings for workout default and user under user model
+- added all necessary admin inputs for new user info
+- ability to add athletes to a coaches page
+- show all athletes and their workouts on a coaches page
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -39,7 +65,27 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- need to add @login_required to interim_created_workout_page view
+- adding athletes or coaches is currently adding each other as athletes/coaches to both users instead of just a 1 way.
+  - adding testathlete1 as an athlete of coach1 also adds coach1 as an athlete of testathlete1 which shouldn't happen
+  - https://simpleisbetterthancomplex.com/tutorial/2018/01/18/how-to-implement-multiple-user-types-with-django.html
+  - maybe make coach/athlete/gym owner models with onetoone field to user and then for athlete have it be a many to many field with coach?
+- clicking on an athletes workouts from the coaches page currently sends you to the athletes workoutinstance
+  - I think this is okay but maybe change the url so it <coachusernam>/athletes/<athleteusername>/instance
+    - this would basically be creating a new page+url+view that has all the same stuff as the current instance view
+      - may be unnecessary and can leave as is
+- when a coach creates a workout give option to what athletes he wants to give it to
+  - will have to be handled in view functions
+    - if user.is_coach or user.is_gymowner:
+      - instance.current_user = choice of athletes
+- coach needs access to his athletes instances
+- in add_athletes_to_coach view
+  - change the add functionality to it sends a request to the athlete.
+    - when the athlete accepts the request then add the athlete to the coach and vis-versa.
+- create user account create page
+- if user is athlete set workout default gender equal to user gender after user creation
+- if user is coach leave workout default gender as both and simply ask if they want to change it (have form initial be both)
+- ask users about their privacy settings or leave both and have popup on first going to profile page that shows them where
+  they can change it.
 - find a way to add captions to each file uploaded via resulst
 - if a user clicks to be a gym owner or coach, let them select what gender their default workouts will be
 - create profanity filter for creating workouts but not results
