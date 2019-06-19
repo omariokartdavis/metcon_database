@@ -1,19 +1,18 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from metcons.models import Classification, Movement, Workout, WorkoutInstance, Result, ResultFile, Date, User
+from metcons.models import *
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
-from metcons.forms import CreateWorkoutForm, CreateResultForm, ScheduleInstanceForm, EditInstanceForm, EditResultForm, EditScheduleForm, DeleteScheduleForm
+from metcons.forms import *
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Max, Min, Q
 from django.core.paginator import Paginator
 import re
-
-
+from django.contrib.auth import login, authenticate
 
 def index(request):
     """View function for home page of site"""
@@ -72,6 +71,7 @@ def profile(request, username):
     workouts_with_no_results_yesterday = WorkoutInstance.objects.filter(current_user=request.user,
                                                                         dates_to_be_completed__date_completed=yesterday).exclude(
                                                                             dates_workout_completed__date_completed=yesterday).distinct().order_by('-youngest_scheduled_date')
+
     context = {
         'users_workouts': users_workouts,
         'long_future_workouts': long_future_workouts,
@@ -81,14 +81,121 @@ def profile(request, username):
         'dict_of_this_weeks_workouts': dict_of_this_weeks_workouts,
         'workouts_with_no_results_yesterday': workouts_with_no_results_yesterday,
         }
+
+    if Athlete.objects.filter(user=request.user):
+        coaches = request.user.athlete.coach_set.all()
+        context['coaches'] = coaches
+        
+    if request.user.is_coach or request.user.is_gym_owner:
+        athletes = request.user.coach.athletes.all()
+        gym_owner = request.user.athlete.gym_owner
+
+        all_workouts_from_all_athletes = []
+        for i in athletes:
+            all_workouts_from_all_athletes += i.user.workoutinstance_set.all()
+
+        context['athletes'] = athletes
+        context['gym_owner'] = gym_owner
+        context['all_workouts_from_all_athletes'] = all_workouts_from_all_athletes
+        
     return render(request, 'metcons/user_page.html', context=context)
+
+@login_required
+def add_athletes_to_coach(request, username):
+    coach_user = request.user
+    coach_user_coach_profile = Coach.objects.get(user=coach_user)
+
+    if request.method == 'POST':
+        if 'add athlete by username' in request.POST:
+            form = AddAthleteToCoachForm(request.POST)
+            if form.is_valid():
+                user_athlete_to_add = User.objects.get(username=form.cleaned_data['athlete_username'])
+                user_athlete_to_add_profile = Athlete.objects.get(user=user_athlete_to_add)
+                
+                #change this to send a notification to the athlete. once the athlete accepts then add to coach and athlete
+                coach_user_coach_profile.athletes.add(user_athlete_to_add_profile)
+                coach_user_coach_profile.save()
+
+                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    else:
+        form = AddAthleteToCoachForm()
+
+    context = {
+        'form': form,
+        'coach_user': coach_user,
+        }
+
+    return render(request, 'metcons/add_athlete_page.html', context=context)
+
+@login_required
+def add_coach(request, username):
+    athlete_user = request.user
+    athlete_user_athlete_profile = Athlete.objects.get(user=athlete_user)
+
+    if request.method == 'POST':
+        if 'add coach by username' in request.POST:
+            form = AddCoachForm(request.POST)
+            if form.is_valid():
+                coach_to_add = User.objects.get(username=form.cleaned_data['coach_username'])
+                coach_to_add_coach_profile = Coach.objects.get(user=coach_to_add)
+                
+                #send a notification to the coach and once they accept then add to both
+                coach_to_add_coach_profile.athletes.add(athlete_user_athlete_profile)
+                coach_to_add_coach_profile.save()
+
+                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    else:
+        form = AddCoachForm()
+
+    context = {
+        'form': form,
+        'athlete_user': athlete_user,
+        }
+
+    return render(request, 'metcons/add_coach_page.html', context=context)
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            if form.cleaned_data['athlete_status'] == 'G':
+                user.is_gym_owner = True
+                user.is_coach = True
+                GymOwner.objects.create(user=user)
+                Coach.objects.create(user=user)
+            elif form.cleaned_data['athlete_status'] == 'C':
+                user.is_coach = True
+                Coach.objects.create(user=user)
+            user.is_athlete = True
+            user.user_gender = form.cleaned_data['gender']
+            user.workout_default_gender = form.cleaned_data['default_workout_gender']
+            user.save()
+            Athlete.objects.create(user=user)
+            username = form.cleaned_data['username']
+            raw_password = form.cleaned_data['password1']
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+
+            return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    else:
+        form = SignUpForm()
+
+    context = {
+        'form': form,
+        }
+    
+    return render(request, 'metcons/signup.html', context=context)
 
 @login_required
 def profileredirect(request):
     return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
 def workoutlistview(request):
-    # default object list excludes users workouts that have been completed.
+    # default object list excludes users workouts that have been completed and workouts that were created by other users.
     object_list = Workout.objects.all()
     now = timezone.localtime(timezone.now()).date()
     
@@ -134,7 +241,11 @@ def workoutlistview(request):
             object_list = object_list.filter(workoutinstance__current_user__username = query8)
         if not query7:
             object_list = object_list.exclude(~Q(created_by_user=request.user),
-                                              where_workout_came_from='User Created')
+                                              where_workout_came_from='Gym Owner Created').exclude(
+                                                  ~Q(created_by_user=request.user),
+                                                  where_workout_came_from='Coach Created').exclude(
+                                                      ~Q(created_by_user=request.user),
+                                                      where_workout_came_from='Athlete Created')
 
     paginator = Paginator(object_list, 10)
     page = request.GET.get('page')
@@ -546,11 +657,24 @@ def create_workout(request):
 
         if form.is_valid():
             current_user = request.user
+            users_to_assign_workout = []
+            if current_user.is_coach or current_user.is_gym_owner:
+                for i in form.cleaned_data['athlete_to_assign']:
+                    user = User.objects.get(username=i)
+                    users_to_assign_workout.append(user)
+            else:
+                users_to_assign_workout.append(current_user)
             if not Workout.objects.filter(workout_text=form.cleaned_data['workout_text']):
+                if current_user.is_gym_owner:
+                    workout_location = 'Gym Owner Created'
+                elif current_user.is_coach:
+                    workout_location = 'Coach Created'
+                else:
+                    workout_location = 'Athlete Created'
                 workout = Workout(workout_text=form.cleaned_data['workout_text'],
                                   scaling_or_description_text=form.cleaned_data['workout_scaling'],
                                   estimated_duration_in_seconds=(form.cleaned_data['estimated_duration']) * 60,
-                                  where_workout_came_from='User Created',
+                                  where_workout_came_from=workout_location,
                                   classification=None,
                                   created_by_user = current_user,
                                   gender = form.cleaned_data['gender'],
@@ -560,37 +684,42 @@ def create_workout(request):
                     r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
                     workout.estimated_duration_in_seconds=int(re.split('\s', r1[0])[3])
                 workout.update_movements_and_classification()
-                    
-                instance = WorkoutInstance(workout=workout, current_user=current_user,
-                                           duration_in_seconds=workout.estimated_duration_in_seconds)
-                instance.save()
-                instance.update_edited_workout_text()
-                instance.update_edited_scaling_text()
-                instance.save()
+
+##                for i in users_to_assign_workout:
+##                    instance = WorkoutInstance(workout=workout, current_user=i,
+##                                               duration_in_seconds=workout.estimated_duration_in_seconds)
+##                    instance.save()
+##                    instance.update_edited_workout_text()
+##                    instance.update_edited_scaling_text()
+##                    instance.save()
             else:
                 workout = Workout.objects.get(workout_text=form.cleaned_data['workout_text'])
-                if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
-                    instance = WorkoutInstance(workout=workout, current_user = current_user,
+                
+            for i in users_to_assign_workout:
+                if not WorkoutInstance.objects.filter(workout=workout, current_user=i):
+                    instance = WorkoutInstance(workout=workout, current_user = i,
                                                duration_in_seconds=workout.estimated_duration_in_seconds)
                     instance.save()
                     instance.update_edited_workout_text()
                     instance.update_edited_scaling_text()
                     instance.save()
                 else:
-                    instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
+                    instance = WorkoutInstance.objects.get(workout=workout, current_user=i)
             
             return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
 
     else:
-        form = CreateWorkoutForm(initial={'gender': request.user.gender,
+        form = CreateWorkoutForm(**{'user':request.user}, initial={'gender': request.user.workout_default_gender,
                                           })
-
+        if request.user.is_coach or request.user.is_gym_owner:
+            form.fields['athlete_to_assign'].choices = [(athlete.user.username, athlete.user.username) for athlete in request.user.coach.athletes.all()]
     context = {
         'form': form,
         }
 
     return render(request, 'metcons/create_workout.html', context)
 
+@login_required
 def schedule_recently_created_or_added_workout(request, username, pk):
     user = request.user
     instance = WorkoutInstance.objects.get(id=pk)
