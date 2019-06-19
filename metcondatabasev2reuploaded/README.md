@@ -25,9 +25,31 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - edit_schedule.html
 - schedule_instance.html
 
-## functionality completed on 6/17/19:
-- added instance inlines to user admin page
-- added user classification as athlete/coach/gym owner
+## 6/19/19
+(not uploaded at work)
+- models.py
+- admin.py
+- views.py
+- test_models.py
+- user_page.html
+- workoutinstance_detail.html
+- delete_instance.html
+- delete_schedule.html
+- edit_instance.html
+- edit_schedule.html
+- schedule_instance.html
+- indext.html
+- created signup.html
+- workout_list.html
+
+## functionality completed on 6/19/19:
+- fixed all issues with athlete/coach relationship
+  - created models for athlete/coach/gym owner.
+    - each one has a onetoone with the user model.
+    - when you add an athlete to a coach it adds that users athlete model to the coach model
+- created signup page and added link to index. also added link to login to index
+- get rid of pagination on workout list if not logged in but keep it if logged in.
+- change where workout created to be based on coach/athlete created not just user created
 
 ## functionality completed on 6/18/19:
 - added @login_required to interim_created_workout_page view
@@ -36,7 +58,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - added all necessary admin inputs for new user info
 - ability to add athletes to a coaches page
 - show all athletes and their workouts on a coaches page
-  
+
+## functionality completed on 6/17/19:
+- added instance inlines to user admin page
+- added user classification as athlete/coach/gym owner
+
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
   - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
@@ -65,29 +91,41 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- adding athletes or coaches is currently adding each other as athletes/coaches to both users instead of just a 1 way.
-  - adding testathlete1 as an athlete of coach1 also adds coach1 as an athlete of testathlete1 which shouldn't happen
-  - https://simpleisbetterthancomplex.com/tutorial/2018/01/18/how-to-implement-multiple-user-types-with-django.html
-  - maybe make coach/athlete/gym owner models with onetoone field to user and then for athlete have it be a many to many field with coach?
+- create a group model that athletes can be added to by coaches
+  - this will allow coaches to add workouts to all athletes in a specific group when creating workouts
 - clicking on an athletes workouts from the coaches page currently sends you to the athletes workoutinstance
-  - I think this is okay but maybe change the url so it <coachusernam>/athletes/<athleteusername>/instance
+  - I think this is okay but maybe change the url so it <coachusername>/athletes/<athleteusername>/instance
     - this would basically be creating a new page+url+view that has all the same stuff as the current instance view
       - may be unnecessary and can leave as is
 - when a coach creates a workout give option to what athletes he wants to give it to
   - will have to be handled in view functions
+  - will need same functionality from delete_schedule where the form is initially populated by users athletes
+    - also need to set the form.fields['athletes'].choices in the POST before the form.is_valid()
     - if user.is_coach or user.is_gymowner:
       - instance.current_user = choice of athletes
-- coach needs access to his athletes instances
+    - else:
+      - form.fields['choose_athletes'].exclude() or something like that. exclude might need a tuple if done in form
+- make 2 create workout buttons for coaches, one for themselves and one for their athletes
+    - if creating for themselves, also give option to share with athletes and vis versa
 - in add_athletes_to_coach view
-  - change the add functionality to it sends a request to the athlete.
+  - change the add functionality so it sends a request to the athlete.
+    - might need to create a "request-to-add" model
+      - would contain info such as: athlete, coach, gym owner
+      - then on requestee's page can have a popup that says 'coach' has claimed you as an athlete. 'Accept' 'Reject'
+      - same for adding coach to athlete.
+      - need some way to make this private so that people cannot request you, only you can request people
+        - this way people don't get spammed
     - when the athlete accepts the request then add the athlete to the coach and vis-versa.
-- create user account create page
 - if user is athlete set workout default gender equal to user gender after user creation
 - if user is coach leave workout default gender as both and simply ask if they want to change it (have form initial be both)
 - ask users about their privacy settings or leave both and have popup on first going to profile page that shows them where
   they can change it.
-- find a way to add captions to each file uploaded via resulst
-- if a user clicks to be a gym owner or coach, let them select what gender their default workouts will be
+- create add athlete/coach/gymowner via email functionality
+  - send link to email address that will send them to the signup page possibly with their email already entered
+  - can possibly have the person who sent the request add info about the requestee
+    - gender, first name, last name etc.
+- find a way to add captions to each file uploaded via results
+  - don't really think this is needed as Instagram only allows 1 caption per post.
 - create profanity filter for creating workouts but not results
   - just like movement tags, create function to search for words in workout_text or scaling description
     - if words are found. delete that workout and give popup saying why
@@ -129,9 +167,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   -would also change def `__str__` to if statement on if name exists otherwise same as above
 ### Pagination:
 - add pagination to workout list, profile page, and instace detail page for results.
-- workout list pagination got removed becuase I changed it to a function view to allow POST forms
-- get rid of pagination on workout list if not logged in but keep it if logged in.
-  - just adding block pagination endblock gets rid of pagination in both situations
 - this will likely solve itself when endless scroll is added
 ### For multiple sports:
 - maybe just add a foreignkey field in current Workout model of "sport" that has different sport choices.
