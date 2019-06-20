@@ -1,21 +1,66 @@
 from django.test import TestCase
-from metcons.models import User, Classification, Movement, Workout, Date, WorkoutInstance, Result, ResultFile
+from metcons.models import *
 from django.utils import timezone
 
 class UserModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         #Set up non-modified objects used by all test methods
-        User.objects.create(username='odavis', password='4a0308ki9ps', gender='M')
+        User.objects.create(username='odavis', password='4a0308ki9ps')
 
-    def test_gender_label(self):
+    def test_user_gender_label(self):
         user = User.objects.get(id=1)
-        field_label = user._meta.get_field('gender').verbose_name
-        self.assertEquals(field_label, 'gender')
+        field_label = user._meta.get_field('user_gender').verbose_name
+        self.assertEquals(field_label, 'user gender')
 
-    def test_gender_max_length(self):
+    def test_workout_default_gender_label(self):
         user = User.objects.get(id=1)
-        max_length = user._meta.get_field('gender').max_length
+        field_label = user._meta.get_field('workout_default_gender').verbose_name
+        self.assertEquals(field_label, 'workout default gender')
+
+    def test_workout_default_privacy_label(self):
+        user = User.objects.get(id=1)
+        field_label = user._meta.get_field('workout_default_privacy').verbose_name
+        self.assertEquals(field_label, 'workout default privacy')
+
+    def test_user_profile_privacy_label(self):
+        user = User.objects.get(id=1)
+        field_label = user._meta.get_field('user_profile_privacy').verbose_name
+        self.assertEquals(field_label, 'user profile privacy')
+
+    def test_is_athlete_label(self):
+        user = User.objects.get(id=1)
+        field_label = user._meta.get_field('is_athlete').verbose_name
+        self.assertEquals(field_label, 'is athlete')
+
+    def test_is_coach_label(self):
+        user = User.objects.get(id=1)
+        field_label = user._meta.get_field('is_coach').verbose_name
+        self.assertEquals(field_label, 'is coach')
+
+    def test_is_gym_owner_label(self):
+        user = User.objects.get(id=1)
+        field_label = user._meta.get_field('is_gym_owner').verbose_name
+        self.assertEquals(field_label, 'is gym owner')
+
+    def test_user_gender_max_length(self):
+        user = User.objects.get(id=1)
+        max_length = user._meta.get_field('user_gender').max_length
+        self.assertEquals(max_length, 1)
+
+    def test_workout_default_gender_max_length(self):
+        user = User.objects.get(id=1)
+        max_length = user._meta.get_field('workout_default_gender').max_length
+        self.assertEquals(max_length, 1)
+
+    def test_workout_default_privacy_max_length(self):
+        user = User.objects.get(id=1)
+        max_length = user._meta.get_field('workout_default_privacy').max_length
+        self.assertEquals(max_length, 1)
+
+    def test_user_profile_privacy_max_length(self):
+        user = User.objects.get(id=1)
+        max_length = user._meta.get_field('user_profile_privacy').max_length
         self.assertEquals(max_length, 1)
 
 class ClassificationModelTest(TestCase):
@@ -73,7 +118,7 @@ class MovementModelTest(TestCase):
 class WorkoutModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        User.objects.create(username='odavis', password='4a0308ki9ps', gender='M')
+        User.objects.create(username='odavis', password='4a0308ki9ps')
         user = User.objects.get(id=1)
         Classification.objects.create(name='Upper Body')
         upper_body = Classification.objects.get(id=1)
@@ -244,7 +289,7 @@ class DateModelTest(TestCase):
 class WorkoutInstanceModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        User.objects.create(username='odavis', password='4a0308ki9ps', gender='M')
+        User.objects.create(username='odavis', password='4a0308ki9ps')
         user = User.objects.get(id=1)
         Classification.objects.create(name='Upper Body')
         upper_body = Classification.objects.get(id=1)
