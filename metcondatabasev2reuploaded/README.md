@@ -2,24 +2,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## 6/19/19
-(uploaded at home)
+## 6/20/19
+(uploaded at work)
 - views.py
-- forms.py
-- urls.py
-- interim_created_workout.html
+- delete_schedule.html
+- user_page.html
 
 ## functionality completed on 6/19/19:
-- fixed all issues with athlete/coach relationship
-  - created models for athlete/coach/gym owner.
-    - each one has a onetoone with the user model.
-    - when you add an athlete to a coach it adds that users athlete model to the coach model
-- created signup page and added link to index. also added link to login to index
-- get rid of pagination on workout list if not logged in but keep it if logged in.
-- change where workout created to be based on coach/athlete created not just user created
-- can create workout from coach and assign it to athletes. If creating workout from athlete it assigns to themselves.
-- added ability to schedule workout for today for created workout to multiple athletes from coach
-- changed url of interim schedule page to not be based on uuid as you can't have that if you are passing multiple uuids
+- added check if future_dates exist in delete schedule, other say this workout has no scheduled dates
+- create an edited notification on an instance.
+  - check if not instance.edited_workout_text = instance.workout.workout_text
+    - if its not then add star to workout name or something. can do (edited from original)
 
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -49,6 +42,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- create new view for a coach viewing their athletes workout instance?
+  - workout name link from coaches page would link to new view instead of instance.get_absolute_url
+  - new url would have coaches username then athletes username
+  - new view could have athletes username on the page somewhere. everything else would likely be the same
+  - would need all new buttons and views for each button to show coach username then athlete username
+- create add to athletes button for workouts on workout list
 - need to fix scheduling workouts individually by coach.
   - currently if you are a coach and have created a workout for multiple athletes and then go to a specific athletes workout instance
     and try to schedule just that workout, it will schedule all athletes instances who have that workout.
