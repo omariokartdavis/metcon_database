@@ -2,45 +2,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## 6/17/19
-(uploaded at work)
-- admin.py
-- models.py (required makemigrations and migrate but no reset, added athlete/coach/gym owner to user model)
-
-## 6/18/19
-(not uploaded at work)
-- models.py
-- admin.py
+## 6/19/19
+(uploaded at home)
 - views.py
 - forms.py
 - urls.py
-- test_models.py
-- user_page.html
-- created add_athlete_page.html
-- created add_coach_page.html
-- workoutinstance_detail.html
-- delete_instance.html
-- delete_schedule.html
-- edit_instance.html
-- edit_schedule.html
-- schedule_instance.html
-
-## 6/19/19
-(not uploaded at work)
-- models.py
-- admin.py
-- views.py
-- test_models.py
-- user_page.html
-- workoutinstance_detail.html
-- delete_instance.html
-- delete_schedule.html
-- edit_instance.html
-- edit_schedule.html
-- schedule_instance.html
-- indext.html
-- created signup.html
-- workout_list.html
+- interim_created_workout.html
 
 ## functionality completed on 6/19/19:
 - fixed all issues with athlete/coach relationship
@@ -50,18 +17,9 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - created signup page and added link to index. also added link to login to index
 - get rid of pagination on workout list if not logged in but keep it if logged in.
 - change where workout created to be based on coach/athlete created not just user created
-
-## functionality completed on 6/18/19:
-- added @login_required to interim_created_workout_page view
-- added privacy settings to user for user and workouts
-- added gender settings for workout default and user under user model
-- added all necessary admin inputs for new user info
-- ability to add athletes to a coaches page
-- show all athletes and their workouts on a coaches page
-
-## functionality completed on 6/17/19:
-- added instance inlines to user admin page
-- added user classification as athlete/coach/gym owner
+- can create workout from coach and assign it to athletes. If creating workout from athlete it assigns to themselves.
+- added ability to schedule workout for today for created workout to multiple athletes from coach
+- changed url of interim schedule page to not be based on uuid as you can't have that if you are passing multiple uuids
 
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -91,20 +49,19 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- need to fix scheduling workouts individually by coach.
+  - currently if you are a coach and have created a workout for multiple athletes and then go to a specific athletes workout instance
+    and try to schedule just that workout, it will schedule all athletes instances who have that workout.
+  - can just create a new view for interim created workouts assigned to multiple people
+    - can have new interim view have new links to new schedule views that easily allow for scheduling for multiple users.
+    - that way the schedule views for multiple at once and for just one are seperate.
 - create a group model that athletes can be added to by coaches
   - this will allow coaches to add workouts to all athletes in a specific group when creating workouts
 - clicking on an athletes workouts from the coaches page currently sends you to the athletes workoutinstance
   - I think this is okay but maybe change the url so it <coachusername>/athletes/<athleteusername>/instance
     - this would basically be creating a new page+url+view that has all the same stuff as the current instance view
       - may be unnecessary and can leave as is
-- when a coach creates a workout give option to what athletes he wants to give it to
-  - will have to be handled in view functions
-  - will need same functionality from delete_schedule where the form is initially populated by users athletes
-    - also need to set the form.fields['athletes'].choices in the POST before the form.is_valid()
-    - if user.is_coach or user.is_gymowner:
-      - instance.current_user = choice of athletes
-    - else:
-      - form.fields['choose_athletes'].exclude() or something like that. exclude might need a tuple if done in form
+- add coaches self to athlete list they can assign workouts to.
 - make 2 create workout buttons for coaches, one for themselves and one for their athletes
     - if creating for themselves, also give option to share with athletes and vis versa
 - in add_athletes_to_coach view
