@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Classification, Movement, Workout, WorkoutInstance, Date, Result, ResultFile, User
+from .models import *
 from django.contrib.auth.admin import UserAdmin
 
 class WorkoutInstanceInline(admin.TabularInline):
@@ -16,16 +16,35 @@ class WorkoutInstanceInline(admin.TabularInline):
 class UserProfileAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         (None, {
-            'fields': ('gender', 'user_classification')
+            'fields': ('user_gender', 'workout_default_gender')
             }),
-        ('Relationships', {
-            'fields': ('athletes', 'coaches', 'gym_owner')
+        ('Athlete Status', {
+            'fields': ('is_athlete', 'is_coach', 'is_gym_owner')
+            }),
+        ('Privacy', {
+            'fields': ('user_profile_privacy', 'workout_default_privacy')
             }),
         )
 
 ##    inlines = [WorkoutInstanceInline] very slow and expensive with a lot of instances
 
 admin.site.register(Classification)
+
+@admin.register(Athlete)
+class AthleteAdmin(admin.ModelAdmin):
+    list_display = ('user',
+                    'gym_owner',
+                    )
+
+@admin.register(Coach)
+class CoachAdmin(admin.ModelAdmin):
+    list_display = ('user',
+                    )
+
+@admin.register(GymOwner)
+class GymOwnerAdmin(admin.ModelAdmin):
+    list_display = ('user',
+                    )
     
 @admin.register(Workout)
 class WorkoutAdmin(admin.ModelAdmin):
@@ -42,6 +61,7 @@ class WorkoutAdmin(admin.ModelAdmin):
     list_filter = ('classification',
                    'estimated_duration_in_seconds',
                    'movements',
+                   'created_by_user',
                    )
     inlines = [WorkoutInstanceInline]
     
@@ -71,6 +91,7 @@ class WorkoutInstanceAdmin(admin.ModelAdmin):
                     'duration_in_seconds',
                     )
     inlines = [ResultInline]
+    list_filter = ['current_user']
     
 class ResultFileInline(admin.TabularInline):
     model = ResultFile
