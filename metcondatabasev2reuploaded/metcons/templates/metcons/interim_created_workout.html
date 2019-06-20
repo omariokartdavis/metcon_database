@@ -2,7 +2,7 @@
 
 {% block content %}
 	{% if user.is_authenticated %}
-		{% if user.username == instance.current_user.username %}
+		{% if user.username == instance.current_user.username or user.coach in instance.current_user.athlete.coach_set.all %}
 			<h2>Would you like to schedule this workout or have you already completed it?</h2>
 			
 			<p><strong>{{ instance.workout.display_name }}</strong>:
@@ -16,17 +16,23 @@
 				{% csrf_token %}
 				<input type="submit" name ='schedule workout for future' value="Schedule Workout In Future" />
 			</form>
-			<form action="{% url 'result_create' user.username instance.id %}">
+			{% if athlete_list.count <= 1 %}
+				<form action="{% url 'result_create' user.username instance.id %}">
+					{% csrf_token %}
+					<input type="submit" name="created workout previous day add result" value="Add Result In Past" >
+				</form>
+				<form action="{% url 'result_create' user.username instance.id %}">
+					{% csrf_token %}
+					<input type="submit" name="created workout today add result" value="Add Result For Today" >
+				</form>
+				<form action="{% url 'workoutinstance-detail' user.username instance.id %}">
+					{% csrf_token %}
+					<input type="submit" value="No, Go To Workout">
+				</form>
+			{% endif %}
+			<form action="{% url 'profile' user.username %}">
 				{% csrf_token %}
-				<input type="submit" name="created workout previous day add result" value="Add Result In Past" >
-			</form>
-			<form action="{% url 'result_create' user.username instance.id %}">
-				{% csrf_token %}
-				<input type="submit" name="created workout today add result" value="Add Result For Today" >
-			</form>
-			<form action="{% url 'workoutinstance-detail' user.username instance.id %}">
-				{% csrf_token %}
-				<input type="submit" value="No, Go To Workout">
+				<input type="submit" value="No, Go To Profile">
 			</form>
 		{% endif %}
 	{% endif %}
