@@ -2,6 +2,8 @@ from django import forms
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.forms import UserCreationForm
+from metcons.models import User
 
 repetition_frequency_choices = [
     ('none', ''),
@@ -19,21 +21,60 @@ repetition_length_choices = [
     (364, 'Years'),
     ]
 
-gender_choices = [
+workout_gender_choices = [
     ('M', 'Male'),
     ('F', 'Female'),
     ('B', 'Both'),
     ]
 
+user_gender_choices = [
+    ('M', 'Male'),
+    ('F', 'Female'),
+    ]
+
+athlete_status_choices = [
+    ('A', 'Athlete'),
+    ('C', 'Coach'),
+    ('G', 'Gym Owner'),
+    ]
+
 def get_default_localtime():
     return timezone.localtime(timezone.now())
 
+class SignUpForm(UserCreationForm):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    email = forms.EmailField(max_length=254)
+    athlete_status = forms.ChoiceField(widget=forms.RadioSelect, choices=athlete_status_choices,
+                                       help_text='Selecting Coach or Gym Owner will also sign you up as an athlete.')
+    gender = forms.ChoiceField(widget=forms.RadioSelect, choices=user_gender_choices)
+    default_workout_gender = forms.ChoiceField(widget=forms.RadioSelect, choices=workout_gender_choices,
+                                               help_text='What is the gender that you will most often write workouts for? This will be the default gender chosen when you create a workout; however, you can change this during creation of any workout.') 
+    
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'athlete_status', 'gender', 'default_workout_gender', 'password1', 'password2', )
+        
+class AddAthleteToCoachForm(forms.Form):
+    athlete_username = forms.CharField(max_length = 30, help_text='What is the athletes username? Lowercase letters only.')
+
+class AddCoachForm(forms.Form):
+    coach_username = forms.CharField(max_length = 30, help_text='What is the coaches username? Lowercase letters only.')
+    
 class CreateWorkoutForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your workout")
     workout_scaling = forms.CharField(widget=forms.Textarea, max_length=4000, help_text='Enter any scaling options', required=False)
     estimated_duration = forms.IntegerField(help_text='Enter an estimate of how long it will take to complete the workout in minutes (whole numbers only)', required=False)
-    gender = forms.ChoiceField(widget=forms.Select(), choices=gender_choices, help_text='Is this workout (and the weights you have entered) applicable for both Males and Females or only one?')
+    gender = forms.ChoiceField(widget=forms.Select(), choices=workout_gender_choices, help_text='Is this workout (and the weights you have entered) applicable for both Males and Females or only one?')
+    athlete_to_assign = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to? Default is yourself')
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(CreateWorkoutForm, self).__init__(*args, **kwargs)
+        if not self.user.is_coach or not self.user.is_gym_owner:
+            athlete_to_assign = None
+    
 class CreateResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here")
     duration_minutes = forms.IntegerField(required = False)
