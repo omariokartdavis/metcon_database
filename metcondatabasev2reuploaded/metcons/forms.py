@@ -67,13 +67,12 @@ class CreateWorkoutForm(forms.Form):
     workout_scaling = forms.CharField(widget=forms.Textarea, max_length=4000, help_text='Enter any scaling options', required=False)
     estimated_duration = forms.IntegerField(help_text='Enter an estimate of how long it will take to complete the workout in minutes (whole numbers only)', required=False)
     gender = forms.ChoiceField(widget=forms.Select(), choices=workout_gender_choices, help_text='Is this workout (and the weights you have entered) applicable for both Males and Females or only one?')
-    athlete_to_assign = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to? Default is yourself')
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+        user = kwargs.pop('user', None)
         super(CreateWorkoutForm, self).__init__(*args, **kwargs)
-        if not self.user.is_coach or not self.user.is_gym_owner:
-            athlete_to_assign = None
+        if user.is_coach or user.is_gym_owner:
+            self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to? Default is yourself')
     
 class CreateResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here")
