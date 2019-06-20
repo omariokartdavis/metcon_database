@@ -11,61 +11,62 @@ def get_default_localtime_date():
         return timezone.localtime(timezone.now()).date()
 
 class User(AbstractUser):
-        gender_choices = [
+        workout_gender_choices = [
+                ('M', 'Male'),
+                ('F', 'Female'),
+                ('B', 'Both'),
+                ]
+
+        user_gender_choices = [
                 ('M', 'Male'),
                 ('F', 'Female'),
                 ]
 
-        gender = models.CharField(max_length=1, blank=True, null=True, choices = gender_choices, default='M',
-                                  help_text='Is this workout (and the weights you have entered) applicable for both Males and Females or only one?')
-
-        athlete_choices = [
-                ('A', 'Athlete'),
-                ('C', 'Coach'),
-                ('G', 'Gym Owner'),
+        workout_default_gender = models.CharField(max_length=1, blank=True, null=True, choices = workout_gender_choices, default='B',
+                                  help_text='This is the default gender that workouts you create will be tagged for. Can be changed on workout creation.')
+        user_gender = models.CharField(max_length=1, blank=True, null=True, choices=user_gender_choices)
+        
+        privacy_choices = [
+                ('Y', 'Private'),
+                ('N', 'Public'),
                 ]
 
-        user_classification = models.CharField(max_length=1, blank=True, null=True, choices = athlete_choices)
+        workout_default_privacy = models.CharField(max_length=1, blank=True, null=True, choices=privacy_choices, default='N')
+        user_profile_privacy = models.CharField(max_length=1, blank=True, null=True, choices=privacy_choices, default='N')
 
-        athletes = models.ManyToManyField('self', related_name='listed_athletes', blank=True)
-        coaches = models.ManyToManyField('self', related_name='listed_coaches', blank=True)
-        gym_owner = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='listed_gym_owner', null=True)
+        is_athlete = models.BooleanField(default=False)
+        is_coach = models.BooleanField(default=False)
+        is_gym_owner = models.BooleanField(default=False)
 
-        @property
-        def is_athlete(self):
-                if self.user_classification == 'A':
-                        True
+class Athlete(models.Model):
+        user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+        gym_owner = models.ForeignKey('GymOwner', on_delete=models.SET_NULL, null=True, blank=True)
+
+        def __str__(self):
+                if self.user:
+                        return self.user.username
                 else:
-                        False
+                        return 'User Deleted'
+        
+class Coach(models.Model):
+        user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+        athletes = models.ManyToManyField(Athlete, blank=True)
 
-        @property
-        def is_coach(self):
-                if self.user_classification == 'C':
-                        True
+        def __str__(self):
+                if self.user:
+                        return self.user.username
                 else:
-                        False
+                        return 'User Deleted'
 
-        @property
-        def is_gym_owner(self):
-                if self.user_classification == 'G':
-                        True
+class GymOwner(models.Model):
+        user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+        coaches = models.ManyToManyField(Coach, blank=True)
+
+        def __str__(self):
+                if self.user:
+                        return self.user.username
                 else:
-                        False
-                        
-##don't think I actually need these models. Made them but never used them.
-##class GymOwner(models.Model):
-##        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-##        coach = models.ForeignKey('Coach', on_delete=models.SET_NULL, null=True)
-##
-##class Coach(Models.Model):
-##        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-##        coach = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
-##        gym_owner = models.ForeignKey(GymOwner, on_delete=models.SET_NULL, null=True)
-##        
-##class Athlete(models.Model):
-##        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-##        coach = models.ForeignKey(Coach, on_delete=models.SET_NULL, null=True)
-##        gym_owner = models.ForeignKey(GymOwner, on_delete=models.SET_NULL, null=True)
+                        return 'User Deleted'
 
 class Classification(models.Model):
         """Model representing a classification of a movement"""
