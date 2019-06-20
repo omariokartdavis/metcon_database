@@ -357,7 +357,14 @@ def schedule_instance(request, username, pk):
                         list_of_dates_to_schedule.append(local_date)
                         local_date += timezone.timedelta(days=repeat_frequency)
 
-                instance.add_date_to_be_completed(*list_of_dates_to_schedule)
+                athlete_username_list = request.session['athlete_list']
+                if athlete_username_list:
+                    for i in athlete_username_list:
+                        user = User.objects.get(username=i)
+                        instance = WorkoutInstance.objects.get(current_user=user, workout=instance.workout)
+                        instance.add_date_to_be_completed(*list_of_dates_to_schedule)
+                else:
+                    instance.add_date_to_be_completed(*list_of_dates_to_schedule)
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
     else:
@@ -653,8 +660,10 @@ def create_workout(request):
     """View function for creating a new workout"""
 
     if request.method == 'POST':
-        form = CreateWorkoutForm(request.POST)
-
+        form = CreateWorkoutForm(request.POST, **{'user':request.user})
+        if request.user.is_coach or request.user.is_gym_owner:
+            athlete_to_assign = request.POST.getlist('athlete_to_assign')
+            form.fields['athlete_to_assign'].choices = [(i, i) for i in athlete_to_assign]
         if form.is_valid():
             current_user = request.user
             users_to_assign_workout = []
@@ -685,16 +694,10 @@ def create_workout(request):
                     workout.estimated_duration_in_seconds=int(re.split('\s', r1[0])[3])
                 workout.update_movements_and_classification()
 
-##                for i in users_to_assign_workout:
-##                    instance = WorkoutInstance(workout=workout, current_user=i,
-##                                               duration_in_seconds=workout.estimated_duration_in_seconds)
-##                    instance.save()
-##                    instance.update_edited_workout_text()
-##                    instance.update_edited_scaling_text()
-##                    instance.save()
             else:
                 workout = Workout.objects.get(workout_text=form.cleaned_data['workout_text'])
-                
+
+            athlete_username_list = []
             for i in users_to_assign_workout:
                 if not WorkoutInstance.objects.filter(workout=workout, current_user=i):
                     instance = WorkoutInstance(workout=workout, current_user = i,
@@ -705,8 +708,14 @@ def create_workout(request):
                     instance.save()
                 else:
                     instance = WorkoutInstance.objects.get(workout=workout, current_user=i)
-            
-            return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
+                athlete_username_list.append(i.username)
+            request.session['athlete_list'] = athlete_username_list
+##            if current_user != instance.current_user:
+##                if len(users_to_assign_workout) == 1:
+##                    return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
+##                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+##            else:
+            return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, workout.id]))
 
     else:
         form = CreateWorkoutForm(**{'user':request.user}, initial={'gender': request.user.workout_default_gender,
@@ -722,17 +731,25 @@ def create_workout(request):
 @login_required
 def schedule_recently_created_or_added_workout(request, username, pk):
     user = request.user
-    instance = WorkoutInstance.objects.get(id=pk)
-
+    workout = Workout.objects.get(id=pk)
+    athlete_list = request.session['athlete_list']
+    first_user_in_list_username = athlete_list[0]
+    first_user_in_list = User.objects.get(username=first_user_in_list_username)
+    
+    instance = WorkoutInstance.objects.get(current_user=first_user_in_list, workout=workout)
+    
     if request.method == 'POST':
-        if user == instance.current_user:
-            if 'schedule workout for today' in request.POST:
-                now = timezone.localtime(timezone.now()).date()
+        if 'schedule workout for today' in request.POST:
+            now = timezone.localtime(timezone.now()).date()
+            for i in athlete_list:
+                user = User.objects.get(username=i)
+                instance = WorkoutInstance.objects.get(current_user=user, workout=workout)
                 instance.add_date_to_be_completed(now)
 
-                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+            return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
     context = {
+        'athlete_list': athlete_list,
         'instance': instance,
         }
     return render(request, 'metcons/interim_created_workout.html', context)
