@@ -357,7 +357,8 @@ def schedule_instance(request, username, pk):
                         list_of_dates_to_schedule.append(local_date)
                         local_date += timezone.timedelta(days=repeat_frequency)
 
-                athlete_username_list = request.session['athlete_list']
+                if request.session['athlete_list']:
+                    athlete_username_list = request.session['athlete_list']
                 if athlete_username_list:
                     for i in athlete_username_list:
                         user = User.objects.get(username=i)
@@ -431,7 +432,8 @@ def edit_schedule(request, username, pk):
 @login_required
 def delete_schedule(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
-    
+    now = timezone.localtime(timezone.now()).date()
+    future_dates = instance.dates_to_be_completed.filter(date_completed__gte=now)
     if request.method == 'POST':
         if 'delete schedule' in request.POST:
             form = DeleteScheduleForm(request.POST)
@@ -452,7 +454,6 @@ def delete_schedule(request, username, pk):
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
     else:
-        now = timezone.localtime(timezone.now()).date()
         form = DeleteScheduleForm()
         form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now)]
         #not sure if I want to have an initial choice here.
@@ -461,6 +462,7 @@ def delete_schedule(request, username, pk):
     context = {
         'form': form,
         'instance': instance,
+        'future_dates': future_dates,
         }
     
     return render(request, 'metcons/delete_schedule.html', context)
