@@ -2,7 +2,7 @@
 
 {% block content %}
 	{% if user.is_authenticated %}
-		{% if user.username == workoutinstance.current_user.username %}
+		{% if user.username == workoutinstance.current_user.username or user.coach in workoutinstance.current_user.athlete.coach_set.all %}
 			<form action="{% url 'schedule_instance' user.username workoutinstance.id %}">
 				<input type="submit" value="Schedule Workout" />
 			</form>
