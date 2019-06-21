@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% if user.is_authenticated %}
+		{% if user.is_coach or user.is_gym_owner %}
+			<h2>Would you like to schedule this workout now?</h2>
+			
+			<p><strong>{{ workout.display_name }}</strong>:
+			{{ workout.workout_text|linebreaks }}</p>
+			
+			<form method='POST'>
+				{% csrf_token %}
+				<input type='submit' name='schedule workout for today for multiple athletes' value='Schedule For Today'>
+			</form>
+			<form action="{% url 'schedule_instance_for_multiple_athletes' user.username workout.id %}">
+				{% csrf_token %}
+				<input type="submit" name ='schedule workout for future' value="Schedule Workout For Future" />
+			</form>
+			<form action="{% url 'profile' user.username %}">
+				{% csrf_token %}
+				<input type="submit" value="No, Go To Profile">
+			</form>
+		{% endif %}
+	{% endif %}
+{% endblock %}
