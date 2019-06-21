@@ -2,7 +2,7 @@
 
 {% block content %}
 	{% if user.is_authenticated %}
-		{% if user.username == instance.current_user.username %}
+		{% if user.username == instance.current_user.username or user.coach in instance.current_user.athlete.coach_set.all %}
 			<h1>Delete Result for {{ instance.display_workout }}</h1>
 			
 			<p>Date: {{ result.date_workout_completed|date:"F j, Y" }}</p>
