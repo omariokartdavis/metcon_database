@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% if user.is_authenticated %}
+		{% if user.is_coach or user.is_gym_owner %}
+			<h1>Add Workout To Athletes</h1>
+			
+			<form method="post">
+				{% csrf_token %}
+				<table>
+				{{ form.as_table }}
+				</table>
+				<input type="submit" value="Submit">
+			</form>
+		{% else %}
+			<p>You must be a coach to access this page</p>
+		{% endif %}
+	{% else %}
+		<p>Please login to view this page.</p>
+	{% endif %}
+{% endblock %}
