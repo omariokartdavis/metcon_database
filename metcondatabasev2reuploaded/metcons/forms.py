@@ -61,6 +61,19 @@ class AddAthleteToCoachForm(forms.Form):
 
 class AddCoachForm(forms.Form):
     coach_username = forms.CharField(max_length = 30, help_text='What is the coaches username? Lowercase letters only.')
+
+class AddWorkoutToAthletesForm(forms.Form):
+    athlete_to_assign = forms.MultipleChoiceField(help_text='Which athletes would you like to assign this workout to?')
+
+class CreateGroupForm(forms.Form):
+    group_name = forms.CharField(max_length = 254)
+    athlete_to_add = forms.MultipleChoiceField(help_text='Which athletes would you like to add to this group?')
+
+class AddAthletesToGroupForm(forms.Form):
+    athlete_to_add = forms.MultipleChoiceField(help_text='Which athletes would you like to add to this group?')
+
+class RemoveAthletesFromGroupForm(forms.Form):
+    athlete_to_remove = forms.MultipleChoiceField(help_text='Which athletes would you like to add to this group?')
     
 class CreateWorkoutForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your workout")
@@ -72,7 +85,7 @@ class CreateWorkoutForm(forms.Form):
         user = kwargs.pop('user', None)
         super(CreateWorkoutForm, self).__init__(*args, **kwargs)
         if user.is_coach or user.is_gym_owner:
-            self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to? Default is yourself')
+            self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to? Default is yourself only.')
     
 class CreateResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here")
@@ -90,8 +103,8 @@ class ScheduleInstanceForm(forms.Form):
     repeat_length = forms.ChoiceField(widget=forms.Select, choices=repetition_length_choices)
 
 class EditScheduleForm(forms.Form):
-    date_to_be_removed = forms.MultipleChoiceField(help_text='What date would you like to remove?')
-    date_to_be_added = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
+    date_to_be_removed = forms.MultipleChoiceField(required=False, help_text='What date would you like to remove?')
+    date_to_be_added = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
 
 class DeleteScheduleForm(forms.Form):
     date_to_be_removed = forms.MultipleChoiceField(help_text='What date would you like to remove?')
