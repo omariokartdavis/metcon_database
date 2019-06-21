@@ -357,15 +357,7 @@ def schedule_instance(request, username, pk):
                         list_of_dates_to_schedule.append(local_date)
                         local_date += timezone.timedelta(days=repeat_frequency)
 
-                if request.session['athlete_list']:
-                    athlete_username_list = request.session['athlete_list']
-                if athlete_username_list:
-                    for i in athlete_username_list:
-                        user = User.objects.get(username=i)
-                        instance = WorkoutInstance.objects.get(current_user=user, workout=instance.workout)
-                        instance.add_date_to_be_completed(*list_of_dates_to_schedule)
-                else:
-                    instance.add_date_to_be_completed(*list_of_dates_to_schedule)
+                instance.add_date_to_be_completed(*list_of_dates_to_schedule)
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
     else:
@@ -380,6 +372,55 @@ def schedule_instance(request, username, pk):
         }
 
     return render(request, 'metcons/schedule_instance.html', context)
+
+@login_required
+def schedule_instance_for_multiple_athletes(request, username, pk):
+    workout = Workout.objects.get(id=pk)
+    user = request.user
+
+    if request.method == 'POST':
+        if 'schedule for all athletes' in request.POST:
+            form = ScheduleInstanceForm(request.POST)
+            if form.is_valid():
+                coach = Coach.objects.get(user=user)
+
+                if form.cleaned_data['date_to_be_added'] == dt.date.today():
+                    aware_datetime = timezone.now()
+                else:
+                    date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_added'], dt.datetime.min.time())
+                    aware_datetime = timezone.make_aware(date_in_datetime)
+                local_date = timezone.localtime(aware_datetime).date()
+                list_of_dates_to_schedule=[local_date]
+                if form.cleaned_data['repeat_yes'] == True:
+                    repeat_frequency = int(form.cleaned_data['repeat_frequency'])
+                    number_of_repetitions = form.cleaned_data['number_of_repetitions']
+                    repeat_length = int(form.cleaned_data['repeat_length'])
+                    end_repeat_scheduling_date = local_date + timezone.timedelta(days=number_of_repetitions*repeat_length)
+                    list_of_dates_to_schedule = []
+                    while local_date <= end_repeat_scheduling_date:
+                        list_of_dates_to_schedule.append(local_date)
+                        local_date += timezone.timedelta(days=repeat_frequency)
+
+                athletes = user.coach.athletes.filter(user__workoutinstance__workout=workout)
+                if athletes:
+                    for i in athletes:
+                        instance = WorkoutInstance.objects.get(current_user=i.user, workout=workout)
+                        instance.add_date_to_be_completed(*list_of_dates_to_schedule)
+
+                    return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    else:
+        form = ScheduleInstanceForm()
+        if 'schedule workout for future' in request.GET:
+            tomorrow = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=1)
+            form.fields['date_to_be_added'].initial = tomorrow
+
+    context = {
+        'form': form,
+        'workout': workout,
+        }
+
+    return render(request, 'metcons/schedule_instance_for_multiple_athletes.html', context)
 
 @login_required
 def edit_schedule(request, username, pk):
@@ -699,7 +740,6 @@ def create_workout(request):
             else:
                 workout = Workout.objects.get(workout_text=form.cleaned_data['workout_text'])
 
-            athlete_username_list = []
             for i in users_to_assign_workout:
                 if not WorkoutInstance.objects.filter(workout=workout, current_user=i):
                     instance = WorkoutInstance(workout=workout, current_user = i,
@@ -710,14 +750,11 @@ def create_workout(request):
                     instance.save()
                 else:
                     instance = WorkoutInstance.objects.get(workout=workout, current_user=i)
-                athlete_username_list.append(i.username)
-            request.session['athlete_list'] = athlete_username_list
-##            if current_user != instance.current_user:
-##                if len(users_to_assign_workout) == 1:
-##                    return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
-##                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
-##            else:
-            return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, workout.id]))
+
+            if len(users_to_assign_workout) > 1:
+                return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, workout.id]))
+            else:
+                return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
 
     else:
         form = CreateWorkoutForm(**{'user':request.user}, initial={'gender': request.user.workout_default_gender,
@@ -731,30 +768,45 @@ def create_workout(request):
     return render(request, 'metcons/create_workout.html', context)
 
 @login_required
-def schedule_recently_created_or_added_workout(request, username, pk):
+def interim_created_workout(request, username, pk):
     user = request.user
-    workout = Workout.objects.get(id=pk)
-    athlete_list = request.session['athlete_list']
-    first_user_in_list_username = athlete_list[0]
-    first_user_in_list = User.objects.get(username=first_user_in_list_username)
-    
-    instance = WorkoutInstance.objects.get(current_user=first_user_in_list, workout=workout)
-    
+    instance = WorkoutInstance.objects.get(id=pk)
+
     if request.method == 'POST':
-        if 'schedule workout for today' in request.POST:
-            now = timezone.localtime(timezone.now()).date()
-            for i in athlete_list:
-                user = User.objects.get(username=i)
-                instance = WorkoutInstance.objects.get(current_user=user, workout=workout)
+        if user == instance.current_user:
+            if 'schedule workout for today' in request.POST:
+                now = timezone.localtime(timezone.now()).date()
                 instance.add_date_to_be_completed(now)
 
-            return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
     context = {
-        'athlete_list': athlete_list,
         'instance': instance,
         }
     return render(request, 'metcons/interim_created_workout.html', context)
+
+@login_required
+def interim_created_workout_for_multiple_athletes(request, username, pk):
+    user = request.user
+    workout = Workout.objects.get(id=pk)
+    athletes = user.coach.athletes.filter(user__workoutinstance__workout=workout)
+
+    if request.method == 'POST':
+        if user.is_coach:
+            if 'schedule workout for today for multiple athletes' in request.POST:
+                now = timezone.localtime(timezone.now()).date()
+                if athletes:
+                    for i in athletes:
+                        instance = WorkoutInstance.objects.get(current_user=i.user, workout=workout)
+                        instance.add_date_to_be_completed(now)
+
+                    return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    context = {
+        'athletes': athletes,
+        'workout': workout,
+        }
+    return render(request, 'metcons/interim_created_workout_for_multiple_athletes.html', context)
 
 class MovementCreate(LoginRequiredMixin, CreateView):
     model = Movement
