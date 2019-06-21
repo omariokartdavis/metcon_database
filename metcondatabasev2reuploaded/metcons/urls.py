@@ -13,6 +13,7 @@ urlpatterns = [
     path('movement/create/', views.MovementCreate.as_view(), name='movement_create'),
     path('<username>/workout/<uuid:pk>/result/create/', views.create_result, name='result_create'),
     path('<username>/workout/<uuid:pk>/scheduleworkout/', views.schedule_instance, name='schedule_instance'),
+    path('<username>/workout/<int:pk>/scheduleworkoutformultipleathletes/', views.schedule_instance_for_multiple_athletes, name='schedule_instance_for_multiple_athletes'),
     path('<username>/workout/<uuid:pk>/editschedule/', views.edit_schedule, name='edit_schedule'),
     path('<username>/workout/<uuid:pk>/deleteschedule/', views.delete_schedule, name='delete_schedule'),
     path('<username>/', views.profile, name='profile'),
@@ -21,7 +22,8 @@ urlpatterns = [
     path('<username>/workout/<uuid:pk>/delete/', views.delete_instance, name='delete_instance'),
     path('<username>/workout/<uuid:pk>/result/<int:resultid>/edit/', views.edit_result, name='edit_result'),
     path('<username>/workout/<uuid:pk>/result/<int:resultid>/delete/', views.delete_result, name='delete_result'),
-    path('<username>/workout/<int:pk>/schedule or add result/', views.schedule_recently_created_or_added_workout, name='interim_created_workout'),
+    path('<username>/workout/<uuid:pk>/scheduleoraddresult/', views.interim_created_workout, name='interim_created_workout'),
+    path('<username>/workout/<int:pk>/schedulerecentlycreatedworkoutformultipleathletes/', views.interim_created_workout_for_multiple_athletes, name='interim_created_workout_for_multiple_athletes'),
     path('<username>/add athlete/', views.add_athletes_to_coach, name='add_athletes'),
     path('<username>/add coach/', views.add_coach, name='add_coach'),
 ]
