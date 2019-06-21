@@ -45,6 +45,12 @@ class CoachAdmin(admin.ModelAdmin):
 class GymOwnerAdmin(admin.ModelAdmin):
     list_display = ('user',
                     )
+
+@admin.register(Group)
+class GroupAdmin (admin.ModelAdmin):
+    list_display = ('name',
+                    'coach',
+                    )                    
     
 @admin.register(Workout)
 class WorkoutAdmin(admin.ModelAdmin):
