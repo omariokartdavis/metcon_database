@@ -2,19 +2,42 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## 6/20/19
-(uploaded at home)
+## 6/21/19
+(uploaded at work)
 - views.py
 - urls.py
-- created interim_created_workout_for_multiple_athletes.html
-- created schedule_instance_for_multiple_athletes.html
+- forms.py
+- models.py (requires makemigrations/migrate)
+- admin.py
+- schedule_instance.html
+- schedule_instance_for_multiple_athletes.html
+- workoutinstance_detail.html
+- created_result.html
+- edit_result.html
+- delete_result.html
+- workout_list.html
+- edit_schedule.html
+- created add_workout_from_list_to_athletes.html
+- created add_athletes_to_group.html
+- user_page.html
+- created create_group.html
+- created group_detail.html
+- created delete_group.html
+- created remove_athletes_from_group.html
 
-## functionality completed on 6/19/19:
-- added check if future_dates exist in delete schedule, other say this workout has no scheduled dates
-- create an edited notification on an instance.
-  - check if not instance.edited_workout_text = instance.workout.workout_text
-    - if its not then add star to workout name or something. can do (edited from original)
-- created seperate pages for adding workouts to multiple users and for scheduling a new workout for multiple users
+## functionality completed on 6/21/19:
+- create a button for scheduling one athletes workout to all athletes who have that workout
+  - uses the schedule instance for multiple athletes view already created.
+- added list of athletes you are scheduling for to schedule_instance_for_multiple_athletes
+- fixed <p> tag on schedule_instance
+- allowed coach access to result pages
+- removed date_to_be_removed field from edit schedule page if there are no dates that the workout is scheduled for
+  - if workout has no dates from yesterday into the future. only add date will show
+- create add to athletes button for workouts on workout list
+- add coaches self to athlete list they can assign workouts to.
+- created groups
+  - all functionality for creating/deleting/adding athletes/removing athletes is done
+  - still need to add functionality for adding workouts to groups
 
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -44,31 +67,25 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- add "you don't have any athletes" if statement to create group page if coach has no athletes
+- create add workout to group functionality on all necessary pages
+- add user setting to change profile to a coach or gym owner
+  - will create coach model and gym owner model for user and change users current flag from is_athlete to whatever
+  - if changing from coach/gym owner to athlete simply chang ethe is_coach/gym_owner flag. Do not delete the coach/gymowner models
 - create edit schedule view for multiple athletes
   - very similar to schedule for multiple athletes
-- create a button for scheduling one athletes workout to all athletes who have that workout
-  - can use the schedule instance for multiple athletes view already created.
+  - would require selecting which athletes this is editing for.
+    - include list of all athletes that have this workout
+    - can initial select all athletes but allow for selecting only certain ones
 - create new view for a coach viewing their athletes workout instance?
   - workout name link from coaches page would link to new view instead of instance.get_absolute_url
   - new url would have coaches username then athletes username
   - new view could have athletes username on the page somewhere. everything else would likely be the same
   - would need all new buttons and views for each button to show coach username then athlete username
-- create add to athletes button for workouts on workout list
-- need to fix scheduling workouts individually by coach.
-  - currently if you are a coach and have created a workout for multiple athletes and then go to a specific athletes workout instance
-    and try to schedule just that workout, it will schedule all athletes instances who have that workout.
-  - can just create a new view for interim created workouts assigned to multiple people
-    - can have new interim view have new links to new schedule views that easily allow for scheduling for multiple users.
-    - that way the schedule views for multiple at once and for just one are seperate.
-- create a group model that athletes can be added to by coaches
-  - this will allow coaches to add workouts to all athletes in a specific group when creating workouts
 - clicking on an athletes workouts from the coaches page currently sends you to the athletes workoutinstance
   - I think this is okay but maybe change the url so it <coachusername>/athletes/<athleteusername>/instance
     - this would basically be creating a new page+url+view that has all the same stuff as the current instance view
       - may be unnecessary and can leave as is
-- add coaches self to athlete list they can assign workouts to.
-- make 2 create workout buttons for coaches, one for themselves and one for their athletes
-    - if creating for themselves, also give option to share with athletes and vis versa
 - in add_athletes_to_coach view
   - change the add functionality so it sends a request to the athlete.
     - might need to create a "request-to-add" model
@@ -86,8 +103,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - send link to email address that will send them to the signup page possibly with their email already entered
   - can possibly have the person who sent the request add info about the requestee
     - gender, first name, last name etc.
-- find a way to add captions to each file uploaded via results
-  - don't really think this is needed as Instagram only allows 1 caption per post.
 - create profanity filter for creating workouts but not results
   - just like movement tags, create function to search for words in workout_text or scaling description
     - if words are found. delete that workout and give popup saying why
