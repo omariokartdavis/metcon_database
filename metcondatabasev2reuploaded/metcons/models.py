@@ -68,6 +68,14 @@ class GymOwner(models.Model):
                 else:
                         return 'User Deleted'
 
+class Group(models.Model):
+        name = models.CharField(max_length=254)
+        athletes = models.ManyToManyField(Athlete, blank=True)
+        coach = models.ForeignKey(Coach, on_delete=models.CASCADE, null=True)
+
+        def __str__(self):
+                return self.name
+
 class Classification(models.Model):
         """Model representing a classification of a movement"""
         classification_types = (
