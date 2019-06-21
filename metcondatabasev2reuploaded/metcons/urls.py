@@ -11,6 +11,7 @@ urlpatterns = [
     path('movement/<int:pk>', views.MovementDetailView.as_view(), name='movement-detail'),
     path('workout/create/', views.create_workout, name='workout_create'),
     path('movement/create/', views.MovementCreate.as_view(), name='movement_create'),
+    path('<username>/workout/<int:pk>/addtoathletes/', views.add_workout_from_list_to_athletes, name='add_workout_from_list_to_athletes'),
     path('<username>/workout/<uuid:pk>/result/create/', views.create_result, name='result_create'),
     path('<username>/workout/<uuid:pk>/scheduleworkout/', views.schedule_instance, name='schedule_instance'),
     path('<username>/workout/<int:pk>/scheduleworkoutformultipleathletes/', views.schedule_instance_for_multiple_athletes, name='schedule_instance_for_multiple_athletes'),
@@ -26,4 +27,9 @@ urlpatterns = [
     path('<username>/workout/<int:pk>/schedulerecentlycreatedworkoutformultipleathletes/', views.interim_created_workout_for_multiple_athletes, name='interim_created_workout_for_multiple_athletes'),
     path('<username>/add athlete/', views.add_athletes_to_coach, name='add_athletes'),
     path('<username>/add coach/', views.add_coach, name='add_coach'),
+    path('<username>/group/create/', views.create_group, name='create_group'),
+    path('<username>/group/<int:pk>/delete/', views.delete_group, name='delete_group'),
+    path('<username>/group/<int:pk>/', views.group_detail, name='group_detail'),
+    path('<username>/group/<int:pk>/addathletestogroup/', views.add_athletes_to_group, name='add_athletes_to_group'),
+    path('<username>/group/<int:pk>/removeathletesfromgroup/', views.remove_athletes_from_group, name='remove_athletes_from_group'),
 ]
