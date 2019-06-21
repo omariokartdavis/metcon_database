@@ -3,16 +3,18 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # Run update_instance_dates every day
 
 ## 6/20/19
-(uploaded at work)
+(uploaded at home)
 - views.py
-- delete_schedule.html
-- user_page.html
+- urls.py
+- created interim_created_workout_for_multiple_athletes.html
+- created schedule_instance_for_multiple_athletes.html
 
 ## functionality completed on 6/19/19:
 - added check if future_dates exist in delete schedule, other say this workout has no scheduled dates
 - create an edited notification on an instance.
   - check if not instance.edited_workout_text = instance.workout.workout_text
     - if its not then add star to workout name or something. can do (edited from original)
+- created seperate pages for adding workouts to multiple users and for scheduling a new workout for multiple users
 
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -42,6 +44,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- create edit schedule view for multiple athletes
+  - very similar to schedule for multiple athletes
+- create a button for scheduling one athletes workout to all athletes who have that workout
+  - can use the schedule instance for multiple athletes view already created.
 - create new view for a coach viewing their athletes workout instance?
   - workout name link from coaches page would link to new view instead of instance.get_absolute_url
   - new url would have coaches username then athletes username
