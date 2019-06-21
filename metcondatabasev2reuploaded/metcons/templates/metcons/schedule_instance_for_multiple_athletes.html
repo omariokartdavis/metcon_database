@@ -5,6 +5,11 @@
 		{% if user.is_coach or user.is_gym_owner %}
 			<h1>Schedule Workout</h1>
 			
+			{% if athletes %}
+				<p>Schedule this workout for the following athletes: 
+				{% for i in athletes %}{{ i.user.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+			{% endif %}
+			
 			<form action="" method="post">
 				{% csrf_token %}
 				<table>
