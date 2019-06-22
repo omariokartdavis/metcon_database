@@ -11,6 +11,10 @@
 			</table>
 			<input type="submit" value="Submit">
 		</form>
+		
+		{% if user.is_coach or user.is_gym_owner %}
+			<p>If no athletes or groups are chosen, the workout will be assigned to yourself.</p>
+		{% endif %}
 	{% else %}
 		<p>Please login to view this page.</p>
 	{% endif %}
