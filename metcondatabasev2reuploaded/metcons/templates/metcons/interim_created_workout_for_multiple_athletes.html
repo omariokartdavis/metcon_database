@@ -5,6 +5,11 @@
 		{% if user.is_coach or user.is_gym_owner %}
 			<h2>Would you like to schedule this workout now?</h2>
 			
+			{% if athletes %}
+				<p>Schedule this workout for the following athletes: 
+				{% for i in athletes %}{{ i.user.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+			{% endif %}
+			
 			<p><strong>{{ workout.display_name }}</strong>:
 			{{ workout.workout_text|linebreaks }}</p>
 			
