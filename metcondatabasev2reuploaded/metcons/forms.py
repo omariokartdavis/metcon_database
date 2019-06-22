@@ -59,8 +59,14 @@ class SignUpForm(UserCreationForm):
 class AddAthleteToCoachForm(forms.Form):
     athlete_username = forms.CharField(max_length = 30, help_text='What is the athletes username? Lowercase letters only.')
 
+class RemoveAthleteFromCoachForm(forms.Form):
+    athlete_to_remove = forms.MultipleChoiceField(help_text='Which athletes would you like to remove?')
+    
 class AddCoachForm(forms.Form):
     coach_username = forms.CharField(max_length = 30, help_text='What is the coaches username? Lowercase letters only.')
+
+class RemoveCoachFromAthleteForm(forms.Form):
+    coach_to_remove = forms.MultipleChoiceField(help_text='Which coach would you like to remove?')
 
 class AddWorkoutToAthletesForm(forms.Form):
     athlete_to_assign = forms.MultipleChoiceField(help_text='Which athletes would you like to assign this workout to?')
