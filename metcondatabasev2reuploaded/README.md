@@ -2,46 +2,19 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates every day
 
-## 6/21/19
+## 6/22/19
 (uploaded at home)
 - views.py
-- urls.py
 - forms.py
-- user_page.html
-- create_group.html
-- remove_athletes_from_group.html
-- schedule_instance.html
-- workoutinstance_detail.html
-- interim_created_workout_for_multiple_athletes.html
-- created remove_athletes_from_coach.html
-- created remove_coaches_from_athlete.html
-- created edit_schedule_for_multiple_athletes.html
+- create_workout.html
 
-## functionality completed on 6/21/19:
-- create a button for scheduling one athletes workout to all athletes who have that workout
-  - uses the schedule instance for multiple athletes view already created.
-- added list of athletes you are scheduling for to schedule_instance_for_multiple_athletes
-- fixed <p> tag on schedule_instance
-- allowed coach access to result pages
-- removed date_to_be_removed field from edit schedule page if there are no dates that the workout is scheduled for
-  - if workout has no dates from yesterday into the future. only add date will show
-- create add to athletes button for workouts on workout list
-- add coaches self to athlete list they can assign workouts to.
-- created groups
-  - all functionality for creating/deleting/adding athletes/removing athletes is done
-  - still need to add functionality for adding workouts to groups
-- remove athletes from coach
-- remove coaches from athlete
-- add "you don't have any athletes" if statement to create group page if coach has no athletes
-- add "you don't have any athletes" if statement to remove athletes page if coach has no athletes
-- add "you don't have any coaches" if statement to remove coach page if athlete has no coaches
-- create edit schedule view for multiple athletes
-  - very difficult to do because of the remove dates potentially being different for each athlete
-  - very similar to schedule for multiple athletes
-  - would require selecting which athletes this is editing for.
-    - include list of all athletes that have this workout
-    - can initial select all athletes but allow for selecting only certain ones
-- removed coaches self from athlete list for assigning workouts as it complicates the scheduling too much
+## functionality completed on 6/22/19:
+- create add workout to group functionality on all necessary pages
+- add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
+  - actually did this awhile ago
+- add login to index page.
+  - done awhile ago
+- create workout now properly defaults to self if coach and no athletes or groups have been chosen
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -71,9 +44,9 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- create remove coach feature
+- create 'tags' button on workout detail page that you can click 
+  - will show you all movement and classification tags on that workout
 - when a coach removes an athlete, send a notification to the athlete
-- create add workout to group functionality on all necessary pages
 - add user setting to change profile to a coach or gym owner
   - will create coach model and gym owner model for user and change users current flag from is_athlete to whatever
   - if changing from coach/gym owner to athlete simply chang ethe is_coach/gym_owner flag. Do not delete the coach/gymowner models
@@ -116,13 +89,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - create dropdown filter for where workouts came from (users, mainsite, comptrain etc.)
 - add ability to edit resultfiles on edit result page
 - add filter for workout id on workout list page
-- add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
 - add create workout link to workout list page
   - under user authentication in template
 - ?only update base workout times counted and duration at midnight?
   - will help speed up workout creation and all instance updates/saves
 - add filter on workout instance detail page to filter results by date
-- add login to index page.
 - Add privacy setting so users can set their profile/workouts to private and therefore others cant search for/see them.
   - default to public
   - have a setting on each individual workout as well so users can make 1 workout public if they want but the rest of them stay private
