@@ -3,27 +3,19 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # Run update_instance_dates every day
 
 ## 6/21/19
-(uploaded at work)
+(uploaded at home)
 - views.py
 - urls.py
 - forms.py
-- models.py (requires makemigrations/migrate)
-- admin.py
-- schedule_instance.html
-- schedule_instance_for_multiple_athletes.html
-- workoutinstance_detail.html
-- created_result.html
-- edit_result.html
-- delete_result.html
-- workout_list.html
-- edit_schedule.html
-- created add_workout_from_list_to_athletes.html
-- created add_athletes_to_group.html
 - user_page.html
-- created create_group.html
-- created group_detail.html
-- created delete_group.html
-- created remove_athletes_from_group.html
+- create_group.html
+- remove_athletes_from_group.html
+- schedule_instance.html
+- workoutinstance_detail.html
+- interim_created_workout_for_multiple_athletes.html
+- created remove_athletes_from_coach.html
+- created remove_coaches_from_athlete.html
+- created edit_schedule_for_multiple_athletes.html
 
 ## functionality completed on 6/21/19:
 - create a button for scheduling one athletes workout to all athletes who have that workout
@@ -38,7 +30,19 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - created groups
   - all functionality for creating/deleting/adding athletes/removing athletes is done
   - still need to add functionality for adding workouts to groups
-
+- remove athletes from coach
+- remove coaches from athlete
+- add "you don't have any athletes" if statement to create group page if coach has no athletes
+- add "you don't have any athletes" if statement to remove athletes page if coach has no athletes
+- add "you don't have any coaches" if statement to remove coach page if athlete has no coaches
+- create edit schedule view for multiple athletes
+  - very difficult to do because of the remove dates potentially being different for each athlete
+  - very similar to schedule for multiple athletes
+  - would require selecting which athletes this is editing for.
+    - include list of all athletes that have this workout
+    - can initial select all athletes but allow for selecting only certain ones
+- removed coaches self from athlete list for assigning workouts as it complicates the scheduling too much
+  
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
   - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
@@ -67,16 +71,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- add "you don't have any athletes" if statement to create group page if coach has no athletes
+- create remove coach feature
+- when a coach removes an athlete, send a notification to the athlete
 - create add workout to group functionality on all necessary pages
 - add user setting to change profile to a coach or gym owner
   - will create coach model and gym owner model for user and change users current flag from is_athlete to whatever
   - if changing from coach/gym owner to athlete simply chang ethe is_coach/gym_owner flag. Do not delete the coach/gymowner models
-- create edit schedule view for multiple athletes
-  - very similar to schedule for multiple athletes
-  - would require selecting which athletes this is editing for.
-    - include list of all athletes that have this workout
-    - can initial select all athletes but allow for selecting only certain ones
 - create new view for a coach viewing their athletes workout instance?
   - workout name link from coaches page would link to new view instead of instance.get_absolute_url
   - new url would have coaches username then athletes username
