@@ -104,8 +104,7 @@ def profile(request, username):
 
 @login_required
 def add_athletes_to_coach(request, username):
-    coach_user = request.user
-    coach_user_coach_profile = Coach.objects.get(user=coach_user)
+    user = request.user
 
     if request.method == 'POST':
         if 'add athlete by username' in request.POST:
@@ -115,8 +114,7 @@ def add_athletes_to_coach(request, username):
                 user_athlete_to_add_profile = Athlete.objects.get(user=user_athlete_to_add)
                 
                 #change this to send a notification to the athlete. once the athlete accepts then add to coach and athlete
-                coach_user_coach_profile.athletes.add(user_athlete_to_add_profile)
-                coach_user_coach_profile.save()
+                user.coach.athletes.add(user_athlete_to_add_profile)
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -125,10 +123,43 @@ def add_athletes_to_coach(request, username):
 
     context = {
         'form': form,
-        'coach_user': coach_user,
         }
 
     return render(request, 'metcons/add_athlete_page.html', context=context)
+
+@login_required
+def remove_athletes_from_coach(request, username):
+    coach_user = request.user
+    athletes = coach_user.coach.athletes.all()
+
+    if request.method == 'POST':
+        if 'remove athletes from coach' in request.POST:
+            form = RemoveAthleteFromCoachForm(request.POST)
+            athlete_to_remove = request.POST.getlist('athlete_to_remove')
+            form.fields['athlete_to_remove'].choices = [(i, i) for i in athlete_to_remove]
+            if form.is_valid():
+                for i in form.cleaned_data['athlete_to_remove']:
+                    user = User.objects.get(username=i)
+                    if coach_user.coach.group_set.filter(athletes=user.athlete).exists():
+                        for group in coach_user.coach.group_set.filter(athletes=user.athlete):
+                            group.athletes.remove(user.athlete)
+                            if not group.athletes.all():
+                                group.delete()
+                    coach_user.coach.athletes.remove(user.athlete)
+
+                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    else:
+        form = RemoveAthleteFromCoachForm()
+        if request.user.is_coach or request.user.is_gym_owner:
+            form.fields['athlete_to_remove'].choices = [(athlete.user.username, athlete.user.username) for athlete in athletes]
+
+    context = {
+        'form': form,
+        'athletes': athletes,
+        }
+
+    return render(request, 'metcons/remove_athletes_from_coach.html', context=context)
 
 @login_required
 def create_group(request, username):
@@ -243,6 +274,9 @@ def remove_athletes_from_group(request, username, pk):
                 for i in form.cleaned_data['athlete_to_remove']:
                     user = User.objects.get(username=i)
                     group.athletes.remove(user.athlete)
+                    if not group.athletes.all():
+                        group.delete()
+                        return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
                 return HttpResponseRedirect(reverse('group_detail', args=[request.user.username, group.id]))
 
@@ -286,6 +320,34 @@ def add_coach(request, username):
         }
 
     return render(request, 'metcons/add_coach_page.html', context=context)
+
+@login_required
+def remove_coaches_from_athlete(request, username):
+    athlete_user = request.user
+    coaches = athlete_user.athlete.coach_set.all()
+
+    if request.method == 'POST':
+        if 'remove coaches from athlete' in request.POST:
+            form = RemoveCoachFromAthleteForm(request.POST)
+            coach_to_remove = request.POST.getlist('coach_to_remove')
+            form.fields['coach_to_remove'].choices = [(i, i) for i in coach_to_remove]
+            if form.is_valid():
+                for i in form.cleaned_data['coach_to_remove']:
+                    coach_user = User.objects.get(username=i)
+                    coach_user.coach.athletes.remove(athlete_user.athlete)
+
+                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    else:
+        form = RemoveCoachFromAthleteForm()
+        form.fields['coach_to_remove'].choices = [(coach.user.username, coach.user.username) for coach in coaches]
+
+    context = {
+        'form': form,
+        'coaches': coaches,
+        }
+
+    return render(request, 'metcons/remove_coaches_from_athlete.html', context=context)
 
 def signup(request):
     if request.method == 'POST':
@@ -595,7 +657,6 @@ def edit_schedule(request, username, pk):
         else:
             form.fields.pop('date_to_be_removed')
         if 'previous day edit schedule' in request.GET:
-            now = timezone.localtime(timezone.now()).date()
             yesterday = now - timezone.timedelta(days=1)
             form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=yesterday)]
             form.fields['date_to_be_removed'].initial = yesterday
@@ -608,6 +669,71 @@ def edit_schedule(request, username, pk):
         }
     
     return render(request, 'metcons/edit_schedule.html', context)
+
+@login_required
+def edit_schedule_for_multiple_athletes(request, username, pk):
+    workout = Workout.objects.get(id=pk)
+    user = request.user
+    athletes = user.coach.athletes.filter(user__workoutinstance__workout=workout)
+
+    if request.method == 'POST':
+        if 'edit schedule for all athletes' in request.POST:
+            form = EditScheduleForm(request.POST)
+            date_to_be_removed = request.POST.getlist('date_to_be_removed')
+            form.fields['date_to_be_removed'].choices = [(i, i) for i in date_to_be_removed]
+            if form.is_valid():
+                i=0
+                dates_to_be_removed = []
+                while i < len(date_to_be_removed):
+                    date_in_datetime = dt.datetime.strptime(form.cleaned_data['date_to_be_removed'][i], "%Y-%m-%d")
+                    aware_datetime = timezone.make_aware(date_in_datetime)
+                    local_date_to_be_removed = timezone.localtime(aware_datetime).date()
+                    dates_to_be_removed.append(local_date_to_be_removed)
+                    i+=1
+                
+                if form.cleaned_data['date_to_be_added'] == dt.date.today():
+                    aware_datetime = timezone.now()
+                else:
+                    date_in_datetime = dt.datetime.combine(form.cleaned_data['date_to_be_added'], dt.datetime.min.time())
+                    aware_datetime = timezone.make_aware(date_in_datetime)
+                local_date_to_be_added = timezone.localtime(aware_datetime).date()
+
+                if athletes:
+                    for i in athletes:
+                        instance = WorkoutInstance.objects.get(current_user=i.user, workout=workout)
+                        if dates_to_be_removed:
+                            instance.remove_date_to_be_completed(*dates_to_be_removed)
+                        if local_date_to_be_added:
+                            instance.add_date_to_be_completed(local_date_to_be_added)
+
+                    return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
+    else:
+        form = EditScheduleForm()
+        now = timezone.localtime(timezone.now()).date()
+        yesterday = now - timezone.timedelta(days=1)
+        workout_scheduled_dates = []
+        for i in athletes:
+            instance = i.user.workoutinstance_set.get(workout=workout)
+            for date in instance.dates_to_be_completed.filter(date_completed__gte=yesterday):
+                if date not in workout_scheduled_dates:
+                    workout_scheduled_dates.append(date)
+        if workout_scheduled_dates:
+            form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in workout_scheduled_dates]
+        else:
+            form.fields.pop('date_to_be_removed')
+        if 'previous day edit schedule' in request.GET:
+            form.fields['date_to_be_removed'].initial = yesterday
+            form.fields['date_to_be_added'].initial = now
+
+    context = {
+        'form': form,
+        'workout': workout,
+        'athletes': athletes,
+        'workout_scheduled_dates': workout_scheduled_dates,
+        }
+
+    return render(request, 'metcons/edit_schedule_for_multiple_athletes.html', context)
 
 @login_required
 def delete_schedule(request, username, pk):
@@ -698,7 +824,7 @@ def delete_instance(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
 
     if request.method == 'POST':
-        if request.user == instance.current_user or request.user in instance.current_user.athlete.coach_set.all():
+        if request.user == instance.current_user or request.user.coach in instance.current_user.athlete.coach_set.all():
             base_workout = instance.workout
             instance.delete()
             base_workout.update_estimated_duration()
@@ -823,7 +949,7 @@ def delete_result(request, username, pk, resultid):
     
     if request.method == 'POST':
         if 'delete result' in request.POST:
-            if request.user == instance.current_user:
+            if request.user == instance.current_user or request.user.coach in instance.current_user.athlete.coach_set.all():
                 instance.remove_date_completed(timezone.localtime(result.date_workout_completed).date())
                 result.delete()
                 instance.update_duration()
@@ -867,7 +993,6 @@ def add_workout_from_list_to_athletes(request, username, pk):
         form = AddWorkoutToAthletesForm()
         if request.user.is_coach or request.user.is_gym_owner:
             form.fields['athlete_to_assign'].choices = [(athlete.user.username, athlete.user.username) for athlete in athletes]
-            form.fields['athlete_to_assign'].choices.insert(0, (request.user.username, request.user.username))
             
     context = {
         'form': form,
@@ -938,7 +1063,6 @@ def create_workout(request):
                                           })
         if request.user.is_coach or request.user.is_gym_owner:
             form.fields['athlete_to_assign'].choices = [(athlete.user.username, athlete.user.username) for athlete in request.user.coach.athletes.all()]
-            form.fields['athlete_to_assign'].choices.insert(0, (request.user.username, request.user.username))
             
     context = {
         'form': form,
