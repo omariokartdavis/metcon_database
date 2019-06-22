@@ -69,7 +69,8 @@ class RemoveCoachFromAthleteForm(forms.Form):
     coach_to_remove = forms.MultipleChoiceField(help_text='Which coach would you like to remove?')
 
 class AddWorkoutToAthletesForm(forms.Form):
-    athlete_to_assign = forms.MultipleChoiceField(help_text='Which athletes would you like to assign this workout to?')
+    athlete_to_assign = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
+    group_to_assign = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
 
 class CreateGroupForm(forms.Form):
     group_name = forms.CharField(max_length = 254)
@@ -91,8 +92,9 @@ class CreateWorkoutForm(forms.Form):
         user = kwargs.pop('user', None)
         super(CreateWorkoutForm, self).__init__(*args, **kwargs)
         if user.is_coach or user.is_gym_owner:
-            self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to? Default is yourself only.')
-    
+            self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
+            self.fields['group_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
+
 class CreateResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here")
     duration_minutes = forms.IntegerField(required = False)
