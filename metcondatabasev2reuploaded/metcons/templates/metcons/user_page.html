@@ -43,6 +43,10 @@
 			{% csrf_token %}
 			<input type="submit" value="Add Athletes" name='add athlete to coach page'>
 		</form>
+		<form action="{% url 'remove_athletes_from_coach' user.username %}">
+			{% csrf_token %}
+			<input type="submit" value="Remove Athletes" name='remove athlete from coach page'>
+		</form>
 		<form action="{% url 'create_group' user.username %}">
 			{% csrf_token %}
 			<input type="submit" value="Create Group" name='create group'>
@@ -51,6 +55,10 @@
 	<form action="{% url 'add_coach' user.username %}">
 		{% csrf_token %}
 		<input type="submit" value="Add Coach" name='add coach'>
+	</form>
+	<form action="{% url 'remove_coaches_from_athlete' user.username %}">
+		{% csrf_token %}
+		<input type="submit" value="Remove Coach" name='remove coach'>
 	</form>
 	{% if user.is_coach %}
 		{% if groups %}
