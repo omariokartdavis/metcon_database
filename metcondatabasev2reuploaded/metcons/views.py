@@ -461,7 +461,7 @@ def workoutlistview(request):
                 instance = WorkoutInstance(workout=workout, current_user = current_user,
                                            duration_in_seconds=workout.estimated_duration_in_seconds,
                                            edited_workout_text=workout.workout_text,
-                                           edited_scaling_test=workout.scaling_or_description_text)
+                                           edited_scaling_text=workout.scaling_or_description_text)
                 instance.save()
             else:
                 instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
@@ -489,7 +489,7 @@ def workoutdetailview(request, pk):
                 instance = WorkoutInstance(workout=workout, current_user = current_user,
                                            duration_in_seconds=workout.estimated_duration_in_seconds,
                                            edited_workout_text=workout.workout_text,
-                                           edited_scaling_test=workout.scaling_or_description_text)
+                                           edited_scaling_text=workout.scaling_or_description_text)
                 instance.save()
             else:
                 instance = WorkoutInstance.objects.get(workout=workout, current_user=current_user)
@@ -969,23 +969,36 @@ def add_workout_from_list_to_athletes(request, username, pk):
     workout = Workout.objects.get(id=pk)
     user = request.user
     athletes = user.coach.athletes.all()
+    groups = user.coach.group_set.all()
 
     if request.method == 'POST':
         if user.is_coach or user.is_gym_owner:
             form = AddWorkoutToAthletesForm(request.POST)
             athlete_to_assign = request.POST.getlist('athlete_to_assign')
             form.fields['athlete_to_assign'].choices = [(i, i) for i in athlete_to_assign]
+            group_to_assign = request.POST.getlist('group_to_assign')
+            form.fields['group_to_assign'].choices = [(i, i) for i in group_to_assign]
             if form.is_valid():
-                users_to_assign_workout = []
-                for i in form.cleaned_data['athlete_to_assign']:
-                    current_user = User.objects.get(username=i)
-                    users_to_assign_workout.append(current_user)
-                    if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
-                        instance = WorkoutInstance(workout=workout, current_user=current_user,
-                                                   duration_in_seconds=workout.estimated_duration_in_seconds,
-                                                   edited_workout_text=workout.workout_text,
-                                                   edited_scaling_text=workout.scaling_or_description_text)
-                        instance.save()
+                if form.cleaned_data['athlete_to_assign']:
+                    for i in form.cleaned_data['athlete_to_assign']:
+                        current_user = User.objects.get(username=i)
+                        if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
+                            instance = WorkoutInstance(workout=workout, current_user=current_user,
+                                                       duration_in_seconds=workout.estimated_duration_in_seconds,
+                                                       edited_workout_text=workout.workout_text,
+                                                       edited_scaling_text=workout.scaling_or_description_text)
+                            instance.save()
+                if form.cleaned_data['group_to_assign']:
+                    for i in form.cleaned_data['group_to_assign']:
+                        group = Group.objects.get(name=i, coach=user.coach)
+                        for i in group.athletes.all():
+                            current_user = i.user
+                            if not WorkoutInstance.objects.filter(workout=workout, current_user=current_user):
+                                instance = WorkoutInstance(workout=workout, current_user=current_user,
+                                                           duration_in_seconds=workout.estimated_duration_in_seconds,
+                                                           edited_workout_text=workout.workout_text,
+                                                           edited_scaling_text=workout.scaling_or_description_text)
+                                instance.save()
 
                 return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, workout.id]))
 
@@ -993,10 +1006,15 @@ def add_workout_from_list_to_athletes(request, username, pk):
         form = AddWorkoutToAthletesForm()
         if request.user.is_coach or request.user.is_gym_owner:
             form.fields['athlete_to_assign'].choices = [(athlete.user.username, athlete.user.username) for athlete in athletes]
+            if groups:
+                form.fields['group_to_assign'].choices = [(group.name, group.name) for group in groups]
+            else:
+                form.fields.pop('group_to_assign')
             
     context = {
         'form': form,
         'athletes': athletes,
+        'groups': groups,
         }
 
     return render(request, 'metcons/add_workout_from_list_to_athletes.html', context)
@@ -1010,13 +1028,23 @@ def create_workout(request):
         if request.user.is_coach or request.user.is_gym_owner:
             athlete_to_assign = request.POST.getlist('athlete_to_assign')
             form.fields['athlete_to_assign'].choices = [(i, i) for i in athlete_to_assign]
+            group_to_assign = request.POST.getlist('group_to_assign')
+            form.fields['group_to_assign'].choices = [(i, i) for i in group_to_assign]
         if form.is_valid():
             current_user = request.user
             users_to_assign_workout = []
             if current_user.is_coach or current_user.is_gym_owner:
-                for i in form.cleaned_data['athlete_to_assign']:
-                    user = User.objects.get(username=i)
-                    users_to_assign_workout.append(user)
+                if form.cleaned_data['athlete_to_assign']:
+                    for i in form.cleaned_data['athlete_to_assign']:
+                        user = User.objects.get(username=i)
+                        users_to_assign_workout.append(user)
+                if form.cleaned_data['group_to_assign']:
+                    for i in form.cleaned_data['group_to_assign']:
+                        group = Group.objects.get(name=i, coach=current_user.coach)
+                        for i in group.athletes.all():
+                            users_to_assign_workout.append(i.user)
+                if not form.cleaned_data['athlete_to_assign'] and not form.cleaned_data['group_to_assign']:
+                    users_to_assign_workout.append(current_user)
             else:
                 users_to_assign_workout.append(current_user)
             if not Workout.objects.filter(workout_text=form.cleaned_data['workout_text']):
@@ -1048,7 +1076,7 @@ def create_workout(request):
                     instance = WorkoutInstance(workout=workout, current_user = i,
                                                duration_in_seconds=workout.estimated_duration_in_seconds,
                                                edited_workout_text=workout.workout_text,
-                                               edited_scaling_test=workout.scaling_or_description_text)
+                                               edited_scaling_text=workout.scaling_or_description_text)
                     instance.save()
                 else:
                     instance = WorkoutInstance.objects.get(workout=workout, current_user=i)
@@ -1063,6 +1091,10 @@ def create_workout(request):
                                           })
         if request.user.is_coach or request.user.is_gym_owner:
             form.fields['athlete_to_assign'].choices = [(athlete.user.username, athlete.user.username) for athlete in request.user.coach.athletes.all()]
+            if request.user.coach.group_set.all():
+                form.fields['group_to_assign'].choices = [(group.name, group.name) for group in request.user.coach.group_set.all()]
+            else:
+                form.fields.pop('group_to_assign')
             
     context = {
         'form': form,
