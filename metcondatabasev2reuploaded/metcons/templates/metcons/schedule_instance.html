@@ -4,6 +4,7 @@
 	{% if user.is_authenticated %}
 		{% if user.username == instance.current_user.username or user.coach in instance.current_user.athlete.coach_set.all %}
 			<h1>Schedule Workout</h1>
+			
 			<p>By the way, you have this workout scheduled for: 
 			{% for i in instance.get_scheduled_dates_in_future %}{{ i.date_completed|date:"l, F j, Y" }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 			
