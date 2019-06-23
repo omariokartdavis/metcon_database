@@ -1,20 +1,39 @@
 When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movements_list. mainsite_workouts.
 
-# Run update_instance_dates every day
+# Run update_instance_dates and update_instance_hidden every day
 
-## 6/22/19
+# check all history files from the past few days when you download at work!
+
+## 6/23/19
 (uploaded at home)
+- movements_list.py
+- created update_instance_hidden.py
+- models.py (requires make migrations)
 - views.py
+- urls.py
 - forms.py
-- create_workout.html
+- changed name of add_workout_from_list_to_athletes.html to add_workout_to_athletes
+- workout_list.html
+- workout_detail.html
+- create_workout.html-
+- user_page.html
+- workoutinstance_detail.html
+- created hide_instance.html
 
-## functionality completed on 6/22/19:
-- create add workout to group functionality on all necessary pages
-- add an indicator on the user_page and instance_detail to show if a workout has been edited from the base workout in database
-  - actually did this awhile ago
-- add login to index page.
-  - done awhile ago
-- create workout now properly defaults to self if coach and no athletes or groups have been chosen
+## functionality completed on 6/23/19
+- added assigned_by_coach field to workoutinstance
+- changed name of add_workout_from_list_to_athletes to add_workout_to_athletes
+- mark workout as assigned_by_coach on creation
+- add button for add workout to athletes to workout_detail.html
+  - can copy from workout_list.html
+- add is_hidden and date_to_unhide fields to workoutinstance
+- added functionality to hide workouts from athletes.
+  - if is hidden = true, workout shows as Workout ???
+  - coaches can always see their athletes workout details
+  - can unhide workout from instance detail page
+- add hide button to workouts
+  - create view, template, form, url
+  - select what date to hide the workout until
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -44,6 +63,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- add more filters to schedule for all athletes and edit schedule for all athletes views.
+  - can add filters for only workouts that were assigned by this coach
+  - can add functionality for only athletes in a certain group with this workout
+- add 'or user.gym_owner == instance.current_user.athlete.gym_owner' to all templates authentication
+- add confirmed (default=False) field to coach/athlete/gym owner models
+  - if coach adds an athlete it will add them to the coach so the coach can start writing workouts
+    - nothing will show up on the athletes side until they accept the request
+    - once request is accepted, change confirmed field to True and show all workouts coach has written for them.
 - create 'tags' button on workout detail page that you can click 
   - will show you all movement and classification tags on that workout
 - when a coach removes an athlete, send a notification to the athlete
@@ -149,6 +176,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
 ## Styling:
+- change color of workout name if assigned by coach or by self
 - Create stylebook for all screens
 - Create table for viewing workouts
         similar to the styling of this: https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
