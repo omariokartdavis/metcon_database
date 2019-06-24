@@ -248,10 +248,21 @@ class WorkoutInstance(models.Model):
         oldest_completed_date = models.ForeignKey(Date, related_name="oldest_completed_date", on_delete=models.SET_NULL, null=True, blank=True)
         edited_workout_text = models.TextField(max_length=2000, blank=True, null=True)
         edited_scaling_text = models.TextField(max_length=4000, blank=True, null=True)
-
+        is_assigned_by_coach_or_gym_owner = models.BooleanField(default=False)
+        assigned_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'assigned_by_user', on_delete=models.SET_NULL, null=True, blank=True)
+        is_hidden = models.BooleanField(default=False)
+        date_to_unhide = models.DateField(blank=True, null=True)
+        
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
 
+        def check_unhide_date(self):
+                now = timezone.localtime(timezone.now()).date()
+                if now >= self.date_to_unhide:
+                        self.is_hidden = False
+                        self.date_to_unhide = None
+                        self.save()
+                        
         def update_edited_workout_text(self):
                 #This sets edited_text to workout_text, use this on workout creation to set it as default. from there it will be changed on udpates
                 if self.workout:
