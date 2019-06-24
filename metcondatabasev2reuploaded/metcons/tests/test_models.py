@@ -63,6 +63,102 @@ class UserModelTest(TestCase):
         max_length = user._meta.get_field('user_profile_privacy').max_length
         self.assertEquals(max_length, 1)
 
+class AthleteModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(username='testathlete1', password='4a0308ki9ps')
+        user = User.objects.get(id=1)
+        Athlete.objects.create(user=user)
+
+    def test_athlete_user_label(self):
+        athlete = Athlete.objects.get(id=1)
+        field_label = athlete._meta.get_field('user').verbose_name
+        self.assertEquals(field_label, 'user')
+
+    def test_athlete_gym_owner_label(self):
+        athlete = Athlete.objects.get(id=1)
+        field_label = athlete._meta.get_field('gym_owner').verbose_name
+        self.assertEquals(field_label, 'gym owner')
+
+    def test_object_name_is_user_username(self):
+        athlete = Athlete.objects.get(id=1)
+        expected_object_name = f'{athlete.user.username}'
+        self.assertEquals(expected_object_name, str(athlete))
+
+class CoachModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(username='testcoach1', password='4a0308ki9ps')
+        user = User.objects.get(id=1)
+        Coach.objects.create(user=user)
+
+    def test_coach_user_label(self):
+        coach = Coach.objects.get(id=1)
+        field_label = coach._meta.get_field('user').verbose_name
+        self.assertEquals(field_label, 'user')
+
+    def test_coach_athletes_label(self):
+        coach = Coach.objects.get(id=1)
+        field_label = coach._meta.get_field('athletes').verbose_name
+        self.assertEquals(field_label, 'athletes')
+
+    def test_object_name_is_user_username(self):
+        coach = Coach.objects.get(id=1)
+        expected_object_name = f'{coach.user.username}'
+        self.assertEquals(expected_object_name, str(coach))
+
+class GymOwnerModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(username='testgymowner1', password='4a0308ki9ps')
+        user = User.objects.get(id=1)
+        GymOwner.objects.create(user=user)
+
+    def test_gymowner_user_label(self):
+        gymowner = GymOwner.objects.get(id=1)
+        field_label = gymowner._meta.get_field('user').verbose_name
+        self.assertEquals(field_label, 'user')
+
+    def test_gymowner_coaches_label(self):
+        gymowner = GymOwner.objects.get(id=1)
+        field_label = gymowner._meta.get_field('coaches').verbose_name
+        self.assertEquals(field_label, 'coaches')
+
+    def test_object_name_is_user_username(self):
+        gymowner = GymOwner.objects.get(id=1)
+        expected_object_name = f'{gymowner.user.username}'
+        self.assertEquals(expected_object_name, str(gymowner))
+
+class GroupModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        Group.objects.create(name='testgroup')
+
+    def test_group_name_label(self):
+        group = Group.objects.get(id=1)
+        field_label = group._meta.get_field('name').verbose_name
+        self.assertEquals(field_label, 'name')
+
+    def test_group_athletes_label(self):
+        group = Group.objects.get(id=1)
+        field_label = group._meta.get_field('athletes').verbose_name
+        self.assertEquals(field_label, 'athletes')
+
+    def test_group_coach_label(self):
+        group = Group.objects.get(id=1)
+        field_label = group._meta.get_field('coach').verbose_name
+        self.assertEquals(field_label, 'coach')
+
+    def test_name_max_length(self):
+        group = Group.objects.get(id=1)
+        max_length = group._meta.get_field('name').max_length
+        self.assertEquals(max_length, 254)
+
+    def test_object_name_is_name(self):
+        group = Group.objects.get(id=1)
+        expected_object_name = f'{group.name}'
+        self.assertEquals(expected_object_name, str(group))
+        
 class ClassificationModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -76,7 +172,7 @@ class ClassificationModelTest(TestCase):
 
     def test_name_max_length(self):
         classification = Classification.objects.get(id=1)
-        max_length = Classification._meta.get_field('name').max_length
+        max_length = classification._meta.get_field('name').max_length
         self.assertEquals(max_length, 20)
 
     def test_object_name_is_name(self):
@@ -372,6 +468,30 @@ class WorkoutInstanceModelTest(TestCase):
         field_label = instance._meta.get_field('edited_scaling_text').verbose_name
         self.assertEquals(field_label, 'edited scaling text')
 
+    def test_is_assigned_by_coach_or_gym_owner_label(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        field_label = instance._meta.get_field('is_assigned_by_coach_or_gym_owner').verbose_name
+        self.assertEquals(field_label, 'is assigned by coach or gym owner')
+
+    def test_assigned_by_user_label(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        field_label = instance._meta.get_field('assigned_by_user').verbose_name
+        self.assertEquals(field_label, 'assigned by user')
+
+    def test_is_hidden_label(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        field_label = instance._meta.get_field('is_hidden').verbose_name
+        self.assertEquals(field_label, 'is hidden')
+
+    def test_date_to_unhide_label(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        field_label = instance._meta.get_field('date_to_unhide').verbose_name
+        self.assertEquals(field_label, 'date to unhide')
+
     def test_edited_workout_text_max_length(self):
         workout = Workout.objects.get(id=1)
         instance = WorkoutInstance.objects.get(workout=workout)
@@ -401,6 +521,18 @@ class WorkoutInstanceModelTest(TestCase):
         workout = Workout.objects.get(id=1)
         instance = WorkoutInstance.objects.get(workout=workout)
         self.assertEquals(instance.get_absolute_url(), '/metcons/' + instance.current_user.username + '/workout/' + str(instance.id) + '/')
+
+    def test_check_unhide_date(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        now = timezone.localtime(timezone.now()).date()
+        instance.is_hidden = True
+        instance.date_to_unhide = now
+        instance.save()
+        self.assertTrue(instance.is_hidden)
+        instance.check_unhide_date()
+        self.assertFalse(instance.is_hidden)
+        self.assertEquals(None, instance.date_to_unhide)
 
     def test_update_edited_workout_text(self):
         workout = Workout.objects.get(id=1)
@@ -609,3 +741,126 @@ class WorkoutInstanceModelTest(TestCase):
         self.assertTrue(instance.dates_to_be_completed.all().exists())
         instance.update_youngest_scheduled_date()
         self.assertEquals(instance.youngest_scheduled_date, None)
+
+    def test_update_youngest_scheduled_date_is_none_if_date_to_be_completed_is_today_and_date_workout_completed_is_today(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date()
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_to_be_completed.add(date_object)
+        instance.dates_workout_completed.add(date_object)
+        self.assertEquals(instance.youngest_scheduled_date, None)
+        self.assertTrue(instance.dates_workout_completed.all().exists())
+        self.assertTrue(instance.dates_to_be_completed.all().exists())
+        instance.update_youngest_scheduled_date()
+        self.assertEquals(instance.youngest_scheduled_date, None)
+
+    def test_update_oldest_completed_date_is_none_if_is_oldest_completed_date_but_not_in_dates_workout_completed(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.oldest_completed_date = date_object
+        self.assertEquals(instance.oldest_completed_date.date_completed, date)
+        instance.update_oldest_completed_date()
+        self.assertEquals(instance.oldest_completed_date, None)
+
+    def test_update_oldest_completed_date_is_date_if_dates_workout_completed_is_today_or_in_past(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_workout_completed.add(date_object)
+        self.assertEquals(instance.oldest_completed_date, None)
+        self.assertTrue(instance.dates_workout_completed.all().exists())
+        instance.update_oldest_completed_date()
+        self.assertEquals(instance.oldest_completed_date.date_completed, date)
+
+    def test_update_oldest_completed_date_is_none_if_date_workout_completed_is_in_future(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_workout_completed.add(date_object)
+        self.assertEquals(instance.oldest_completed_date, None)
+        self.assertTrue(instance.dates_workout_completed.all().exists())
+        instance.update_oldest_completed_date()
+        self.assertEquals(instance.oldest_completed_date, None)
+
+    def test_get_scheduled_dates_in_future_is_true_if_date_in_dates_to_be_completed_in_future(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_to_be_completed.add(date_object)
+        self.assertTrue(instance.get_scheduled_dates_in_future().exists())
+
+    def test_get_scheduled_dates_in_future_is_false_if_date_in_dates_to_be_completed_in_past(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_to_be_completed.add(date_object)
+        self.assertFalse(instance.get_scheduled_dates_in_future().exists())
+
+    def test_get_scheduled_dates_in_future_is_none_if_dates_to_be_completed_is_empty(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        self.assertFalse(instance.dates_to_be_completed.all().exists())
+        self.assertEquals(instance.get_scheduled_dates_in_future(), None)
+
+    def test_get_scheduled_dates_in_past_is_true_if_date_in_dates_to_be_completed_in_past(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_to_be_completed.add(date_object)
+        self.assertTrue(instance.get_scheduled_dates_in_past().exists())
+
+    def test_get_scheduled_dates_in_past_is_false_if_date_in_dates_to_be_completed_in_future(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_to_be_completed.add(date_object)
+        self.assertFalse(instance.get_scheduled_dates_in_past().exists())
+
+    def test_get_scheduled_dates_in_past_is_none_if_dates_to_be_completed_is_empty(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        self.assertFalse(instance.dates_to_be_completed.all().exists())
+        self.assertEquals(instance.get_scheduled_dates_in_past(), None)
+
+    def test_get_dates_completed_in_past_is_true_if_date_in_dates_workout_completed_in_past(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_workout_completed.add(date_object)
+        self.assertTrue(instance.get_dates_completed_in_past().exists())
+
+    def test_get_scheduled_dates_in_past_is_false_if_date_in_dates_workout_completed_in_future(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_workout_completed.add(date_object)
+        self.assertFalse(instance.get_dates_completed_in_past().exists())
+
+    def test_get_scheduled_dates_in_past_is_none_if_dates_workout_completed_is_empty(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        self.assertFalse(instance.dates_workout_completed.all().exists())
+        self.assertEquals(instance.get_dates_completed_in_past(), None)
+
+#on instance.update_duration tests
