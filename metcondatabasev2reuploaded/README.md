@@ -4,36 +4,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # check all history files from the past few days when you download at work!
 
-## 6/23/19
-(uploaded at home)
-- movements_list.py
-- created update_instance_hidden.py
-- models.py (requires make migrations)
-- views.py
-- urls.py
-- forms.py
-- changed name of add_workout_from_list_to_athletes.html to add_workout_to_athletes
-- workout_list.html
-- workout_detail.html
-- create_workout.html-
-- user_page.html
-- workoutinstance_detail.html
-- created hide_instance.html
+## 6/24/19
+(uploaded at work)
+- test_models.py
+- models.py (doesn't require anything)
 
-## functionality completed on 6/23/19
-- added assigned_by_coach field to workoutinstance
-- changed name of add_workout_from_list_to_athletes to add_workout_to_athletes
-- mark workout as assigned_by_coach on creation
-- add button for add workout to athletes to workout_detail.html
-  - can copy from workout_list.html
-- add is_hidden and date_to_unhide fields to workoutinstance
-- added functionality to hide workouts from athletes.
-  - if is hidden = true, workout shows as Workout ???
-  - coaches can always see their athletes workout details
-  - can unhide workout from instance detail page
-- add hide button to workouts
-  - create view, template, form, url
-  - select what date to hide the workout until
+## functionality completed on 6/24/19
+- more model tests
+- changed name of 2 variablse in instance functions to more clearly specify what it is
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -63,6 +41,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- Create request model for athlete/coach requests
+  - when adding a coach or athlete, send a request to that person.
+  - have a confirmed booleanfield on model. when athlete/coach accepts, change it to true
+  - requestee and requestor fields linked to user field
+  - date field 
+  - date confirmed field
+  - where known from field (text field so can give a description of where they know each other)
+  - requestor_is_coach boolean field
+  - requestor_is_athlete boolean field
+  - requestor_is_gym_owner boolean field
+- gym owners need some distinction between adding athletes/coaches and adding members.k
 - if workout is_hidden and only has instances with users who all belong to the same coach/gym then don't show workout in workout list.
   - will have to be done on the workout_list query view.
 - add more filters to schedule for all athletes and edit schedule for all athletes views.
