@@ -71,6 +71,8 @@ class RemoveCoachFromAthleteForm(forms.Form):
 class AddWorkoutToAthletesForm(forms.Form):
     athlete_to_assign = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
     group_to_assign = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
+    hide_from_athletes = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date and time?')
+    date_to_unhide = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
 
 class CreateGroupForm(forms.Form):
     group_name = forms.CharField(max_length = 254)
@@ -94,6 +96,8 @@ class CreateWorkoutForm(forms.Form):
         if user.is_coach or user.is_gym_owner:
             self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
             self.fields['group_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
+            self.fields['hide_from_athletes?'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date and time?')
+            self.fields['date_to_unhide'] = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
 
 class CreateResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here")
@@ -116,6 +120,9 @@ class EditScheduleForm(forms.Form):
 
 class DeleteScheduleForm(forms.Form):
     date_to_be_removed = forms.MultipleChoiceField(help_text='What date would you like to remove?')
+
+class HideInstanceForm(forms.Form):
+    date_to_unhide = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
     
 class EditInstanceForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
