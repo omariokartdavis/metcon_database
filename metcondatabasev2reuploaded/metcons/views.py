@@ -497,27 +497,37 @@ def workoutdetailview(request, pk):
     
     return render(request, 'metcons/workout_detail.html', context=context)
 
-class WorkoutInstanceDetailView(LoginRequiredMixin, generic.DetailView):
-    model = WorkoutInstance
+@login_required
+def workoutinstancedetailview(request, username, pk):
+    instance = WorkoutInstance.objects.get(id=pk)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        instance = self.get_object()
-        duration_in_seconds = instance.duration_in_seconds
-        if duration_in_seconds:
-            duration_minutes = (duration_in_seconds // 60)
-            duration_seconds = duration_in_seconds % 60
-        else:
-            duration_minutes = 0
-            duration_seconds = 0
-        context['duration_minutes'] = duration_minutes
-        context['duration_seconds'] = duration_seconds
-        result_list = Result.objects.filter(workoutinstance = instance).order_by('-date_workout_completed', '-date_created')
-        context['result_list'] = result_list
-        context['workout'] = instance.workout
-            
-        return context
-    
+    if instance.duration_in_seconds:
+        duration_minutes = (instance.duration_in_seconds // 60)
+        duration_seconds = instance.duration_in_seconds % 60
+    else:
+        duration_minutes = 0
+        duration_seconds = 0
+    result_list = Result.objects.filter(workoutinstance=instance).order_by('-date_workout_completed', '-date_created')
+
+    if request.method == 'POST':
+        if request.user.is_coach or request.user.is_gym_owner:
+            if 'unhide instance' in request.POST:
+                instance.is_hidden = False
+                instance.date_to_unhide = None
+                instance.save()
+                
+                return HttpResponseRedirect(instance.get_absolute_url())
+        
+    context = {
+        'duration_minutes': duration_minutes,
+        'duration_seconds': duration_seconds,
+        'result_list': result_list,
+        'workoutinstance': instance,
+        'workout': instance.workout,
+        }
+
+    return render(request, 'metcons/workoutinstance_detail.html', context=context)
+
 class MovementListView(generic.ListView):
     model = Movement
     paginate_by = 10
@@ -775,6 +785,34 @@ def delete_schedule(request, username, pk):
     return render(request, 'metcons/delete_schedule.html', context)
 
 @login_required
+def hide_instance(request, username, pk):
+    instance = WorkoutInstance.objects.get(id=pk)
+
+    if request.method == 'POST':
+        if 'hide instance' in request.POST:
+            form = HideInstanceForm(request.POST)
+            if form.is_valid():
+                if instance.is_assigned_by_coach_or_gym_owner:
+                    instance.is_hidden=True
+                    if form.cleaned_data['date_to_unhide']:
+                        instance.date_to_unhide = form.cleaned_data['date_to_unhide']
+                    else:
+                        instance.date_to_unhide = None
+
+                    instance.save()
+
+                return HttpResponseRedirect(instance.get_absolute_url())
+
+    form = HideInstanceForm()
+
+    context = {
+        'form': form,
+        'instance': instance,
+        }
+
+    return render(request, 'metcons/hide_instance.html', context=context)
+
+@login_required
 def edit_instance(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
 
@@ -965,7 +1003,7 @@ def delete_result(request, username, pk, resultid):
     return render(request, 'metcons/delete_result.html', context)
 
 @login_required
-def add_workout_from_list_to_athletes(request, username, pk):
+def add_workout_to_athletes(request, username, pk):
     workout = Workout.objects.get(id=pk)
     user = request.user
     athletes = user.coach.athletes.all()
@@ -979,6 +1017,12 @@ def add_workout_from_list_to_athletes(request, username, pk):
             group_to_assign = request.POST.getlist('group_to_assign')
             form.fields['group_to_assign'].choices = [(i, i) for i in group_to_assign]
             if form.is_valid():
+                if form.cleaned_data['hide_from_athletes']:
+                    hidden=True
+                    date_to_unhide = form.cleaned_data['date_to_unhide']
+                else:
+                    hidden=False
+                    date_to_unhide = None
                 if form.cleaned_data['athlete_to_assign']:
                     for i in form.cleaned_data['athlete_to_assign']:
                         current_user = User.objects.get(username=i)
@@ -986,7 +1030,11 @@ def add_workout_from_list_to_athletes(request, username, pk):
                             instance = WorkoutInstance(workout=workout, current_user=current_user,
                                                        duration_in_seconds=workout.estimated_duration_in_seconds,
                                                        edited_workout_text=workout.workout_text,
-                                                       edited_scaling_text=workout.scaling_or_description_text)
+                                                       edited_scaling_text=workout.scaling_or_description_text,
+                                                       is_assigned_by_coach_or_gym_owner=True,
+                                                       assigned_by_user=user,
+                                                       is_hidden=hidden,
+                                                       date_to_unhide=date_to_unhide)
                             instance.save()
                 if form.cleaned_data['group_to_assign']:
                     for i in form.cleaned_data['group_to_assign']:
@@ -997,7 +1045,11 @@ def add_workout_from_list_to_athletes(request, username, pk):
                                 instance = WorkoutInstance(workout=workout, current_user=current_user,
                                                            duration_in_seconds=workout.estimated_duration_in_seconds,
                                                            edited_workout_text=workout.workout_text,
-                                                           edited_scaling_text=workout.scaling_or_description_text)
+                                                           edited_scaling_text=workout.scaling_or_description_text,
+                                                           is_assigned_by_coach_or_gym_owner=True,
+                                                           assigned_by_user=user,
+                                                           is_hidden=hidden,
+                                                           date_to_unhide=date_to_unhide)
                                 instance.save()
 
                 return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, workout.id]))
@@ -1017,7 +1069,7 @@ def add_workout_from_list_to_athletes(request, username, pk):
         'groups': groups,
         }
 
-    return render(request, 'metcons/add_workout_from_list_to_athletes.html', context)
+    return render(request, 'metcons/add_workout_to_athletes.html', context)
             
 @login_required    
 def create_workout(request):
@@ -1031,7 +1083,7 @@ def create_workout(request):
             group_to_assign = request.POST.getlist('group_to_assign')
             form.fields['group_to_assign'].choices = [(i, i) for i in group_to_assign]
         if form.is_valid():
-            current_user = request.user
+            current_user = User.objects.get(username=request.user.username)
             users_to_assign_workout = []
             if current_user.is_coach or current_user.is_gym_owner:
                 if form.cleaned_data['athlete_to_assign']:
@@ -1054,9 +1106,13 @@ def create_workout(request):
                     workout_location = 'Coach Created'
                 else:
                     workout_location = 'Athlete Created'
+                if form.cleaned_data['estimated_duration']:
+                    estimated_duration = form.cleaned_data['estimated_duration'] * 60
+                else:
+                    estimated_duration = None
                 workout = Workout(workout_text=form.cleaned_data['workout_text'],
                                   scaling_or_description_text=form.cleaned_data['workout_scaling'],
-                                  estimated_duration_in_seconds=(form.cleaned_data['estimated_duration']) * 60,
+                                  estimated_duration_in_seconds=estimated_duration,
                                   where_workout_came_from=workout_location,
                                   classification=None,
                                   created_by_user = current_user,
@@ -1071,13 +1127,30 @@ def create_workout(request):
             else:
                 workout = Workout.objects.get(workout_text=form.cleaned_data['workout_text'])
 
+            if (request.user.is_coach and form.cleaned_data['hide_from_athletes?']) or (request.user.is_gym_owner and form.cleaned_data['hide_from_athletes?']):
+                hidden=True
+                date_to_unhide = form.cleaned_data['date_to_unhide']
+            else:
+                hidden=False
+                date_to_unhide = None
+                    
             for i in users_to_assign_workout:
                 if not WorkoutInstance.objects.filter(workout=workout, current_user=i):
+                    if i != request.user:
+                        assigned = True
+                    else:
+                        assigned = False
                     instance = WorkoutInstance(workout=workout, current_user = i,
                                                duration_in_seconds=workout.estimated_duration_in_seconds,
                                                edited_workout_text=workout.workout_text,
-                                               edited_scaling_text=workout.scaling_or_description_text)
+                                               edited_scaling_text=workout.scaling_or_description_text,
+                                               is_assigned_by_coach_or_gym_owner=assigned)
                     instance.save()
+                    if instance.is_assigned_by_coach_or_gym_owner:
+                        instance.is_hidden=hidden
+                        instance.date_to_unhide=date_to_unhide
+                        instance.assigned_by_user=current_user
+                        instance.save()
                 else:
                     instance = WorkoutInstance.objects.get(workout=workout, current_user=i)
 
@@ -1090,7 +1163,12 @@ def create_workout(request):
         form = CreateWorkoutForm(**{'user':request.user}, initial={'gender': request.user.workout_default_gender,
                                           })
         if request.user.is_coach or request.user.is_gym_owner:
-            form.fields['athlete_to_assign'].choices = [(athlete.user.username, athlete.user.username) for athlete in request.user.coach.athletes.all()]
+            if request.user.coach.athletes.all():
+                form.fields['athlete_to_assign'].choices = [(athlete.user.username, athlete.user.username) for athlete in request.user.coach.athletes.all()]
+            else:
+                form.fields.pop('athlete_to_assign')
+                form.fields.pop('hide_from_athletes?')
+                form.fields.pop('date_to_unhide')
             if request.user.coach.group_set.all():
                 form.fields['group_to_assign'].choices = [(group.name, group.name) for group in request.user.coach.group_set.all()]
             else:
@@ -1102,13 +1180,14 @@ def create_workout(request):
 
     return render(request, 'metcons/create_workout.html', context)
 
+
 @login_required
 def interim_created_workout(request, username, pk):
     user = request.user
     instance = WorkoutInstance.objects.get(id=pk)
 
     if request.method == 'POST':
-        if user == instance.current_user:
+        if user == instance.current_user or user.coach in instance.current_user.athlete.coach_set.all():
             if 'schedule workout for today' in request.POST:
                 now = timezone.localtime(timezone.now()).date()
                 instance.add_date_to_be_completed(now)
