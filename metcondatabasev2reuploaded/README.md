@@ -63,6 +63,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- if workout is_hidden and only has instances with users who all belong to the same coach/gym then don't show workout in workout list.
+  - will have to be done on the workout_list query view.
 - add more filters to schedule for all athletes and edit schedule for all athletes views.
   - can add filters for only workouts that were assigned by this coach
   - can add functionality for only athletes in a certain group with this workout
