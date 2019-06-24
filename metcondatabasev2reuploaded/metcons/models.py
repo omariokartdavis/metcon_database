@@ -324,12 +324,12 @@ class WorkoutInstance(models.Model):
                         
         def update_youngest_scheduled_date(self):
                 if self.dates_to_be_completed.all().exists():
-                        scheduled_dates_excluding_today = Date.objects.filter(dates_to_be_completed=self,
+                        scheduled_dates_excluding_completed_today = Date.objects.filter(dates_to_be_completed=self,
                                                                             date_completed__gte=timezone.localtime(timezone.now()).date()
                                                                             ).exclude(dates_workout_completed=self,
                                                                                       date_completed=timezone.localtime(timezone.now()).date())
-                        if scheduled_dates_excluding_today:
-                                self.youngest_scheduled_date = scheduled_dates_excluding_today.earliest('date_completed')
+                        if scheduled_dates_excluding_completed_today:
+                                self.youngest_scheduled_date = scheduled_dates_excluding_completed_today.earliest('date_completed')
                         else:
                                 self.youngest_scheduled_date=None
                 else:
@@ -349,12 +349,14 @@ class WorkoutInstance(models.Model):
 
         def remove_all_dates_scheduled(self):
                 #for testing purposes
+                #don't need to create a test for this as this is only for cleaning out instances in development phase
                 for i in self.dates_to_be_completed.all().iterator():
                         self.dates_to_be_completed.remove(i)
                 self.update_youngest_scheduled_date()
                 self.save()
                 
         def get_scheduled_dates_in_future(self):
+                #could also write this return as self.dates_to_be_completed.filter(date_completed__gte=timzeon.localtime(timezone.now()).date()))
                 if self.dates_to_be_completed.all().exists():
                         return Date.objects.filter(dates_to_be_completed=self,
                                                    date_completed__gte=timezone.localtime(timezone.now()).date())
