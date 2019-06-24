@@ -6,18 +6,10 @@
 			<form action="{% url 'schedule_instance' user.username workoutinstance.id %}">
 				<input type="submit" value="Schedule Workout" />
 			</form>
-			<form action="{% url 'schedule_instance_for_multiple_athletes' user.username workout.id %}">
-				<input type="submit" value="Schedule For All Your Athletes With This Workout" />
-			</form>
 			<form class="post_workout_form" action="{% url 'edit_schedule' user.username workoutinstance.id %}">
-				{% csrf_token %}
 				<input type="submit" value="Edit Schedule" name="edit schedule">
 			</form>
-			<form action="{% url 'edit_schedule_for_multiple_athletes' user.username workout.id %}">
-				<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
-			</form>
 			<form class="post_workout_form" action="{% url 'delete_schedule' user.username workoutinstance.id %}">
-				{% csrf_token %}
 				<input type="submit" value="Delete Schedule" name="Delete schedule">
 			</form>
 			<form action="{% url 'edit_instance' user.username workoutinstance.id %}">
@@ -26,7 +18,30 @@
 			<form action="{% url 'delete_instance' user.username workoutinstance.id %}">
 				<input type="submit" value="Delete Workout" />
 			</form>
+			{% if user.is_coach or user.is_gym_owner %}
+				{% if workoutinstance.is_assigned_by_coach_or_gym_owner %}
+					{% if workoutinstance.assigned_by_user == request.user %}
+						<form action="{% url 'schedule_instance_for_multiple_athletes' user.username workout.id %}">
+							<input type="submit" value="Schedule For All Your Athletes With This Workout" />
+						</form>
+						<form action="{% url 'edit_schedule_for_multiple_athletes' user.username workout.id %}">
+							<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
+						</form>
+						{% if workoutinstance.is_hidden %}
+							<form class="post_workout_form" method='POST'>
+								{% csrf_token %}
+								<input type="submit" value="Unhide" name="unhide instance">
+							</form>
+						{% else %}
+							<form class="post_workout_form" action="{% url 'hide_instance' user.username workoutinstance.id %}">
+								<input type="submit" value="Hide">
+							</form>
+						{% endif %}
+					{% endif %}
+				{% endif %}
+			{% endif %}
 			<h1>{{ workoutinstance.workout.display_name }}</h1><p> - Last Completed: {% if workoutinstance.oldest_completed_date %}{{ workoutinstance.oldest_completed_date.date_completed|date:"l, F j, Y" }}{% else %} Never {% endif %}</p>
+			{% if user.is_coach or user.is_gym_owner %}{% if workoutinstance.is_hidden %}Hidden - will unhide to athletes on: {% if workoutinstance.date_to_unhide %}{{ workoutinstance.date_to_unhide|date:"F j, Y" }}{% else %}Never{% endif %}{% endif %}{% endif %}</p>
 			<p><strong>Description:</strong> {{ workoutinstance.edited_workout_text|linebreaks }}</p>
 			<p><strong>Scaling:</strong> {{ workoutinstance.edited_scaling_text|linebreaks }}</p>
 			<p><strong>Duration:</strong> {% if duration_minutes == 0 and duration_seconds == 0 %} No Results {% endif %}{% if duration_minutes > 0 %}{{ duration_minutes }} minutes {% endif %}{% if duration_seconds > 0 %} {{ duration_seconds }} seconds {% endif %}</p>
