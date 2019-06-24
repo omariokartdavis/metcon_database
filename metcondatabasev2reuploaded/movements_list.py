@@ -98,7 +98,7 @@ class ClassificationList:
 # python manage.py shell
 # exec(open('movements_list.py').read())
 
-from metcons.models import Classification, Movement, Workout, Date
+from metcons.models import *
 from django.utils import timezone
 #import datetime as dt
 
@@ -107,15 +107,32 @@ from django.utils import timezone
 ##for i in all_wicd:
 ##    wicd_dates.append(i.date_completed)
 
+athlete_users = ['testathlete1', 'testathlete2', 'testathlete3', 'testathlete4', 'testathlete5']
+coach_users = ['testcoach1', 'testcoach2', 'testcoach3', 'testcoach4', 'testcoach5']
+gym_owner_users = ['testgymowner1', 'testgymowner2', 'testgymowner3', 'testgymowner4', 'testgymowner5']
+
+for i in athlete_users:
+    user = User(username=i, is_athlete=True)
+    user.save()
+    Athlete.objects.create(user = user)
+
+for i in coach_users:
+    user = User(username=i, is_coach=True)
+    user.save()
+    Coach.objects.create(user=user)
+
+for i in gym_owner_users:
+    user = User(username=i, is_gym_owner=True)
+    user.save()
+    GymOwner.objects.create(user=user)
+    
 for i in range(366):
     date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=i)
-    new_date = Date(date_completed=date)
-    new_date.save()
+    Date.objects.create(date_completed=date)
 
 for i in range(1, 366):
     date = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=i)
-    new_date = Date(date_completed=date)
-    new_date.save()
+    Date.objects.create(date_completed=date)
 
 all_classifications = ClassificationList()
 current_classifications_in_database = Classification.objects.all()
@@ -123,8 +140,7 @@ current_classifications_in_database_names = [i.name for i in current_classificat
 
 for k in all_classifications.class_list:
     if k not in current_classifications_in_database_names:
-        classification = Classification(name=k)
-        classification.save()
+        Classification.objects.create(name=k)
 
 all_movements = MovementList()
 current_movements_in_database = Movement.objects.all()
@@ -132,9 +148,7 @@ current_movements_in_database_names = [i.name for i in current_movements_in_data
 
 for k, v in all_movements.movement_list.items():
     if k not in current_movements_in_database_names:
-        #change 'classification=' below to classifications for work.
-        movement = Movement(name=k, classification=Classification.objects.get(name=v))
-        movement.save()
+        Movement.objects.create(name=k, classification=Classification.objects.get(name=v))
 
     
 ##to change this to include abbreviations later:
