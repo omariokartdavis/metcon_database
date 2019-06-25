@@ -409,12 +409,14 @@ class WorkoutInstance(models.Model):
 
         def display_dates_completed(self):
                 """Create a string for the classification. required to display classificaitons in admin site"""
-                return ', '.join(str(date) for date in self.dates_workout_completed.all()[:3])
+                now = timezone.localtime(timezone.now()).date()
+                return ', '.join(str(date) for date in self.dates_workout_completed.filter(date_completed__lte=now)[:3])
 
         display_dates_completed.short_description = 'Dates Completed'
 
         def display_dates_scheduled(self):
-                return ', '.join(str(date) for date in self.dates_to_be_completed.all()[:3])
+                now = timezone.localtime(timezone.now()).date()
+                return ', '.join(str(date) for date in self.dates_to_be_completed.filter(date_completed__gte=now)[:3])
 
         display_dates_scheduled.short_description = 'Dates Scheduled'
         
@@ -451,7 +453,7 @@ class Result(models.Model):
                         self.workoutinstance.update_duration()
 
         def get_absolute_url(self):
-                """Returns the results instace detail page since a result will not have its own page. maybe change this later"""
+                """Returns the results instance detail page since a result will not have its own page. maybe change this later"""
                 return reverse('workoutinstance-detail', args=[str(self.workoutinstance.current_user.username),
                                                                str(self.workoutinstance.id)])
         
