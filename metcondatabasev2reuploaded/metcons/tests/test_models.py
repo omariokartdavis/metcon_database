@@ -361,7 +361,7 @@ class WorkoutModelTest(TestCase):
         workout.movements.add(pull_up)
         self.assertEquals(workout.display_movement(), 'Pull Up')
 
-    def test_classifications_of_movenets(self):
+    def test_display_classifications_of_movements(self):
         workout = Workout.objects.get(id=1)
         pull_up = Movement.objects.get(id=1)
         workout.movements.add(pull_up)
@@ -863,4 +863,267 @@ class WorkoutInstanceModelTest(TestCase):
         self.assertFalse(instance.dates_workout_completed.all().exists())
         self.assertEquals(instance.get_dates_completed_in_past(), None)
 
-#on instance.update_duration tests
+    def test_update_duration_sets_instance_duration_to_zero_if_no_results(self):
+        result = Result.objects.get(id=1)
+        result.delete()
+        workout = Workout.objects.get(id=1)
+        workout.estimated_duration_in_seconds = 360
+        workout.save()
+        instance = WorkoutInstance.objects.get(workout=workout)
+        instance.duration_in_seconds = 360
+        instance.save()
+        instance.update_duration()
+        workout.refresh_from_db()
+        self.assertEquals(instance.duration_in_seconds, 0)
+        self.assertEquals(workout.estimated_duration_in_seconds, 360)
+        #workout duration is not effected by zeros in instance duration
+
+    def test_update_duration_does_nothing_if_result_duration_is_same_as_instance_duration(self):
+        result = Result.objects.get(id=1)
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()) - timezone.timedelta(days=1)
+        result.date_workout_completed = date
+        result.duration_in_seconds = 360
+        result.save()
+        workout.estimated_duration_in_seconds = 360
+        workout.save()
+        instance.duration_in_seconds = 360
+        instance.save()
+        instance.update_duration()
+        workout.refresh_from_db()
+        self.assertEquals(instance.duration_in_seconds, 360)
+        self.assertEquals(workout.estimated_duration_in_seconds, 360)
+
+    def test_update_duration_updates_instance_and_workout_duration_if_result_duration_is_different(self):
+        result = Result.objects.get(id=1)
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()) - timezone.timedelta(days=1)
+        result.date_workout_completed = date
+        result.duration_in_seconds = 360
+        result.save()
+        workout.estimated_duration_in_seconds = 0
+        workout.save()
+        instance.duration_in_seconds = 0
+        instance.save()
+        instance.update_duration()
+        workout.refresh_from_db()
+        self.assertEquals(instance.duration_in_seconds, 360)
+        self.assertEquals(workout.estimated_duration_in_seconds, 360)
+
+    def test_update_times_completed_updates_instance_and_workout(self):
+        result = Result.objects.get(id=1)
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        self.assertEquals(instance.number_of_times_completed, 0)
+        self.assertEquals(workout.number_of_times_completed, 0)
+        instance.update_times_completed()
+        workout.refresh_from_db()
+        self.assertEquals(instance.number_of_times_completed, 1)
+        self.assertEquals(workout.number_of_times_completed, 1)
+
+    def test_display_workout_is_workout_display_name_if_workout_exists(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        expected_object_name = f'{instance.workout.display_name()}'
+        self.assertEquals(expected_object_name, instance.display_workout())
+
+    def test_display_workout_is_workout_deleted_if_workout_does_not_exist(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        workout.delete()
+        instance.refresh_from_db()
+        expected_object_name = 'Workout Deleted'
+        self.assertEquals(expected_object_name, instance.display_workout())
+
+    def test_display_dates_completed(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_workout_completed.add(date_object)
+        self.assertEquals(instance.display_dates_completed(), str(date_object))
+
+    def test_display_dates_scheduled(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        date = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=1)
+        Date.objects.create(date_completed=date)
+        date_object = Date.objects.get(id=1)
+        instance.dates_to_be_completed.add(date_object)
+        self.assertEquals(instance.display_dates_scheduled(), str(date_object))
+
+class ResultModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(username='odavis', password='4a0308ki9ps')
+        user = User.objects.get(id=1)
+        Workout.objects.create(workout_text='Pull Up', created_by_user=user)
+        workout = Workout.objects.get(id=1)
+        WorkoutInstance.objects.create(workout=workout, current_user=user)
+        instance = WorkoutInstance.objects.get(workout=workout, current_user=user)
+        Result.objects.create(workoutinstance=instance)
+
+    def test_date_created_label(self):
+        result = Result.objects.get(id=1)
+        field_label = result._meta.get_field('date_created').verbose_name
+        self.assertEquals(field_label, 'date created')
+
+    def test_date_workout_completed_label(self):
+        result = Result.objects.get(id=1)
+        field_label = result._meta.get_field('date_workout_completed').verbose_name
+        self.assertEquals(field_label, 'date workout completed')
+
+    def test_workoutinstance_label(self):
+        result = Result.objects.get(id=1)
+        field_label = result._meta.get_field('workoutinstance').verbose_name
+        self.assertEquals(field_label, 'workoutinstance')
+
+    def test_result_text_label(self):
+        result = Result.objects.get(id=1)
+        field_label = result._meta.get_field('result_text').verbose_name
+        self.assertEquals(field_label, 'result text')
+
+    def test_duration_in_seconds_label(self):
+        result = Result.objects.get(id=1)
+        field_label = result._meta.get_field('duration_in_seconds').verbose_name
+        self.assertEquals(field_label, 'Duration (sec)')
+
+    def test_result_text_max_length(self):
+        result = Result.objects.get(id=1)
+        max_length = result._meta.get_field('result_text').max_length
+        self.assertEquals(max_length, 2000)
+
+    def test_get_absolute_url(self):
+        result = Result.objects.get(id=1)
+        workout = Workout.objects.get(id=1)
+        instance  = WorkoutInstance.objects.get(workout=workout)
+        self.assertEquals(result.get_absolute_url(), '/metcons/' + instance.current_user.username + '/workout/' + str(instance.id) + '/')
+        
+    def test_duration_in_minutes(self):
+        result = Result.objects.get(id=1)
+        result.duration_in_seconds = 260
+        result.save()
+        self.assertEquals(result.duration_in_minutes(), 4)
+
+    def test_duration_remainder(self):
+        result = Result.objects.get(id=1)
+        result.duration_in_seconds = 260
+        result.save()
+        self.assertEquals(result.duration_remainder(), 20)
+
+    def test_update_instance_duration_updates_result_and_instance_and_workout(self):
+        workout = Workout.objects.get(id=1)
+        instance = WorkoutInstance.objects.get(workout=workout)
+        result = Result.objects.get(id=1)
+        result.duration_in_seconds = 360
+        result.save()
+        self.assertEquals(instance.duration_in_seconds, 0)
+        self.assertEquals(workout.estimated_duration_in_seconds, 0)
+        result.update_instance_duration()
+        instance.refresh_from_db()
+        workout.refresh_from_db()
+        self.assertEquals(instance.duration_in_seconds, 360)
+        self.assertEquals(workout.estimated_duration_in_seconds, 360)
+
+    def test_display_workout_is_workout_id_if_workoutinstance_exists(self):
+        result = Result.objects.get(id=1)
+        expected_name = f'{result.workoutinstance.display_workout()}'
+        self.assertEquals(expected_name, result.display_workout())
+
+    def test_display_workout_is_workout_deleted_if_workoutinstance_does_not_exist(self):
+        result = Result.objects.get(id=1)
+        instance = result.workoutinstance
+        instance.delete()
+        result.refresh_from_db()
+        expected_name = 'Workout Deleted'
+        self.assertEquals(expected_name, result.display_workout())
+
+    def test_display_result_is_result_id_if_workoutinstance_exists(self):
+        result = Result.objects.get(id=1)
+        expected_name = 'Result ' + str(result.id)
+        self.assertEquals(expected_name, result.display_result())
+
+    def test_display_result_is_workout_instance_deleted_if_workoutinstance_does_not_exist(self):
+        result = Result.objects.get(id=1)
+        instance = result.workoutinstance
+        instance.delete()
+        result.refresh_from_db()
+        expected_name = 'Workout Instance Deleted'
+        self.assertEquals(expected_name, result.display_result())
+
+class ResultFileModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(username='odavis', password='4a0308ki9ps')
+        user = User.objects.get(id=1)
+        Workout.objects.create(workout_text='Pull Up', created_by_user=user)
+        workout = Workout.objects.get(id=1)
+        WorkoutInstance.objects.create(workout=workout, current_user=user)
+        instance = WorkoutInstance.objects.get(workout=workout, current_user=user)
+        Result.objects.create(workoutinstance=instance)
+        result = Result.objects.get(id=1)
+        ResultFile.objects.create(result=result)
+
+    def test_date_created_label(self):
+        resultfile = ResultFile.objects.get(id=1)
+        field_label = resultfile._meta.get_field('date_created').verbose_name
+        self.assertEquals(field_label, 'date created')
+
+    def test_file_label(self):
+        resultfile = ResultFile.objects.get(id=1)
+        field_label = resultfile._meta.get_field('file').verbose_name
+        self.assertEquals(field_label, 'file')
+
+    def test_caption_label(self):
+        resultfile = ResultFile.objects.get(id=1)
+        field_label = resultfile._meta.get_field('caption').verbose_name
+        self.assertEquals(field_label, 'caption')
+
+    def test_result_label(self):
+        resultfile = ResultFile.objects.get(id=1)
+        field_label = resultfile._meta.get_field('result').verbose_name
+        self.assertEquals(field_label, 'result')
+
+    def test_content_type_label(self):
+        resultfile = ResultFile.objects.get(id=1)
+        field_label = resultfile._meta.get_field('content_type').verbose_name
+        self.assertEquals(field_label, 'content type')
+
+    def test_caption_max_length(self):
+        resultfile = ResultFile.objects.get(id=1)
+        max_length = resultfile._meta.get_field('caption').max_length
+        self.assertEquals(max_length, 250)
+
+    def test_content_type_max_length(self):
+        resultfile = ResultFile.objects.get(id=1)
+        max_length = resultfile._meta.get_field('content_type').max_length
+        self.assertEquals(max_length, 100)
+
+    def test_display_workout_is_result_display_workout_if_result_exists(self):
+        resultfile = ResultFile.objects.get(id=1)
+        expected_name = f'{resultfile.result.display_workout()}'
+        self.assertEquals(expected_name, resultfile.display_workout())
+
+    def test_display_workout_is_result_deleted_if_result_does_not_exist(self):
+        resultfile = ResultFile.objects.get(id=1)
+        result = resultfile.result
+        result.delete()
+        resultfile.refresh_from_db()
+        expected_name = 'Result Deleted'
+        self.assertEquals(expected_name, resultfile.display_workout())
+
+    def test_display_resultfile_is_resultfile_id_if_result_exists(self):
+        resultfile = ResultFile.objects.get(id=1)
+        expected_name = 'Result File ' + str(resultfile.id)
+        self.assertEquals(expected_name, resultfile.display_resultfile())
+
+    def test_display_resultfile_is_result_deleted_if_result_does_not_exist(self):
+        resultfile = ResultFile.objects.get(id=1)
+        result = resultfile.result
+        result.delete()
+        resultfile.refresh_from_db()
+        expected_name = 'Result Deleted'
+        self.assertEquals(expected_name, resultfile.display_resultfile())
