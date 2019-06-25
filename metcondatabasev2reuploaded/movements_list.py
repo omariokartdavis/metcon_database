@@ -107,24 +107,21 @@ from django.utils import timezone
 ##for i in all_wicd:
 ##    wicd_dates.append(i.date_completed)
 
-athlete_users = ['testathlete1', 'testathlete2', 'testathlete3', 'testathlete4', 'testathlete5']
-coach_users = ['testcoach1', 'testcoach2', 'testcoach3', 'testcoach4', 'testcoach5']
-gym_owner_users = ['testgymowner1', 'testgymowner2', 'testgymowner3', 'testgymowner4', 'testgymowner5']
+num_users_per_category = 5
 
-for i in athlete_users:
-    user = User(username=i, is_athlete=True)
-    user.save()
-    Athlete.objects.create(user = user)
-
-for i in coach_users:
-    user = User(username=i, is_coach=True)
-    user.save()
-    Coach.objects.create(user=user)
-
-for i in gym_owner_users:
-    user = User(username=i, is_gym_owner=True)
-    user.save()
-    GymOwner.objects.create(user=user)
+for i in range(num_users_per_category):
+    User.objects.create(username=f'testathlete{i}', password='4a0308ki9ps', is_athlete=True)
+    User.objects.create(username=f'testcoach{i}', password='4a0308ki9ps', is_coach=True)
+    User.objects.create(username=f'testgymowner{i}', password='4a0308ki9ps', is_gym_owner=True)
+    testathlete_user = User.objects.get(username=f'testathlete{i}')
+    testcoach_user = User.objects.get(username=f'testcoach{i}')
+    testgymowner_user = User.objects.get(username=f'testgymowner{i}')
+    Athlete.objects.create(user=testathlete_user)
+    Athlete.objects.create(user=testcoach_user)
+    Athlete.objects.create(user=testgymowner_user)
+    Coach.objects.create(user=testcoach_user)
+    Coach.objects.create(user=testgymowner_user)
+    GymOwner.objects.create(user=testgymowner_user)
     
 for i in range(366):
     date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=i)
