@@ -2,17 +2,29 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates and update_instance_hidden every day
 
-# check all history files from the past few days when you download at work!
-
 ## 6/24/19
 (uploaded at work)
 - test_models.py
 - models.py (doesn't require anything)
 
+## 6/25/29
+(uploaded at work)
+- movements_list.py
+- test_models.py
+- test_forms.py
+- models.py (doesn't require anything)
+- forms.py
+
 ## functionality completed on 6/24/19
 - more model tests
 - changed name of 2 variablse in instance functions to more clearly specify what it is
-  
+
+## functionality completed on 6/25/19
+- finished model tests
+- started and finished writing tests for forms
+- changed some help texts in forms.py
+- streamlined user create code in movements_list.py
+
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
   - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
@@ -41,6 +53,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- add is_completed_rx and is_completed_scaled to result model?
 - Create request model for athlete/coach requests
   - when adding a coach or athlete, send a request to that person.
   - have a confirmed booleanfield on model. when athlete/coach accepts, change it to true
