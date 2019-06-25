@@ -71,7 +71,7 @@ class RemoveCoachFromAthleteForm(forms.Form):
 class AddWorkoutToAthletesForm(forms.Form):
     athlete_to_assign = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
     group_to_assign = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
-    hide_from_athletes = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date and time?')
+    hide_from_athletes = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
     date_to_unhide = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
 
 class CreateGroupForm(forms.Form):
@@ -82,12 +82,12 @@ class AddAthletesToGroupForm(forms.Form):
     athlete_to_add = forms.MultipleChoiceField(help_text='Which athletes would you like to add to this group?')
 
 class RemoveAthletesFromGroupForm(forms.Form):
-    athlete_to_remove = forms.MultipleChoiceField(help_text='Which athletes would you like to add to this group?')
+    athlete_to_remove = forms.MultipleChoiceField(help_text='Which athletes would you like to remove from this group?')
     
 class CreateWorkoutForm(forms.Form):
-    workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your workout")
-    workout_scaling = forms.CharField(widget=forms.Textarea, max_length=4000, help_text='Enter any scaling options', required=False)
-    estimated_duration = forms.IntegerField(help_text='Enter an estimate of how long it will take to complete the workout in minutes (whole numbers only)', required=False)
+    workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your workout.")
+    workout_scaling = forms.CharField(widget=forms.Textarea, max_length=4000, help_text='Enter any scaling options.', required=False)
+    estimated_duration = forms.IntegerField(help_text='Enter an estimate of how long it will take to complete the workout in minutes (whole numbers only).', required=False)
     gender = forms.ChoiceField(widget=forms.Select(), choices=workout_gender_choices, help_text='Is this workout (and the weights you have entered) applicable for both Males and Females or only one?')
 
     def __init__(self, *args, **kwargs):
@@ -96,22 +96,22 @@ class CreateWorkoutForm(forms.Form):
         if user.is_coach or user.is_gym_owner:
             self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
             self.fields['group_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
-            self.fields['hide_from_athletes?'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date and time?')
+            self.fields['hide_from_athletes?'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
             self.fields['date_to_unhide'] = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
 
 class CreateResultForm(forms.Form):
-    result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here")
+    result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.")
     duration_minutes = forms.IntegerField(required = False)
     duration_seconds = forms.IntegerField(required = False)
     media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
-    media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable')
+    media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable.')
     date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
 
 class ScheduleInstanceForm(forms.Form):
     date_to_be_added = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
     repeat_yes = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     repeat_frequency = forms.ChoiceField(widget=forms.Select, choices=repetition_frequency_choices)
-    number_of_repetitions = forms.IntegerField(widget=forms.NumberInput, required=False, help_text = 'XX number of times to repeat')
+    number_of_repetitions = forms.IntegerField(widget=forms.NumberInput, required=False, help_text = 'XX number of times to repeat.')
     repeat_length = forms.ChoiceField(widget=forms.Select, choices=repetition_length_choices)
 
 class EditScheduleForm(forms.Form):
