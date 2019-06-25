@@ -437,7 +437,6 @@ class EditInstanceFormTest(SimpleTestCase):
 
     def test_duration_minutes_positive(self):
         form = EditInstanceForm({'duration_minutes': 5, 'duration_seconds': 0})
-        print(form.is_valid())
         self.assertTrue(form.is_valid())
 
     def test_duration_seconds_negative(self):
@@ -471,7 +470,6 @@ class EditResultFormTest(SimpleTestCase):
 
     def test_duration_minutes_positive(self):
         form = EditResultForm({'duration_minutes': 5, 'duration_seconds': 0, 'result_text': 'Text'})
-        print(form.is_valid())
         self.assertTrue(form.is_valid())
 
     def test_duration_seconds_negative(self):
