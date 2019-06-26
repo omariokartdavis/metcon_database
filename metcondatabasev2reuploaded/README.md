@@ -53,6 +53,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- break user sign up into two or more pages, first page has basic info (name, username, password, email, is athlete/coach etc)
+  - second page can have more specific stuff based on their athlete/coach choice on first page
+  - not sure which page should ask about sports, probably second
+    - if athlete ask what sport they mainly focus on, if coach what sports do their athletes play and what sport do they play etc.
+- add main_sport field to user model
 - add is_completed_rx and is_completed_scaled to result model?
 - Create request model for athlete/coach requests
   - when adding a coach or athlete, send a request to that person.
@@ -205,3 +210,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - can give available dates to schedule form and create result form
   - create result should only have past
   - schedule should only have future dates
+  
+# Mobile App:
+- https://www.quora.com/How-do-we-convert-the-Django-web-application-into-an-Android-app
