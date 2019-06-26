@@ -185,6 +185,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
 ## Styling:
+- css storage location: https://docs.djangoproject.com/en/2.2/intro/tutorial06/
 - change color of workout name if assigned by coach or by self
 - Create stylebook for all screens
 - Create table for viewing workouts
