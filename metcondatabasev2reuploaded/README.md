@@ -15,6 +15,16 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - models.py (doesn't require anything)
 - forms.py
 
+## 6/27/19
+(uploaded at work)
+- models.py (changed check_unhide function to check if date_to_unhide exists first)
+- base_generic.html
+- user_page.html
+- workout_list.html
+- created workout_list.css (in metcons/static/css)
+- created workout_list.js (in metcons/static/js)
+- created user_page.css
+
 ## functionality completed on 6/24/19
 - more model tests
 - changed name of 2 variablse in instance functions to more clearly specify what it is
@@ -25,6 +35,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - changed some help texts in forms.py
 - streamlined user create code in movements_list.py
 
+## functionality completed on 6/27/19
+- moved css and javascript files into the static directory and out of individual templates
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
   - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
