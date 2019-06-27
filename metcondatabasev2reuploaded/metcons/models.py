@@ -258,10 +258,11 @@ class WorkoutInstance(models.Model):
 
         def check_unhide_date(self):
                 now = timezone.localtime(timezone.now()).date()
-                if now >= self.date_to_unhide:
-                        self.is_hidden = False
-                        self.date_to_unhide = None
-                        self.save()
+                if self.date_to_unhide:
+                        if now >= self.date_to_unhide:
+                                self.is_hidden = False
+                                self.date_to_unhide = None
+                                self.save()
                         
         def update_edited_workout_text(self):
                 #This sets edited_text to workout_text, use this on workout creation to set it as default. from there it will be changed on udpates
