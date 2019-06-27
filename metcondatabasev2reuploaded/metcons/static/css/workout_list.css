@@ -1,0 +1,72 @@
+.textinput {
+  border-box: box-sizing;
+  background-position: 14px 12px;
+  background-repeat: no-repeat;
+  font-size: 16px;
+  padding: 14px 20px 12px 45px;
+  border: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+.textinput:focus {outline: 3px solid #ddd;}
+
+.durationinput {
+  border-box: box-sizing;
+  background-position: 14px 12px;
+  background-repeat: no-repeat;
+  font-size: 16px;
+  padding: 14px 0px 12px 10px;
+  border: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  width: 125px;
+}
+
+.durationinput:focus {outline: 3px solid #ddd;}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f6f6f6;
+  border: 1px solid #ddd;
+  z-index: 1;
+}
+
+#myMovementDropdown {
+  left: 60px;
+}
+
+#myMovementDropdown2 {
+  left: 326px;
+}
+
+#myClassificationDropdown {
+  right: 331px;
+}
+
+#filtersubmitbutton {
+  display: inline-block;
+}
+
+.dropdown-content option {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown option:hover {background-color: #ddd;}
+
+.post_workout_form {
+  display: inline;
+}
+
+.workout_display_name {
+  display: inline;
+}
+
+.show {display: block;}

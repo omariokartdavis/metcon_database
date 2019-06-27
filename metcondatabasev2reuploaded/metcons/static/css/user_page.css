@@ -1,0 +1,31 @@
+.popup {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: #000000;
+  display: block;
+}
+
+.popup2 {
+  background-color: White;
+  border: 2px solid black;
+  display: block;
+  height: 75%;
+  width: 75%;
+  z-index: 1001;
+  top: 12.5%;
+  left: 12.5%;
+  position: fixed;
+  padding-left: 10px;
+  margin: auto;
+}
+
+.popup2 .popuptext {
+  text-align: center;
+}
+
+.popup .show {
+  visibility: hidden;
+}
