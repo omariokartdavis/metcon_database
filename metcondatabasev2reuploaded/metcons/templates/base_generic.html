@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	{% block title %}<title>Metcon Database</title>{% endblock %}
 	{% load static %}
 	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+	{% block extra_css %}{% endblock %}
 </head>
 <body>
 	<div class="container-fluid">
@@ -52,5 +54,6 @@
 			</div>
 		</div>
 	</div>
+	{%block extra_js %}{% endblock %}
 </body>
 </html>
