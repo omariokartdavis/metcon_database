@@ -1,42 +1,10 @@
 {% extends "base_generic.html" %}
 
+{% block extra_css %}
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'css/user_page.css' %}">
+{% endblock %}
 {% block content %}
-<head>
-<style>
-.popup {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  background-color: #000000;
-  display: block;
-}
-
-.popup2 {
-  background-color: White;
-  border: 2px solid black;
-  display: block;
-  height: 75%;
-  width: 75%;
-  z-index: 1001;
-  top: 12.5%;
-  left: 12.5%;
-  position: fixed;
-  padding-left: 10px;
-  margin: auto;
-}
-
-.popup2 .popuptext {
-  text-align: center;
-}
-
-.popup .show {
-  visibility: hidden;
-}
-
-</style>
-</head>
 	<h1>{{ user.username }}'s Homepage</h1>
 	{% if user.is_coach %}
 		<form action="{% url 'add_athletes' user.username %}">
