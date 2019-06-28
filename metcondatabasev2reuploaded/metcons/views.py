@@ -441,8 +441,8 @@ def workoutlistview(request):
                                                       where_workout_came_from='Athlete Created')
 
     paginator = Paginator(object_list, 10)
-    page = request.GET.get('page')
-    workout_list = paginator.get_page(page)            
+    page = request.GET.get('page', 1)
+    workout_list = paginator.page(page)            
 
     context = {
         'workout_list': workout_list,
