@@ -25,6 +25,18 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - created workout_list.js (in metcons/static/js)
 - created user_page.css
 
+## 6/28/19
+(uploaded at work)
+- views.py
+- base_generic.html
+- workout_list.html
+- created 3 files in static/sj
+  - infinite.js
+  - jquery-3.4.1.js
+  - jquery.waypoints.min.js
+- created metcons/templatetags
+  - getlistasparam.py
+
 ## functionality completed on 6/24/19
 - more model tests
 - changed name of 2 variablse in instance functions to more clearly specify what it is
@@ -37,6 +49,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## functionality completed on 6/27/19
 - moved css and javascript files into the static directory and out of individual templates
+
+## functionality completed on 6/28/19
+- created infinite scroll for workout_list
+  - currently have to include the scroll pagination in the html file not the js file. not sure why it won't work yet
+  - pagination works for all search functions
+  
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
   - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
@@ -81,7 +99,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - requestor_is_coach boolean field
   - requestor_is_athlete boolean field
   - requestor_is_gym_owner boolean field
-- gym owners need some distinction between adding athletes/coaches and adding members.k
+- gym owners need some distinction between adding athletes/coaches and adding members.
 - if workout is_hidden and only has instances with users who all belong to the same coach/gym then don't show workout in workout list.
   - will have to be done on the workout_list query view.
 - add more filters to schedule for all athletes and edit schedule for all athletes views.
@@ -163,7 +181,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   -would also change def `__str__` to if statement on if name exists otherwise same as above
 ### Pagination:
 - add pagination to workout list, profile page, and instace detail page for results.
-- this will likely solve itself when endless scroll is added
+- add 'loading...' thing for infinite scroll
 ### For multiple sports:
 - maybe just add a foreignkey field in current Workout model of "sport" that has different sport choices.
   -  should probably still create a different model for individual strength workout
