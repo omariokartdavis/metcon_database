@@ -101,6 +101,15 @@ def profile(request, username):
         context['gym_owner'] = gym_owner
         context['groups'] = groups
         context['all_workouts_from_all_athletes'] = all_workouts_from_all_athletes #currently not used in template
+        if request.method == 'GET':
+            if 'q' in request.GET:
+                query1 = request.GET.get('q')
+                chosen_user = User.objects.get(username=query1)
+                chosen_users_other_workouts = WorkoutInstance.objects.filter(current_user=chosen_user,
+                                                    youngest_scheduled_date=None,
+                                                    dates_workout_completed=None).distinct().order_by('date_added_by_user')
+                context['chosen_users_other_workouts'] = chosen_users_other_workouts
+                context['chosen_user'] = chosen_user
         
     return render(request, 'metcons/user_page.html', context=context)
 
