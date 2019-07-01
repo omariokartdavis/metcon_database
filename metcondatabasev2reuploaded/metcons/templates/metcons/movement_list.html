@@ -23,9 +23,6 @@
 {% endblock %}
 {% block pagination %}{% endblock %}
 {% block extra_js %}
-	<script>
-		var infinite = new Waypoint.Infinite({
-		  element: $('.infinite-container')[0]
-		});
-	</script>
+	{% load static %}
+	<script src="{% static 'js/movement_list.js' %}"></script>
 {% endblock %}
