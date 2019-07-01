@@ -30,6 +30,7 @@ def profile(request, username):
     #if there isn't a completed date it is last then filtered by date_added_by_user
     #long future workouts is 1 week forward, long past workouts is 2 weeks back
     users_workouts = WorkoutInstance.objects.filter(current_user=request.user)
+    request_list = Request.objects.filter(requestee=request.user)
 
     now = timezone.localtime(timezone.now()).date()
     end_of_week = now + timezone.timedelta(days=7)
@@ -80,6 +81,7 @@ def profile(request, username):
         'other_workouts': other_workouts,
         'dict_of_this_weeks_workouts': dict_of_this_weeks_workouts,
         'workouts_with_no_results_yesterday': workouts_with_no_results_yesterday,
+        'request_list': request_list,
         }
 
     if Athlete.objects.filter(user=request.user):
@@ -104,7 +106,7 @@ def profile(request, username):
 
 @login_required
 def add_athletes_to_coach(request, username):
-    user = request.user
+    user = User.objects.get(username=username)
 
     if request.method == 'POST':
         if 'add athlete by username' in request.POST:
@@ -114,7 +116,8 @@ def add_athletes_to_coach(request, username):
                 user_athlete_to_add_profile = Athlete.objects.get(user=user_athlete_to_add)
                 
                 #change this to send a notification to the athlete. once the athlete accepts then add to coach and athlete
-                user.coach.athletes.add(user_athlete_to_add_profile)
+                Request.objects.create(requestee=user_athlete_to_add, requestor=user, is_adding_athlete=True)
+##                user.coach.athletes.add(user_athlete_to_add_profile)
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -295,7 +298,7 @@ def remove_athletes_from_group(request, username, pk):
 
 @login_required
 def add_coach(request, username):
-    athlete_user = request.user
+    athlete_user = User.objects.get(username=username)
     athlete_user_athlete_profile = Athlete.objects.get(user=athlete_user)
 
     if request.method == 'POST':
@@ -306,8 +309,9 @@ def add_coach(request, username):
                 coach_to_add_coach_profile = Coach.objects.get(user=coach_to_add)
                 
                 #send a notification to the coach and once they accept then add to both
-                coach_to_add_coach_profile.athletes.add(athlete_user_athlete_profile)
-                coach_to_add_coach_profile.save()
+                Request.objects.create(requestee=coach_to_add, requestor = athlete_user, is_adding_coach=True)
+##                coach_to_add_coach_profile.athletes.add(athlete_user_athlete_profile)
+##                coach_to_add_coach_profile.save()
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -348,6 +352,50 @@ def remove_coaches_from_athlete(request, username):
         }
 
     return render(request, 'metcons/remove_coaches_from_athlete.html', context=context)
+
+@login_required
+def request_list_view(request, username):
+    user = User.objects.get(username=username)
+    request_list = Request.objects.filter(requestee=request.user)
+
+    context = {
+        'request_list': request_list,
+        }
+
+    return render(request, 'metcons/request_list.html', context=context)
+
+@login_required
+def request_detail(request, username, pk):
+    user = User.objects.get(username=username)
+    specific_request = Request.objects.get(id=pk, requestee=request.user)
+
+    if request.method == 'POST':
+        if 'confirm' in request.POST:
+            specific_request.is_confirmed=True
+            specific_request.save()
+            if specific_request.is_adding_athlete:
+                coach_user = specific_request.requestor
+                coach_user_profile = coach_user.coach
+                athlete_user = specific_request.requestee
+                athlete_user_profile = athlete_user.athlete
+                coach_user_profile.athletes.add(athlete_user_profile)
+            elif specific_request.is_adding_coach:
+                athlete_user = specific_request.requestor
+                athlete_user_profile = athlete_user.athlete
+                coach_user = specific_request.requestee
+                coach_user_profile = coach_user.coach
+                coach_user_profile.athletes.add(athlete_user_profile)
+        elif 'deny' in request.POST:
+            specific_request.delete()
+
+        return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+        
+
+    context = {
+        'specific_request': specific_request,
+        }
+
+    return render(request, 'metcons/request_detail.html', context=context)
 
 def signup(request):
     if request.method == 'POST':
@@ -517,7 +565,11 @@ def workoutinstancedetailview(request, username, pk):
                 instance.save()
                 
                 return HttpResponseRedirect(instance.get_absolute_url())
-        
+
+    paginator = Paginator(result_list, 5)
+    page = request.GET.get('page', 1)
+    result_list = paginator.page(page)
+    
     context = {
         'duration_minutes': duration_minutes,
         'duration_seconds': duration_seconds,
@@ -530,7 +582,7 @@ def workoutinstancedetailview(request, username, pk):
 
 class MovementListView(generic.ListView):
     model = Movement
-    paginate_by = 10
+    paginate_by = 20
 
 class MovementDetailView(generic.DetailView):
     model = Movement
