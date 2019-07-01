@@ -2,58 +2,23 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates and update_instance_hidden every day
 
-## 6/24/19
-(uploaded at work)
-- test_models.py
-- models.py (doesn't require anything)
-
-## 6/25/29
-(uploaded at work)
-- movements_list.py
-- test_models.py
-- test_forms.py
-- models.py (doesn't require anything)
-- forms.py
-
-## 6/27/19
-(uploaded at work)
-- models.py (changed check_unhide function to check if date_to_unhide exists first)
-- base_generic.html
-- user_page.html
-- workout_list.html
-- created workout_list.css (in metcons/static/css)
-- created workout_list.js (in metcons/static/js)
-- created user_page.css
-
-## 6/28/19
-(uploaded at work)
+## 6/30/19
+(uploaded at home)
+- models.py (requires migrations)
 - views.py
-- base_generic.html
-- workout_list.html
-- created 3 files in static/sj
-  - infinite.js
-  - jquery-3.4.1.js
-  - jquery.waypoints.min.js
-- created metcons/templatetags
-  - getlistasparam.py
+- urls.py
+- user_page.html
+- movement_list.html
+- workoutinstance_detail.html
+- created request_list.html
+- created request_detail.html
+- schedule_instance.html
 
-## functionality completed on 6/24/19
-- more model tests
-- changed name of 2 variablse in instance functions to more clearly specify what it is
-
-## functionality completed on 6/25/19
-- finished model tests
-- started and finished writing tests for forms
-- changed some help texts in forms.py
-- streamlined user create code in movements_list.py
-
-## functionality completed on 6/27/19
-- moved css and javascript files into the static directory and out of individual templates
-
-## functionality completed on 6/28/19
-- created infinite scroll for workout_list
-  - currently have to include the scroll pagination in the html file not the js file. not sure why it won't work yet
-  - pagination works for all search functions
+## functionality completed on 6/30/19
+- created request model
+  - created necessary views and urls as well as links from user page to view and accept/deny requests
+- added infinite scroll to movements list and results on workoutinstance_detail
+- added an if statement to check if future dates exist on the "by the way" sentence in schedule_instance
   
 #### Notes:
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
@@ -83,22 +48,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- add videos/pictures to movements to create a database of movement technique
+- create tests for request model
 - break user sign up into two or more pages, first page has basic info (name, username, password, email, is athlete/coach etc)
   - second page can have more specific stuff based on their athlete/coach choice on first page
   - not sure which page should ask about sports, probably second
     - if athlete ask what sport they mainly focus on, if coach what sports do their athletes play and what sport do they play etc.
 - add main_sport field to user model
 - add is_completed_rx and is_completed_scaled to result model?
-- Create request model for athlete/coach requests
-  - when adding a coach or athlete, send a request to that person.
-  - have a confirmed booleanfield on model. when athlete/coach accepts, change it to true
-  - requestee and requestor fields linked to user field
-  - date field 
-  - date confirmed field
-  - where known from field (text field so can give a description of where they know each other)
-  - requestor_is_coach boolean field
-  - requestor_is_athlete boolean field
-  - requestor_is_gym_owner boolean field
 - gym owners need some distinction between adding athletes/coaches and adding members.
 - if workout is_hidden and only has instances with users who all belong to the same coach/gym then don't show workout in workout list.
   - will have to be done on the workout_list query view.
@@ -125,15 +82,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - I think this is okay but maybe change the url so it <coachusername>/athletes/<athleteusername>/instance
     - this would basically be creating a new page+url+view that has all the same stuff as the current instance view
       - may be unnecessary and can leave as is
-- in add_athletes_to_coach view
-  - change the add functionality so it sends a request to the athlete.
-    - might need to create a "request-to-add" model
-      - would contain info such as: athlete, coach, gym owner
-      - then on requestee's page can have a popup that says 'coach' has claimed you as an athlete. 'Accept' 'Reject'
-      - same for adding coach to athlete.
-      - need some way to make this private so that people cannot request you, only you can request people
-        - this way people don't get spammed
-    - when the athlete accepts the request then add the athlete to the coach and vis-versa.
 - if user is athlete set workout default gender equal to user gender after user creation
 - if user is coach leave workout default gender as both and simply ask if they want to change it (have form initial be both)
 - ask users about their privacy settings or leave both and have popup on first going to profile page that shows them where
@@ -180,7 +128,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
                 by "workout " + str(id)
   -would also change def `__str__` to if statement on if name exists otherwise same as above
 ### Pagination:
-- add pagination to workout list, profile page, and instace detail page for results.
+- add pagination to workout list, profile page, and instance detail page for results.
 - add 'loading...' thing for infinite scroll
 ### For multiple sports:
 - maybe just add a foreignkey field in current Workout model of "sport" that has different sport choices.
@@ -215,12 +163,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
 ## Styling:
-- css storage location: https://docs.djangoproject.com/en/2.2/intro/tutorial06/
+- css storage location: https://docs.djangoproject.com/en/2.2/intro/tutorial06/ `
 - change color of workout name if assigned by coach or by self
 - Create stylebook for all screens
 - Create table for viewing workouts
         similar to the styling of this: https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
-- Endless Scroll of workouts
 - Add back button to previous search after filtering
 - Add filters currently active below search boxes after a filter is chosen
 - set maximum video and image size for displaying on webpage
@@ -235,12 +182,15 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - and have a line detailing that highlighted dates have already been scheduled
 - move "last completed" on instancedetail page to next to the title like so:
         Workout 287 - Last Completed: Date
+  - this is likely a display: inline
   - Grey the text for last completed out and make it smaller than workout number.
 - use jquery UI datepicker for date choices in schedule and result forms
   - look at top answer from this question: https://stackoverflow.com/questions/12884638/select-future-dates-only-django-form
   - can give available dates to schedule form and create result form
   - create result should only have past
   - schedule should only have future dates
+- infinite scroll:
+  - https://simpleisbetterthancomplex.com/tutorial/2017/03/13/how-to-create-infinite-scroll-with-django.html
   
 # Mobile App:
 - https://www.quora.com/How-do-we-convert-the-Django-web-application-into-an-Android-app
