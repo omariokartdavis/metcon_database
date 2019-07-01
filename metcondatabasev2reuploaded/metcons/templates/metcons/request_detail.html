@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% if user.is_authenticated %}
+		{% if specific_request %}
+			<p>{{ specific_request.requestor.username }} would like to add you as a{% if specific_request.is_adding_coach %} Coach{% endif %}{% if specific_request.is_adding_athlete %}n Athlete{% endif %}.</p>
+			<p>Would you like to accept?</p>
+			<form method='POST'>
+				{% csrf_token %}
+				<input type='submit' name='confirm' value='Accept'>
+			</form>
+			<form method='POST'>
+				{% csrf_token %}
+				<input type='submit' name='deny' value='Deny'>
+			</form>
+			{% if specific_request.is_adding_coach %}
+				<p>Accepting this request will assign you as a coach of {{ specific_request.requestor.username }}, which will give you access to {{ specific_request.requestor.username }}'s current workouts as well as allowing you to create, schedule, and delete workouts for {{ specific_request.requestor.username }}.</p>
+			{% elif specific_request.is_adding_athlete %}
+				<p>Accepting this request will assign {{ specific_request.requestor.username }} as your coach. This will give {{ specific_request.requestor.username }} access to all of your workouts as well as give permission for this coach to create, schedule, and delete workouts for you.</p>
+			{% endif %}
+		{% endif %}
+	{% else %}
+		<p>Please login to view this page.</p>
+	{% endif %}
+{% endblock %}
