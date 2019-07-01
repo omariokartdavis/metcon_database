@@ -76,6 +76,19 @@ class Group(models.Model):
         def __str__(self):
                 return self.name
 
+class Request(models.Model):
+        requestee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name = 'requestee')
+        requestor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name = 'requestor')
+        date_requested = models.DateTimeField(auto_now_add=True)
+        date_confirmed = models.DateTimeField(blank=True, null=True)
+        is_confirmed = models.BooleanField(default=False)
+        is_adding_coach = models.BooleanField(default=False)
+        is_adding_athlete = models.BooleanField(default=False)
+        is_adding_gymowner = models.BooleanField(default=False)
+
+        def get_absolute_url(self):
+                return reverse('request_detail', args=[str(self.requestee.username), str(self.id)])
+                
 class Classification(models.Model):
         """Model representing a classification of a movement"""
         classification_types = (
