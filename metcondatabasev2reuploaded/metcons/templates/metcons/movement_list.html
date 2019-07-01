@@ -3,14 +3,29 @@
 {% block content %}
 	<h1>Movement List</h1>
 	{% if movement_list %}
-	<ul>
-		{% for movement in movement_list %}
-			<li>
-				<a href="{{ movement.get_absolute_url }}">{{ movement.name }}</a>
-			</li>
-		{% endfor %}
-	</ul>
+		<ul>
+			<div class="infinite-container">
+				{% for movement in movement_list %}
+					<div class="infinite-item">
+						<li>
+							<a href="{{ movement.get_absolute_url }}">{{ movement.name }}</a>
+						</li>
+					</div>
+				{% endfor %}
+			</div>
+		</ul>
+		{% if page_obj.has_next %}
+			<a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}">More</a>
+		{% endif %}
 	{% else %}
 		<p>There are no movements in the database.</p>
 	{% endif %}
+{% endblock %}
+{% block pagination %}{% endblock %}
+{% block extra_js %}
+	<script>
+		var infinite = new Waypoint.Infinite({
+		  element: $('.infinite-container')[0]
+		});
+	</script>
 {% endblock %}
