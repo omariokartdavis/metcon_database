@@ -28,6 +28,9 @@
 		{% csrf_token %}
 		<input type="submit" value="Remove Coach" name='remove coach'>
 	</form>
+	{% if request_list %}
+		<p><a href="{% url 'request_list' user.username %}">View Requests</a></p>
+	{% endif %}
 	{% if user.is_coach or user.is_gym_owner %}
 		{% if groups %}
 			{% for i in groups %}
