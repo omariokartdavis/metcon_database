@@ -2,25 +2,27 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates and update_instance_hidden every day
 
-## 6/30/19
-(uploaded at home)
-- models.py (requires migrations)
+## 7/1/19
+(uploaded at work)
 - views.py
-- urls.py
-- user_page.html
+- user_page.css
+- created user_page.js
+- workout_list.js
+- created movement_list.js
+- created workoutinstance_detail.js
 - movement_list.html
 - workoutinstance_detail.html
-- created request_list.html
-- created request_detail.html
-- schedule_instance.html
+- workout_list.html
+- user_page.html
 
-## functionality completed on 6/30/19
-- created request model
-  - created necessary views and urls as well as links from user page to view and accept/deny requests
-- added infinite scroll to movements list and results on workoutinstance_detail
-- added an if statement to check if future dates exist on the "by the way" sentence in schedule_instance
+## functionality completed on 7/1/19
+- started styling user_page
+  - created tabs of users workouts
+- infinite scroll now works from seperate javascript file
   
 #### Notes:
+- sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
+  - need to clear computers cache in order to force it to reload it.
 - can add db_index=True to fields that get ordered_by/filtered_by a lot (date fields)
   - all foreignkey fields automatically have this, can remove it by db_index=False to save speed
   - might be a good idea as database gets bigger
@@ -48,6 +50,21 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- add <div class="self workouts"> to users own workouts
+  - if user.is_coach add <div class="athlete workouts">
+  - in view of user page can do:
+    - if request.method == 'GET':
+      - if 'athletes workouts' in request.GET:
+        - query1 = request.GET.get('q') [ q will be athletes name]
+        - if query1:
+          - athletes_future_workouts = WorkoutInstance.objects.filter(current_user=athlete_user...)
+          - same for all other types of workouts.
+    - basically turn user_page into search get requests for athletes names just like workout list.
+  - or can just load in all future workouts from the start and filter based off athlete name
+    - in view:
+      - all_athletes_future_workouts = for i in athletes = WorkoutInstance.objcets.filter(current_user=i...)
+    - then in template have buttons for each athlete and filter workouts displayed based on which athlete is clicked.
+  - this way page does not have to reload
 - add videos/pictures to movements to create a database of movement technique
 - create tests for request model
 - break user sign up into two or more pages, first page has basic info (name, username, password, email, is athlete/coach etc)
