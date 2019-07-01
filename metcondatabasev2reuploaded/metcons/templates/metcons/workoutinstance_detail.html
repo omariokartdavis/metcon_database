@@ -51,38 +51,45 @@
 				<input type="submit" value="Add Result" />
 			</form>
 			{% if result_list %}
-			<p><strong>Results:</strong></p>
+				<p><strong>Results:</strong></p>
 				<ul>
-					{% for result in result_list %}
-						<li>
-							<p><a href="{% url 'edit_result' user.username workoutinstance.id result.id %}"><strong>{{ result.date_workout_completed|date:"F j, Y" }}</strong></a> - <form action="{% url 'delete_result' user.username workoutinstance.id result.id %}"><input type="submit" value="Delete Result" /></form></p>
-							{% if result.duration_in_minutes > 0 %}
-								<p>{{ result.duration_in_minutes }} minutes</p>
-							{% endif %}
-							{% if result.duration_remainder > 0 %}
-								<p>{{ result.duration_remainder }} seconds</p>
-							{% endif %}
-							{% if result.duration_in_minutes == 0 and result.duration_remainder == 0 %}
-								<p>No Duration Results</p>
-							{% endif %}
-							<p>{{ result.result_text }}</p>
-							{% if result.resultfile_set.all %}
-								{% for resultfile in result.resultfile_set.all %}
-									{% if resultfile.content_type == "image/png" or resultfile.content_type == "image/jpeg" or resultfile.content_type == "image/gif" %}
-										<img src="{{ resultfile.file.url }}" width="750" height="500"/>
-									{% elif resultfile.content_type == "video/mp4" %}
-										<video controls>
-											<source src="{{ MEDIA_URL }}{{ resultfile.file }}">
-										</video>
-									{% else %}
-										<p>Content Type: {{ resultfile.content_type }}</p>
+					<div class="infinite-container">
+						{% for result in result_list %}
+							<div class="infinite-item">
+								<li>
+									<p><a href="{% url 'edit_result' user.username workoutinstance.id result.id %}"><strong>{{ result.date_workout_completed|date:"F j, Y" }}</strong></a> - <form action="{% url 'delete_result' user.username workoutinstance.id result.id %}"><input type="submit" value="Delete Result" /></form></p>
+									{% if result.duration_in_minutes > 0 %}
+										<p>{{ result.duration_in_minutes }} minutes</p>
 									{% endif %}
-									<p>Caption: {{ resultfile.caption }}</p>
-								{% endfor %}
-							{% endif %}
-						</li>
-					{% endfor %}
+									{% if result.duration_remainder > 0 %}
+										<p>{{ result.duration_remainder }} seconds</p>
+									{% endif %}
+									{% if result.duration_in_minutes == 0 and result.duration_remainder == 0 %}
+										<p>No Duration Results</p>
+									{% endif %}
+									<p>{{ result.result_text }}</p>
+									{% if result.resultfile_set.all %}
+										{% for resultfile in result.resultfile_set.all %}
+											{% if resultfile.content_type == "image/png" or resultfile.content_type == "image/jpeg" or resultfile.content_type == "image/gif" %}
+												<img src="{{ resultfile.file.url }}" width="750" height="500"/>
+											{% elif resultfile.content_type == "video/mp4" %}
+												<video controls>
+													<source src="{{ MEDIA_URL }}{{ resultfile.file }}">
+												</video>
+											{% else %}
+												<p>Content Type: {{ resultfile.content_type }}</p>
+											{% endif %}
+											<p>Caption: {{ resultfile.caption }}</p>
+										{% endfor %}
+									{% endif %}
+								</li>
+							</div>
+						{% endfor %}
+					</div>
 				</ul>
+				{% if result_list.has_next %}
+					<a class="infinite-more-link" href="?page={{ result_list.next_page_number }}">More</a>
+				{% endif %}
 			{% endif %}
 		{% else %}
 			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
@@ -90,4 +97,11 @@
 	{% else %}
 		<p>Please login to view this page.</p>
 	{% endif %}
+{% endblock %}
+{% block extra_js %}
+	<script>
+		var infinite = new Waypoint.Infinite({
+		  element: $('.infinite-container')[0]
+		});
+	</script>
 {% endblock %}
