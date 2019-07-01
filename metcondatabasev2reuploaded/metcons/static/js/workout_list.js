@@ -1,3 +1,7 @@
+var infinite = new Waypoint.Infinite({
+  element: $('.infinite-container')[0]
+});
+
 function Dropdown() {
   //this event is only on the textinput boxes so I can't close dropdowns when the submit button is focused.
   //using onblur makes the setDropdown Selection function not work because the moment you click out of the text input the dropdown disappears. making it as if you didnt
