@@ -99,9 +99,6 @@
 	{% endif %}
 {% endblock %}
 {% block extra_js %}
-	<script>
-		var infinite = new Waypoint.Infinite({
-		  element: $('.infinite-container')[0]
-		});
-	</script>
+	{% load static %}
+	<script src="{% static 'js/workoutinstance_detail.js' %}"></script>
 {% endblock %}
