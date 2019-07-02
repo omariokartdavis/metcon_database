@@ -31,9 +31,11 @@ if (tabs) {
 
 function queryAthlete(evt) {
   var i, athleteUsername;
-  
   athleteUsername = evt.target.firstChild.nodeValue;
-  console.log(athleteUsername);
+  var athletes = document.getElementsByClassName("athleteButton");
+  for (i = 0; i < athletes.length; i++) {
+    athletes[i].className = athletes[i].className.replace(" active", "");
+  } 
   document.getElementById("chosenAthlete").value = athleteUsername;
   document.getElementById("whichUserDisplay").submit();
 }
@@ -44,15 +46,17 @@ if (athleteButtons) {
     athleteButtons[i].addEventListener("click", queryAthlete, false);
   }
 }
-const NAME = "once";
 
 window.onload = document.getElementById("defaultOpenTab").click();
-window.onload = function defaultToUser() {
-	if (this.name !== NAME) {
-		this.name = NAME;
-		document.getElementById("defaultOpenUser").click();
-		splashScreen();
-	} else {
-		console.log(this.name)
-	}
+
+window.onload = function() {
+  var url_string = window.location.href;
+  var url = new URL(url_string);
+  var q = url.searchParams.get("q");
+  if (q) {
+	document.getElementById(q).className += " active";
+  } else {
+	document.getElementsByClassName("defaultOpenUser")[0].className += " active";
+	document.getElementsByClassName("defaultOpenUser")[0].click();
+  }
 }
