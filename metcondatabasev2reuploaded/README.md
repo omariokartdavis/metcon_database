@@ -2,18 +2,16 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates and update_instance_hidden every day
 
-## 7/1/19
-(uploaded at home)
-- views.py
+## 7/2/19
+(uploaded at work)
 - user_page.html
 - user_page.css
 - user_page.js
 
-## functionality completed on 7/1/19
-- started styling user_page
-  - created tabs of users workouts
-- infinite scroll now works from seperate javascript file
-- coach can now see all of users future/recent etc. workouts filtered properly
+## functionality completed on 7/2/19
+- styling user page
+  - added scroll effects to majority of page
+  
   
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -167,6 +165,9 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
 ## Styling:
+- parallax scrolling: https://www.w3schools.com/howto/howto_css_parallax.asp
+- add height: somepixels; with a overflow: auto; to give a scroll bar when necessary
+  - find out how to style scroll bar
 - css storage location: https://docs.djangoproject.com/en/2.2/intro/tutorial06/ `
 - change color of workout name if assigned by coach or by self
 - Create stylebook for all screens
@@ -198,3 +199,5 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   
 # Mobile App:
 - https://www.quora.com/How-do-we-convert-the-Django-web-application-into-an-Android-app
+- on users this weeks workouts page
+  - swipe left/right for different days
