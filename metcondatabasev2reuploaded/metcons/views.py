@@ -105,10 +105,41 @@ def profile(request, username):
             if 'q' in request.GET:
                 query1 = request.GET.get('q')
                 chosen_user = User.objects.get(username=query1)
-                chosen_users_other_workouts = WorkoutInstance.objects.filter(current_user=chosen_user,
+                chosen_users_incomplete_workouts = WorkoutInstance.objects.filter(current_user=chosen_user,
                                                     youngest_scheduled_date=None,
                                                     dates_workout_completed=None).distinct().order_by('date_added_by_user')
-                context['chosen_users_other_workouts'] = chosen_users_other_workouts
+                chosen_users_long_future_workouts = WorkoutInstance.objects.filter(current_user=chosen_user,
+                                                          youngest_scheduled_date__date_completed__gte=end_of_week).exclude(
+                                                                  youngest_scheduled_date=None).distinct().order_by('-youngest_scheduled_date')
+                chosen_users_recent_past_workouts = WorkoutInstance.objects.filter(current_user=chosen_user,
+                                                          dates_workout_completed__date_completed__lte=now,
+                                                          dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('oldest_completed_date', '-youngest_scheduled_date')
+    
+                chosen_users_long_past_workouts = WorkoutInstance.objects.filter(current_user=chosen_user,
+                                                                    dates_workout_completed__date_completed__lt=recent_time).exclude(
+                                                                        dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('oldest_completed_date')
+                chosen_users_dict_of_this_weeks_workouts = {}
+                chosen_users_todays_workouts = WorkoutInstance.objects.filter(current_user=chosen_user,
+                                                       dates_to_be_completed__date_completed=now).exclude(
+                                                           dates_workout_completed__date_completed=now).exclude(
+                                                               youngest_scheduled_date=None).distinct().order_by('-youngest_scheduled_date', 'date_added_by_user')
+                if chosen_users_todays_workouts:
+                    chosen_users_dict_of_this_weeks_workouts[now] = chosen_users_todays_workouts
+                    
+                date_to_check = now + timezone.timedelta(days=1)
+                while date_to_check < end_of_week:
+                    query_of_date = WorkoutInstance.objects.filter(current_user=chosen_user,
+                                                       dates_to_be_completed__date_completed=date_to_check).exclude(
+                                                               youngest_scheduled_date=None).distinct().order_by('-youngest_scheduled_date', 'date_added_by_user')
+                    if query_of_date:
+                        chosen_users_dict_of_this_weeks_workouts[date_to_check] = query_of_date
+                    date_to_check += timezone.timedelta(days=1)
+                
+                context['chosen_users_incomplete_workouts'] = chosen_users_incomplete_workouts
+                context['chosen_users_long_future_workouts'] = chosen_users_long_future_workouts
+                context['chosen_users_recent_past_workouts'] = chosen_users_recent_past_workouts
+                context['chosen_users_long_past_workouts'] = chosen_users_long_past_workouts
+                context['chosen_users_dict_of_this_weeks_workouts'] = chosen_users_dict_of_this_weeks_workouts
                 context['chosen_user'] = chosen_user
         
     return render(request, 'metcons/user_page.html', context=context)
