@@ -302,7 +302,7 @@
 				{% else %}
 					<p>{{ chosen_user.username}} has no recently completed workouts.</p>
 				{% endif %}
-			{% elif recent_workouts %}
+			{% elif recent_past_workouts %}
 				<h2>Recent Workouts</h2>
 				<ul>
 					{% for recent_instance in recent_past_workouts %}
