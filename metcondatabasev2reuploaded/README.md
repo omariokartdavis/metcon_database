@@ -3,22 +3,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # Run update_instance_dates and update_instance_hidden every day
 
 ## 7/1/19
-(uploaded at work)
+(uploaded at home)
 - views.py
-- user_page.css
-- created user_page.js
-- workout_list.js
-- created movement_list.js
-- created workoutinstance_detail.js
-- movement_list.html
-- workoutinstance_detail.html
-- workout_list.html
 - user_page.html
+- user_page.css
+- user_page.js
 
 ## functionality completed on 7/1/19
 - started styling user_page
   - created tabs of users workouts
 - infinite scroll now works from seperate javascript file
+- coach can now see all of users future/recent etc. workouts filtered properly
   
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -50,16 +45,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- add <div class="self workouts"> to users own workouts
-  - if user.is_coach add <div class="athlete workouts">
-  - in view of user page can do:
-    - if request.method == 'GET':
-      - if 'athletes workouts' in request.GET:
-        - query1 = request.GET.get('q') [ q will be athletes name]
-        - if query1:
-          - athletes_future_workouts = WorkoutInstance.objects.filter(current_user=athlete_user...)
-          - same for all other types of workouts.
-    - basically turn user_page into search get requests for athletes names just like workout list.
+- can load all future/recent/etc. workouts for all athletes on user_page visit then filter them in template instead of causing
+  page reload and filtering in views. not sure if this would be better or not.
   - or can just load in all future workouts from the start and filter based off athlete name
     - in view:
       - all_athletes_future_workouts = for i in athletes = WorkoutInstance.objcets.filter(current_user=i...)
