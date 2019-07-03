@@ -65,7 +65,7 @@
 			<div class="athleteTab">
 				<h2>Athletes</h2>
 				<div class="athletesNames">
-					<button class="athleteButton defaultOpenUser" id={{ user.username }}>{{ user.username }}</button>
+					<button class="athleteButton defaultOpenUser" id={{ user.username }}>{{ user.username }} (You)</button>
 					{% for athlete in athletes %}
 						<button class="athleteButton" id={{ athlete.user.username }}>{{ athlete.user.username }}</button>
 					{% endfor %}
@@ -153,7 +153,7 @@
 					</ul>
 				{% endfor %}
 			{% else %}
-				<p>{{ chosen_user }} has no workouts scheduled for this week.</p>
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled for this week.</p>
 			{% endif %}
 		{% elif dict_of_this_weeks_workouts %}
 			<h2>This Weeks Workouts</h2>
@@ -238,7 +238,7 @@
 					{% endfor %}
 				</ul>
 			{% else %}
-				<p>{{ chosen_user }} has no workouts scheduled farther out than 1 week.</p>
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled farther out than 1 week.</p>
 			{% endif %}
 		{% elif long_future_workouts %}
 			<h2>More Than 1 Week Ahead (Not showing workouts that are also scheduled for the current week)</h2>
@@ -301,7 +301,7 @@
 					{% endfor %}
 				</ul>
 			{% else %}
-				<p>{{ chosen_user }} has not completed any workouts longer than 2 weeks ago.</p>
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} not completed any workouts longer than 2 weeks ago.</p>
 			{% endif %}
 		{% elif long_past_workouts %}
 			<h2>Past Workouts</h2>
@@ -359,7 +359,7 @@
 					{% endfor %}
 				</ul>
 			{% else %}
-				<p>{{ chosen_user.username}} has no recently completed workouts.</p>
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no recently completed workouts.</p>
 			{% endif %}
 		{% elif recent_past_workouts %}
 			<h2>Recent Workouts</h2>
@@ -423,7 +423,7 @@
 					{% endfor %}
 				</ul>
 			{% else %}
-				<p>{{ chosen_user.username}} has no incomplete workouts.</p>
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no incomplete workouts.</p>
 			{% endif %}
 		{% elif other_workouts %}
 			<h2>Workouts That Haven't Been Completed Or Are Not Scheduled For The Future</h2>
