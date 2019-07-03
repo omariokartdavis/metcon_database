@@ -90,7 +90,7 @@
 							</form>
 							<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
 								{% csrf_token %}
-								<input type="submit" value="No, Edit Schedule" name="previous day edit schedule">
+								<input type="submit" value="No, Re-Schedule" name="previous day edit schedule">
 							</form>
 						{% endfor %}
 						<p>Otherwise remove scheduled date (-link to remove the date scheduled for yesterday)</p>
