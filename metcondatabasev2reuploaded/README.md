@@ -2,22 +2,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates and update_instance_hidden every day
 
-## 7/2/19
-(uploaded at home)
-- views.py
-- user_page.js
-- user_page.html
-- user_page.css
-- created base_generic.js
-- created base_generic.css
+## 7/3/19
+(uploaded at work)
+- base_generic.css
 - base_generic.html
-- movement_form.html
+- user_page.html
+- workoutinstance_detail.html
 
-## functionality completed on 7/2/19
-- styling user page
-  - added scroll effects to majority of page
-  
-  
+## functionality completed on 7/3/19
+- moved buttons to after workout name title on workoutinstance_detail
+- added a blank div across top of screen on base generic for sidebar nav to have background fully across
+    
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
   - need to clear computers cache in order to force it to reload it.
