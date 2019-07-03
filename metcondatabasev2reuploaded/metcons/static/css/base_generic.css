@@ -15,6 +15,16 @@
 h1 {
 	left: 50px;
 	position: relative;
+	z-index: 4;
+}
+
+.blankAcrossTop {
+	top: 0;
+	width: 100%;
+	background-color: white;
+	z-index: 3;
+	position: fixed;
+	height: 70px;
 }
 
 .sidebar-nav {
