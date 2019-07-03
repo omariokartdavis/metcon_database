@@ -3,6 +3,7 @@
 {% block content %}
 	{% if user.is_authenticated %}
 		{% if user.username == workoutinstance.current_user.username or user.coach in workoutinstance.current_user.athlete.coach_set.all %}
+			<h1>{{ workoutinstance.workout.display_name }}</h1><p> - Last Completed: {% if workoutinstance.oldest_completed_date %}{{ workoutinstance.oldest_completed_date.date_completed|date:"l, F j, Y" }}{% else %} Never {% endif %}</p>
 			<form action="{% url 'schedule_instance' user.username workoutinstance.id %}">
 				<input type="submit" value="Schedule Workout" />
 			</form>
@@ -40,7 +41,6 @@
 					{% endif %}
 				{% endif %}
 			{% endif %}
-			<h1>{{ workoutinstance.workout.display_name }}</h1><p> - Last Completed: {% if workoutinstance.oldest_completed_date %}{{ workoutinstance.oldest_completed_date.date_completed|date:"l, F j, Y" }}{% else %} Never {% endif %}</p>
 			{% if user.is_coach or user.is_gym_owner %}{% if workoutinstance.is_hidden %}Hidden - will unhide to athletes on: {% if workoutinstance.date_to_unhide %}{{ workoutinstance.date_to_unhide|date:"F j, Y" }}{% else %}Never{% endif %}{% endif %}{% endif %}</p>
 			<p><strong>Description:</strong> {{ workoutinstance.edited_workout_text|linebreaks }}</p>
 			<p><strong>Scaling:</strong> {{ workoutinstance.edited_scaling_text|linebreaks }}</p>
