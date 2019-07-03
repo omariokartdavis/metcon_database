@@ -3,10 +3,15 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # Run update_instance_dates and update_instance_hidden every day
 
 ## 7/2/19
-(uploaded at work)
+(uploaded at home)
+- views.py
+- user_page.js
 - user_page.html
 - user_page.css
-- user_page.js
+- created base_generic.js
+- created base_generic.css
+- base_generic.html
+- movement_form.html
 
 ## functionality completed on 7/2/19
 - styling user page
