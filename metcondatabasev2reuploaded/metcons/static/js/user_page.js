@@ -32,7 +32,7 @@ if (tabs) {
 
 function queryAthlete(evt) {
   var i, athleteUsername;
-  athleteUsername = evt.target.firstChild.nodeValue;
+  athleteUsername = evt.target.id;
   var athletes = document.getElementsByClassName("athleteButton");
   for (i = 0; i < athletes.length; i++) {
     athletes[i].className = athletes[i].className.replace(" active", "");
@@ -58,7 +58,7 @@ window.onload = function() {
 	document.getElementById(q).className += " active";
   } else {
 	document.getElementsByClassName("defaultOpenUser")[0].className += " active";
-	document.getElementsByClassName("defaultOpenUser")[0].click();
+	//document.getElementsByClassName("defaultOpenUser")[0].click();
   }
 }
 
@@ -83,9 +83,10 @@ $(window).scroll(function(){
 		//$(".tab").css("width", 400);
 		//$(".tab button:not(#tabID)").fadeIn( "fast");
 		$(".tab button:not(#" + specificTabLink.id + ")").css("visibility", "visible");
-		$(".tab button:not(#" + specificTabLink.id + ")").css("opacity", 0 + ($(window).scrollTop()  + $(window).height()) / 50);
+		$(".tab button:not(#" + specificTabLink.id + ")").css("opacity", 0 + ($(window).scrollTop() + $(window).height()));
 	}
-	lastScrollTop = st;
+	lastScrollTop = st; // required to make the scroll fade ins and outs work
+	/*
 	if ($(window).scrollTop() >= 150) {
 		$(".somediv").css("top", 0);
 		$(".tab").css("top", 260);
@@ -97,4 +98,6 @@ $(window).scroll(function(){
 		$(".athleteTab").css("top", 410 - $(window).scrollTop());
 		$(".athletesNames").css("top", 460 - $(window).scrollTop());
 	}
+	*/
+	// this was all old code when all these classes weren't already at the top of the screen
 });
