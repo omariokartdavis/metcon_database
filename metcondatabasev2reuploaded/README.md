@@ -201,3 +201,9 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - https://www.quora.com/How-do-we-convert-the-Django-web-application-into-an-Android-app
 - on users this weeks workouts page
   - swipe left/right for different days
+- notes on creating mobile app with django as server side backend:
+  - create a mobile app using java (java is frontend just like html) then use django rest framework to communicate with backend
+  - https://stackoverflow.com/questions/24402017/django-how-to-integrate-django-rest-framework-in-an-existing-application
+  - https://www.django-rest-framework.org/tutorial/1-serialization/
+  - https://stackoverflow.com/questions/19217835/can-an-android-app-connect-directly-to-an-online-mysql-database
+  - https://www.quora.com/How-do-we-convert-the-Django-web-application-into-an-Android-app
