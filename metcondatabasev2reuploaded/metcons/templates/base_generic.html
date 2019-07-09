@@ -28,10 +28,40 @@
 						<li><a href="{% url 'movements' %}">Movements</a></li>
 						<li><a href="{% url 'workout_create' %}">Create Workout</a></li>
 						<li><a href="{% url 'movement_create' %}">Create Movement</a></li>
+						<li><a href="" id="coachDropdownOpener">Coaches</a></li>
+						<div class="coachDropdown dropdown">
+							<li><a href="{% url 'add_coach' user.username %}"><i class="fas fa-plus-circle"></i> Add Coach</a></li>
+							{% if user.athlete.coach_set.all %}
+								{% for i in user.athlete.coach_set.all %}
+									<li><p>{{ i.user.username }} <i class="fas fa-minus-circle"></i></p></li>
+								{% endfor %}
+							{% endif %}
+						</div>
+						{% if user.is_coach or user.is_gym_owner %}
+							<li><a href="" id="athleteDropdownOpener">Athletes</a></li>
+							<div class="athleteDropdown dropdown">
+								<li><a href="{% url 'add_athletes' user.username %}"><i class="fas fa-plus-circle"> Add Athlete</a></li>
+								{% if user.coach.athletes.all %}									
+										{% for i in user.coach.athletes.all %}
+											<li><p>{{ i.user.username }} <i class="fas fa-minus-circle"></i></p></li>
+										{% endfor %}									
+								{% endif %}
+							</div>
+							<li><a href="" id="athleteDropdownOpener">Groups</a></li>
+							<div class="groupDropdown dropdown">
+								<li><a href="{% url 'create_group' user.username %}"><i class="fas fa-plus-circle"> Create Group</a></li>
+								{% if user.coach.group_set.all %}
+									{% for i in user.coach.group_set.all %}
+										<li><a href="{% url 'group_detail' user.username i.id %}">{{ i.name }} <i class="fas fa-minus-circle"></i></a></li>
+									{% endfor %}
+								{% endif %}
+							</div>
+						{% endif %}
 					{% endif %}
 
 				</ul>
 				<div class="blankAcrossTop"></div>
+				<div class="relAcrossTop"></div>
 				<span id="side_nav_open_button">&#9776;</span>
 				<div class="backgroundDim"></div>
 			{% endblock %}
@@ -39,23 +69,7 @@
 			<div class="col-sm-10 ">
 				{% block content %}{% endblock %}
 				
-				{% block pagination %}
-					{% if is_paginated %}
-						<div class="pagination">
-							<span class="page-links">
-								{% if page_obj.has_previous %}
-									<a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
-								{% endif %}
-								<span class="page-current">
-									<p>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</p>
-								</span>
-								{% if page_obj.has_next %}
-									<a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
-								{% endif %}
-							</span>
-						</div>
-					{% endif %}
-				{% endblock %}
+
 			</div>
 		</div>
 	</div>
@@ -64,6 +78,7 @@
 	<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
 	<script src="{% static 'js/infinite.js' %}"></script>
 	<script src="{% static 'js/base_generic.js' %}"></script>
+	<script src="https://kit.fontawesome.com/8313e665c1.js"></script>
 	{%block extra_js %}{% endblock %}
 </body>
 </html>
