@@ -1,10 +1,12 @@
 .somediv {
   background-color: White;
   position: fixed;
-  z-index: 3;
-  top: 0;
+  z-index: 4;
+  top: 70px;
+  left: 0;
   width: 100%;
-  height: 310px;
+  height: 240px;
+  border: 1px solid black;
 }
 
 .popup {
@@ -51,6 +53,7 @@
   left: 100px;
   z-index: 5;
   opacity: 1;
+  border: 1px solid black;
 }
 
 .tab button {
@@ -74,16 +77,18 @@
   width: 100px;
   height: 50px;
   z-index: 5;
+  border: 1px solid black;
 }
 
 .athletesNames {
   left: 0;
-  top: 310px;
+  top: 311px;
   position: fixed;
   overflow: hidden;
   background-color: #f1f1f1;
   width: 100px;
   z-index: 5;
+  border: 1px solid black;
 }
 
 .athletesNames:hover {
@@ -125,6 +130,7 @@
   border: 1px solid #ccc;
   background-color: #f1f1f1;
   width: 600px;
+  border: 1px solid black;
 }
 
 .addremoveTab input {
@@ -147,6 +153,7 @@
 .addremoveTab input.active {
   background-color: #ccc;
 }
+
 .tab button:hover {
   background-color: #ddd;
 }
@@ -158,10 +165,10 @@
 .tabcontent {
   display: none;
   padding: 6px 12px;
-  border: 1px solid #ccc;
   border-top: none;
-  left: 100px;
+  left: 102px;
   top: 290px;
   position: absolute;
   z-index: 1;
+  border: 1px solid black;
 }
