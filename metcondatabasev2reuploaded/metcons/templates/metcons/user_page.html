@@ -5,8 +5,8 @@
 	<link rel="stylesheet" href="{% static 'css/user_page.css' %}">
 {% endblock %}
 {% block content %}
+	<h1>{{ user.username }}'s Homepage</h1>
 	<div class="somediv">
-		<h1>{{ user.username }}'s Homepage</h1>
 		<div class="addremoveTab">
 			{% if user.is_coach %}
 				<form action="{% url 'add_athletes' user.username %}">
@@ -17,7 +17,7 @@
 					{% csrf_token %}
 					<input type="submit" value="Remove Athletes" name='remove athlete from coach page'>
 				</form>
-				<form class="athleteButton" action="{% url 'create_group' user.username %}">
+				<form action="{% url 'create_group' user.username %}">
 					{% csrf_token %}
 					<input type="submit" value="Create Group" name='create group'>
 				</form>
@@ -34,19 +34,23 @@
 		{% if request_list %}
 			<p><a href="{% url 'request_list' user.username %}">View Requests</a></p>
 		{% endif %}
-		{% if coaches %}
-			<h2>Coaches</h2>
-			{% for coach in coaches %}
-				<p>{{ coach.user.username }}</p>
-			{% endfor %}
-		{% endif %}
-		{% if user.is_coach or user.is_gym_owner %}
-			{% if groups %}
-				{% for i in groups %}
-					<p><a href="{% url 'group_detail' user.username i.id %}"><strong>{{ i.name }}</strong></a></p>
+		<div class="coachList">
+			{% if coaches %}
+				<h2>Coaches</h2>
+				{% for coach in coaches %}
+					<p>{{ coach.user.username }}</p>
 				{% endfor %}
 			{% endif %}
-		{% endif %}
+		</div>
+		<div class="groupList">
+			{% if user.is_coach or user.is_gym_owner %}
+				{% if groups %}
+					{% for i in groups %}
+						<p><a href="{% url 'group_detail' user.username i.id %}"><strong>{{ i.name }}</strong></a></p>
+					{% endfor %}
+				{% endif %}
+			{% endif %}
+		</div>
 		{% if not users_workouts %}
 			<p>{{ user.username }}, you have no workouts saved. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 		{% endif %}
