@@ -4,15 +4,28 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## 7/3/19
 (uploaded at work)
+- base_generic.css (also uploaded on later date)
+- base_generic.html (also uploaded on later date)
+- user_page.html (also uploaded on later date)
+- workoutinstance_detail.html
+
+## 7/9/19
+(uploaded at work)
 - base_generic.css
+- user_page.css
 - base_generic.html
 - user_page.html
-- workoutinstance_detail.html
+- views.py
 
 ## functionality completed on 7/3/19
 - moved buttons to after workout name title on workoutinstance_detail
 - added a blank div across top of screen on base generic for sidebar nav to have background fully across
-    
+
+## functionality completed on 7/9/19
+- slight styling changes
+- fixed requests issue where it wouldn't get rid of request after accepting
+- added script source to font awesome
+
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
   - need to clear computers cache in order to force it to reload it.
@@ -43,6 +56,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- create "are you sure you want to delete XXX" page
+  - when clicking the delete button from the sidebar menu, link to this page
+  - on button links in sidebar have names for 'delete athlete/coach/group' and then have if statements on page based on which
+    name was sent
 - can load all future/recent/etc. workouts for all athletes on user_page visit then filter them in template instead of causing
   page reload and filtering in views. not sure if this would be better or not.
   - or can just load in all future workouts from the start and filter based off athlete name
@@ -165,9 +182,25 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
 ## Styling:
+- put 3 main buttons to the right of sidebar, left of title of page
+  - sidebar...1.2.3...............Title
+  - put them on base generic inside blank across top div
+- move add athlete/coach buttons to side bar
+  - if user.is_coach:
+    - athletes dropdown
+      - list athletes, at top of list have add athlete button. next to each athletes name have - symbol that removes them
+    - groups dropdown
+      - list groups, top of list have create group button, next to each group have + and - buttons for adding/removing athletes
+        - or have the - button be for deleting the group and have them click on the group to remove athletes
+      - can have a dropdown of athletes inside the dropdown of groups
+  - if user.authenticated:
+    - Coaches dropdown
+      - list coaches, top of list have add coach button, next to each coach have delete coach button as - symbol
+- make requests a notification popup on either sidebar or top bar.
 - parallax scrolling: https://www.w3schools.com/howto/howto_css_parallax.asp
-- add height: somepixels; with a overflow: auto; to give a scroll bar when necessary
+- add height: somepixels; with a overflow-y/x: auto; to give a scroll bar when necessary
   - find out how to style scroll bar
+  - add this as a hover style to an element to only show the scroll bar on hover
 - css storage location: https://docs.djangoproject.com/en/2.2/intro/tutorial06/ `
 - change color of workout name if assigned by coach or by self
 - Create stylebook for all screens
@@ -179,9 +212,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - add click to hide/show scaling on workout detail and instance detail pages.
   - set default to hidden
 - ?remove number of times completed counter from instance_detail page?
-- style future/recent/past workouts as tabs on user page
-  - default to future workouts if they have any, then recent, then past, then All Workouts if
-                they have none scheduled and none completed
 - create a calendar dropdown for scheduling workouts
   - when you try and schedule a workout again you should have the dates highlighted that it is already scheduled
   - and have a line detailing that highlighted dates have already been scheduled
@@ -194,6 +224,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - can give available dates to schedule form and create result form
   - create result should only have past
   - schedule should only have future dates
+- on calendar tab for workouts:
+  - create a large calendar that holds all past and future workouts by day.
 - infinite scroll:
   - https://simpleisbetterthancomplex.com/tutorial/2017/03/13/how-to-create-infinite-scroll-with-django.html
   
