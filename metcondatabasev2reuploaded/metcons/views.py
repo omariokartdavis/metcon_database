@@ -30,7 +30,7 @@ def profile(request, username):
     #if there isn't a completed date it is last then filtered by date_added_by_user
     #long future workouts is 1 week forward, long past workouts is 2 weeks back
     users_workouts = WorkoutInstance.objects.filter(current_user=request.user)
-    request_list = Request.objects.filter(requestee=request.user)
+    request_list = Request.objects.filter(requestee=request.user, is_confirmed=False)
 
     now = timezone.localtime(timezone.now()).date()
     end_of_week = now + timezone.timedelta(days=7)
@@ -148,7 +148,7 @@ def profile(request, username):
 
 @login_required
 def add_athletes_to_coach(request, username):
-    user = User.objects.get(username=username)
+    user = User.objects.get(username=request.user.username)
 
     if request.method == 'POST':
         if 'add athlete by username' in request.POST:
@@ -340,7 +340,7 @@ def remove_athletes_from_group(request, username, pk):
 
 @login_required
 def add_coach(request, username):
-    athlete_user = User.objects.get(username=username)
+    athlete_user = User.objects.get(username=request.user.username)
     athlete_user_athlete_profile = Athlete.objects.get(user=athlete_user)
 
     if request.method == 'POST':
@@ -397,8 +397,8 @@ def remove_coaches_from_athlete(request, username):
 
 @login_required
 def request_list_view(request, username):
-    user = User.objects.get(username=username)
-    request_list = Request.objects.filter(requestee=request.user)
+    user = User.objects.get(username=request.user.username)
+    request_list = Request.objects.filter(requestee=request.user, is_confirmed=False)
 
     context = {
         'request_list': request_list,
@@ -408,7 +408,7 @@ def request_list_view(request, username):
 
 @login_required
 def request_detail(request, username, pk):
-    user = User.objects.get(username=username)
+    user = User.objects.get(username=request.user.username)
     specific_request = Request.objects.get(id=pk, requestee=request.user)
 
     if request.method == 'POST':
@@ -427,6 +427,7 @@ def request_detail(request, username, pk):
                 coach_user = specific_request.requestee
                 coach_user_profile = coach_user.coach
                 coach_user_profile.athletes.add(athlete_user_profile)
+            specific_request.delete()
         elif 'deny' in request.POST:
             specific_request.delete()
 
