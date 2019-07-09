@@ -11,19 +11,34 @@
 	opacity: 0;
 	visibility: hidden;
 }
+body {
+	border: 1px solid black;
+}
 
 h1 {
 	left: 50px;
-	position: relative;
-	z-index: 4;
+	top: 0;
+	position: fixed;
+	z-index: 8;
 }
 
 .blankAcrossTop {
 	top: 0;
+	left: 0;
 	width: 100%;
 	background-color: white;
 	z-index: 3;
 	position: fixed;
+	height: 70px;
+	border: 1px solid black;
+}
+
+.relAcrossTop {
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 3;
+	position: relative;
 	height: 70px;
 }
 
@@ -42,6 +57,10 @@ h1 {
 	list-style: none;
 }	
 
+.sidebar-nav:hover{
+	overflow-y: auto;
+}
+
 .sidebar-nav a {
 	padding: 8px 8px 8px 32px;
 	text-decoration: none;
@@ -55,6 +74,21 @@ h1 {
 	display: block;
 	transition: 0.3s;
 	outline: none;
+}
+
+.sidebar-nav li p {
+	padding: 8px 8px 8px 32px;
+	text-decoration: none;
+	font-size: 25px;
+	border: none;
+	color: #818181;
+	background-color: #111;
+	width: 100%;
+	text-align: left;
+	display: block;
+	transition: 0.3s;
+	outline: none;
+	margin: 0;
 }
 
 .sidebar-nav a:hover {
