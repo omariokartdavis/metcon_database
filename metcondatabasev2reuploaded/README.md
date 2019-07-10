@@ -2,18 +2,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates and update_instance_hidden every day
 
-## 7/9/19
-(uploaded at home)
+## 7/10/19
+(uploaded at work)
+- user_page.html
+- base_generic.js
 - base_generic.html
 - base_generic.css
-- base_generic.js
+
 
 ## functionality completed on 7/9/19
-- slight styling changes
-- fixed requests issue where it wouldn't get rid of request after accepting
-- added script source to font awesome
-- moved athletes/coaches/groups to sidebar
-- dropdowns in sidebar
+- removed coaches and groups from user page
+- add onmouseover and onmouseleave effects to sidebar nav so you don't have to click to open/close
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
