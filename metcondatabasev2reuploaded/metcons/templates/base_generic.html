@@ -13,53 +13,58 @@
 		<div class="row">
 			<div class="col-sm-2">
 			{% block sidebar %}
-				<ul class="sidebar-nav">
+				<div class="sidebar-nav">
 					<a href="" class="closebtn" id="side_nav_close_button">&times;</a>
 					{% if user.is_authenticated %}
-						<li><a href="{% url 'profile' user.username %}">Home</a></li>
-						<li><a href="{% url 'logout' %}">Logout</a></li>
+						<a href="{% url 'profile' user.username %}">Home</a>
+						<a href="{% url 'logout' %}">Logout</a>
 					{% else %}
-						<li><a href="{% url 'index' %}">Home</a></li>
-						<li><a href="{% url 'login' %}">Login</a></li>
+						<a href="{% url 'index' %}">Home</a>
+						<a href="{% url 'login' %}">Login</a>
 					{% endif %}
 					</br >
-					<li><a href="{% url 'workouts' %}">Workouts</a></li>
+					<a href="{% url 'workouts' %}">Workouts</a>
 					{% if user.is_authenticated %}
-						<li><a href="{% url 'movements' %}">Movements</a></li>
-						<li><a href="{% url 'workout_create' %}">Create Workout</a></li>
-						<li><a href="{% url 'movement_create' %}">Create Movement</a></li>
-						<li><a href="" id="coachDropdownOpener">Coaches</a></li>
-						<div class="coachDropdown dropdown">
-							<li><a href="{% url 'add_coach' user.username %}"><i class="fas fa-plus-circle"></i> Add Coach</a></li>
+						<a href="{% url 'movements' %}">Movements</a>
+						<a href="{% url 'workout_create' %}">Create Workout</a>
+						<a href="{% url 'movement_create' %}">Create Movement</a>
+						<button id="coachDropdownOpener" class="dropdownOpener">Coaches
+							<i class="fa fa-caret-down"></i>
+						</button>
+						<div class="coachDropdownContainer dropdownContainer">
+							<a href="{% url 'add_coach' user.username %}"><i class="fas fa-plus-circle"></i> Add Coach</a>
 							{% if user.athlete.coach_set.all %}
 								{% for i in user.athlete.coach_set.all %}
-									<li><p>{{ i.user.username }} <i class="fas fa-minus-circle"></i></p></li>
+									<p>{{ i.user.username }} <i class="fas fa-minus-circle"></i></p>
 								{% endfor %}
 							{% endif %}
 						</div>
 						{% if user.is_coach or user.is_gym_owner %}
-							<li><a href="" id="athleteDropdownOpener">Athletes</a></li>
-							<div class="athleteDropdown dropdown">
-								<li><a href="{% url 'add_athletes' user.username %}"><i class="fas fa-plus-circle"> Add Athlete</a></li>
+							<button id="athleteDropdownOpener" class="dropdownOpener">Athletes
+								<i class="fa fa-caret-down"></i>
+							</button>
+							<div class="athleteDropdownContainer dropdownContainer">
+								<a href="{% url 'add_athletes' user.username %}"><i class="fas fa-plus-circle"></i> Add Athlete</a>
 								{% if user.coach.athletes.all %}									
 										{% for i in user.coach.athletes.all %}
-											<li><p>{{ i.user.username }} <i class="fas fa-minus-circle"></i></p></li>
+											<p>{{ i.user.username }} <i class="fas fa-minus-circle"></i></p>
 										{% endfor %}									
 								{% endif %}
 							</div>
-							<li><a href="" id="athleteDropdownOpener">Groups</a></li>
-							<div class="groupDropdown dropdown">
-								<li><a href="{% url 'create_group' user.username %}"><i class="fas fa-plus-circle"> Create Group</a></li>
+							<button id="athleteDropdownOpener" class="dropdownOpener">Groups
+								<i class="fa fa-caret-down"></i>
+							</button>
+							<div class="groupDropdownContainer dropdownContainer">
+								<a href="{% url 'create_group' user.username %}"><i class="fas fa-plus-circle"></i> Create Group</a>
 								{% if user.coach.group_set.all %}
 									{% for i in user.coach.group_set.all %}
-										<li><a href="{% url 'group_detail' user.username i.id %}">{{ i.name }} <i class="fas fa-minus-circle"></i></a></li>
+										<a href="{% url 'group_detail' user.username i.id %}">{{ i.name }}</a><button><i class="fas fa-minus-circle"></i></button>
 									{% endfor %}
 								{% endif %}
 							</div>
 						{% endif %}
 					{% endif %}
-
-				</ul>
+				</div>
 				<div class="blankAcrossTop"></div>
 				<div class="relAcrossTop"></div>
 				<span id="side_nav_open_button">&#9776;</span>
