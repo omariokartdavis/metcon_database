@@ -172,39 +172,40 @@ def add_athletes_to_coach(request, username):
 
     return render(request, 'metcons/add_athlete_page.html', context=context)
 
-@login_required
-def remove_athletes_from_coach(request, username):
-    coach_user = request.user
-    athletes = coach_user.coach.athletes.all()
-
-    if request.method == 'POST':
-        if 'remove athletes from coach' in request.POST:
-            form = RemoveAthleteFromCoachForm(request.POST)
-            athlete_to_remove = request.POST.getlist('athlete_to_remove')
-            form.fields['athlete_to_remove'].choices = [(i, i) for i in athlete_to_remove]
-            if form.is_valid():
-                for i in form.cleaned_data['athlete_to_remove']:
-                    user = User.objects.get(username=i)
-                    if coach_user.coach.group_set.filter(athletes=user.athlete).exists():
-                        for group in coach_user.coach.group_set.filter(athletes=user.athlete):
-                            group.athletes.remove(user.athlete)
-                            if not group.athletes.all():
-                                group.delete()
-                    coach_user.coach.athletes.remove(user.athlete)
-
-                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
-
-    else:
-        form = RemoveAthleteFromCoachForm()
-        if request.user.is_coach or request.user.is_gym_owner:
-            form.fields['athlete_to_remove'].choices = [(athlete.user.username, athlete.user.username) for athlete in athletes]
-
-    context = {
-        'form': form,
-        'athletes': athletes,
-        }
-
-    return render(request, 'metcons/remove_athletes_from_coach.html', context=context)
+## no longer needed due to remove_coach_or_athlete in sidebar
+##@login_required
+##def remove_athletes_from_coach(request, username):
+##    coach_user = request.user
+##    athletes = coach_user.coach.athletes.all()
+##
+##    if request.method == 'POST':
+##        if 'remove athletes from coach' in request.POST:
+##            form = RemoveAthleteFromCoachForm(request.POST)
+##            athlete_to_remove = request.POST.getlist('athlete_to_remove')
+##            form.fields['athlete_to_remove'].choices = [(i, i) for i in athlete_to_remove]
+##            if form.is_valid():
+##                for i in form.cleaned_data['athlete_to_remove']:
+##                    user = User.objects.get(username=i)
+##                    if coach_user.coach.group_set.filter(athletes=user.athlete).exists():
+##                        for group in coach_user.coach.group_set.filter(athletes=user.athlete):
+##                            group.athletes.remove(user.athlete)
+##                            if not group.athletes.all():
+##                                group.delete()
+##                    coach_user.coach.athletes.remove(user.athlete)
+##
+##                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+##
+##    else:
+##        form = RemoveAthleteFromCoachForm()
+##        if request.user.is_coach or request.user.is_gym_owner:
+##            form.fields['athlete_to_remove'].choices = [(athlete.user.username, athlete.user.username) for athlete in athletes]
+##
+##    context = {
+##        'form': form,
+##        'athletes': athletes,
+##        }
+##
+##    return render(request, 'metcons/remove_athletes_from_coach.html', context=context)
 
 @login_required
 def create_group(request, username):
@@ -367,34 +368,74 @@ def add_coach(request, username):
 
     return render(request, 'metcons/add_coach_page.html', context=context)
 
+## no longer needed due to remove_coach_or_athlete in sidebar
+##@login_required
+##def remove_coaches_from_athlete(request, username):
+##    athlete_user = request.user
+##    coaches = athlete_user.athlete.coach_set.all()
+##
+##    if request.method == 'POST':
+##        if 'remove coaches from athlete' in request.POST:
+##            form = RemoveCoachFromAthleteForm(request.POST)
+##            coach_to_remove = request.POST.getlist('coach_to_remove')
+##            form.fields['coach_to_remove'].choices = [(i, i) for i in coach_to_remove]
+##            if form.is_valid():
+##                for i in form.cleaned_data['coach_to_remove']:
+##                    coach_user = User.objects.get(username=i)
+##                    coach_user.coach.athletes.remove(athlete_user.athlete)
+##
+##                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+##
+##    else:
+##        form = RemoveCoachFromAthleteForm()
+##        form.fields['coach_to_remove'].choices = [(coach.user.username, coach.user.username) for coach in coaches]
+##
+##    context = {
+##        'form': form,
+##        'coaches': coaches,
+##        }
+##
+##    return render(request, 'metcons/remove_coaches_from_athlete.html', context=context)
+
 @login_required
-def remove_coaches_from_athlete(request, username):
-    athlete_user = request.user
-    coaches = athlete_user.athlete.coach_set.all()
-
-    if request.method == 'POST':
-        if 'remove coaches from athlete' in request.POST:
-            form = RemoveCoachFromAthleteForm(request.POST)
-            coach_to_remove = request.POST.getlist('coach_to_remove')
-            form.fields['coach_to_remove'].choices = [(i, i) for i in coach_to_remove]
-            if form.is_valid():
-                for i in form.cleaned_data['coach_to_remove']:
-                    coach_user = User.objects.get(username=i)
-                    coach_user.coach.athletes.remove(athlete_user.athlete)
-
-                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
-
-    else:
-        form = RemoveCoachFromAthleteForm()
-        form.fields['coach_to_remove'].choices = [(coach.user.username, coach.user.username) for coach in coaches]
+def remove_coach_or_athlete(request, username):
+    user = User.objects.get(username=request.user.username)
+    if 'coach to remove' in request.GET:
+        athlete_or_coach_user = User.objects.get(username=str(request.GET['coach to remove']))
+    elif 'athlete to remove' in request.GET:
+        athlete_or_coach_user = User.objects.get(username=str(request.GET['athlete to remove']))
 
     context = {
-        'form': form,
-        'coaches': coaches,
+        'athlete_or_coach_user': athlete_or_coach_user,
         }
+    
+    if request.method == "POST":
+        if 'remove coach' in request.POST:
+            coach_user = athlete_or_coach_user
+            coach_user.coach.athletes.remove(user.athlete)
+            
+        elif 'remove athlete' in request.POST:
+            coach_user = user
+            athlete_user = athlete_or_coach_user
+            if coach_user.coach.group_set.filter(athletes=athlete_user.athlete).exists():
+                for group in coach_user.coach.group_set.filter(athletes=athlete_user.athlete):
+                    group.athletes.remove(athlete_user.athlete)
+                    if not group.athletes.all():
+                        group.delete()
+            coach_user.coach.athletes.remove(athlete_user.athlete)
 
-    return render(request, 'metcons/remove_coaches_from_athlete.html', context=context)
+        return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+                    
+    else:
+        if 'coach to remove' in request.GET:
+            remove_coach = 'remove coach'
+            context['remove_coach'] = remove_coach
+        elif 'athlete to remove' in request.GET:
+            remove_athlete = 'remove athlete'
+            context['remove_athlete'] = remove_athlete    
 
+    return render(request, 'metcons/remove_coach_or_athlete.html', context=context)
+        
 @login_required
 def request_list_view(request, username):
     user = User.objects.get(username=request.user.username)
