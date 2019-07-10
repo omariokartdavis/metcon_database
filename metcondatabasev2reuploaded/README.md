@@ -4,15 +4,26 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## 7/10/19
 (uploaded at work)
+- views.py
+- urls.py
 - user_page.html
+- user_page.css
 - base_generic.js
 - base_generic.html
 - base_generic.css
-
+- request_detail.html
+- created remove_coach_or_athlete.html
+- obsoleted remove_athletes_from_coach.html and remove_coaches_from_athlete.html
+- obsoleted request_list.html
 
 ## functionality completed on 7/9/19
 - removed coaches and groups from user page
 - add onmouseover and onmouseleave effects to sidebar nav so you don't have to click to open/close
+- + and - symbols in dropdowns of sidebar now work properly and are positioned properly
+- are you sure you want to delete xxx page created
+  - remove_coach_or_athlete.html
+- removed add athlete/coach buttons from user page as they are now in sidebar as +/- buttons
+- added right side nav with requests
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -44,10 +55,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- create "are you sure you want to delete XXX" page
-  - when clicking the delete button from the sidebar menu, link to this page
-  - on button links in sidebar have names for 'delete athlete/coach/group' and then have if statements on page based on which
-    name was sent
 - can load all future/recent/etc. workouts for all athletes on user_page visit then filter them in template instead of causing
   page reload and filtering in views. not sure if this would be better or not.
   - or can just load in all future workouts from the start and filter based off athlete name
@@ -170,22 +177,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
 ## Styling:
-- make plus and minus buttons work
-  - once they work can remove the addremove tab from user page and all coaches and groups
+- ?have athletes names in sidebar be links to coaches profile page?
 - put 3 main buttons to the right of sidebar, left of title of page
   - sidebar...1.2.3...............Title
   - put them on base generic inside blank across top div
-- move add athlete/coach buttons to side bar
-  - if user.is_coach:
-    - athletes dropdown
-      - list athletes, at top of list have add athlete button. next to each athletes name have - symbol that removes them
-    - groups dropdown
-      - list groups, top of list have create group button, next to each group have + and - buttons for adding/removing athletes
-        - or have the - button be for deleting the group and have them click on the group to remove athletes
-      - can have a dropdown of athletes inside the dropdown of groups
-  - if user.authenticated:
-    - Coaches dropdown
-      - list coaches, top of list have add coach button, next to each coach have delete coach button as - symbol
 - make requests a notification popup on either sidebar or top bar.
 - parallax scrolling: https://www.w3schools.com/howto/howto_css_parallax.asp
 - add height: somepixels; with a overflow-y/x: auto; to give a scroll bar when necessary
