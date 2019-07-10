@@ -3,30 +3,56 @@ var dropdown = document.getElementsByClassName("dropdownOpener");
 function dropdownFunction() {
 	this.classList.toggle("active");
 	var dropdownContent = this.nextElementSibling;
-	if (dropdownContent.style.height == "60%") {
+	if (dropdownContent.style.height == "30%") {
 		dropdownContent.style.height = "0";
 	} else {
-		dropdownContent.style.height = "60%";
+		dropdownContent.style.height = "30%";
 	}
 };
 
-function openNav() {
+function openLeftNav() {
+	document.getElementsByClassName("sidebar-nav")[0].style.overflow = "auto";
 	document.getElementsByClassName("sidebar-nav")[0].style.width = "300px";
-	document.getElementsByClassName("sidebar-nav")[0].style.left = "0";
-	//document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+	//document.getElementsByClassName("sidebar-nav")[0].style.left = "0";
 	document.getElementsByClassName("backgroundDim")[0].style.visibility = "visible";
 	document.getElementsByClassName("backgroundDim")[0].style.opacity = "0.4";
 	for (var i = 0; i < dropdown.length; i++) {
 		dropdown[i].addEventListener("click", dropdownFunction, false) //this for loop has to be inside the openNav() function because it can't apply the on click event before the side nav has been opened. The buttons don't exist yet.
 	}
+	
 }
 
-function closeNav() {
+function closeLeftNav() {
+	for (var i = 0; i < dropdown.length; i++) {
+		dropdown[i].nextElementSibling.style.overflow = "hidden";
+		dropdown[i].nextElementSibling.style.height = "0";
+	}
+	document.getElementsByClassName("sidebar-nav")[0].style.overflow = "hidden";
 	document.getElementsByClassName("sidebar-nav")[0].style.width = "0";
-	document.getElementsByClassName("sidebar-nav")[0].style.left = "-50px";
+	//document.getElementsByClassName("sidebar-nav")[0].style.left = "-50px";
 	document.getElementsByClassName("backgroundDim")[0].style.opacity = "0";
 	document.getElementsByClassName("backgroundDim")[0].style.visibility = "hidden";	
 }
 
-document.getElementById("side_nav_open_button").addEventListener("click", openNav, false);
-document.getElementById("side_nav_close_button").addEventListener("click", closeNav, false);
+function openRightNav() {
+	document.getElementsByClassName("right-sidebar-nav")[0].style.overflow = "auto";
+	document.getElementsByClassName("right-sidebar-nav")[0].style.width = "300px";
+	document.getElementsByClassName("backgroundDim")[0].style.visibility = "visible";
+	document.getElementsByClassName("backgroundDim")[0].style.opacity = "0.4";
+}
+
+function closeRightNav() {
+	document.getElementsByClassName("right-sidebar-nav")[0].style.overflow = "hidden";
+	document.getElementsByClassName("right-sidebar-nav")[0].style.width = "0";
+	document.getElementsByClassName("backgroundDim")[0].style.opacity = "0";
+	document.getElementsByClassName("backgroundDim")[0].style.visibility = "hidden";	
+}
+
+//document.getElementById("side_nav_open_button").addEventListener("click", openLeftNav, false);
+document.getElementById("side_nav_open_button").addEventListener("mouseover", openLeftNav, false);
+document.getElementById("side_nav_close_button").addEventListener("click", closeLeftNav, false);
+document.getElementsByClassName("sidebar-nav")[0].addEventListener("mouseleave", closeLeftNav, false);
+
+document.getElementById("right_sidenav_open_button").addEventListener("mouseover", openRightNav, false);
+document.getElementById("right_side_nav_close_button").addEventListener("click", closeRightNav, false);
+document.getElementsByClassName("right-sidebar-nav")[0].addEventListener("mouseleave", closeRightNav, false);
