@@ -2,29 +2,18 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates and update_instance_hidden every day
 
-## 7/3/19
-(uploaded at work)
-- base_generic.css (also uploaded on later date)
-- base_generic.html (also uploaded on later date)
-- user_page.html (also uploaded on later date)
-- workoutinstance_detail.html
-
 ## 7/9/19
-(uploaded at work)
-- base_generic.css
-- user_page.css
+(uploaded at home)
 - base_generic.html
-- user_page.html
-- views.py
-
-## functionality completed on 7/3/19
-- moved buttons to after workout name title on workoutinstance_detail
-- added a blank div across top of screen on base generic for sidebar nav to have background fully across
+- base_generic.css
+- base_generic.js
 
 ## functionality completed on 7/9/19
 - slight styling changes
 - fixed requests issue where it wouldn't get rid of request after accepting
 - added script source to font awesome
+- moved athletes/coaches/groups to sidebar
+- dropdowns in sidebar
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -182,6 +171,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
 ## Styling:
+- make plus and minus buttons work
+  - once they work can remove the addremove tab from user page and all coaches and groups
 - put 3 main buttons to the right of sidebar, left of title of page
   - sidebar...1.2.3...............Title
   - put them on base generic inside blank across top div
