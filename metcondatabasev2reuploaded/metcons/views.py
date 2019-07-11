@@ -47,7 +47,7 @@ def profile(request, username):
     long_past_workouts = WorkoutInstance.objects.filter(current_user=request.user,
                                                         dates_workout_completed__date_completed__lt=recent_time).exclude(
                                                             dates_workout_completed__date_completed__gte=recent_time).distinct().order_by('oldest_completed_date')
-    other_workouts = WorkoutInstance.objects.filter(current_user=request.user,
+    incomplete_workouts = WorkoutInstance.objects.filter(current_user=request.user,
                                                     youngest_scheduled_date=None,
                                                     dates_workout_completed=None).distinct().order_by('date_added_by_user')
 
@@ -78,7 +78,7 @@ def profile(request, username):
         'long_future_workouts': long_future_workouts,
         'recent_past_workouts': recent_past_workouts,
         'long_past_workouts': long_past_workouts,
-        'other_workouts': other_workouts,
+        'incomplete_workouts': incomplete_workouts,
         'dict_of_this_weeks_workouts': dict_of_this_weeks_workouts,
         'workouts_with_no_results_yesterday': workouts_with_no_results_yesterday,
         'request_list': request_list,
@@ -156,10 +156,8 @@ def add_athletes_to_coach(request, username):
             if form.is_valid():
                 user_athlete_to_add = User.objects.get(username=form.cleaned_data['athlete_username'])
                 user_athlete_to_add_profile = Athlete.objects.get(user=user_athlete_to_add)
-                
-                #change this to send a notification to the athlete. once the athlete accepts then add to coach and athlete
+
                 Request.objects.create(requestee=user_athlete_to_add, requestor=user, is_adding_athlete=True)
-##                user.coach.athletes.add(user_athlete_to_add_profile)
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -351,10 +349,7 @@ def add_coach(request, username):
                 coach_to_add = User.objects.get(username=form.cleaned_data['coach_username'])
                 coach_to_add_coach_profile = Coach.objects.get(user=coach_to_add)
                 
-                #send a notification to the coach and once they accept then add to both
                 Request.objects.create(requestee=coach_to_add, requestor = athlete_user, is_adding_coach=True)
-##                coach_to_add_coach_profile.athletes.add(athlete_user_athlete_profile)
-##                coach_to_add_coach_profile.save()
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -436,16 +431,16 @@ def remove_coach_or_athlete(request, username):
 
     return render(request, 'metcons/remove_coach_or_athlete.html', context=context)
         
-@login_required
-def request_list_view(request, username):
-    user = User.objects.get(username=request.user.username)
-    request_list = Request.objects.filter(requestee=request.user, is_confirmed=False)
-
-    context = {
-        'request_list': request_list,
-        }
-
-    return render(request, 'metcons/request_list.html', context=context)
+##@login_required
+##def request_list_view(request, username):
+##    user = User.objects.get(username=request.user.username)
+##    request_list = Request.objects.filter(requestee=request.user, is_confirmed=False)
+##
+##    context = {
+##        'request_list': request_list,
+##        }
+##
+##    return render(request, 'metcons/request_list.html', context=context)
 
 @login_required
 def request_detail(request, username, pk):
@@ -454,8 +449,6 @@ def request_detail(request, username, pk):
 
     if request.method == 'POST':
         if 'confirm' in request.POST:
-            specific_request.is_confirmed=True
-            specific_request.save()
             if specific_request.is_adding_athlete:
                 coach_user = specific_request.requestor
                 coach_user_profile = coach_user.coach
