@@ -121,6 +121,15 @@
   background-color: #ccc;
 }
 
+.noAthletes {
+  left: 0;
+  top: 311px;
+  position: fixed;
+  width: 100px;
+  z-index: 5;
+  border: 1px solid black;
+}
+
 .tab button:hover, .athleteTab button:hover {
   background-color: #ddd;
 }
