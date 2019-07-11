@@ -2,28 +2,24 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 # Run update_instance_dates and update_instance_hidden every day
 
-## 7/10/19
+# spelling mistake on remove_coach_or_athlete
+- for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
+
+## 7/11/19
 (uploaded at work)
-- views.py
 - urls.py
-- user_page.html
-- user_page.css
-- base_generic.js
+- views.py
 - base_generic.html
 - base_generic.css
-- request_detail.html
-- created remove_coach_or_athlete.html
-- obsoleted remove_athletes_from_coach.html and remove_coaches_from_athlete.html
-- obsoleted request_list.html
+- user_page.html
+- user_page.css
 
-## functionality completed on 7/9/19
-- removed coaches and groups from user page
-- add onmouseover and onmouseleave effects to sidebar nav so you don't have to click to open/close
-- + and - symbols in dropdowns of sidebar now work properly and are positioned properly
-- are you sure you want to delete xxx page created
-  - remove_coach_or_athlete.html
-- removed add athlete/coach buttons from user page as they are now in sidebar as +/- buttons
-- added right side nav with requests
+## functionality completed on 7/11/19
+- simplified right-sidenav code
+- added 3 main buttons at top left of page
+- centered page title
+- moved if no athetes to where athletesnames are
+- moved if user has no workouts to each individual tabcontent
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -40,7 +36,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - workout 96 doesn't have a proper description. Scaling info is the description and scaling is none
   - not sure why it got pulled from the website this way.
   - same with Workout 266
-- to allow urls to extend with info, the get_absolute_url function must be in the model isntance and you must pass the arguments
+- to allow urls to extend with info, the get_absolute_url function must be in the model instance and you must pass the arguments
         for each specification before it. otherwise you will get a reverse match not found on the template link.
   - see workout instance get_absolute_url for example
   - if using function based views, the argument must also be passed in the view function
@@ -55,6 +51,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- create edit group page to allow changing of group name
+  - can also possibly combine add/delete athletes to group on this page
 - can load all future/recent/etc. workouts for all athletes on user_page visit then filter them in template instead of causing
   page reload and filtering in views. not sure if this would be better or not.
   - or can just load in all future workouts from the start and filter based off athlete name
@@ -177,13 +175,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
 ## Styling:
-- ?have athletes names in sidebar be links to coaches profile page?
-- put 3 main buttons to the right of sidebar, left of title of page
-  - sidebar...1.2.3...............Title
-  - put them on base generic inside blank across top div
-- make requests a notification popup on either sidebar or top bar.
 - parallax scrolling: https://www.w3schools.com/howto/howto_css_parallax.asp
-- add height: somepixels; with a overflow-y/x: auto; to give a scroll bar when necessary
+- to have scrollbar, add height: somepixels; and overflow-y: auto; 
   - find out how to style scroll bar
   - add this as a hover style to an element to only show the scroll bar on hover
 - css storage location: https://docs.djangoproject.com/en/2.2/intro/tutorial06/ `
