@@ -7,15 +7,7 @@
 {% block content %}
 	<h1>{{ user.username }}'s Homepage</h1>
 	<div class="somediv">
-		{% if not users_workouts %}
-			<p>{{ user.username }}, you have no workouts saved. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-		{% endif %}
-		{% if user.is_coach or user.is_gym_owner %}
-			{% if not athletes %}
-				<p>{{ user.username }}, you have no athletes! Add athletes by <a href="{% url 'add_athletes' user.username %}">Clicking Here!</a></p>
-			{% endif %}
-		{% endif %}
-		<p>Only things left here are if user has no workouts at all and if coach/gym owner has no athletes</p>
+		<p>Nothing left here.</p>
 	</div>
 	<div class="tab">
 		<button class="tablinks" id="defaultOpenTab">This Week</button>
@@ -31,11 +23,17 @@
 			<div class="athleteTab">
 				<h2>Athletes</h2>
 				<div class="athletesNames">
+					<!-- can change this to this and remove the defaultopenuser code in js but need to style this a link to be the same as the just text buttons-->
+					<!-- <a href="{% url 'profile' user.username %}">{{ user.username }} (You)</a> -->
 					<button class="athleteButton defaultOpenUser" id={{ user.username }}>{{ user.username }} (You)</button>
 					{% for athlete in athletes %}
 						<button class="athleteButton" id={{ athlete.user.username }}>{{ athlete.user.username }}</button>
 					{% endfor %}
 				</div>
+			</div>
+		{% else %}
+			<div class="noAthletes">
+				<p>{{ user.username }}, you have no athletes! Add athletes by <a href="{% url 'add_athletes' user.username %}">Clicking Here!</a></p>
 			</div>
 		{% endif %}
 	{% else %}
@@ -65,7 +63,6 @@
 	<div id="This Week" class="tabcontent">
 		{% if user.is_coach or user.is_gym_owner %}
 			{% if chosen_users_dict_of_this_weeks_workouts %}
-				<h2>This Weeks Workouts</h2>
 				{% for k, v in chosen_users_dict_of_this_weeks_workouts.items %}
 					{% if v %}
 						<h3>{{k|date:"l"}}</h3>
@@ -117,10 +114,9 @@
 					</ul>
 				{% endfor %}
 			{% else %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled for this week.</p>
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled for this week. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 			{% endif %}
 		{% elif dict_of_this_weeks_workouts %}
-			<h2>This Weeks Workouts</h2>
 			{% for k, v in dict_of_this_weeks_workouts.items %}
 				{% if v %}
 					<h3>{{k|date:"l"}}</h3>
@@ -155,7 +151,7 @@
 				</ul>
 			{% endfor %}
 		{% else %}
-			<p>You have no workouts scheduled for this week.</p>
+			<p>You have no workouts scheduled for this week. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 		{% endif %}
 	</div>
 	<div id="Calendar" class="tabcontent">
@@ -202,7 +198,7 @@
 					{% endfor %}
 				</ul>
 			{% else %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled farther out than 1 week.</p>
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled further out than 1 week. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 			{% endif %}
 		{% elif long_future_workouts %}
 			<h2>More Than 1 Week Ahead (Not showing workouts that are also scheduled for the current week)</h2>
@@ -232,7 +228,7 @@
 				{% endfor %}
 			</ul>
 		{% else %}
-			<p>You have no long future workouts.</p>
+			<p>You have no workouts scheduled further out than 1 week. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 		{% endif %}
 		{% if user.is_coach or user.is_gym_owner %}
 			{% if chosen_users_long_past_workouts %}
@@ -265,7 +261,7 @@
 					{% endfor %}
 				</ul>
 			{% else %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} not completed any workouts longer than 2 weeks ago.</p>
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} not completed any workouts longer than 2 weeks ago. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 			{% endif %}
 		{% elif long_past_workouts %}
 			<h2>Past Workouts</h2>
@@ -288,7 +284,7 @@
 				{% endfor %}
 			</ul>
 		{% else %}
-			<p>You have no long past workouts.</p>
+			<p>You have not completed any workouts longer than 2 weeks ago. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 		{% endif %}
 	</div>
 	<div id="Recent" class="tabcontent">
@@ -323,7 +319,7 @@
 					{% endfor %}
 				</ul>
 			{% else %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no recently completed workouts.</p>
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} not completed any workouts in the past 2 weeks. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 			{% endif %}
 		{% elif recent_past_workouts %}
 			<h2>Recent Workouts</h2>
@@ -346,7 +342,7 @@
 				{% endfor %}
 			</ul>
 		{% else %}
-			<p>You have not completed any workouts in the past 2 weeks.</p>
+			<p>You have not completed any workouts in the past 2 weeks. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 		{% endif %}
 	</div>
 	<div id="Incomplete" class="tabcontent">
@@ -369,6 +365,9 @@
 										<form action="{% url 'schedule_instance' user.username instance.id %}">
 											<input type="submit" value="Schedule Workout" />
 										</form>
+										<form action="{% url 'delete_instance' user.username instance.id %}">
+											<input type="submit" value="Delete Workout" />
+										</form>
 										{{ instance.edited_workout_text|linebreaks }}</p>
 									{% endif %}
 								{% else %}
@@ -380,6 +379,9 @@
 									<form action="{% url 'schedule_instance' user.username instance.id %}">
 										<input type="submit" value="Schedule Workout" />
 									</form>
+									<form action="{% url 'delete_instance' user.username instance.id %}">
+										<input type="submit" value="Delete Workout" />
+									</form>
 									{{ instance.edited_workout_text|linebreaks }}</p>
 								{% endif %}
 							</li>
@@ -387,12 +389,12 @@
 					{% endfor %}
 				</ul>
 			{% else %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no incomplete workouts.</p>
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no incomplete workouts. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 			{% endif %}
-		{% elif other_workouts %}
+		{% elif incomplete_workouts %}
 			<h2>Workouts That Haven't Been Completed Or Are Not Scheduled For The Future</h2>
 			<ul>
-				{% for instance in other_workouts %}
+				{% for instance in incomplete_workouts %}
 					{% if instance.workout %}
 						<li>
 							{% if instance.is_hidden %}
@@ -413,7 +415,7 @@
 				{% endfor %}
 			</ul>
 		{% else %}
-			<p>You have no unscheduled or non-completed workouts.</p>
+			<p>You have no incomplete workouts. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 		{% endif %}
 	</div>
 {% endblock %}
