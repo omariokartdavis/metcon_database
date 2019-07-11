@@ -34,14 +34,14 @@
 						<div class="coachDropdownContainer dropdownContainer">
 							<a href="{% url 'add_coach' user.username %}"><i class="fas fa-plus-circle"></i> Add Coach</a>
 							{% if user.athlete.coach_set.all %}
-									{% for i in user.athlete.coach_set.all %}
-										<p>{{ i.user.username }}</p>
-										<form action="{% url 'remove_coach_or_athlete' user.username %}">
-											<input type="hidden" name="coach to remove" value= {{ i.user.username }}>
-											<button type="submit" class="hasMinusSign"><i class="fas fa-minus-circle"></i></button>
-										</form>
-										</br >
-									{% endfor %}
+								{% for i in user.athlete.coach_set.all %}
+									<p>{{ i.user.username }}</p>
+									<form action="{% url 'remove_coach_or_athlete' user.username %}">
+										<input type="hidden" name="coach to remove" value= {{ i.user.username }}>
+										<button type="submit" class="hasMinusSign"><i class="fas fa-minus-circle"></i></button>
+									</form>
+									</br >
+								{% endfor %}
 							{% endif %}
 						</div>
 						{% if user.is_coach or user.is_gym_owner %}
@@ -52,12 +52,15 @@
 								<a href="{% url 'add_athletes' user.username %}"><i class="fas fa-plus-circle"></i> Add Athlete</a>
 								{% if user.coach.athletes.all %}
 									{% for i in user.coach.athletes.all %}
-											<p>{{ i.user.username }}</p>
-											<form action="{% url 'remove_coach_or_athlete' user.username %}">
-												<input type="hidden" name="athlete to remove" value= {{ i.user.username }}>
-												<button type="submit" class="hasMinusSign"><i class="fas fa-minus-circle"></i></button>
-											</form>
-											</br >
+										<form action="{% url 'profile' user.username %}">
+											<input type="hidden" name="q" value={{ i.user.username }}>
+											<button type="submit">{{ i.user.username }}</button>
+										</form>
+										<form action="{% url 'remove_coach_or_athlete' user.username %}">
+											<input type="hidden" name="athlete to remove" value= {{ i.user.username }}>
+											<button type="submit" class="hasMinusSign"><i class="fas fa-minus-circle"></i></button>
+										</form>
+										</br >
 									{% endfor %}	
 								{% endif %}
 							</div>
@@ -67,14 +70,14 @@
 							<div class="groupDropdownContainer dropdownContainer">
 								<a href="{% url 'create_group' user.username %}"><i class="fas fa-plus-circle"></i> Create Group</a>
 								{% if user.coach.group_set.all %}
-										{% for i in user.coach.group_set.all %}
-											<a class="hasMinusSign groupName" href="{% url 'group_detail' user.username i.id %}">{{ i.name }}</a>
-											<form action="{% url 'delete_group' user.username i.id %}">
-												<input type="hidden" name="group to remove" value= {{ i.id }}>
-												<button type="submit" class="hasMinusSign"><i class="fas fa-minus-circle"></i></button>
-											</form>
-											</br >
-										{% endfor %}
+									{% for i in user.coach.group_set.all %}
+										<a class="hasMinusSign groupName" href="{% url 'group_detail' user.username i.id %}">{{ i.name }}</a>
+										<form action="{% url 'delete_group' user.username i.id %}">
+											<input type="hidden" name="group to remove" value= {{ i.id }}>
+											<button type="submit" class="hasMinusSign"><i class="fas fa-minus-circle"></i></button>
+										</form>
+										</br >
+									{% endfor %}
 								{% endif %}
 							</div>
 						{% endif %}
@@ -85,33 +88,39 @@
 				<span id="side_nav_open_button">&#9776;</span>
 				<div class="backgroundDim"></div>
 				{% if user.is_authenticated %}
-					{% if user.requestee.all %}
-						<span id="right_sidenav_open_button"><i class="fas fa-exclamation-circle"></i></span>
-						<div class="right-sidebar-nav">
-							<a href="" class="right-sidebar-closebtn" id="right_side_nav_close_button">&times;</a>
+					<div class="home-search-create-buttons">
+						<a href="{% url 'profile' user.username %}"><i class="fas fa-home"></i></a>
+						<a href="{% url 'workouts' %}"><i class="fas fa-search"></i></a>
+						<a href="{% url 'workout_create' %}"><i class="fas fa-plus-circle"></i></a>
+					</div>
+				{% endif %}
+				<span id="right_sidenav_open_button">
+					{% if user.is_authenticated %}
+						{% if user.requestee.all %}<i class="fas fa-bell"></i>{% endif %}
+					{% endif %}
+				</span>
+				<div class="right-sidebar-nav">
+					<a href="" class="right-sidebar-closebtn" id="right_side_nav_close_button">&times;</a>
+					{% if user.is_authenticated %}
+						{% if user.requestee.all %}
 							<p>Requests:</p>
 							{% for i in user.requestee.all %}
 								<a href="{{ i.get_absolute_url }}">{{ i.requestor.username }}</a>
 							{% endfor %}
-						</div>
-					{% else %}
-						<span id="right_sidenav_open_button"></span>
-						<div class="right-sidebar-nav">
-							<a href="" class="right-sidebar-closebtn" id="right_side_nav_close_button">&times;</a>
-						</div>
+						{% endif %}
+					{% endif %}
+				</div>
+				{% if user.is_authenticated %}
+					{% if not user.requestee.all %}
+						<div class="blockRightSidebar"></div>
 					{% endif %}
 				{% else %}
-					<span id="right_sidenav_open_button"></span>
-					<div class="right-sidebar-nav">
-						<a href="" class="right-sidebar-closebtn" id="right_side_nav_close_button">&times;</a>
-					</div>
+					<div class="blockRightSidebar"></div>
 				{% endif %}
 			{% endblock %}
 			</div>
-			<div class="col-sm-10 ">
+			<div class="col-sm-10">
 				{% block content %}{% endblock %}
-				
-
 			</div>
 		</div>
 	</div>
