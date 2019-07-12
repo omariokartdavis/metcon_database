@@ -19,7 +19,6 @@ function openLeftNav() {
 	for (var i = 0; i < dropdown.length; i++) {
 		dropdown[i].addEventListener("click", dropdownFunction, false) //this for loop has to be inside the openNav() function because it can't apply the on click event before the side nav has been opened. The buttons don't exist yet.
 	}
-	
 }
 
 function closeLeftNav() {
@@ -53,6 +52,7 @@ document.getElementById("side_nav_open_button").addEventListener("mouseover", op
 document.getElementById("side_nav_close_button").addEventListener("click", closeLeftNav, false);
 document.getElementsByClassName("sidebar-nav")[0].addEventListener("mouseleave", closeLeftNav, false);
 
+document.getElementsByClassName("notifications")[0].addEventListener("mouseover", openRightNav, false);
 document.getElementById("right_sidenav_open_button").addEventListener("mouseover", openRightNav, false);
 document.getElementById("right_side_nav_close_button").addEventListener("click", closeRightNav, false);
 document.getElementsByClassName("right-sidebar-nav")[0].addEventListener("mouseleave", closeRightNav, false);
