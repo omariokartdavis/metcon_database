@@ -6,9 +6,6 @@
 {% endblock %}
 {% block content %}
 	<h1>{{ user.username }}'s Homepage</h1>
-	<div class="somediv">
-		<p>Nothing left here.</p>
-	</div>
 	<div class="tab">
 		<button class="tablinks" id="defaultOpenTab">This Week</button>
 		<button class="tablinks" id="recentTab">Recent</button>
@@ -23,7 +20,7 @@
 			<div class="athleteTab">
 				<h2>Athletes</h2>
 				<div class="athletesNames">
-					<!-- can change this to this and remove the defaultopenuser code in js but need to style this a link to be the same as the just text buttons-->
+					<!-- can change this to this and remove the athleteButton class (not defaultOpenUser) from it but need to style this a link to be the same as the just text buttons-->
 					<!-- <a href="{% url 'profile' user.username %}">{{ user.username }} (You)</a> -->
 					<button class="athleteButton defaultOpenUser" id={{ user.username }}>{{ user.username }} (You)</button>
 					{% for athlete in athletes %}
@@ -35,6 +32,7 @@
 			<div class="noAthletes">
 				<p>{{ user.username }}, you have no athletes! Add athletes by <a href="{% url 'add_athletes' user.username %}">Clicking Here!</a></p>
 			</div>
+			<input type="hidden" class="defaultOpenUser" id={{ user.username }}>
 		{% endif %}
 	{% else %}
 		<input type='hidden' class='defaultOpenUser' value={{ user.username }}>
