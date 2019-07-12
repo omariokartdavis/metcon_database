@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	{% block title %}<title>Metcon Database</title>{% endblock %}
+	{% block title %}<title>{% if user.is_authenticated %}{% if user.requestee.all %}({{ user.requestee.all.count }}){% endif %}{% endif %} Metcon Database</title>{% endblock %}
 	{% load static %}
 	<link rel="stylesheet" href="{% static 'css/base_generic.css' %}">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> <!-- This is for using font awesome icons-->
@@ -96,9 +96,17 @@
 				{% endif %}
 				<span id="right_sidenav_open_button">
 					{% if user.is_authenticated %}
-						{% if user.requestee.all %}<i class="fas fa-bell"></i>{% endif %}
+						{% if user.requestee.all %}<i class="fas fa-user-friends"></i>{% endif %}
 					{% endif %}
 				</span>
+				<div class="notifications">
+					{% if user.is_authenticated %}
+						{% if user.requestee.all %}
+							<i class="fas fa-circle"></i>
+							<p>{{ user.requestee.all.count }}</p>
+						{% endif %}
+					{% endif %}
+				</div>
 				<div class="right-sidebar-nav">
 					<a href="" class="right-sidebar-closebtn" id="right_side_nav_close_button">&times;</a>
 					{% if user.is_authenticated %}
