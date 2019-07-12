@@ -6,13 +6,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
 ## 7/11/19
-(uploaded at work)
-- urls.py
-- views.py
-- base_generic.html
+(uploaded at home)
 - base_generic.css
-- user_page.html
+- base_generic.js
+- base_generic.html
 - user_page.css
+- user_page.html
 
 ## functionality completed on 7/11/19
 - simplified right-sidenav code
@@ -20,6 +19,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - centered page title
 - moved if no athetes to where athletesnames are
 - moved if user has no workouts to each individual tabcontent
+- added notification counter on right nav open button and website title
+- added background color of website and added background color to tabcontent on user page
+- moved elements on user page to be more centered and larger.
+- added eventlistener to notifications counter to open right sidebar
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -51,6 +54,9 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- can create a notifications model
+  - would only hold count of notifications
+  - count can be an aggregate sum of requests currently and later any other things like messages etc.
 - create edit group page to allow changing of group name
   - can also possibly combine add/delete athletes to group on this page
 - can load all future/recent/etc. workouts for all athletes on user_page visit then filter them in template instead of causing
@@ -175,6 +181,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
 
 ## Styling:
+- can add red dot to website icon on browser tab if you have notifications
+  - (just like linkedin)
 - parallax scrolling: https://www.w3schools.com/howto/howto_css_parallax.asp
 - to have scrollbar, add height: somepixels; and overflow-y: auto; 
   - find out how to style scroll bar
