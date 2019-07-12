@@ -1,3 +1,4 @@
+/* all borders count towards total sizes so things may need to be moved 1-2 pixels after positioning is done. */
 .backgroundDim {
 	top: -50px;
 	left: -50px;
@@ -5,7 +6,7 @@
 	width: 10000px;
 	size: fill;
 	position: fixed;
-	z-index: 7;
+	z-index: 12;
 	background-color: black;
 	transition: 0.5s;
 	opacity: 0;
@@ -15,12 +16,16 @@ body {
 	border: 1px solid black;
 }
 
+html {
+	background-color: #e9ebee;
+}
+
 h1 {
 	text-align: center;
 	left: 30%;
 	top: 0;
 	position: fixed;
-	z-index: 8;
+	z-index: 9;
 	width: 40%;
 	border: 1px solid black;
 }
@@ -42,14 +47,14 @@ h1 {
 	width: 100%;
 	z-index: 3;
 	position: relative;
-	height: 70px;
+	height: 62px;
 }
 
 .sidebar-nav {
 	height: 96%;
 	width: 0;
 	position: fixed;
-	z-index: 9;
+	z-index: 15;
 	top: 0;
 	left: 0;
 	background-color: #111;
@@ -79,6 +84,7 @@ h1 {
 	outline: none;
 	margin: 0;
 	border: 1px solid white;
+	font-family: "Times New Roman", Times, serif;
 }
 
 .sidebar-nav a, .sidebar-nav button {
@@ -157,7 +163,6 @@ h1 {
 	left: 17px;
 	width: 30px;
 	font-size: 30px;
-	cursor: pointer;
 	z-index: 6;
 	border: 1px solid black;
 }
@@ -166,7 +171,7 @@ h1 {
 	height: 96%;
 	width: 0;
 	position: fixed;
-	z-index: 9;
+	z-index: 15;
 	top: 0;
 	right: 0;
 	background-color: #111;
@@ -195,6 +200,7 @@ h1 {
 	transition: 0.3s;
 	outline: none;
 	margin: 0;
+	font-family: "Times New Roman", Times, serif;
 	border: 1px solid white;
 }
 
@@ -225,24 +231,48 @@ h1 {
 	position: fixed;
 	top: 15px;
 	right: 15px;
-	width: 40px;
-	height: 15px;
-	z-index: 7;
+	width: 60px;
+	height: 20px;
+	z-index: 8;
 	border: 1px solid black;
 }
 
 #right_sidenav_open_button {
 	position: fixed;
 	top: 22px;
-	right: 20px;
-	width: 30px;
+	right: 25px;
+	width: 40px;
 	font-size: 30px;
 	text-align: center;
 	z-index: 6;
-	color: red;
+	color: black;
 	border: 1px solid black;
 }
 
+.notifications .fa-circle {
+	color: red;
+	font-size: 15px;
+	text-align: center;
+}
+
+.notifications p {
+	z-index: 9;
+	font-size: 10px;
+	text-align: center;
+	color: white;
+	position: relative;
+	bottom: 25px;	
+}
+
+.notifications {
+	position: fixed;
+	top: 17px;
+	right: 20px;
+	z-index: 8;
+	height: 15px;
+	border: 1px solid black;
+}
+	
 .home-search-create-buttons {
 	position: fixed;
 	top: 18px;
