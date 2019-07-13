@@ -5,24 +5,24 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 7/11/19
+## 7/12/19
 (uploaded at home)
-- base_generic.css
-- base_generic.js
-- base_generic.html
 - user_page.css
 - user_page.html
+- user_page.js
+- views.py (only made changes for calendar so far)
+- created utils.py in metcons folder
+- login.html
+- base_generic.html
+- base_generic.css
 
-## functionality completed on 7/11/19
-- simplified right-sidenav code
-- added 3 main buttons at top left of page
-- centered page title
-- moved if no athetes to where athletesnames are
-- moved if user has no workouts to each individual tabcontent
-- added notification counter on right nav open button and website title
-- added background color of website and added background color to tabcontent on user page
-- moved elements on user page to be more centered and larger.
-- added eventlistener to notifications counter to open right sidebar
+## functionality completed on 7/12/19
+- moved tabcontent li and h2/h3 to center of screen on user_page
+- changed tabcontent li to a div and removed all ul's on user_page
+- created calendar on user_page
+  - added previous/next month buttons
+- fixed calendar issue for coaches so coaches can see calendar next/previous month of their athletes
+- added tooltips to 3 main topnav buttons
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -54,6 +54,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- add if request already exists or if user already is coach/athlete so you can't repeat requests that have already happened
+- change workoutinstance_detail so when sent to from calendar it shows only the results from that day
+  - add a show all results button that then shows everything.
+  - may not be able to do this as it is from a <a> get_absolute_url. would need to add a hidden input.
+    - maybe change it to a form link that has action to the get_absolute_url so a hidden input can be included?
+  - have to add in utils.py file in formatday() method f' string.
+- on calendar view
+  - add buttons that switch the view from day/week/month and can see more details of workouts on day/week than on month
 - can create a notifications model
   - would only hold count of notifications
   - count can be an aggregate sum of requests currently and later any other things like messages etc.
@@ -179,8 +187,15 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - create a field on user model that has choices of different sports
   - whatever sport they choose will be their default createworkout model and default workout list to search through
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
+- set up a strength workout model and strength program model
+  - for strength programs, hold info about periodization rules etc. hold training maxes, days of the week when each workout ill be done
 
 ## Styling:
+- wrap the top bar on base generic in the blue div so that they are all fixed
+  - this does not work!
+- style workouts on calendar for if completed or not completed that day
+  - not sure exactly how to get this if statement in there
+- style previous/next month buttons on calendar.
 - can add red dot to website icon on browser tab if you have notifications
   - (just like linkedin)
 - parallax scrolling: https://www.w3schools.com/howto/howto_css_parallax.asp
@@ -214,8 +229,13 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - create a large calendar that holds all past and future workouts by day.
 - infinite scroll:
   - https://simpleisbetterthancomplex.com/tutorial/2017/03/13/how-to-create-infinite-scroll-with-django.html
+- user_page calendar:
+  - https://www.huiwenteo.com/normal/2018/07/24/django-calendar.html
+  - https://alexpnt.github.io/2017/07/15/django-calendar/
   
 # Mobile App:
+- when clicking a workout either on user_page or workout_list, show buttons underneath workout after its touched
+  - just like reddit with "comments, share, ... "etc
 - https://www.quora.com/How-do-we-convert-the-Django-web-application-into-an-Android-app
 - on users this weeks workouts page
   - swipe left/right for different days
