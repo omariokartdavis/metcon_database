@@ -48,17 +48,55 @@ if (athleteButtons) {
   }
 }
 
-window.onload = document.getElementById("defaultOpenTab").click();
+function nextMonth(evt) {
+	var monthYear;
+	monthYear = document.getElementsByClassName("month")[0].innerHTML;
+	var athletes = document.getElementsByClassName("athleteButton");
+	var i;
+	for (i = 0; i < athletes.length; i++) {
+		if (athletes[i].classList.contains("active")) {
+			document.getElementById("chosenAthleteNextMonth").value = athletes[i].id;
+		}
+	}
+	document.getElementById("nextMonthCurrentMonth").value = monthYear;
+	document.getElementById("nextMonthForm").submit();
+}
+
+function previousMonth(evt) {
+	var monthYear;
+	monthYear = document.getElementsByClassName("month")[0].innerHTML;
+	var athletes = document.getElementsByClassName("athleteButton");
+	var i;
+	for (i = 0; i < athletes.length; i++) {
+		if (athletes[i].classList.contains("active")) {
+			document.getElementById("chosenAthletePreviousMonth").value = athletes[i].id;
+		}
+	}
+	document.getElementById("previousMonthCurrentMonth").value = monthYear;
+	document.getElementById("previousMonthForm").submit();
+}
+
+document.getElementById("nextMonthButton").addEventListener("click", nextMonth, false);
+document.getElementById("previousMonthButton").addEventListener("click", previousMonth, false);
 
 window.onload = function() {
   var url_string = window.location.href;
   var url = new URL(url_string);
   var q = url.searchParams.get("q");
+  var z = url.searchParams.get("z");
+  var n = url.searchParams.get("n");
   if (q) {
 	document.getElementById(q).className += " active";
   } else {
 	document.getElementsByClassName("defaultOpenUser")[0].className += " active";
 	//document.getElementsByClassName("defaultOpenUser")[0].click();
+  }
+  if (z) {
+	document.getElementById("calendarTab").click();
+  } else if (n) {
+	document.getElementById("calendarTab").click();
+  } else {
+	document.getElementById("defaultOpenTab").click();
   }
 }
 
