@@ -137,9 +137,50 @@
   border: 1px solid black;
 }
 
-.tabcontent li {
+.tabcontent .workoutContent {
 	background-color: white;
 	border-radius: 5px;
-	padding: 1px;
+	padding-top: 1px;
 	margin-top: 2px;
+	width: 100%;
+
+	border: 1px solid black;
+}
+
+.tabcontent h2, .tabcontent h3 {
+	width: 100%;
+	position: relative;
+	text-align: center;
+	border: 1px solid black;
+}
+
+.calendar {
+	width: 98%;
+	margin: auto;
+	font-size: 13px;
+	background-color: white;
+}
+
+.calendar tr, .calendar td {
+	border: 1px solid black;
+}
+
+.calendar th {
+	padding: 10px;
+	text-align: center;
+	font-size: 18px;
+}
+
+.month {
+	font-size: 25px;
+}
+.date {
+	font-size: 16px;
+}
+
+.listedWorkouts {
+	background-color: white;
+	width: 30%;
+	left: 35%;
+	position: relative;
 }
