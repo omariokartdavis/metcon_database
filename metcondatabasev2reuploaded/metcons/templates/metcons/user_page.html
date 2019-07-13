@@ -62,14 +62,14 @@
 		{% if user.is_coach or user.is_gym_owner %}
 			{% if chosen_users_dict_of_this_weeks_workouts %}
 				{% for k, v in chosen_users_dict_of_this_weeks_workouts.items %}
-					{% if v %}
-						<h3>{{k|date:"l"}}</h3>
-					{% endif %}
-					<ul>
+					<div class="listedWorkouts">
+						{% if v %}
+							<h3>{{k|date:"l"}}</h3>
+						{% endif %}
 						{% for i in v %}
 							{% if i.workout %}
 								{% if i.youngest_scheduled_date %}
-									<li>
+									<div class="workoutContent">
 										{% if i.is_hidden %}
 											{% if i.assigned_by_user != request.user %}
 												<p>Workout Hidden - {% if i.date_to_unhide %}This workout will unhide on {{ i.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
@@ -105,25 +105,25 @@
 											</form>
 											{{ i.edited_workout_text|linebreaks }}</p>
 										{% endif %}
-									</li>
+									</div>
 								{% endif %}
 							{% endif %}
 						{% endfor %}
-					</ul>
+					</div>
 				{% endfor %}
 			{% else %}
 				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled for this week. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 			{% endif %}
 		{% elif dict_of_this_weeks_workouts %}
 			{% for k, v in dict_of_this_weeks_workouts.items %}
-				{% if v %}
-					<h3>{{k|date:"l"}}</h3>
-				{% endif %}
-				<ul>
+				<div class="listedWorkouts">
+					{% if v %}
+						<h3>{{k|date:"l"}}</h3>
+					{% endif %}
 					{% for i in v %}
 						{% if i.workout %}
 							{% if i.youngest_scheduled_date %}
-								<li>
+								<div class="workoutContent">
 									{% if i.is_hidden %}
 										<p>Workout Hidden - {% if i.date_to_unhide %}This workout will unhide on {{ i.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
 									{% else %}
@@ -142,157 +142,24 @@
 										</form>
 										{{ i.edited_workout_text|linebreaks }}</p>
 									{% endif %}
-								</li>
+								</div>
 							{% endif %}
 						{% endif %}
 					{% endfor %}
-				</ul>
+				</div>
 			{% endfor %}
 		{% else %}
 			<p>You have no workouts scheduled for this week. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 		{% endif %}
 	</div>
-	<div id="Calendar" class="tabcontent">
-		{% if user.is_coach or user.is_gym_owner %}
-			{% if chosen_users_long_future_workouts %}
-				<h2>More Than 1 Week Ahead (Not showing workouts that are also scheduled for the current week)</h2>
-				<ul>
-					{% for future_instance in chosen_users_long_future_workouts %}
-						{% if future_instance.workout %}
-							{% if future_instance.youngest_scheduled_date %}
-								<li>
-									{% if future_instance.is_hidden %}
-										{% if future_instance.assigned_by_user != request.user %}
-											<p>Workout Hidden - {% if future_instance.date_to_unhide %}This workout will unhide on {{ future_instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
-										{% else %}
-											<p><a href="{{ future_instance.get_absolute_url }}">{{ future_instance.workout.display_name }}</a>{% if future_instance.edited_workout_text != future_instance.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden{% if future_instance.date_to_unhide %} until {{ future_instance.date_to_unhide|date:"F j, Y" }}.{% else %}, not scheduled to unhide.{% endif %}
-											<br /><strong>Scheduled for: {{ future_instance.youngest_scheduled_date.date_completed|date:"l, F j, Y" }}</strong>
-											<form class="post_workout_form" action="{% url 'edit_schedule' user.username future_instance.id %}">
-												{% csrf_token %}
-												<input type="submit" value="Edit Schedule" name="edit schedule">
-											</form>
-											<form class="post_workout_form" action="{% url 'delete_schedule' user.username future_instance.id %}">
-												{% csrf_token %}
-												<input type="submit" value="Delete Schedule" name="Delete schedule">
-											</form>
-											{{ future_instance.edited_workout_text|linebreaks }}</p>
-										{% endif %}
-									{% else %}
-										<p><a href="{{ future_instance.get_absolute_url }}">{{ future_instance.workout.display_name }}</a>{% if future_instance.edited_workout_text != future_instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-										<br /><strong>Scheduled for: {{ future_instance.youngest_scheduled_date.date_completed|date:"l, F j, Y" }}</strong>
-										<form class="post_workout_form" action="{% url 'edit_schedule' user.username future_instance.id %}">
-											{% csrf_token %}
-											<input type="submit" value="Edit Schedule" name="edit schedule">
-										</form>
-										<form class="post_workout_form" action="{% url 'delete_schedule' user.username future_instance.id %}">
-											{% csrf_token %}
-											<input type="submit" value="Delete Schedule" name="Delete schedule">
-										</form>
-										{{ future_instance.edited_workout_text|linebreaks }}</p>
-									{% endif %}
-								</li>
-							{% endif %}
-						{% endif %}
-					{% endfor %}
-				</ul>
-			{% else %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled further out than 1 week. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-			{% endif %}
-		{% elif long_future_workouts %}
-			<h2>More Than 1 Week Ahead (Not showing workouts that are also scheduled for the current week)</h2>
-			<ul>
-				{% for future_instance in long_future_workouts %}
-					{% if future_instance.workout %}
-						{% if future_instance.youngest_scheduled_date %}
-							<li>
-								{% if future_instance.is_hidden %}
-									<p>Workout Hidden - {% if future_instance.date_to_unhide %}This workout will unhide on {{ future_instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
-								{% else %}
-									<p><a href="{{ future_instance.get_absolute_url }}">{{ future_instance.workout.display_name }}</a>{% if future_instance.edited_workout_text != future_instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-									<br /><strong>Scheduled for: {{ future_instance.youngest_scheduled_date.date_completed|date:"l, F j, Y" }}</strong>
-									<form class="post_workout_form" action="{% url 'edit_schedule' user.username future_instance.id %}">
-										{% csrf_token %}
-										<input type="submit" value="Edit Schedule" name="edit schedule">
-									</form>
-									<form class="post_workout_form" action="{% url 'delete_schedule' user.username future_instance.id %}">
-										{% csrf_token %}
-										<input type="submit" value="Delete Schedule" name="Delete schedule">
-									</form>
-									{{ future_instance.edited_workout_text|linebreaks }}</p>
-								{% endif %}
-							</li>
-						{% endif %}
-					{% endif %}
-				{% endfor %}
-			</ul>
-		{% else %}
-			<p>You have no workouts scheduled further out than 1 week. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-		{% endif %}
-		{% if user.is_coach or user.is_gym_owner %}
-			{% if chosen_users_long_past_workouts %}
-				<h2>Past Workouts</h2>
-				<ul>
-					{% for past_instance in chosen_users_long_past_workouts %}
-						{% if past_instance.workout %}
-							<li>
-								{% if past_instance.is_hidden %}
-									{% if past_instance.assigned_by_user != request.user %}
-										<p>Workout Hidden - {% if past_instance.date_to_unhide %}This workout will unhide on {{ past_instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
-									{% else %}
-										<p><a href="{{ past_instance.get_absolute_url }}">{{ past_instance.workout.display_name }}</a>{% if past_instance.edited_workout_text != past_instance.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden{% if past_instance.date_to_unhide %} until {{ past_instance.date_to_unhide|date:"F j, Y" }}.{% else %}, not scheduled to unhide.{% endif %}
-										<br /><strong>Last Completed On: {{ past_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
-										<form action="{% url 'schedule_instance' user.username past_instance.id %}">
-											<input type="submit" value="Schedule Workout" />
-										</form>
-										{{ past_instance.edited_workout_text|linebreaks }}</p>
-									{% endif %}
-								{% else %}
-									<p><a href="{{ past_instance.get_absolute_url }}">{{ past_instance.workout.display_name }}</a>{% if past_instance.edited_workout_text != past_instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-									<br /><strong>Last Completed On: {{ past_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
-									<form action="{% url 'schedule_instance' user.username past_instance.id %}">
-										<input type="submit" value="Schedule Workout" />
-									</form>
-									{{ past_instance.edited_workout_text|linebreaks }}</p>
-								{% endif %}
-							</li>
-						{% endif %}
-					{% endfor %}
-				</ul>
-			{% else %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} not completed any workouts longer than 2 weeks ago. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-			{% endif %}
-		{% elif long_past_workouts %}
-			<h2>Past Workouts</h2>
-			<ul>
-				{% for past_instance in long_past_workouts %}
-					{% if past_instance.workout %}
-						<li>
-							{% if past_instance.is_hidden %}
-								<p>Workout Hidden - {% if past_instance.date_to_unhide %}This workout will unhide on {{ past_instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
-							{% else %}
-								<p><a href="{{ past_instance.get_absolute_url }}">{{ past_instance.workout.display_name }}</a>{% if past_instance.edited_workout_text != past_instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-								<br /><strong>Last Completed On: {{ past_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
-								<form action="{% url 'schedule_instance' user.username past_instance.id %}">
-									<input type="submit" value="Schedule Workout" />
-								</form>
-								{{ past_instance.edited_workout_text|linebreaks }}</p>
-							{% endif %}
-						</li>
-					{% endif %}
-				{% endfor %}
-			</ul>
-		{% else %}
-			<p>You have not completed any workouts longer than 2 weeks ago. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-		{% endif %}
-	</div>
 	<div id="Recent" class="tabcontent">
 		{% if user.is_coach or user.is_gym_owner %}
 			{% if chosen_users_recent_past_workouts %}
-				<h2>Recent Workouts</h2>
-				<ul>
+				<div class="listedWorkouts">
+					<h2>Recent Workouts</h2>
 					{% for recent_instance in chosen_users_recent_past_workouts %}
 						{% if recent_instance.workout %}
-							<li>
+							<div class="workoutContent">
 								{% if recent_instance.is_hidden %}
 									{% if recent_instance.assigned_by_user != request.user %}
 										<p>Workout Hidden - {% if recent_instance.date_to_unhide %}This workout will unhide on {{ recent_instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
@@ -312,19 +179,19 @@
 									</form>
 									{{ recent_instance.edited_workout_text|linebreaks }}</p>
 								{% endif %}
-							</li>
+							</div>
 						{% endif %}
 					{% endfor %}
-				</ul>
+				</div>
 			{% else %}
 				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} not completed any workouts in the past 2 weeks. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 			{% endif %}
 		{% elif recent_past_workouts %}
-			<h2>Recent Workouts</h2>
-			<ul>
+			<div class="listedWorkouts">
+				<h2>Recent Workouts</h2>
 				{% for recent_instance in recent_past_workouts %}
 					{% if recent_instance.workout %}
-						<li>
+						<div class="workoutContent">
 							{% if recent_instance.is_hidden %}
 								<p>Workout Hidden - {% if recent_instance.date_to_unhide %}This workout will unhide on {{ recent_instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
 							{% else %}
@@ -335,10 +202,10 @@
 								</form>
 								{{ recent_instance.edited_workout_text|linebreaks }}</p>
 							{% endif %}
-						</li>
+						</div>
 					{% endif %}
 				{% endfor %}
-			</ul>
+			</div>
 		{% else %}
 			<p>You have not completed any workouts in the past 2 weeks. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 		{% endif %}
@@ -346,11 +213,11 @@
 	<div id="Incomplete" class="tabcontent">
 		{% if user.is_coach or user.is_gym_owner %}
 			{% if chosen_users_incomplete_workouts %}
-				<h2>Workouts That Haven't Been Completed Or Are Not Scheduled For The Future</h2>
-				<ul>
+				<div class="listedWorkouts">
+					<h2>Pending Wokouts</h2>
 					{% for instance in chosen_users_incomplete_workouts %}
 						{% if instance.workout %}
-							<li>
+							<div class="workoutContent">
 								{% if instance.is_hidden %}
 									{% if instance.assigned_by_user != request.user %}
 										<p>Workout Hidden - {% if instance.date_to_unhide %}This workout will unhide on {{ instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
@@ -382,19 +249,19 @@
 									</form>
 									{{ instance.edited_workout_text|linebreaks }}</p>
 								{% endif %}
-							</li>
+							</div>
 						{% endif %}
 					{% endfor %}
-				</ul>
+				</div>
 			{% else %}
 				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no incomplete workouts. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 			{% endif %}
 		{% elif incomplete_workouts %}
-			<h2>Workouts That Haven't Been Completed Or Are Not Scheduled For The Future</h2>
-			<ul>
+			<div class="listedWorkouts">
+				<h2>Pending Workouts</h2>
 				{% for instance in incomplete_workouts %}
 					{% if instance.workout %}
-						<li>
+						<div class="workoutContent">
 							{% if instance.is_hidden %}
 								<p>Workout Hidden - {% if instance.date_to_unhide %}This workout will unhide on {{ instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
 							{% else %}
@@ -408,12 +275,34 @@
 								</form>
 								{{ instance.edited_workout_text|linebreaks }}</p>
 							{% endif %}
-						</li>
+						</div>
 					{% endif %}
 				{% endfor %}
-			</ul>
+			</div>
 		{% else %}
 			<p>You have no incomplete workouts. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+		{% endif %}
+	</div>
+	<div id="Calendar" class="tabcontent">
+		<div class="next-previous-buttons">
+			<form id="nextMonthForm" method="GET">
+				<input type="hidden" name="z" id="nextMonthCurrentMonth">
+				<input type="hidden" id="chosenAthleteNextMonth" name="q">
+				<button type="submit" id="nextMonthButton">Next Month</button>
+			</form>
+			<form id="previousMonthForm" method="GET">
+				<input type="hidden" name="n" id="previousMonthCurrentMonth">
+				<input type="hidden" id="chosenAthletePreviousMonth" name="q">
+				<button type="submit" id="previousMonthButton">Previous Month</button
+			</form>
+		</div>
+		{{ calendar }} <!-- calendar is for some reason stopping things after it in html from displaying, it used to be before recent workouts and incomplete workouts -->
+		{% if user.is_coach or user.is_gym_owner %}
+			{% if not chosen_users_workouts %}
+				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+			{% endif %}
+		{% elif not users_workouts %}
+			<p>You have no workouts. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
 		{% endif %}
 	</div>
 {% endblock %}
