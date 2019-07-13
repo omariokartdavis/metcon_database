@@ -83,15 +83,21 @@
 						{% endif %}
 					{% endif %}
 				</div>
-				<div class="blankAcrossTop"></div>
 				<div class="relAcrossTop"></div>
-				<span id="side_nav_open_button">&#9776;</span>
 				<div class="backgroundDim"></div>
+				<div class="blankAcrossTop"></div>
+				<span id="side_nav_open_button">&#9776;</span>
 				{% if user.is_authenticated %}
 					<div class="home-search-create-buttons">
-						<a href="{% url 'profile' user.username %}"><i class="fas fa-home"></i></a>
-						<a href="{% url 'workouts' %}"><i class="fas fa-search"></i></a>
-						<a href="{% url 'workout_create' %}"><i class="fas fa-plus-circle"></i></a>
+						<div class="tooltip"><a href="{% url 'profile' user.username %}"><i class="fas fa-home"></i></a>
+							<span class="tooltiptext">User Homepage</span>
+						</div>
+						<div class="tooltip"><a href="{% url 'workouts' %}"><i class="fas fa-search"></i></a>
+							<span class="tooltiptext">Search Workouts</span>
+						</div>
+						<div class="tooltip"><a href="{% url 'workout_create' %}"><i class="fas fa-plus-circle"></i></a>
+							<span class="tooltiptext">Create Workout</span>
+						</div>
 					</div>
 				{% endif %}
 				<span id="right_sidenav_open_button">
