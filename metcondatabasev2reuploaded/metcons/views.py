@@ -11,8 +11,10 @@ from django.utils import timezone
 import datetime as dt
 from django.db.models import Max, Min, Q
 from django.core.paginator import Paginator
-import re
+import re, calendar
 from django.contrib.auth import login, authenticate
+from metcons.utils import Calendar
+from django.utils.safestring import mark_safe
 
 def index(request):
     """View function for home page of site"""
@@ -29,6 +31,7 @@ def index(request):
 def profile(request, username):
     #if there isn't a completed date it is last then filtered by date_added_by_user
     #long future workouts is 1 week forward, long past workouts is 2 weeks back
+    this_user = request.user
     users_workouts = WorkoutInstance.objects.filter(current_user=request.user)
     request_list = Request.objects.filter(requestee=request.user, is_confirmed=False)
 
@@ -72,7 +75,7 @@ def profile(request, username):
     workouts_with_no_results_yesterday = WorkoutInstance.objects.filter(current_user=request.user,
                                                                         dates_to_be_completed__date_completed=yesterday).exclude(
                                                                             dates_workout_completed__date_completed=yesterday).distinct().order_by('-youngest_scheduled_date')
-
+    
     context = {
         'users_workouts': users_workouts,
         'long_future_workouts': long_future_workouts,
@@ -107,6 +110,8 @@ def profile(request, username):
                 chosen_user = User.objects.get(username=query1)
             else:
                 chosen_user = User.objects.get(username=request.user.username)
+            this_user = chosen_user
+            chosen_users_workouts = WorkoutInstance.objects.filter(current_user=chosen_user)
             chosen_users_incomplete_workouts = WorkoutInstance.objects.filter(current_user=chosen_user,
                                                 youngest_scheduled_date=None,
                                                 dates_workout_completed=None).distinct().order_by('date_added_by_user')
@@ -136,13 +141,40 @@ def profile(request, username):
                 if query_of_date:
                     chosen_users_dict_of_this_weeks_workouts[date_to_check] = query_of_date
                 date_to_check += timezone.timedelta(days=1)
-            
+
             context['chosen_users_incomplete_workouts'] = chosen_users_incomplete_workouts
             context['chosen_users_long_future_workouts'] = chosen_users_long_future_workouts
             context['chosen_users_recent_past_workouts'] = chosen_users_recent_past_workouts
             context['chosen_users_long_past_workouts'] = chosen_users_long_past_workouts
             context['chosen_users_dict_of_this_weeks_workouts'] = chosen_users_dict_of_this_weeks_workouts
             context['chosen_user'] = chosen_user
+            context['chosen_users_workouts'] = chosen_users_workouts
+
+    month = now.month
+    year = now.year
+    if request.method == "GET":
+        if 'z' in request.GET:
+            current_month_string = request.GET.get('z')
+            current_month_datetime = dt.datetime.strptime(current_month_string, '%B %Y')
+            current_month_value = current_month_datetime.month
+            year = current_month_datetime.year
+            month = current_month_value + 1
+            if month == 13:
+                year = year + 1
+                month = 1
+        elif 'n' in request.GET:
+            current_month_string = request.GET.get('n')
+            current_month_datetime = dt.datetime.strptime(current_month_string, '%B %Y')
+            current_month_value = current_month_datetime.month
+            year = current_month_datetime.year
+            month = current_month_value - 1
+            if month == 0:
+                year = year - 1
+                month = 12
+            
+    cal = Calendar(year, month, this_user)
+    html_cal = cal.formatmonth(withyear=True)   
+    context['calendar'] = mark_safe(html_cal)
         
     return render(request, 'metcons/user_page.html', context=context)
 
