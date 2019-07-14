@@ -64,7 +64,7 @@
 				{% for k, v in chosen_users_dict_of_this_weeks_workouts.items %}
 					<div class="listedWorkouts">
 						{% if v %}
-							<h3>{{k|date:"l"}}</h3>
+							<h2>{{k|date:"l"}}</h2>
 						{% endif %}
 						{% for i in v %}
 							{% if i.workout %}
@@ -72,22 +72,98 @@
 									<div class="workoutContent">
 										{% if i.is_hidden %}
 											{% if i.assigned_by_user != request.user %}
-												<p>Workout Hidden - {% if i.date_to_unhide %}This workout will unhide on {{ i.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
+												{% if i.date_to_unhide %}
+													{% if k >= i.date_to_unhide %}
+														{% if k != now %}
+															<p>Workout Hidden - This workout will unhide on {{ i.date_to_unhide|date:"F j, Y" }}.</p>
+														{% else %}
+															<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+															<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+																{% csrf_token %}
+																<input type="submit" value="Add Result" name="add result">
+															</form>
+															<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+																{% csrf_token %}
+																<input type="submit" value="Edit Schedule" name="edit schedule">
+															</form>
+															<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+																{% csrf_token %}
+																<input type="submit" value="Delete Schedule" name="Delete schedule">
+															</form>
+															{{ i.edited_workout_text|linebreaks }}</p>
+														{% endif %}
+													{% else %}
+														<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Add Result" name="add result">
+														</form>
+														<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Edit Schedule" name="edit schedule">
+														</form>
+														<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Delete Schedule" name="Delete schedule">
+														</form>
+														{{ i.edited_workout_text|linebreaks }}</p>
+													{% endif %}
+												{% else %}
+													<p>Workout Hidden - This workout is not scheduled to unhide.
+												{% endif %}
 											{% else %}
-												<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden{% if i.date_to_unhide %} until {{ i.date_to_unhide|date:"F j, Y" }}.{% else %}, not scheduled to unhide.{% endif %}
-												<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-													{% csrf_token %}
-													<input type="submit" value="Add Result" name="add result">
-												</form>
-												<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-													{% csrf_token %}
-													<input type="submit" value="Edit Schedule" name="edit schedule">
-												</form>
-												<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-													{% csrf_token %}
-													<input type="submit" value="Delete Schedule" name="Delete schedule">
-												</form>
-												{{ i.edited_workout_text|linebreaks }}</p>
+												{% if i.date_to_unhide %}
+													{% if k >= i.date_to_unhide %}
+														{% if k != now %}
+															<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden until {{ i.date_to_unhide|date:"F j, Y" }}.
+														{% else %}
+															<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														{% endif %}
+														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Add Result" name="add result">
+														</form>
+														<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Edit Schedule" name="edit schedule">
+														</form>
+														<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Delete Schedule" name="Delete schedule">
+														</form>
+														{{ i.edited_workout_text|linebreaks }}</p>
+													{% else %}
+														<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Add Result" name="add result">
+														</form>
+														<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Edit Schedule" name="edit schedule">
+														</form>
+														<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Delete Schedule" name="Delete schedule">
+														</form>
+														{{ i.edited_workout_text|linebreaks }}</p>
+													{% endif %}
+												{% else %}
+													<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden, not scheduled to unhide.
+													<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+														{% csrf_token %}
+														<input type="submit" value="Add Result" name="add result">
+													</form>
+													<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+														{% csrf_token %}
+														<input type="submit" value="Edit Schedule" name="edit schedule">
+													</form>
+													<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+														{% csrf_token %}
+														<input type="submit" value="Delete Schedule" name="Delete schedule">
+													</form>
+													{{ i.edited_workout_text|linebreaks }}</p>
+												{% endif %}
 											{% endif %}
 										{% else %}
 											<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
@@ -118,14 +194,69 @@
 			{% for k, v in dict_of_this_weeks_workouts.items %}
 				<div class="listedWorkouts">
 					{% if v %}
-						<h3>{{k|date:"l"}}</h3>
+						<h2>{{k|date:"l"}}</h2>
 					{% endif %}
 					{% for i in v %}
 						{% if i.workout %}
 							{% if i.youngest_scheduled_date %}
 								<div class="workoutContent">
 									{% if i.is_hidden %}
-										<p>Workout Hidden - {% if i.date_to_unhide %}This workout will unhide on {{ i.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
+										{% if i.assigned_by_user != request.user %}
+											{% if i.date_to_unhide %}
+												{% if k >= i.date_to_unhide %}
+													{% if k != now %}
+														<p>Workout Hidden - This workout will unhide on {{ i.date_to_unhide|date:"F j, Y" }}.</p>
+													{% else %}
+														<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Add Result" name="add result">
+														</form>
+														<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Edit Schedule" name="edit schedule">
+														</form>
+														<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+															{% csrf_token %}
+															<input type="submit" value="Delete Schedule" name="Delete schedule">
+														</form>
+														{{ i.edited_workout_text|linebreaks }}</p>
+													{% endif %}
+												{% else %}
+													<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+													<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+														{% csrf_token %}
+														<input type="submit" value="Add Result" name="add result">
+													</form>
+													<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+														{% csrf_token %}
+														<input type="submit" value="Edit Schedule" name="edit schedule">
+													</form>
+													<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+														{% csrf_token %}
+														<input type="submit" value="Delete Schedule" name="Delete schedule">
+													</form>
+													{{ i.edited_workout_text|linebreaks }}</p>
+												{% endif %}
+											{% else %}
+												<p>Workout Hidden - This workout is not scheduled to unhide.</p>
+											{% endif %}
+										{% else %}
+											<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+											<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+												{% csrf_token %}
+												<input type="submit" value="Add Result" name="add result">
+											</form>
+											<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+												{% csrf_token %}
+												<input type="submit" value="Edit Schedule" name="edit schedule">
+											</form>
+											<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+												{% csrf_token %}
+												<input type="submit" value="Delete Schedule" name="Delete schedule">
+											</form>
+											{{ i.edited_workout_text|linebreaks }}</p>
+										{% endif %}
 									{% else %}
 										<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 										<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
@@ -160,25 +291,12 @@
 					{% for recent_instance in chosen_users_recent_past_workouts %}
 						{% if recent_instance.workout %}
 							<div class="workoutContent">
-								{% if recent_instance.is_hidden %}
-									{% if recent_instance.assigned_by_user != request.user %}
-										<p>Workout Hidden - {% if recent_instance.date_to_unhide %}This workout will unhide on {{ recent_instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
-									{% else %}
-										<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>{% if recent_instance.edited_workout_text != recent_instance.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden{% if recent_instance.date_to_unhide %} until {{ recent_instance.date_to_unhide|date:"F j, Y" }}.{% else %}, not scheduled to unhide.{% endif %}
-										<br /><strong>Last Completed On: {{ recent_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
-										<form action="{% url 'schedule_instance' user.username recent_instance.id %}">
-											<input type="submit" value="Schedule Workout" />
-										</form>
-										{{ recent_instance.edited_workout_text|linebreaks }}</p>
-									{% endif %}
-								{% else %}
-									<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>{% if recent_instance.edited_workout_text != recent_instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-									<br /><strong>Last Completed On: {{ recent_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
-									<form action="{% url 'schedule_instance' user.username recent_instance.id %}">
-										<input type="submit" value="Schedule Workout" />
-									</form>
-									{{ recent_instance.edited_workout_text|linebreaks }}</p>
-								{% endif %}
+								<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>{% if recent_instance.edited_workout_text != recent_instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
+								<br /><strong>Last Completed On: {{ recent_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
+								<form action="{% url 'schedule_instance' user.username recent_instance.id %}">
+									<input type="submit" value="Schedule Workout" />
+								</form>
+								{{ recent_instance.edited_workout_text|linebreaks }}</p>
 							</div>
 						{% endif %}
 					{% endfor %}
@@ -192,16 +310,12 @@
 				{% for recent_instance in recent_past_workouts %}
 					{% if recent_instance.workout %}
 						<div class="workoutContent">
-							{% if recent_instance.is_hidden %}
-								<p>Workout Hidden - {% if recent_instance.date_to_unhide %}This workout will unhide on {{ recent_instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
-							{% else %}
-								<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>{% if recent_instance.edited_workout_text != recent_instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-								<br /><strong>Last Completed On: {{ recent_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
-								<form action="{% url 'schedule_instance' user.username recent_instance.id %}">
-									<input type="submit" value="Schedule Workout" />
-								</form>
-								{{ recent_instance.edited_workout_text|linebreaks }}</p>
-							{% endif %}
+							<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>{% if recent_instance.edited_workout_text != recent_instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
+							<br /><strong>Last Completed On: {{ recent_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
+							<form action="{% url 'schedule_instance' user.username recent_instance.id %}">
+								<input type="submit" value="Schedule Workout" />
+							</form>
+							{{ recent_instance.edited_workout_text|linebreaks }}</p>
 						</div>
 					{% endif %}
 				{% endfor %}
@@ -218,37 +332,18 @@
 					{% for instance in chosen_users_incomplete_workouts %}
 						{% if instance.workout %}
 							<div class="workoutContent">
-								{% if instance.is_hidden %}
-									{% if instance.assigned_by_user != request.user %}
-										<p>Workout Hidden - {% if instance.date_to_unhide %}This workout will unhide on {{ instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
-									{% else %}
-										<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>{% if instance.edited_workout_text != instance.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden{% if instance.date_to_unhide %} until {{ instance.date_to_unhide|date:"F j, Y" }}.{% else %}, not scheduled to unhide.{% endif %}
-										<form class="post_workout_form" action="{% url 'result_create' user.username instance.id %}">
-											{% csrf_token %}
-											<input type="submit" value="Add Result" name="add result">
-										</form>
-										<form action="{% url 'schedule_instance' user.username instance.id %}">
-											<input type="submit" value="Schedule Workout" />
-										</form>
-										<form action="{% url 'delete_instance' user.username instance.id %}">
-											<input type="submit" value="Delete Workout" />
-										</form>
-										{{ instance.edited_workout_text|linebreaks }}</p>
-									{% endif %}
-								{% else %}
-									<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>{% if instance.edited_workout_text != instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-									<form class="post_workout_form" action="{% url 'result_create' user.username instance.id %}">
-										{% csrf_token %}
-										<input type="submit" value="Add Result" name="add result">
-									</form>
-									<form action="{% url 'schedule_instance' user.username instance.id %}">
-										<input type="submit" value="Schedule Workout" />
-									</form>
-									<form action="{% url 'delete_instance' user.username instance.id %}">
-										<input type="submit" value="Delete Workout" />
-									</form>
-									{{ instance.edited_workout_text|linebreaks }}</p>
-								{% endif %}
+								<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>{% if instance.edited_workout_text != instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
+								<form class="post_workout_form" action="{% url 'result_create' user.username instance.id %}">
+									{% csrf_token %}
+									<input type="submit" value="Add Result" name="add result">
+								</form>
+								<form action="{% url 'schedule_instance' user.username instance.id %}">
+									<input type="submit" value="Schedule Workout" />
+								</form>
+								<form action="{% url 'delete_instance' user.username instance.id %}">
+									<input type="submit" value="Delete Workout" />
+								</form>
+								{{ instance.edited_workout_text|linebreaks }}</p>
 							</div>
 						{% endif %}
 					{% endfor %}
@@ -262,19 +357,15 @@
 				{% for instance in incomplete_workouts %}
 					{% if instance.workout %}
 						<div class="workoutContent">
-							{% if instance.is_hidden %}
-								<p>Workout Hidden - {% if instance.date_to_unhide %}This workout will unhide on {{ instance.date_to_unhide|date:"F j, Y" }}.{% else %}This workout is not scheduled to unhide.{% endif %}</p>
-							{% else %}
-								<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>{% if instance.edited_workout_text != instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-								<form class="post_workout_form" action="{% url 'result_create' user.username instance.id %}">
-									{% csrf_token %}
-									<input type="submit" value="Add Result" name="add result">
-								</form>
-								<form action="{% url 'schedule_instance' user.username instance.id %}">
-									<input type="submit" value="Schedule Workout" />
-								</form>
-								{{ instance.edited_workout_text|linebreaks }}</p>
-							{% endif %}
+							<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>{% if instance.edited_workout_text != instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
+							<form class="post_workout_form" action="{% url 'result_create' user.username instance.id %}">
+								{% csrf_token %}
+								<input type="submit" value="Add Result" name="add result">
+							</form>
+							<form action="{% url 'schedule_instance' user.username instance.id %}">
+								<input type="submit" value="Schedule Workout" />
+							</form>
+							{{ instance.edited_workout_text|linebreaks }}</p>
 						</div>
 					{% endif %}
 				{% endfor %}
