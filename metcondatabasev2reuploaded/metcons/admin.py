@@ -30,6 +30,16 @@ class UserProfileAdmin(UserAdmin):
 
 admin.site.register(Classification)
 
+@admin.register(Request)
+class RequestAdmin(admin.ModelAdmin):
+    list_display = ('requestor',
+                    'requestee',
+                    'date_requested',
+                    'is_adding_athlete',
+                    'is_adding_coach',
+                    'is_adding_gymowner',
+                    )
+    
 @admin.register(Athlete)
 class AthleteAdmin(admin.ModelAdmin):
     list_display = ('user',
