@@ -5,10 +5,12 @@ from django.utils import timezone
 import datetime as dt
 
 class Calendar(HTMLCalendar):
-    def __init__(self, year=None, month=None, this_user=None):
+    def __init__(self, year=None, month=None, calendar_user=None, viewing_user=None, now=None):
         self.year = year
         self.month = month
-        self.this_user = this_user
+        self.calendar_user = calendar_user
+        self.viewing_user = viewing_user
+        self.now = now
         super(Calendar, self).__init__()
 
     # formats a day as a td
@@ -25,6 +27,29 @@ class Calendar(HTMLCalendar):
                                                  Q(dates_workout_completed__date_completed=date)).distinct()
             d = ''
             for instance in instances_per_day:
+                if instance.is_hidden:
+                    if instance.assigned_by_user != self.viewing_user:
+                        if instance.date_to_unhide:
+                            if date >= instance.date_to_unhide:
+                                if date != self.now:
+                                    d+= f'<li>Workout Hidden</li>'
+                                else:
+                                    d += f'<li><a href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></li>'
+                            else:
+                                d += f'<li><a href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></li>'
+                        else:
+                            d+= f'<li>Workout Hidden</li>'
+                    elif instance.date_to_unhide:
+                        if date >= instance.date_to_unhide:
+                            if date != self.now:
+                                d += f'<li><a href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} - Hidden </a></li>'
+                            else:
+                                d += f'<li><a href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></li>'
+                        else:
+                            d += f'<li><a href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></li>'
+                    else:
+                        d += f'<li><a href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} - Hidden No Unhide </a></li>'
+                else:
                     d += f'<li><a href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></li>'
             return f"<td><span class='date'>{day}</span><ul> {d} </ul></td>"
         return '<td></td>'
@@ -39,8 +64,8 @@ class Calendar(HTMLCalendar):
     # formats a month as a table
     # filter instances by year and month
     def formatmonth(self, withyear=True):
-        instances = WorkoutInstance.objects.filter(Q(current_user=self.this_user, dates_to_be_completed__date_completed__year=self.year, dates_to_be_completed__date_completed__month=self.month) |
-                                                   Q(current_user=self.this_user, dates_workout_completed__date_completed__year=self.year, dates_workout_completed__date_completed__month=self.month)).distinct()
+        instances = WorkoutInstance.objects.filter(Q(current_user=self.calendar_user, dates_to_be_completed__date_completed__year=self.year, dates_to_be_completed__date_completed__month=self.month) |
+                                                   Q(current_user=self.calendar_user, dates_workout_completed__date_completed__year=self.year, dates_workout_completed__date_completed__month=self.month)).distinct()
 
         cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
