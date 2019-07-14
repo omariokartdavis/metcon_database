@@ -91,9 +91,7 @@ window.onload = function() {
 	document.getElementsByClassName("defaultOpenUser")[0].className += " active";
 	//document.getElementsByClassName("defaultOpenUser")[0].click();
   }
-  if (z) {
-	document.getElementById("calendarTab").click();
-  } else if (n) {
+  if (z || n) {
 	document.getElementById("calendarTab").click();
   } else {
 	document.getElementById("defaultOpenTab").click();
