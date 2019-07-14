@@ -43,7 +43,7 @@
 			{% endif %}
 			{% if user.is_coach or user.is_gym_owner %}{% if workoutinstance.is_hidden %}Hidden - will unhide to athletes on: {% if workoutinstance.date_to_unhide %}{{ workoutinstance.date_to_unhide|date:"F j, Y" }}{% else %}Never{% endif %}{% endif %}{% endif %}</p>
 			<p><strong>Description:</strong> {{ workoutinstance.edited_workout_text|linebreaks }}</p>
-			<p><strong>Scaling:</strong> {{ workoutinstance.edited_scaling_text|linebreaks }}</p>
+			<p><strong>Scaling/Comments:</strong> {{ workoutinstance.edited_scaling_text|linebreaks }}</p>
 			<p><strong>Duration:</strong> {% if duration_minutes == 0 and duration_seconds == 0 %} No Results {% endif %}{% if duration_minutes > 0 %}{{ duration_minutes }} minutes {% endif %}{% if duration_seconds > 0 %} {{ duration_seconds }} seconds {% endif %}</p>
 			<p><strong>Number of Times You've Completed:</strong> {{ workoutinstance.number_of_times_completed }}</p>
 			
