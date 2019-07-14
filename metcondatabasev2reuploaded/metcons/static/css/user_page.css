@@ -37,12 +37,13 @@
   background-color: white;
   width: 80%;
   height: 50px;
-  top: 71px;
+  top: 72px;
   position: fixed;
   left: 10%;
   z-index: 5;
   opacity: 1;
-  border: 1px solid black;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+  border-radius: 0 5px 5px 0;
 }
 
 .tab button {
@@ -60,23 +61,24 @@
 
 .athleteTab {
   left: 0;
-  top: 71px;
+  top: 72px;
   position: fixed;
-  background-color: #f1f1f1;
+  background-color: white;
   width: 10%;
   height: 50px;
   z-index: 5;
-  border: 1px solid black;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15);
 }
 
 .athletesNames {
   left: 0;
-  top: 122px;
+  top: 123px;
   position: fixed;
   overflow: hidden;
   background-color: #f1f1f1;
   width: 10%;
-  border: 1px solid black;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+  border-radius: 0 0 5px 5px;
 }
 
 .athletesNames:hover {
@@ -84,7 +86,7 @@
 }
 
 .athleteTab button {
-  background-color: inherit;
+  background-color: white;
   float: left;
   border: none;
   outline: none;
@@ -106,7 +108,7 @@
 }
 
 .athleteTab button.active {
-  background-color: #ccc;
+  background-color: #e9ebee;
 }
 
 .noAthletes {
@@ -134,24 +136,35 @@
   position: absolute;
   z-index: 1;
   width: 80%;
-  border: 1px solid black;
+  /*border: 1px solid black;*/
+  margin-bottom: 50px; /*adds space from last workout to bottom of page */
 }
 
 .tabcontent .workoutContent {
 	background-color: white;
 	border-radius: 5px;
 	padding-top: 1px;
-	margin-top: 2px;
+	padding-bottom: 1px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 	width: 100%;
-
-	border: 1px solid black;
+	/*border: 1px solid black;*/
+	box-shadow: 0 0 0 1px rgba(0,0,0,.15);
 }
 
-.tabcontent h2, .tabcontent h3 {
+.tabcontent h2 {
 	width: 100%;
 	position: relative;
 	text-align: center;
-	border: 1px solid black;
+	/*border: 1px solid black;*/
+	box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+	background-color: white;
+	border-radius: 5px;
+}
+
+.workoutContent p, .workoutContent form {
+	position: relative;
+	left: 10px;
 }
 
 .calendar {
@@ -159,10 +172,28 @@
 	margin: auto;
 	font-size: 13px;
 	background-color: white;
+	border-radius: 5px;
+	box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+	/*border: 1px solid black;*/
+	position: relative;
+	top: 20px;
 }
 
-.calendar tr, .calendar td {
-	border: 1px solid black;
+/* .calendar tr is the top headers (month, days of the week) .calendar td are the cells for the days of the month in the calendar */
+.calendar td, calendar tr {
+	box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+	/*border: 1px solid black;*/
+	border-radius: 5px;
+}
+
+.calendar td {
+	height: 95px;
+	width: 200px;
+	padding: 20px 0px 0px 5px;
+}
+.calendar ul {
+	height: 100%;
+	padding: 0px 5px 0px 20px;
 }
 
 .calendar th {
@@ -174,13 +205,44 @@
 .month {
 	font-size: 25px;
 }
+
 .date {
 	font-size: 16px;
+	position: relative;
+	top: 5px;
 }
 
 .listedWorkouts {
-	background-color: white;
+	background-color: transparent; /*white;*/
 	width: 30%;
 	left: 35%;
 	position: relative;
+	/*box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2); /*this is the linked in border shadow effect */
+	border-radius: 5px;
+}
+
+.next-previous-buttons {
+	position: relative;
+	top: 20px;
+	z-index: 1;
+}
+
+.next-previous-buttons #nextMonthButton, .next-previous-buttons #previousMonthButton {
+	position: absolute;
+	top: 10px;
+	color: black;
+	border-radius: 4px;
+	background-color: transparent;
+	box-shadow: 0 0 0 0, 0 2px 3px rgba(0,0,0,.2); /*can get rid of after comma to get rid of shadow*/
+	outline: none;
+	border: 1px solid rgba(0,0,0,.15);
+	font-size: 13px;
+}
+
+.next-previous-buttons #nextMonthButton {
+	right: 20px;
+}
+
+.next-previous-buttons #previousMonthButton {
+	left: 20px;
 }
