@@ -19,7 +19,7 @@
 	
 	<h3>Date Created: {{ workout.date_created|date:"F j, Y" }}</h3>
 	<p><strong>Description:</strong> {{ workout.workout_text|linebreaks }}</p>
-	<p><strong>Scaling:</strong> {{ workout.scaling_or_description_text|linebreaks }}</p>
+	<p><strong>Scaling/Comments:</strong> {{ workout.scaling_or_description_text|linebreaks }}</p>
 	<p><strong>Estimated Duration:</strong> {{ estimated_duration }} minutes</p>
 	<p><strong>Number of Times Completed:</strong> {{ workout.number_of_times_completed }}</p>
 	
