@@ -85,6 +85,7 @@ def profile(request, username):
         'dict_of_this_weeks_workouts': dict_of_this_weeks_workouts,
         'workouts_with_no_results_yesterday': workouts_with_no_results_yesterday,
         'request_list': request_list,
+        'now': now,
         }
 
     if Athlete.objects.filter(user=request.user):
@@ -92,18 +93,14 @@ def profile(request, username):
         context['coaches'] = coaches
         
     if request.user.is_coach or request.user.is_gym_owner:
-        athletes = request.user.coach.athletes.all()
+        athletes = request.user.coach.athletes.all() #.order_by('user') adding this here will order properly but they will be ordered diferrently than the sidebar nav because I can't order there
         gym_owner = request.user.athlete.gym_owner
         groups = request.user.coach.group_set.all()
         
-        all_workouts_from_all_athletes = []
-        for i in athletes:
-            all_workouts_from_all_athletes += i.user.workoutinstance_set.all()
-
         context['athletes'] = athletes
         context['gym_owner'] = gym_owner
         context['groups'] = groups
-        context['all_workouts_from_all_athletes'] = all_workouts_from_all_athletes #currently not used in template
+
         if request.method == 'GET':
             if 'q' in request.GET:
                 query1 = request.GET.get('q')
@@ -172,7 +169,7 @@ def profile(request, username):
                 year = year - 1
                 month = 12
             
-    cal = Calendar(year, month, this_user)
+    cal = Calendar(year, month, this_user, request.user, now)
     html_cal = cal.formatmonth(withyear=True)   
     context['calendar'] = mark_safe(html_cal)
         
@@ -187,9 +184,9 @@ def add_athletes_to_coach(request, username):
             form = AddAthleteToCoachForm(request.POST)
             if form.is_valid():
                 user_athlete_to_add = User.objects.get(username=form.cleaned_data['athlete_username'])
-                user_athlete_to_add_profile = Athlete.objects.get(user=user_athlete_to_add)
 
-                Request.objects.create(requestee=user_athlete_to_add, requestor=user, is_adding_athlete=True)
+                if user_athlete_to_add.athlete not in user.coach.athletes.all() and not Request.objects.filter(requestee=user_athlete_to_add, requestor=user, is_adding_athlete=True) and not Request.objects.filter(requestee=user, requestor=user_athlete_to_add, is_adding_coach=True):
+                    Request.objects.create(requestee=user_athlete_to_add, requestor=user, is_adding_athlete=True)
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -202,40 +199,6 @@ def add_athletes_to_coach(request, username):
 
     return render(request, 'metcons/add_athlete_page.html', context=context)
 
-## no longer needed due to remove_coach_or_athlete in sidebar
-##@login_required
-##def remove_athletes_from_coach(request, username):
-##    coach_user = request.user
-##    athletes = coach_user.coach.athletes.all()
-##
-##    if request.method == 'POST':
-##        if 'remove athletes from coach' in request.POST:
-##            form = RemoveAthleteFromCoachForm(request.POST)
-##            athlete_to_remove = request.POST.getlist('athlete_to_remove')
-##            form.fields['athlete_to_remove'].choices = [(i, i) for i in athlete_to_remove]
-##            if form.is_valid():
-##                for i in form.cleaned_data['athlete_to_remove']:
-##                    user = User.objects.get(username=i)
-##                    if coach_user.coach.group_set.filter(athletes=user.athlete).exists():
-##                        for group in coach_user.coach.group_set.filter(athletes=user.athlete):
-##                            group.athletes.remove(user.athlete)
-##                            if not group.athletes.all():
-##                                group.delete()
-##                    coach_user.coach.athletes.remove(user.athlete)
-##
-##                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
-##
-##    else:
-##        form = RemoveAthleteFromCoachForm()
-##        if request.user.is_coach or request.user.is_gym_owner:
-##            form.fields['athlete_to_remove'].choices = [(athlete.user.username, athlete.user.username) for athlete in athletes]
-##
-##    context = {
-##        'form': form,
-##        'athletes': athletes,
-##        }
-##
-##    return render(request, 'metcons/remove_athletes_from_coach.html', context=context)
 
 @login_required
 def create_group(request, username):
@@ -372,17 +335,16 @@ def remove_athletes_from_group(request, username, pk):
 @login_required
 def add_coach(request, username):
     athlete_user = User.objects.get(username=request.user.username)
-    athlete_user_athlete_profile = Athlete.objects.get(user=athlete_user)
 
     if request.method == 'POST':
         if 'add coach by username' in request.POST:
             form = AddCoachForm(request.POST)
             if form.is_valid():
                 coach_to_add = User.objects.get(username=form.cleaned_data['coach_username'])
-                coach_to_add_coach_profile = Coach.objects.get(user=coach_to_add)
                 
-                Request.objects.create(requestee=coach_to_add, requestor = athlete_user, is_adding_coach=True)
-
+                if athlete_user.athlete not in coach_to_add.coach.athletes.all() and not Request.objects.filter(requestee=athlete_user, requestor=coach_to_add, is_adding_athlete=True) and not Request.objects.filter(requestee=coach_to_add, requestor=athlete_user, is_adding_coach=True):
+                    Request.objects.create(requestee=coach_to_add, requestor=athlete_user, is_adding_coach=True)
+                    
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
     else:
@@ -394,35 +356,6 @@ def add_coach(request, username):
         }
 
     return render(request, 'metcons/add_coach_page.html', context=context)
-
-## no longer needed due to remove_coach_or_athlete in sidebar
-##@login_required
-##def remove_coaches_from_athlete(request, username):
-##    athlete_user = request.user
-##    coaches = athlete_user.athlete.coach_set.all()
-##
-##    if request.method == 'POST':
-##        if 'remove coaches from athlete' in request.POST:
-##            form = RemoveCoachFromAthleteForm(request.POST)
-##            coach_to_remove = request.POST.getlist('coach_to_remove')
-##            form.fields['coach_to_remove'].choices = [(i, i) for i in coach_to_remove]
-##            if form.is_valid():
-##                for i in form.cleaned_data['coach_to_remove']:
-##                    coach_user = User.objects.get(username=i)
-##                    coach_user.coach.athletes.remove(athlete_user.athlete)
-##
-##                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
-##
-##    else:
-##        form = RemoveCoachFromAthleteForm()
-##        form.fields['coach_to_remove'].choices = [(coach.user.username, coach.user.username) for coach in coaches]
-##
-##    context = {
-##        'form': form,
-##        'coaches': coaches,
-##        }
-##
-##    return render(request, 'metcons/remove_coaches_from_athlete.html', context=context)
 
 @login_required
 def remove_coach_or_athlete(request, username):
@@ -462,17 +395,6 @@ def remove_coach_or_athlete(request, username):
             context['remove_athlete'] = remove_athlete    
 
     return render(request, 'metcons/remove_coach_or_athlete.html', context=context)
-        
-##@login_required
-##def request_list_view(request, username):
-##    user = User.objects.get(username=request.user.username)
-##    request_list = Request.objects.filter(requestee=request.user, is_confirmed=False)
-##
-##    context = {
-##        'request_list': request_list,
-##        }
-##
-##    return render(request, 'metcons/request_list.html', context=context)
 
 @login_required
 def request_detail(request, username, pk):
@@ -486,16 +408,15 @@ def request_detail(request, username, pk):
                 coach_user_profile = coach_user.coach
                 athlete_user = specific_request.requestee
                 athlete_user_profile = athlete_user.athlete
-                coach_user_profile.athletes.add(athlete_user_profile)
             elif specific_request.is_adding_coach:
                 athlete_user = specific_request.requestor
                 athlete_user_profile = athlete_user.athlete
                 coach_user = specific_request.requestee
                 coach_user_profile = coach_user.coach
+            if athlete_user_profile not in coach_user_profile.athletes.all():
                 coach_user_profile.athletes.add(athlete_user_profile)
-            specific_request.delete()
-        elif 'deny' in request.POST:
-            specific_request.delete()
+        specific_request.delete()
+
 
         return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
         
