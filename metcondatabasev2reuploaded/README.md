@@ -5,24 +5,26 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 7/12/19
+## 7/13/19
 (uploaded at home)
-- user_page.css
+- views.py
+- admin.py
+- utils.py
 - user_page.html
+- user_page.css
 - user_page.js
-- views.py (only made changes for calendar so far)
-- created utils.py in metcons folder
-- login.html
-- base_generic.html
-- base_generic.css
+- workout_detail.html
+- workoutinstance_detail.html
 
-## functionality completed on 7/12/19
-- moved tabcontent li and h2/h3 to center of screen on user_page
-- changed tabcontent li to a div and removed all ul's on user_page
-- created calendar on user_page
-  - added previous/next month buttons
-- fixed calendar issue for coaches so coaches can see calendar next/previous month of their athletes
-- added tooltips to 3 main topnav buttons
+## functionality completed on 7/13/19
+- add if request already exists or if user already is coach/athlete so you can't repeat requests that have already happened
+- deleted code for add athlete/remove athlete selector views and request list view
+- added request to admin
+- add if workout is hidden to calendar in utils.py
+  - need to fix if coach is viewing it vs if user is viewing it.
+- fixed: currently if a workout is scheduled multiple times during the week and is hidden for a later date, 
+    none of them will show up until the later date
+- all hidden workouts should now show or hide properly on this week and calendar.
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -54,7 +56,13 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- add if request already exists or if user already is coach/athlete so you can't repeat requests that have already happened
+- create '...' button on right of workoutcontent box that gives a popup/dropdown of form buttons for that workout
+  - schedule, add result, delete etc.
+  - just like facebook/linkedin posts
+- currently an athlete can see if a workout is scheduled for another date even if that workout is hidden for that date.
+  - change this in a view somewhere?
+  - possibly in the delete/edit schedule views for date choices.
+  - make an if statement saying if date >= date to unhide, dont show it in list unless you are a coach
 - change workoutinstance_detail so when sent to from calendar it shows only the results from that day
   - add a show all results button that then shows everything.
   - may not be able to do this as it is from a <a> get_absolute_url. would need to add a hidden input.
@@ -191,8 +199,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - for strength programs, hold info about periodization rules etc. hold training maxes, days of the week when each workout ill be done
 
 ## Styling:
-- wrap the top bar on base generic in the blue div so that they are all fixed
-  - this does not work!
+- get rid of shadow on previous/next month buttons
 - style workouts on calendar for if completed or not completed that day
   - not sure exactly how to get this if statement in there
 - style previous/next month buttons on calendar.
@@ -232,6 +239,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - user_page calendar:
   - https://www.huiwenteo.com/normal/2018/07/24/django-calendar.html
   - https://alexpnt.github.io/2017/07/15/django-calendar/
+- wrap the top bar on base generic in the blue div so that they are all fixed
+  - this does not work!
   
 # Mobile App:
 - when clicking a workout either on user_page or workout_list, show buttons underneath workout after its touched
