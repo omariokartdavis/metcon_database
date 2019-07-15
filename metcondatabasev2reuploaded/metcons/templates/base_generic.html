@@ -14,7 +14,7 @@
 			<div class="col-sm-2">
 			{% block sidebar %}
 				<div class="sidebar-nav">
-					<a href="" class="left-sidebar-closebtn" id="side_nav_close_button">&times;</a>
+					<button class="left-sidebar-closebtn" id="side_nav_close_button">&times;</button>
 					{% if user.is_authenticated %}
 						<a href="{% url 'profile' user.username %}">Home</a>
 						<a href="{% url 'logout' %}">Logout</a>
@@ -64,7 +64,7 @@
 									{% endfor %}	
 								{% endif %}
 							</div>
-							<button id="athleteDropdownOpener" class="dropdownOpener">Groups
+							<button id="groupDropdownOpener" class="dropdownOpener">Groups
 								<i class="fa fa-caret-down"></i>
 							</button>
 							<div class="groupDropdownContainer dropdownContainer">
@@ -114,7 +114,7 @@
 					{% endif %}
 				</div>
 				<div class="right-sidebar-nav">
-					<a href="" class="right-sidebar-closebtn" id="right_side_nav_close_button">&times;</a>
+					<button class="right-sidebar-closebtn" id="right_side_nav_close_button">&times;</button>
 					{% if user.is_authenticated %}
 						{% if user.requestee.all %}
 							<p>Requests:</p>
