@@ -1,3 +1,7 @@
+var infinite = new Waypoint.Infinite({
+  element: $('.infinite-container')[0]
+});
+
 var dropdown = document.getElementsByClassName("dropdownOpener");
 
 function dropdownFunction() {
