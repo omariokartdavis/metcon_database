@@ -77,107 +77,200 @@
 														{% if k != now %}
 															<p>Workout Hidden - This workout will unhide on {{ i.date_to_unhide|date:"F j, Y" }}.</p>
 														{% else %}
-															<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+															<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+															<div class="dropdownContainerWorkoutButtons">
+																<form action="{% url 'schedule_instance' user.username i.id %}">
+																	<input type="submit" value="Schedule Workout" />
+																</form>
+																<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+																	<input type="submit" value="Edit Schedule" name="edit schedule">
+																</form>
+																<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+																	<input type="submit" value="Delete Schedule" name="Delete schedule">
+																</form>
+																<form action="{% url 'edit_instance' user.username i.id %}">
+																	<input type="submit" value="Edit Workout" />
+																</form>
+																<form action="{% url 'delete_instance' user.username i.id %}">
+																	<input type="submit" value="Delete Workout" />
+																</form>
+															</div>
+															<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 															<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-																{% csrf_token %}
 																<input type="submit" value="Add Result" name="add result">
-															</form>
-															<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-																{% csrf_token %}
-																<input type="submit" value="Edit Schedule" name="edit schedule">
-															</form>
-															<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-																{% csrf_token %}
-																<input type="submit" value="Delete Schedule" name="Delete schedule">
 															</form>
 															{{ i.edited_workout_text|linebreaks }}</p>
 														{% endif %}
 													{% else %}
-														<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+														<div class="dropdownContainerWorkoutButtons">
+															<form action="{% url 'schedule_instance' user.username i.id %}">
+																<input type="submit" value="Schedule Workout" />
+															</form>
+															<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+																<input type="submit" value="Edit Schedule" name="edit schedule">
+															</form>
+															<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+																<input type="submit" value="Delete Schedule" name="Delete schedule">
+															</form>
+															<form action="{% url 'edit_instance' user.username i.id %}">
+																<input type="submit" value="Edit Workout" />
+															</form>
+															<form action="{% url 'delete_instance' user.username i.id %}">
+																<input type="submit" value="Delete Workout" />
+															</form>
+														</div>
+														<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-															{% csrf_token %}
 															<input type="submit" value="Add Result" name="add result">
-														</form>
-														<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-															{% csrf_token %}
-															<input type="submit" value="Edit Schedule" name="edit schedule">
-														</form>
-														<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-															{% csrf_token %}
-															<input type="submit" value="Delete Schedule" name="Delete schedule">
 														</form>
 														{{ i.edited_workout_text|linebreaks }}</p>
 													{% endif %}
 												{% else %}
-													<p>Workout Hidden - This workout is not scheduled to unhide.
+													<p>Workout Hidden - This workout is not scheduled to unhide.</p>
 												{% endif %}
 											{% else %}
 												{% if i.date_to_unhide %}
 													{% if k >= i.date_to_unhide %}
 														{% if k != now %}
-															<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden until {{ i.date_to_unhide|date:"F j, Y" }}.
+															<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden until {{ i.date_to_unhide|date:"F j, Y" }}.</p>
 														{% else %}
-															<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+															<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}</p>
 														{% endif %}
+														<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+														<div class="dropdownContainerWorkoutButtons">
+															<form action="{% url 'schedule_instance' user.username i.id %}">
+																<input type="submit" value="Schedule Workout" />
+															</form>
+															<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+																<input type="submit" value="Edit Schedule" name="edit schedule">
+															</form>
+															<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+																<input type="submit" value="Delete Schedule" name="Delete schedule">
+															</form>
+															<form action="{% url 'edit_instance' user.username i.id %}">
+																<input type="submit" value="Edit Workout" />
+															</form>
+															<form action="{% url 'delete_instance' user.username i.id %}">
+																<input type="submit" value="Delete Workout" />
+															</form>
+															<form action="{% url 'schedule_instance_for_multiple_athletes' user.username i.workout.id %}">
+																<input type="submit" value="Schedule For All Your Athletes With This Workout" />
+															</form>
+															<form action="{% url 'edit_schedule_for_multiple_athletes' user.username i.workout.id %}">
+																<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
+															</form>
+															<form class="post_workout_form" method='POST'>
+																{% csrf_token %}
+																<input type="submit" value="Unhide" name="unhide instance">
+															</form>
+														</div>
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-															{% csrf_token %}
 															<input type="submit" value="Add Result" name="add result">
 														</form>
-														<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-															{% csrf_token %}
-															<input type="submit" value="Edit Schedule" name="edit schedule">
-														</form>
-														<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-															{% csrf_token %}
-															<input type="submit" value="Delete Schedule" name="Delete schedule">
-														</form>
-														{{ i.edited_workout_text|linebreaks }}</p>
+														<p>{{ i.edited_workout_text|linebreaks }}</p>
 													{% else %}
-														<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+														<div class="dropdownContainerWorkoutButtons">
+															<form action="{% url 'schedule_instance' user.username i.id %}">
+																<input type="submit" value="Schedule Workout" />
+															</form>
+															<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+																<input type="submit" value="Edit Schedule" name="edit schedule">
+															</form>
+															<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+																<input type="submit" value="Delete Schedule" name="Delete schedule">
+															</form>
+															<form action="{% url 'edit_instance' user.username i.id %}">
+																<input type="submit" value="Edit Workout" />
+															</form>
+															<form action="{% url 'delete_instance' user.username i.id %}">
+																<input type="submit" value="Delete Workout" />
+															</form>
+															<form action="{% url 'schedule_instance_for_multiple_athletes' user.username i.workout.id %}">
+																<input type="submit" value="Schedule For All Your Athletes With This Workout" />
+															</form>
+															<form action="{% url 'edit_schedule_for_multiple_athletes' user.username i.workout.id %}">
+																<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
+															</form>
+														</div>
+														<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-															{% csrf_token %}
 															<input type="submit" value="Add Result" name="add result">
-														</form>
-														<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-															{% csrf_token %}
-															<input type="submit" value="Edit Schedule" name="edit schedule">
-														</form>
-														<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-															{% csrf_token %}
-															<input type="submit" value="Delete Schedule" name="Delete schedule">
 														</form>
 														{{ i.edited_workout_text|linebreaks }}</p>
 													{% endif %}
 												{% else %}
-													<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden, not scheduled to unhide.
+													<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+													<div class="dropdownContainerWorkoutButtons">
+														<form action="{% url 'schedule_instance' user.username i.id %}">
+															<input type="submit" value="Schedule Workout" />
+														</form>
+														<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+															<input type="submit" value="Edit Schedule" name="edit schedule">
+														</form>
+														<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+															<input type="submit" value="Delete Schedule" name="Delete schedule">
+														</form>
+														<form action="{% url 'edit_instance' user.username i.id %}">
+															<input type="submit" value="Edit Workout" />
+														</form>
+														<form action="{% url 'delete_instance' user.username i.id %}">
+															<input type="submit" value="Delete Workout" />
+														</form>
+														<form action="{% url 'schedule_instance_for_multiple_athletes' user.username i.workout.id %}">
+															<input type="submit" value="Schedule For All Your Athletes With This Workout" />
+														</form>
+														<form action="{% url 'edit_schedule_for_multiple_athletes' user.username i.workout.id %}">
+															<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
+														</form>
+														<form class="post_workout_form" method='POST'>
+															{% csrf_token %}
+															<input type="submit" value="Unhide" name="unhide instance">
+														</form>
+													</div>
+													<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden, not scheduled to unhide.
 													<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-														{% csrf_token %}
 														<input type="submit" value="Add Result" name="add result">
-													</form>
-													<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-														{% csrf_token %}
-														<input type="submit" value="Edit Schedule" name="edit schedule">
-													</form>
-													<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-														{% csrf_token %}
-														<input type="submit" value="Delete Schedule" name="Delete schedule">
 													</form>
 													{{ i.edited_workout_text|linebreaks }}</p>
 												{% endif %}
 											{% endif %}
 										{% else %}
-											<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+											<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+											<div class="dropdownContainerWorkoutButtons">
+												<form action="{% url 'schedule_instance' user.username i.id %}">
+													<input type="submit" value="Schedule Workout" />
+												</form>
+												<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+													<input type="submit" value="Edit Schedule" name="edit schedule">
+												</form>
+												<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+													<input type="submit" value="Delete Schedule" name="Delete schedule">
+												</form>
+												<form action="{% url 'edit_instance' user.username i.id %}">
+													<input type="submit" value="Edit Workout" />
+												</form>
+												<form action="{% url 'delete_instance' user.username i.id %}">
+													<input type="submit" value="Delete Workout" />
+												</form>
+												{% if i.is_assigned_by_coach_or_gym_owner %}
+													{% if i.assigned_by_user == request.user %}
+														<form action="{% url 'schedule_instance_for_multiple_athletes' user.username i.workout.id %}">
+															<input type="submit" value="Schedule For All Your Athletes With This Workout" />
+														</form>
+														<form action="{% url 'edit_schedule_for_multiple_athletes' user.username i.workout.id %}">
+															<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
+														</form>
+														<form class="post_workout_form" action="{% url 'hide_instance' user.username i.id %}">
+															<input type="submit" value="Hide">
+														</form>
+													{% endif %}
+												{% endif %}
+											</div>
+											<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 											<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-												{% csrf_token %}
 												<input type="submit" value="Add Result" name="add result">
-											</form>
-											<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-												{% csrf_token %}
-												<input type="submit" value="Edit Schedule" name="edit schedule">
-											</form>
-											<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-												{% csrf_token %}
-												<input type="submit" value="Delete Schedule" name="Delete schedule">
 											</form>
 											{{ i.edited_workout_text|linebreaks }}</p>
 										{% endif %}
@@ -207,34 +300,51 @@
 													{% if k != now %}
 														<p>Workout Hidden - This workout will unhide on {{ i.date_to_unhide|date:"F j, Y" }}.</p>
 													{% else %}
-														<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+														<div class="dropdownContainerWorkoutButtons">
+															<form action="{% url 'schedule_instance' user.username i.id %}">
+																<input type="submit" value="Schedule Workout" />
+															</form>
+															<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+																<input type="submit" value="Edit Schedule" name="edit schedule">
+															</form>
+															<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+																<input type="submit" value="Delete Schedule" name="Delete schedule">
+															</form>
+															<form action="{% url 'edit_instance' user.username i.id %}">
+																<input type="submit" value="Edit Workout" />
+															</form>
+															<form action="{% url 'delete_instance' user.username i.id %}">
+																<input type="submit" value="Delete Workout" />
+															</form>
+														</div>
+														<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-															{% csrf_token %}
 															<input type="submit" value="Add Result" name="add result">
+														</form>rkout_text|linebreaks }}</p>
+													{% endif %}
+												{% else %}
+													<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+													<div class="dropdownContainerWorkoutButtons">
+														<form action="{% url 'schedule_instance' user.username i.id %}">
+															<input type="submit" value="Schedule Workout" />
 														</form>
 														<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-															{% csrf_token %}
 															<input type="submit" value="Edit Schedule" name="edit schedule">
 														</form>
 														<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-															{% csrf_token %}
 															<input type="submit" value="Delete Schedule" name="Delete schedule">
 														</form>
-														{{ i.edited_workout_text|linebreaks }}</p>
-													{% endif %}
-												{% else %}
-													<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														<form action="{% url 'edit_instance' user.username i.id %}">
+															<input type="submit" value="Edit Workout" />
+														</form>
+														<form action="{% url 'delete_instance' user.username i.id %}">
+															<input type="submit" value="Delete Workout" />
+														</form>
+													</div>
+													<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 													<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-														{% csrf_token %}
 														<input type="submit" value="Add Result" name="add result">
-													</form>
-													<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-														{% csrf_token %}
-														<input type="submit" value="Edit Schedule" name="edit schedule">
-													</form>
-													<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-														{% csrf_token %}
-														<input type="submit" value="Delete Schedule" name="Delete schedule">
 													</form>
 													{{ i.edited_workout_text|linebreaks }}</p>
 												{% endif %}
@@ -242,34 +352,52 @@
 												<p>Workout Hidden - This workout is not scheduled to unhide.</p>
 											{% endif %}
 										{% else %}
-											<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+											<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+											<div class="dropdownContainerWorkoutButtons">
+												<form action="{% url 'schedule_instance' user.username i.id %}">
+													<input type="submit" value="Schedule Workout" />
+												</form>
+												<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+													<input type="submit" value="Edit Schedule" name="edit schedule">
+												</form>
+												<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+													<input type="submit" value="Delete Schedule" name="Delete schedule">
+												</form>
+												<form action="{% url 'edit_instance' user.username i.id %}">
+													<input type="submit" value="Edit Workout" />
+												</form>
+												<form action="{% url 'delete_instance' user.username i.id %}">
+													<input type="submit" value="Delete Workout" />
+												</form>
+											</div>
+											<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 											<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-												{% csrf_token %}
 												<input type="submit" value="Add Result" name="add result">
-											</form>
-											<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-												{% csrf_token %}
-												<input type="submit" value="Edit Schedule" name="edit schedule">
-											</form>
-											<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-												{% csrf_token %}
-												<input type="submit" value="Delete Schedule" name="Delete schedule">
 											</form>
 											{{ i.edited_workout_text|linebreaks }}</p>
 										{% endif %}
 									{% else %}
-										<p><a href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+										<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+										<div class="dropdownContainerWorkoutButtons">
+											<form action="{% url 'schedule_instance' user.username i.id %}">
+												<input type="submit" value="Schedule Workout" />
+											</form>
+											<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+												<input type="submit" value="Edit Schedule" name="edit schedule">
+											</form>
+											<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+												<input type="submit" value="Delete Schedule" name="Delete schedule">
+											</form>
+											<form action="{% url 'edit_instance' user.username i.id %}">
+												<input type="submit" value="Edit Workout" />
+											</form>
+											<form action="{% url 'delete_instance' user.username i.id %}">
+												<input type="submit" value="Delete Workout" />
+											</form>
+										</div>
+										<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 										<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-											{% csrf_token %}
 											<input type="submit" value="Add Result" name="add result">
-										</form>
-										<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-											{% csrf_token %}
-											<input type="submit" value="Edit Schedule" name="edit schedule">
-										</form>
-										<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
-											{% csrf_token %}
-											<input type="submit" value="Delete Schedule" name="Delete schedule">
 										</form>
 										{{ i.edited_workout_text|linebreaks }}</p>
 									{% endif %}
@@ -288,15 +416,43 @@
 			{% if chosen_users_recent_past_workouts %}
 				<div class="listedWorkouts">
 					<h2>Recent Workouts</h2>
-					{% for recent_instance in chosen_users_recent_past_workouts %}
-						{% if recent_instance.workout %}
+					{% for i in chosen_users_recent_past_workouts %}
+						{% if i.workout %}
 							<div class="workoutContent">
-								<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>{% if recent_instance.edited_workout_text != recent_instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-								<br /><strong>Last Completed On: {{ recent_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
-								<form action="{% url 'schedule_instance' user.username recent_instance.id %}">
-									<input type="submit" value="Schedule Workout" />
+								<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+								<div class="dropdownContainerWorkoutButtons">
+									<form action="{% url 'schedule_instance' user.username i.id %}">
+										<input type="submit" value="Schedule Workout" />
+									</form>
+									<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+										<input type="submit" value="Edit Schedule" name="edit schedule">
+									</form>
+									<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+										<input type="submit" value="Delete Schedule" name="Delete schedule">
+									</form>
+									<form action="{% url 'edit_instance' user.username i.id %}">
+										<input type="submit" value="Edit Workout" />
+									</form>
+									<form action="{% url 'delete_instance' user.username i.id %}">
+										<input type="submit" value="Delete Workout" />
+									</form>
+									{% if i.is_assigned_by_coach_or_gym_owner %}
+										{% if i.assigned_by_user == request.user %}
+											<form action="{% url 'schedule_instance_for_multiple_athletes' user.username i.workout.id %}">
+												<input type="submit" value="Schedule For All Your Athletes With This Workout" />
+											</form>
+											<form action="{% url 'edit_schedule_for_multiple_athletes' user.username i.workout.id %}">
+												<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
+											</form>
+										{% endif %}
+									{% endif %}
+								</div>
+								<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+								<br /><strong>Last Completed On: {{ i.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
+								<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+									<input type="submit" value="Add Result" name="add result">
 								</form>
-								{{ recent_instance.edited_workout_text|linebreaks }}</p>
+								{{ i.edited_workout_text|linebreaks }}</p>
 							</div>
 						{% endif %}
 					{% endfor %}
@@ -307,15 +463,33 @@
 		{% elif recent_past_workouts %}
 			<div class="listedWorkouts">
 				<h2>Recent Workouts</h2>
-				{% for recent_instance in recent_past_workouts %}
-					{% if recent_instance.workout %}
+				{% for i in recent_past_workouts %}
+					{% if i.workout %}
 						<div class="workoutContent">
-							<p><a href="{{ recent_instance.get_absolute_url }}">{{ recent_instance.workout.display_name }}</a>{% if recent_instance.edited_workout_text != recent_instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-							<br /><strong>Last Completed On: {{ recent_instance.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
-							<form action="{% url 'schedule_instance' user.username recent_instance.id %}">
-								<input type="submit" value="Schedule Workout" />
+							<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+							<div class="dropdownContainerWorkoutButtons">
+								<form action="{% url 'schedule_instance' user.username i.id %}">
+									<input type="submit" value="Schedule Workout" />
+								</form>
+								<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+									<input type="submit" value="Edit Schedule" name="edit schedule">
+								</form>
+								<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+									<input type="submit" value="Delete Schedule" name="Delete schedule">
+								</form>
+								<form action="{% url 'edit_instance' user.username i.id %}">
+									<input type="submit" value="Edit Workout" />
+								</form>
+								<form action="{% url 'delete_instance' user.username i.id %}">
+									<input type="submit" value="Delete Workout" />
+								</form>
+							</div>
+							<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+							<br /><strong>Last Completed On: {{ i.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
+							<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+								<input type="submit" value="Add Result" name="add result">
 							</form>
-							{{ recent_instance.edited_workout_text|linebreaks }}</p>
+							{{ i.edited_workout_text|linebreaks }}</p>
 						</div>
 					{% endif %}
 				{% endfor %}
@@ -329,21 +503,42 @@
 			{% if chosen_users_incomplete_workouts %}
 				<div class="listedWorkouts">
 					<h2>Pending Wokouts</h2>
-					{% for instance in chosen_users_incomplete_workouts %}
-						{% if instance.workout %}
+					{% for i in chosen_users_incomplete_workouts %}
+						{% if i.workout %}
 							<div class="workoutContent">
-								<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>{% if instance.edited_workout_text != instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-								<form class="post_workout_form" action="{% url 'result_create' user.username instance.id %}">
-									{% csrf_token %}
+								<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+								<div class="dropdownContainerWorkoutButtons">
+									<form action="{% url 'schedule_instance' user.username i.id %}">
+										<input type="submit" value="Schedule Workout" />
+									</form>
+									<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+										<input type="submit" value="Edit Schedule" name="edit schedule">
+									</form>
+									<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+										<input type="submit" value="Delete Schedule" name="Delete schedule">
+									</form>
+									<form action="{% url 'edit_instance' user.username i.id %}">
+										<input type="submit" value="Edit Workout" />
+									</form>
+									<form action="{% url 'delete_instance' user.username i.id %}">
+										<input type="submit" value="Delete Workout" />
+									</form>
+									{% if i.is_assigned_by_coach_or_gym_owner %}
+										{% if i.assigned_by_user == request.user %}
+											<form action="{% url 'schedule_instance_for_multiple_athletes' user.username i.workout.id %}">
+												<input type="submit" value="Schedule For All Your Athletes With This Workout" />
+											</form>
+											<form action="{% url 'edit_schedule_for_multiple_athletes' user.username i.workout.id %}">
+												<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
+											</form>
+										{% endif %}
+									{% endif %}
+								</div>
+								<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+								<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 									<input type="submit" value="Add Result" name="add result">
 								</form>
-								<form action="{% url 'schedule_instance' user.username instance.id %}">
-									<input type="submit" value="Schedule Workout" />
-								</form>
-								<form action="{% url 'delete_instance' user.username instance.id %}">
-									<input type="submit" value="Delete Workout" />
-								</form>
-								{{ instance.edited_workout_text|linebreaks }}</p>
+								{{ i.edited_workout_text|linebreaks }}</p>
 							</div>
 						{% endif %}
 					{% endfor %}
@@ -354,18 +549,32 @@
 		{% elif incomplete_workouts %}
 			<div class="listedWorkouts">
 				<h2>Pending Workouts</h2>
-				{% for instance in incomplete_workouts %}
-					{% if instance.workout %}
+				{% for i in incomplete_workouts %}
+					{% if i.workout %}
 						<div class="workoutContent">
-							<p><a href="{{ instance.get_absolute_url }}">{{ instance.workout.display_name }}</a>{% if instance.edited_workout_text != instance.workout.workout_text %} - Edited From Original Workout.{% endif %}
-							<form class="post_workout_form" action="{% url 'result_create' user.username instance.id %}">
-								{% csrf_token %}
+							<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
+							<div class="dropdownContainerWorkoutButtons">
+								<form action="{% url 'schedule_instance' user.username i.id %}">
+									<input type="submit" value="Schedule Workout" />
+								</form>
+								<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
+									<input type="submit" value="Edit Schedule" name="edit schedule">
+								</form>
+								<form class="post_workout_form" action="{% url 'delete_schedule' user.username i.id %}">
+									<input type="submit" value="Delete Schedule" name="Delete schedule">
+								</form>
+								<form action="{% url 'edit_instance' user.username i.id %}">
+									<input type="submit" value="Edit Workout" />
+								</form>
+								<form action="{% url 'delete_instance' user.username i.id %}">
+									<input type="submit" value="Delete Workout" />
+								</form>
+							</div>
+							<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+							<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 								<input type="submit" value="Add Result" name="add result">
 							</form>
-							<form action="{% url 'schedule_instance' user.username instance.id %}">
-								<input type="submit" value="Schedule Workout" />
-							</form>
-							{{ instance.edited_workout_text|linebreaks }}</p>
+							{{ i.edited_workout_text|linebreaks }}</p>
 						</div>
 					{% endif %}
 				{% endfor %}
