@@ -3,7 +3,7 @@
 {% block content %}
 	{% if user.is_authenticated %}
 		{% if user.username == instance.current_user.username or user.coach in instance.current_user.athlete.coach_set.all %}
-			<h1>Schedule Workout</h1>
+			<h1>Schedule {{ instance.display_workout }}</h1>
 			
 			<p>{% if instance.get_scheduled_dates_in_future %}By the way, you have this workout scheduled for: {% endif %}
 			{% for i in instance.get_scheduled_dates_in_future %}{{ i.date_completed|date:"l, F j, Y" }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
