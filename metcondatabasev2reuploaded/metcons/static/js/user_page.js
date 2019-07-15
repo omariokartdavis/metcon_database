@@ -1,3 +1,22 @@
+var workoutDropdowns = document.getElementsByClassName("dropdownOpenerWorkoutButtons");
+
+function workoutDropdownFunction() {
+	this.classList.toggle("active");
+	var dropdownContent = this.nextElementSibling;
+	if (dropdownContent.style.height == "auto") {
+		dropdownContent.style.height = "0";
+		dropdownContent.style.width = "0";
+	} else {
+		dropdownContent.style.height = "auto";
+		dropdownContent.style.width = "auto";
+	}
+};
+
+var i;
+for (var i = 0; i < workoutDropdowns.length; i++) {
+	workoutDropdowns[i].addEventListener("click", workoutDropdownFunction, false)
+}
+	
 function openTab(evt) {
   // Declare all variables
   var i, tabcontent, tablinks, tabName;
