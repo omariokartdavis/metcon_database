@@ -250,6 +250,12 @@
 	outline: none;
 	border: 1px solid rgba(0,0,0,.15);
 	font-size: 13px;
+	cursor: pointer;
+}
+
+.next-previous-buttons #nextMonthButton:hover, .next-previous-buttons #previousMonthButton:hover {
+	color: #66b2b2;
+	background-color: #e9ebee;
 }
 
 .next-previous-buttons #nextMonthButton {
