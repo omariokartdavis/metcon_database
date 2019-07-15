@@ -3,7 +3,7 @@
 {% block content %}
 	{% if user.is_authenticated %}
 		{% if user.username == instance.current_user.username or user.coach in instance.current_user.athlete.coach_set.all %}
-			<h1> Add Result</h1>
+			<h1> Add Result for {{ instance.display_workout }}</h1>
 			
 			<p><strong>{{ instance.workout.display_name }}</strong>:
 			{{ instance.workout.workout_text|linebreaks }}</p>
