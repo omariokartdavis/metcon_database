@@ -479,6 +479,7 @@ def workoutlistview(request):
     query7 = request.GET.get('f')
     query8 = request.GET.get('h')
     
+    filter_list = []
     if User.objects.filter(username = request.user.username).exists():
         if query3:
             query3 = int(query3) * 60
@@ -492,24 +493,35 @@ def workoutlistview(request):
                     if not object_list2:
                         object_list2 = object_list.filter(movements__name = i.title())
                     object_list = object_list2
+                    filter_list.append(i)
         if query2:
             if query2.islower():
                 query2 = query2.title()
             object_list = object_list.filter(classification__name = query2)
+            filter_list.append(query2)
         if query3:
             object_list = object_list.filter(estimated_duration_in_seconds__gte=query3)
+            filter_detail = 'Min Duration of ' + str((int(int(query3) / 60))) + 'mins'
+            filter_list.append(filter_detail)
         if query4:
             object_list = object_list.filter(estimated_duration_in_seconds__lte=query4,
                                              estimated_duration_in_seconds__gt=0)
+            filter_detail = 'Max Duration of ' + str((int(int(query4) / 60))) + 'mins'
+            filter_list.append(filter_detail)
         if query5:
             object_list = object_list.order_by('-number_of_times_completed')
+            filter_list.append('Sorted By Popularity')
         if not query6:
             current_users_completed_instances = WorkoutInstance.objects.filter(current_user=request.user, dates_workout_completed__isnull=False)
             object_list = object_list.exclude(workoutinstance__id__in=current_users_completed_instances)
+        else:
+            filter_list.append('Including Workouts You Completed')
         if query8:
             #add an exclude to this to not show workouts that people have marked private later on
             query7 = 'on'
             object_list = object_list.filter(workoutinstance__current_user__username = query8)
+            filter_detail = 'Showing Only Workouts Of ' + query8
+            filter_list.append(filter_detail)
         if not query7:
             object_list = object_list.exclude(~Q(created_by_user=request.user),
                                               where_workout_came_from='Gym Owner Created').exclude(
@@ -517,6 +529,8 @@ def workoutlistview(request):
                                                   where_workout_came_from='Coach Created').exclude(
                                                       ~Q(created_by_user=request.user),
                                                       where_workout_came_from='Athlete Created')
+        else:
+            filter_list.append('Including Workouts Other Users Created')
 
     paginator = Paginator(object_list, 10)
     page = request.GET.get('page', 1)
@@ -529,6 +543,7 @@ def workoutlistview(request):
         'classification_list': Classification.objects.all(),
         'most_recent_workouts': Workout.objects.order_by('-date_created')[:10],
         'num_workouts_total': Workout.objects.all().count(),
+        'filter_list': filter_list,
         }
 
     if request.method == 'POST':
@@ -641,7 +656,21 @@ def schedule_instance(request, username, pk):
                         list_of_dates_to_schedule.append(local_date)
                         local_date += timezone.timedelta(days=repeat_frequency)
 
+                request_user = User.objects.get(username=request.user.username)
+                current_user = instance.current_user
+
+                if current_user != request_user:
+                    assigned=True
+                    assigned_by = request_user
+                else:
+                    assigned=False
+
                 instance.add_date_to_be_completed(*list_of_dates_to_schedule)
+
+                if assigned:
+                    instance.is_assigned_by_coach_or_gym_owner=assigned
+                    instance.assigned_by_user=request_user
+                    instance.save()
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
     else:
@@ -738,6 +767,20 @@ def edit_schedule(request, username, pk):
                     instance.remove_date_to_be_completed(*dates_to_be_removed)
                 if local_date_to_be_added:
                     instance.add_date_to_be_completed(local_date_to_be_added)
+
+                request_user = User.objects.get(username=request.user.username)
+                current_user = instance.current_user
+
+                if current_user != request_user:
+                    assigned=True
+                    assigned_by = request_user
+                else:
+                    assigned=False
+
+                if assigned:
+                    instance.is_assigned_by_coach_or_gym_owner=assigned
+                    instance.assigned_by_user=request_user
+                    instance.save()
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -850,6 +893,20 @@ def delete_schedule(request, username, pk):
 
                 instance.remove_date_to_be_completed(*dates_to_be_removed)
 
+                request_user = User.objects.get(username=request.user.username)
+                current_user = instance.current_user
+
+                if current_user != request_user:
+                    assigned=True
+                    assigned_by = request_user
+                else:
+                    assigned=False
+
+                if assigned:
+                    instance.is_assigned_by_coach_or_gym_owner=assigned
+                    instance.assigned_by_user=request_user
+                    instance.save()
+
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
     else:
@@ -917,6 +974,19 @@ def edit_instance(request, username, pk):
                             base_workout.update_movements_and_classification()
                         base_workout.update_estimated_duration()
 
+                request_user = User.objects.get(username=request.user.username)
+                current_user = instance.current_user
+
+                if current_user != request_user:
+                    assigned=True
+                    assigned_by = request_user
+                else:
+                    assigned=False
+
+                if assigned:
+                    instance.is_assigned_by_coach_or_gym_owner=assigned
+                    instance.assigned_by_user=request_user
+                    instance.save()
 
                 return HttpResponseRedirect(instance.get_absolute_url())
     else:
@@ -950,7 +1020,7 @@ def delete_instance(request, username, pk):
             base_workout.update_estimated_duration()
             base_workout.update_times_completed()
 
-            return HttpResponseRedirect(reverse('profile', args=[username]))
+            return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
     context = {
         'instance': instance,
