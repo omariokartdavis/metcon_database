@@ -140,17 +140,7 @@
   margin-bottom: 50px; /*adds space from last workout to bottom of page */
 }
 
-.tabcontent .workoutContent {
-	background-color: white;
-	border-radius: 5px;
-	padding-top: 1px;
-	padding-bottom: 1px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	width: 100%;
-	/*border: 1px solid black;*/
-	box-shadow: 0 0 0 1px rgba(0,0,0,.15);
-}
+
 
 .tabcontent h2 {
 	width: 100%;
@@ -162,9 +152,41 @@
 	border-radius: 5px;
 }
 
-.workoutContent p, .workoutContent form {
-	position: relative;
-	left: 10px;
+.workoutContent .dropdownOpenerWorkoutButtons {
+	font-size: 20px;
+	position: absolute;
+	right: 20px;
+	top: 10px;
+	color: #66b2b2;
+	cursor: pointer;
+	background-color: white;
+	z-index: 3;
+	border: none;
+}
+
+.workoutContent .dropdownOpenerWorkoutButtons:hover {
+	color: #e9ebee;
+}
+
+.workoutContent .dropdownContainerWorkoutButtons {
+	height: 0;
+	width: 0;
+	box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+	position: absolute;
+	right: 20px;
+	top: 40px;
+	overflow-y: hidden;
+	overflow-x: hidden;
+	z-index: 4;
+	background-color: white;
+}
+
+.workoutContent .dropdownContainerWorkoutButtons button {
+	position: absolute;
+}
+
+.workoutContent .dropdownContainerWorkoutButtons:hover {
+	overflow-y: auto;
 }
 
 .calendar {
@@ -210,15 +232,6 @@
 	font-size: 16px;
 	position: relative;
 	top: 5px;
-}
-
-.listedWorkouts {
-	background-color: transparent; /*white;*/
-	width: 30%;
-	left: 35%;
-	position: relative;
-	/*box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2); /*this is the linked in border shadow effect */
-	border-radius: 5px;
 }
 
 .next-previous-buttons {
