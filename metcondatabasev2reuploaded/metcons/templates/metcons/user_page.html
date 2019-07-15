@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
 	<h1>{{ user.username }}'s Homepage</h1>
-	<div class="tab">
+	<div class="tab{% if not user.is_coach and not user.is_gym_owner %} athlete_user{% endif%}">
 		<button class="tablinks" id="defaultOpenTab">This Week</button>
 		<button class="tablinks" id="recentTab">Recent</button>
 		<button class="tablinks" id="calendarTab">Calendar</button>
@@ -95,7 +95,8 @@
 																	<input type="submit" value="Delete Workout" />
 																</form>
 															</div>
-															<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+															<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">
+																{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 															<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 																<input type="submit" value="Add Result" name="add result">
 															</form>
@@ -120,7 +121,7 @@
 																<input type="submit" value="Delete Workout" />
 															</form>
 														</div>
-														<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 															<input type="submit" value="Add Result" name="add result">
 														</form>
@@ -133,9 +134,9 @@
 												{% if i.date_to_unhide %}
 													{% if k >= i.date_to_unhide %}
 														{% if k != now %}
-															<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden until {{ i.date_to_unhide|date:"F j, Y" }}.</p>
+															<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden until {{ i.date_to_unhide|date:"F j, Y" }}.</p>
 														{% else %}
-															<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}</p>
+															<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}</p>
 														{% endif %}
 														<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
 														<div class="dropdownContainerWorkoutButtons">
@@ -194,7 +195,7 @@
 																<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
 															</form>
 														</div>
-														<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 															<input type="submit" value="Add Result" name="add result">
 														</form>
@@ -229,7 +230,7 @@
 															<input type="submit" value="Unhide" name="unhide instance">
 														</form>
 													</div>
-													<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden, not scheduled to unhide.
+													<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %} - Hidden, not scheduled to unhide.
 													<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 														<input type="submit" value="Add Result" name="add result">
 													</form>
@@ -268,7 +269,7 @@
 													{% endif %}
 												{% endif %}
 											</div>
-											<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+											<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 											<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 												<input type="submit" value="Add Result" name="add result">
 											</form>
@@ -318,7 +319,7 @@
 																<input type="submit" value="Delete Workout" />
 															</form>
 														</div>
-														<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+														<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 															<input type="submit" value="Add Result" name="add result">
 														</form>rkout_text|linebreaks }}</p>
@@ -342,7 +343,7 @@
 															<input type="submit" value="Delete Workout" />
 														</form>
 													</div>
-													<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+													<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 													<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 														<input type="submit" value="Add Result" name="add result">
 													</form>
@@ -370,7 +371,7 @@
 													<input type="submit" value="Delete Workout" />
 												</form>
 											</div>
-											<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+											<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 											<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 												<input type="submit" value="Add Result" name="add result">
 											</form>
@@ -395,7 +396,7 @@
 												<input type="submit" value="Delete Workout" />
 											</form>
 										</div>
-										<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+										<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 										<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 											<input type="submit" value="Add Result" name="add result">
 										</form>
@@ -447,7 +448,7 @@
 										{% endif %}
 									{% endif %}
 								</div>
-								<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+								<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 								<br /><strong>Last Completed On: {{ i.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
 								<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 									<input type="submit" value="Add Result" name="add result">
@@ -484,7 +485,7 @@
 									<input type="submit" value="Delete Workout" />
 								</form>
 							</div>
-							<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+							<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 							<br /><strong>Last Completed On: {{ i.oldest_completed_date.date_completed|date:"l, F j, Y" }}</strong>
 							<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 								<input type="submit" value="Add Result" name="add result">
@@ -534,7 +535,7 @@
 										{% endif %}
 									{% endif %}
 								</div>
-								<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+								<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 								<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 									<input type="submit" value="Add Result" name="add result">
 								</form>
@@ -570,7 +571,7 @@
 									<input type="submit" value="Delete Workout" />
 								</form>
 							</div>
-							<p><a class="workout_display_name" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
+							<p><a class="workout_display_name{% if i.is_assigned_by_coach_or_gym_owner %} assigned_workout_name{% else %} not_assigned_workout_name{% endif %}" href="{{ i.get_absolute_url }}">{{ i.workout.display_name }}</a>{% if i.edited_workout_text != i.workout.workout_text %} - Edited From Original Workout.{% endif %}
 							<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 								<input type="submit" value="Add Result" name="add result">
 							</form>
