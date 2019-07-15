@@ -1,4 +1,5 @@
 /* all borders count towards total sizes so things may need to be moved 1-2 pixels after positioning is done. */
+/* color pallete: grey: #e9ebee; teal: #66b2b2;*/
 .backgroundDim {
 	top: -50px;
 	left: -50px;
@@ -34,7 +35,7 @@ h1 {
 	top: 0;
 	left: 0;
 	width: 100%;
-	background-color: #42d1f5;
+	background-color: #66b2b2;
 	z-index: 3;
 	position: fixed;
 	height: 70px;
@@ -98,11 +99,12 @@ h1 {
 .sidebar-nav .left-sidebar-closebtn {
 	position: absolute;
 	top: 10px;
-	right: 25px;
-	width: 10px;
-	text-align: right;
+	right: 30px;
+	width: 30px;
+	text-align: center;
 	font-size: 36px;
-	margin-left: 20px;
+	padding: 0;
+	margin: 0;
 	outline: none;
 	border: 1px solid white;
 }
@@ -188,7 +190,7 @@ h1 {
 	overflow-y: auto;
 }
 
-.right-sidebar-nav a, .right-sidebar-nav p {
+.right-sidebar-nav a, .right-sidebar-nav p, .right-sidebar-nav button {
 	padding: 8px 8px 8px 32px;
 	text-decoration: none;
 	font-size: 25px;
@@ -206,12 +208,15 @@ h1 {
 }
 
 .right-sidebar-nav a {
-	cursor: pointer;
 	position: relative;
 	left: 50px;
 }
 
-.right-sidebar-nav a:hover {
+.right-sidebar-nav a, .right-sidebar-nav button {
+	cursor: pointer;
+}
+
+.right-sidebar-nav a:hover, .right-sidebar-nav button:hover {
 	color: #f1f1f1;
 }
 
@@ -220,9 +225,9 @@ h1 {
 	top: 22px;
 	left: 25px;
 	width: 30px;
-	text-align: left;
+	text-align: center;
 	font-size: 36px;
-	margin-right: 20px;
+	margin: 0;
 	outline: none;
 	padding: 0;
 	border: 1px solid white;
@@ -308,4 +313,57 @@ h1 {
 
 .home-search-create-buttons .tooltip:hover .tooltiptext {
 	visibility: visible;
+}
+
+.tabContentReplacement {
+  border-top: none;
+  left: 10%;
+  top: 200px;
+  position: absolute;
+  z-index: 1;
+  width: 80%;
+  /*border: 1px solid black;*/
+  margin-bottom: 50px; /*adds space from last workout to bottom of page */
+}
+.tabContentReplacement h2 {
+	width: 100%;
+	position: relative;
+	text-align: center;
+}
+
+.workoutContent {
+	background-color: white;
+	border-radius: 5px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	width: 100%;
+	/*border: 1px solid black;*/
+	box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+	position: relative;
+}
+
+.workoutContent p, .workoutContent form {
+	position: relative;
+	left: 10px;
+	margin-right: 10px;
+}
+
+.listedWorkouts {
+	background-color: transparent; /*white;*/
+	width: 30%;
+	left: 35%;
+	position: relative;
+	/*box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2); /*this is the linked in border shadow effect */
+	border-radius: 5px;
+}
+
+.workout_display_name {
+	text-decoration: none;
+	color: #66b2b2;
+}
+
+.workout_display_name:hover {
+	color: #e9ebee;
 }
