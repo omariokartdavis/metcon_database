@@ -5,29 +5,25 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-# dont forget to check previous days from home at work on 7/15 as i forgot to keep all files listed below
-
-## 7/14/19
-(uploaded at home)
-- views.py
+## 7/15/19
+(uploaded at work)
+- utils.py
 - user_page.css
 - user_page.html
-- user_page.js
+- base_generic.js
 - base_generic.css
-- base_generic.html
-- schedule_instance.html
-- create_result.html
-- workout_list.html
-- workout_list.css
+- workout_list.js
+- deleted workoutinstance_detail.js, movement_list.js
+- workoutinstance_detail.html
+- movement_list.html
 
-## functionality completed on 7/14/19
-- added check in schedule_instance/edit_instance and a few other views for if is assigned
-- changed sidebar close buttons to buttons isntead of <a> so they don't refresh page on click
-- added styling of workouts to base_generic so workout_list is also styled.
-- added filter list to workout_list.html and corresponding view
-- create '...' button on right of workoutcontent box that gives a popup/dropdown of form buttons for that workout
-  - schedule, add result, delete etc.
-  - just like facebook/linkedin posts
+## functionality completed on 7/15/19
+- moved infinite scroll into base_generic.js
+- added hover effects for previous/next month buttons on user calendar
+- added more margin-right to workoutcontent p/form
+- added classes for assigned_workout_name/not_assigned_workout_name to user page to allow different stylings
+- added workout name classes to calendar workouts including assigned/notassigned
+- added {% if not user.is_coach or not user.is_gym_owner %} class="athlete_user" {% endif %} to tab div on user_page
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -59,6 +55,15 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- look at getting rid of the is_athlete=True for all users in signup view.
+  - don't think i need that and only need each user to have is_role = true for their specific role
+  - have to make sure all templates are styled properly by role which I believe they currently are
+  - getting rid of this will allow for template ifs for only athletes to be the following:
+    - {% if user.is_athlete %} instead of having to do {% if not user.is_coach and not user.is_gym_owner %}
+  - coaches and gym owners should still have Athlete and Coach models created for them, the user themselves should only be 1 role tho
+- create all named workouts and create dropdown filter for them
+  - can make a dropdown list of only named workouts
+- add workout_list_minus_user_created to workout_list view and use that list for if a user isn't logged in.
 - currently an athlete can see if a workout is scheduled for another date even if that workout is hidden for that date.
   - they can see this in the edit schedule and delete schedule pages
   - change this in a view somewhere?
@@ -200,7 +205,9 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - for strength programs, hold info about periodization rules etc. hold training maxes, days of the week when each workout ill be done
 
 ## Styling:
-- get rid of shadow on previous/next month buttons
+- style .tab.athlete_user (no space inbetween)
+  - add left side border radius and box-shadow
+- ?get rid of shadow on previous/next month buttons?
 - style workouts on calendar for if completed or not completed that day
   - not sure exactly how to get this if statement in there
 - style previous/next month buttons on calendar.
@@ -212,6 +219,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - add this as a hover style to an element to only show the scroll bar on hover
 - css storage location: https://docs.djangoproject.com/en/2.2/intro/tutorial06/ `
 - change color of workout name if assigned by coach or by self
+  - already aplied the classes below. Just need to style them
+    - .assigned_workout_name     .not_assigned_workout_name
 - Create stylebook for all screens
 - Create table for viewing workouts
         similar to the styling of this: https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
