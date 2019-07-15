@@ -282,7 +282,7 @@ h1 {
 .home-search-create-buttons {
 	position: fixed;
 	top: 18px;
-	left: 60px;
+	left: 100px;
 	z-index: 6;
 	font-size: 40px;
 	border: 1px solid black;
@@ -347,7 +347,7 @@ h1 {
 .workoutContent p, .workoutContent form {
 	position: relative;
 	left: 10px;
-	margin-right: 10px;
+	margin-right: 20px;
 }
 
 .listedWorkouts {
