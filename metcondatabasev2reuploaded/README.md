@@ -5,26 +5,29 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 7/13/19
+# dont forget to check previous days from home at work on 7/15 as i forgot to keep all files listed below
+
+## 7/14/19
 (uploaded at home)
 - views.py
-- admin.py
-- utils.py
-- user_page.html
 - user_page.css
+- user_page.html
 - user_page.js
-- workout_detail.html
-- workoutinstance_detail.html
+- base_generic.css
+- base_generic.html
+- schedule_instance.html
+- create_result.html
+- workout_list.html
+- workout_list.css
 
-## functionality completed on 7/13/19
-- add if request already exists or if user already is coach/athlete so you can't repeat requests that have already happened
-- deleted code for add athlete/remove athlete selector views and request list view
-- added request to admin
-- add if workout is hidden to calendar in utils.py
-  - need to fix if coach is viewing it vs if user is viewing it.
-- fixed: currently if a workout is scheduled multiple times during the week and is hidden for a later date, 
-    none of them will show up until the later date
-- all hidden workouts should now show or hide properly on this week and calendar.
+## functionality completed on 7/14/19
+- added check in schedule_instance/edit_instance and a few other views for if is assigned
+- changed sidebar close buttons to buttons isntead of <a> so they don't refresh page on click
+- added styling of workouts to base_generic so workout_list is also styled.
+- added filter list to workout_list.html and corresponding view
+- create '...' button on right of workoutcontent box that gives a popup/dropdown of form buttons for that workout
+  - schedule, add result, delete etc.
+  - just like facebook/linkedin posts
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -56,10 +59,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- create '...' button on right of workoutcontent box that gives a popup/dropdown of form buttons for that workout
-  - schedule, add result, delete etc.
-  - just like facebook/linkedin posts
 - currently an athlete can see if a workout is scheduled for another date even if that workout is hidden for that date.
+  - they can see this in the edit schedule and delete schedule pages
   - change this in a view somewhere?
   - possibly in the delete/edit schedule views for date choices.
   - make an if statement saying if date >= date to unhide, dont show it in list unless you are a coach
