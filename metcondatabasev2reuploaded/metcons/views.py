@@ -104,7 +104,10 @@ def profile(request, username):
         if request.method == 'GET':
             if 'q' in request.GET:
                 query1 = request.GET.get('q')
-                chosen_user = User.objects.get(username=query1)
+                if query1:
+                    chosen_user = User.objects.get(username=query1)
+                else:
+                    chosen_user = request.user
             else:
                 chosen_user = User.objects.get(username=request.user.username)
             this_user = chosen_user
@@ -185,7 +188,7 @@ def add_athletes_to_coach(request, username):
             if form.is_valid():
                 user_athlete_to_add = User.objects.get(username=form.cleaned_data['athlete_username'])
 
-                if user_athlete_to_add.athlete not in user.coach.athletes.all() and not Request.objects.filter(requestee=user_athlete_to_add, requestor=user, is_adding_athlete=True) and not Request.objects.filter(requestee=user, requestor=user_athlete_to_add, is_adding_coach=True):
+                if not user.coach.athletes.filter(user=user_athlete_to_add).exists() and not Request.objects.filter(requestee=user_athlete_to_add, requestor=user, is_adding_athlete=True) and not Request.objects.filter(requestee=user, requestor=user_athlete_to_add, is_adding_coach=True):
                     Request.objects.create(requestee=user_athlete_to_add, requestor=user, is_adding_athlete=True)
 
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
@@ -281,7 +284,8 @@ def add_athletes_to_group(request, username, pk):
             if form.is_valid():
                 for i in form.cleaned_data['athlete_to_add']:
                     user = User.objects.get(username=i)
-                    group.athletes.add(user.athlete)
+                    if not group.athletes.filter(user=user).exists():
+                        group.athletes.add(user.athlete)
 
                 return HttpResponseRedirect(reverse('group_detail', args=[request.user.username, group.id]))
 
@@ -312,7 +316,8 @@ def remove_athletes_from_group(request, username, pk):
             if form.is_valid():
                 for i in form.cleaned_data['athlete_to_remove']:
                     user = User.objects.get(username=i)
-                    group.athletes.remove(user.athlete)
+                    if group.athletes.filter(user=user).exists():
+                        group.athletes.remove(user.athlete)
                     if not group.athletes.all():
                         group.delete()
                         return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
@@ -342,7 +347,7 @@ def add_coach(request, username):
             if form.is_valid():
                 coach_to_add = User.objects.get(username=form.cleaned_data['coach_username'])
                 
-                if athlete_user.athlete not in coach_to_add.coach.athletes.all() and not Request.objects.filter(requestee=athlete_user, requestor=coach_to_add, is_adding_athlete=True) and not Request.objects.filter(requestee=coach_to_add, requestor=athlete_user, is_adding_coach=True):
+                if not coach_to_add.coach.athletes.filter(user=athlete_user).exists() and not Request.objects.filter(requestee=athlete_user, requestor=coach_to_add, is_adding_athlete=True) and not Request.objects.filter(requestee=coach_to_add, requestor=athlete_user, is_adding_coach=True):
                     Request.objects.create(requestee=coach_to_add, requestor=athlete_user, is_adding_coach=True)
                     
                 return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
@@ -372,7 +377,8 @@ def remove_coach_or_athlete(request, username):
     if request.method == "POST":
         if 'remove coach' in request.POST:
             coach_user = athlete_or_coach_user
-            coach_user.coach.athletes.remove(user.athlete)
+            if coach_user.coach.athletes.filter(user=user).exists():
+                coach_user.coach.athletes.remove(user.athlete)
             
         elif 'remove athlete' in request.POST:
             coach_user = user
@@ -382,7 +388,8 @@ def remove_coach_or_athlete(request, username):
                     group.athletes.remove(athlete_user.athlete)
                     if not group.athletes.all():
                         group.delete()
-            coach_user.coach.athletes.remove(athlete_user.athlete)
+            if coach_user.coach.athletes.filter(user=athlete_user).exists():
+                coach_user.coach.athletes.remove(athlete_user.athlete)
 
         return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
                     
@@ -413,7 +420,7 @@ def request_detail(request, username, pk):
                 athlete_user_profile = athlete_user.athlete
                 coach_user = specific_request.requestee
                 coach_user_profile = coach_user.coach
-            if athlete_user_profile not in coach_user_profile.athletes.all():
+            if not coach_user_profile.athletes.filter(user=athlete_user).exists():
                 coach_user_profile.athletes.add(athlete_user_profile)
         specific_request.delete()
 
@@ -434,13 +441,13 @@ def signup(request):
             user = form.save()
             if form.cleaned_data['athlete_status'] == 'G':
                 user.is_gym_owner = True
-                user.is_coach = True
                 GymOwner.objects.create(user=user)
                 Coach.objects.create(user=user)
             elif form.cleaned_data['athlete_status'] == 'C':
                 user.is_coach = True
                 Coach.objects.create(user=user)
-            user.is_athlete = True
+            else:
+                user.is_athlete = True
             user.user_gender = form.cleaned_data['gender']
             user.workout_default_gender = form.cleaned_data['default_workout_gender']
             user.save()
@@ -1014,7 +1021,7 @@ def delete_instance(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
 
     if request.method == 'POST':
-        if request.user == instance.current_user or request.user.coach in instance.current_user.athlete.coach_set.all():
+        if request.user == instance.current_user or instance.current_user.athlete.coach_set.filter(user=request.user).exists():
             base_workout = instance.workout
             instance.delete()
             base_workout.update_estimated_duration()
@@ -1139,7 +1146,7 @@ def delete_result(request, username, pk, resultid):
     
     if request.method == 'POST':
         if 'delete result' in request.POST:
-            if request.user == instance.current_user or request.user.coach in instance.current_user.athlete.coach_set.all():
+            if request.user == instance.current_user or instance.current_user.athlete.coach_set.filter(user=request.user).exists():
                 instance.remove_date_completed(timezone.localtime(result.date_workout_completed).date())
                 result.delete()
                 instance.update_duration()
@@ -1339,7 +1346,7 @@ def interim_created_workout(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
 
     if request.method == 'POST':
-        if user == instance.current_user or user.coach in instance.current_user.athlete.coach_set.all():
+        if user == instance.current_user or instance.current_user.athlete.coach_set.filter(user=user).exists():
             if 'schedule workout for today' in request.POST:
                 now = timezone.localtime(timezone.now()).date()
                 instance.add_date_to_be_completed(now)
