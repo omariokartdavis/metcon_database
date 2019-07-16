@@ -5,17 +5,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
+# change users role status to only 1 role at work
+
 ## 7/15/19
 (uploaded at work)
+- views.py
 - utils.py
-- user_page.css
 - user_page.html
-- base_generic.js
-- base_generic.css
-- workout_list.js
-- deleted workoutinstance_detail.js, movement_list.js
-- workoutinstance_detail.html
-- movement_list.html
+- user_page.css
 
 ## functionality completed on 7/15/19
 - moved infinite scroll into base_generic.js
@@ -24,6 +21,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - added classes for assigned_workout_name/not_assigned_workout_name to user page to allow different stylings
 - added workout name classes to calendar workouts including assigned/notassigned
 - added {% if not user.is_coach or not user.is_gym_owner %} class="athlete_user" {% endif %} to tab div on user_page
+  - changed to if user.is_athlete after the below
+- changed signup to only give user.is_role = True for specific role. Removed extra roles for users in admin page
+- added styling for div .tab.athlete-user to give border radius on all sides for athletes
+- removed bulletpoints from calendar and added div class='calendar-workout-names' to replace the ul class styling
+- added if checks for if users exist in groups/coaches/athletes before adding/removing them
+- in views.py: replaced all if in or if not in with if filter.exists() where applicable.
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -55,14 +58,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- look at getting rid of the is_athlete=True for all users in signup view.
-  - don't think i need that and only need each user to have is_role = true for their specific role
-  - have to make sure all templates are styled properly by role which I believe they currently are
-  - getting rid of this will allow for template ifs for only athletes to be the following:
-    - {% if user.is_athlete %} instead of having to do {% if not user.is_coach and not user.is_gym_owner %}
-  - coaches and gym owners should still have Athlete and Coach models created for them, the user themselves should only be 1 role tho
+- don't forget to remove all "for testing purposes" code in templates like schedule_instance etc.
+- add clean validation to create group form so that groups can't be created with the same name under the same user
 - create all named workouts and create dropdown filter for them
   - can make a dropdown list of only named workouts
+  - would likely add to movement_list.py or something
 - add workout_list_minus_user_created to workout_list view and use that list for if a user isn't logged in.
 - currently an athlete can see if a workout is scheduled for another date even if that workout is hidden for that date.
   - they can see this in the edit schedule and delete schedule pages
@@ -205,11 +205,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - for strength programs, hold info about periodization rules etc. hold training maxes, days of the week when each workout ill be done
 
 ## Styling:
-- style .tab.athlete_user (no space inbetween)
-  - add left side border radius and box-shadow
-- ?get rid of shadow on previous/next month buttons?
 - style workouts on calendar for if completed or not completed that day
   - not sure exactly how to get this if statement in there
+  - if statement in utils on instance
+    - if instance.dates_workout_completed.filter(date_completed=date).exists():
+      - make names with extra class class="calendar_completed_workout_name"
 - style previous/next month buttons on calendar.
 - can add red dot to website icon on browser tab if you have notifications
   - (just like linkedin)
