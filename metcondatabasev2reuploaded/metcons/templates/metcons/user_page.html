@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
 	<h1>{{ user.username }}'s Homepage</h1>
-	<div class="tab{% if not user.is_coach and not user.is_gym_owner %} athlete_user{% endif%}">
+	<div class="tab{% if user.is_athlete %} athlete_user{% endif%}">
 		<button class="tablinks" id="defaultOpenTab">This Week</button>
 		<button class="tablinks" id="recentTab">Recent</button>
 		<button class="tablinks" id="calendarTab">Calendar</button>
@@ -59,10 +59,10 @@
 			</div>
 	{% endif %}
 	<div id="This Week" class="tabcontent">
-		{% if user.is_coach or user.is_gym_owner %}
-			{% if chosen_users_dict_of_this_weeks_workouts %}
-				{% for k, v in chosen_users_dict_of_this_weeks_workouts.items %}
-					<div class="listedWorkouts">
+		<div class="listedWorkouts">
+			{% if user.is_coach or user.is_gym_owner %}
+				{% if chosen_users_dict_of_this_weeks_workouts %}
+					{% for k, v in chosen_users_dict_of_this_weeks_workouts.items %}
 						{% if v %}
 							<h2>{{k|date:"l"}}</h2>
 						{% endif %}
@@ -279,14 +279,13 @@
 								{% endif %}
 							{% endif %}
 						{% endfor %}
-					</div>
-				{% endfor %}
-			{% else %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled for this week. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-			{% endif %}
-		{% elif dict_of_this_weeks_workouts %}
-			{% for k, v in dict_of_this_weeks_workouts.items %}
-				<div class="listedWorkouts">
+					{% endfor %}
+				{% else %}
+					<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled for this week.
+					</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+				{% endif %}
+			{% elif dict_of_this_weeks_workouts %}
+				{% for k, v in dict_of_this_weeks_workouts.items %}
 					{% if v %}
 						<h2>{{k|date:"l"}}</h2>
 					{% endif %}
@@ -406,16 +405,17 @@
 							{% endif %}
 						{% endif %}
 					{% endfor %}
-				</div>
-			{% endfor %}
-		{% else %}
-			<p>You have no workouts scheduled for this week. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-		{% endif %}
+				{% endfor %}
+			{% else %}
+				<p>You have no workouts scheduled for this week.
+				</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+			{% endif %}
+		</div>
 	</div>
 	<div id="Recent" class="tabcontent">
-		{% if user.is_coach or user.is_gym_owner %}
-			{% if chosen_users_recent_past_workouts %}
-				<div class="listedWorkouts">
+		<div class="listedWorkouts">
+			{% if user.is_coach or user.is_gym_owner %}
+				{% if chosen_users_recent_past_workouts %}
 					<h2>Recent Workouts</h2>
 					{% for i in chosen_users_recent_past_workouts %}
 						{% if i.workout %}
@@ -457,12 +457,11 @@
 							</div>
 						{% endif %}
 					{% endfor %}
-				</div>
-			{% else %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} not completed any workouts in the past 2 weeks. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-			{% endif %}
-		{% elif recent_past_workouts %}
-			<div class="listedWorkouts">
+				{% else %}
+					<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} not completed any workouts in the past 2 weeks.
+					</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+				{% endif %}
+			{% elif recent_past_workouts %}
 				<h2>Recent Workouts</h2>
 				{% for i in recent_past_workouts %}
 					{% if i.workout %}
@@ -494,15 +493,16 @@
 						</div>
 					{% endif %}
 				{% endfor %}
-			</div>
-		{% else %}
-			<p>You have not completed any workouts in the past 2 weeks. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-		{% endif %}
+			{% else %}
+				<p>You have not completed any workouts in the past 2 weeks.
+				</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+			{% endif %}
+		</div>
 	</div>
 	<div id="Incomplete" class="tabcontent">
-		{% if user.is_coach or user.is_gym_owner %}
-			{% if chosen_users_incomplete_workouts %}
-				<div class="listedWorkouts">
+		<div class="listedWorkouts">
+			{% if user.is_coach or user.is_gym_owner %}
+				{% if chosen_users_incomplete_workouts %}
 					<h2>Pending Wokouts</h2>
 					{% for i in chosen_users_incomplete_workouts %}
 						{% if i.workout %}
@@ -543,12 +543,11 @@
 							</div>
 						{% endif %}
 					{% endfor %}
-				</div>
-			{% else %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no incomplete workouts. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-			{% endif %}
-		{% elif incomplete_workouts %}
-			<div class="listedWorkouts">
+				{% else %}
+					<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no incomplete workouts.
+					</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+				{% endif %}
+			{% elif incomplete_workouts %}
 				<h2>Pending Workouts</h2>
 				{% for i in incomplete_workouts %}
 					{% if i.workout %}
@@ -579,10 +578,11 @@
 						</div>
 					{% endif %}
 				{% endfor %}
-			</div>
-		{% else %}
-			<p>You have no incomplete workouts. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-		{% endif %}
+			{% else %}
+				<p>You have no incomplete workouts.
+				</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+			{% endif %}
+		</div>
 	</div>
 	<div id="Calendar" class="tabcontent">
 		<div class="next-previous-buttons">
@@ -598,13 +598,6 @@
 			</form>
 		</div>
 		{{ calendar }} <!-- calendar is for some reason stopping things after it in html from displaying, it used to be before recent workouts and incomplete workouts -->
-		{% if user.is_coach or user.is_gym_owner %}
-			{% if not chosen_users_workouts %}
-				<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-			{% endif %}
-		{% elif not users_workouts %}
-			<p>You have no workouts. Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
-		{% endif %}
 	</div>
 {% endblock %}
 {% block extra_js %}
