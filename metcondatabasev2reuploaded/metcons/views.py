@@ -1235,90 +1235,188 @@ def create_workout(request):
     """View function for creating a new workout"""
 
     if request.method == 'POST':
-        form = CreateWorkoutForm(request.POST, **{'user':request.user})
-        if request.user.is_coach or request.user.is_gym_owner:
-            athlete_to_assign = request.POST.getlist('athlete_to_assign')
-            form.fields['athlete_to_assign'].choices = [(i, i) for i in athlete_to_assign]
-            group_to_assign = request.POST.getlist('group_to_assign')
-            form.fields['group_to_assign'].choices = [(i, i) for i in group_to_assign]
-        if form.is_valid():
-            current_user = User.objects.get(username=request.user.username)
-            users_to_assign_workout = []
-            if current_user.is_coach or current_user.is_gym_owner:
-                if form.cleaned_data['athlete_to_assign']:
-                    for i in form.cleaned_data['athlete_to_assign']:
-                        user = User.objects.get(username=i)
-                        users_to_assign_workout.append(user)
-                if form.cleaned_data['group_to_assign']:
-                    for i in form.cleaned_data['group_to_assign']:
-                        group = Group.objects.get(name=i, coach=current_user.coach)
-                        for i in group.athletes.all():
-                            users_to_assign_workout.append(i.user)
-                if not form.cleaned_data['athlete_to_assign'] and not form.cleaned_data['group_to_assign']:
+        if 'general workout' in request.POST:
+            form = CreateWorkoutForm(request.POST, **{'user':request.user})
+            if request.user.is_coach or request.user.is_gym_owner:
+                athlete_to_assign = request.POST.getlist('athlete_to_assign')
+                form.fields['athlete_to_assign'].choices = [(i, i) for i in athlete_to_assign]
+                group_to_assign = request.POST.getlist('group_to_assign')
+                form.fields['group_to_assign'].choices = [(i, i) for i in group_to_assign]
+            if form.is_valid():
+                current_user = User.objects.get(username=request.user.username)
+                users_to_assign_workout = []
+                if current_user.is_coach or current_user.is_gym_owner:
+                    if form.cleaned_data['athlete_to_assign']:
+                        for i in form.cleaned_data['athlete_to_assign']:
+                            user = User.objects.get(username=i)
+                            users_to_assign_workout.append(user)
+                    if form.cleaned_data['group_to_assign']:
+                        for i in form.cleaned_data['group_to_assign']:
+                            group = Group.objects.get(name=i, coach=current_user.coach)
+                            for i in group.athletes.all():
+                                users_to_assign_workout.append(i.user)
+                    if not form.cleaned_data['athlete_to_assign'] and not form.cleaned_data['group_to_assign']:
+                        users_to_assign_workout.append(current_user)
+                else:
                     users_to_assign_workout.append(current_user)
-            else:
-                users_to_assign_workout.append(current_user)
-            if not Workout.objects.filter(workout_text=form.cleaned_data['workout_text']):
-                if current_user.is_gym_owner:
-                    workout_location = 'Gym Owner Created'
-                elif current_user.is_coach:
-                    workout_location = 'Coach Created'
-                else:
-                    workout_location = 'Athlete Created'
-                if form.cleaned_data['estimated_duration']:
-                    estimated_duration = form.cleaned_data['estimated_duration'] * 60
-                else:
-                    estimated_duration = None
-                workout = Workout(workout_text=form.cleaned_data['workout_text'],
-                                  scaling_or_description_text=form.cleaned_data['workout_scaling'],
-                                  estimated_duration_in_seconds=estimated_duration,
-                                  where_workout_came_from=workout_location,
-                                  classification=None,
-                                  created_by_user = current_user,
-                                  gender = form.cleaned_data['gender'],
-                                  )
-                workout.save()
-                if Workout.objects.filter(id=workout.id, workout_text__iregex=r'as possible in \d+ minutes of'):
-                    r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
-                    workout.estimated_duration_in_seconds=int(re.split('\s', r1[0])[3])
-                workout.update_movements_and_classification()
-
-            else:
-                workout = Workout.objects.get(workout_text=form.cleaned_data['workout_text'])
-
-            if (request.user.is_coach and form.cleaned_data['hide_from_athletes?']) or (request.user.is_gym_owner and form.cleaned_data['hide_from_athletes?']):
-                hidden=True
-                date_to_unhide = form.cleaned_data['date_to_unhide']
-            else:
-                hidden=False
-                date_to_unhide = None
-                    
-            for i in users_to_assign_workout:
-                if not WorkoutInstance.objects.filter(workout=workout, current_user=i):
-                    if i != request.user:
-                        assigned = True
+                if not Workout.objects.filter(workout_text=form.cleaned_data['workout_text']):
+                    if current_user.is_gym_owner:
+                        workout_location = 'Gym Owner Created'
+                    elif current_user.is_coach:
+                        workout_location = 'Coach Created'
                     else:
-                        assigned = False
-                    instance = WorkoutInstance(workout=workout, current_user = i,
-                                               duration_in_seconds=workout.estimated_duration_in_seconds,
-                                               edited_workout_text=workout.workout_text,
-                                               edited_scaling_text=workout.scaling_or_description_text,
-                                               is_assigned_by_coach_or_gym_owner=assigned)
-                    instance.save()
-                    if instance.is_assigned_by_coach_or_gym_owner:
-                        instance.is_hidden=hidden
-                        instance.date_to_unhide=date_to_unhide
-                        instance.assigned_by_user=current_user
-                        instance.save()
+                        workout_location = 'Athlete Created'
+                    if form.cleaned_data['estimated_duration']:
+                        estimated_duration = form.cleaned_data['estimated_duration'] * 60
+                    else:
+                        estimated_duration = None
+                    workout = Workout(workout_text=form.cleaned_data['workout_text'],
+                                      scaling_or_description_text=form.cleaned_data['workout_scaling'],
+                                      estimated_duration_in_seconds=estimated_duration,
+                                      where_workout_came_from=workout_location,
+                                      classification=None,
+                                      created_by_user = current_user,
+                                      gender = form.cleaned_data['gender'],
+                                      )
+                    workout.save()
+                    if Workout.objects.filter(id=workout.id, workout_text__iregex=r'as possible in \d+ minutes of'):
+                        r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
+                        workout.estimated_duration_in_seconds=int(re.split('\s', r1[0])[3])
+                    workout.update_movements_and_classification()
+
                 else:
-                    instance = WorkoutInstance.objects.get(workout=workout, current_user=i)
+                    workout = Workout.objects.get(workout_text=form.cleaned_data['workout_text'])
 
-            if len(users_to_assign_workout) > 1:
-                return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, workout.id]))
-            else:
-                return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
+                if (request.user.is_coach and form.cleaned_data['hide_from_athletes?']) or (request.user.is_gym_owner and form.cleaned_data['hide_from_athletes?']):
+                    hidden=True
+                    date_to_unhide = form.cleaned_data['date_to_unhide']
+                else:
+                    hidden=False
+                    date_to_unhide = None
+                        
+                for i in users_to_assign_workout:
+                    if not WorkoutInstance.objects.filter(workout=workout, current_user=i):
+                        if i != request.user:
+                            assigned = True
+                        else:
+                            assigned = False
+                        instance = WorkoutInstance(workout=workout, current_user = i,
+                                                   duration_in_seconds=workout.estimated_duration_in_seconds,
+                                                   edited_workout_text=workout.workout_text,
+                                                   edited_scaling_text=workout.scaling_or_description_text,
+                                                   is_assigned_by_coach_or_gym_owner=assigned)
+                        instance.save()
+                        if instance.is_assigned_by_coach_or_gym_owner:
+                            instance.is_hidden=hidden
+                            instance.date_to_unhide=date_to_unhide
+                            instance.assigned_by_user=current_user
+                            instance.save()
+                    else:
+                        instance = WorkoutInstance.objects.get(workout=workout, current_user=i)
 
+                if len(users_to_assign_workout) > 1:
+                    return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, workout.id]))
+                else:
+                    return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
+
+        # this part is not effective yet as I haven't added the StrengthWorkoutForm to the Get request for this page
+        elif 'strength workout' in request.POST:
+            form = CreateStrengthWorkoutForm(request.POST, **{'user':request.user})
+            if request.user.is_coach or request.user.is_gym_owner:
+                athlete_to_assign = request.POST.getlist('athlete_to_assign')
+                form.fields['athlete_to_assign'].choices = [(i, i) for i in athlete_to_assign]
+                group_to_assign = request.POST.getlist('group_to_assign')
+                form.fields['group_to_assign'].choices = [(i, i) for i in group_to_assign]
+            if form.is_valid():
+                current_user = User.objects.get(username=request.user.username)
+                users_to_assign_workout = []
+                if current_user.is_coach or current_user.is_gym_owner:
+                    if form.cleaned_data['athlete_to_assign']:
+                        for i in form.cleaned_data['athlete_to_assign']:
+                            user = User.objects.get(username=i)
+                            users_to_assign_workout.append(user)
+                    if form.cleaned_data['group_to_assign']:
+                        for i in form.cleaned_data['group_to_assign']:
+                            group = Group.objects.get(name=i, coach=current_user.coach)
+                            for i in group.athletes.all():
+                                users_to_assign_workout.append(i.user)
+                    if not form.cleaned_data['athlete_to_assign'] and not form.cleaned_data['group_to_assign']:
+                        users_to_assign_workout.append(current_user)
+                else:
+                    users_to_assign_workout.append(current_user)
+                if not StrengthExercise.objects.filter(movement__name=form.cleaned_data['movement'], number_of_sets=form.cleaned_data['sets']).exists():
+                    if Movemement.objects.filter(name=form.cleaned_data['movement']):
+                        strength_movement = Movement.objects.get(name=form.cleaned_data['movement'])
+                    strength_exercise = StrengthExercise(movement=strength_movement,
+                                                         number_of_sets=form.cleaned_data['sets'])
+                    strength_exercise.save()
+            #stopped editing after this point########################################################
+                    
+                if not StrengthWorkout.objects.filter(workout_text=form.cleaned_data['workout_text']):
+                    if current_user.is_gym_owner:
+                        workout_location = 'Gym Owner Created'
+                    elif current_user.is_coach:
+                        workout_location = 'Coach Created'
+                    else:
+                        workout_location = 'Athlete Created'
+                    if form.cleaned_data['estimated_duration']:
+                        estimated_duration = form.cleaned_data['estimated_duration'] * 60
+                    else:
+                        estimated_duration = None
+                    workout = Workout(workout_text=form.cleaned_data['workout_text'],
+                                      scaling_or_description_text=form.cleaned_data['workout_scaling'],
+                                      estimated_duration_in_seconds=estimated_duration,
+                                      where_workout_came_from=workout_location,
+                                      classification=None,
+                                      created_by_user = current_user,
+                                      gender = form.cleaned_data['gender'],
+                                      )
+                    workout.save()
+                    if Workout.objects.filter(id=workout.id, workout_text__iregex=r'as possible in \d+ minutes of'):
+                        r1=re.findall(r'as possible in \d+ minutes of', workout.workout_text)
+                        workout.estimated_duration_in_seconds=int(re.split('\s', r1[0])[3])
+                    workout.update_movements_and_classification()
+
+                else:
+                    workout = Workout.objects.get(workout_text=form.cleaned_data['workout_text'])
+
+                if (request.user.is_coach and form.cleaned_data['hide_from_athletes?']) or (request.user.is_gym_owner and form.cleaned_data['hide_from_athletes?']):
+                    hidden=True
+                    date_to_unhide = form.cleaned_data['date_to_unhide']
+                else:
+                    hidden=False
+                    date_to_unhide = None
+                        
+                for i in users_to_assign_workout:
+                    if not WorkoutInstance.objects.filter(workout=workout, current_user=i):
+                        if i != request.user:
+                            assigned = True
+                        else:
+                            assigned = False
+                        instance = WorkoutInstance(workout=workout, current_user = i,
+                                                   duration_in_seconds=workout.estimated_duration_in_seconds,
+                                                   edited_workout_text=workout.workout_text,
+                                                   edited_scaling_text=workout.scaling_or_description_text,
+                                                   is_assigned_by_coach_or_gym_owner=assigned)
+                        instance.save()
+                        if instance.is_assigned_by_coach_or_gym_owner:
+                            instance.is_hidden=hidden
+                            instance.date_to_unhide=date_to_unhide
+                            instance.assigned_by_user=current_user
+                            instance.save()
+                    else:
+                        instance = WorkoutInstance.objects.get(workout=workout, current_user=i)
+
+                if len(users_to_assign_workout) > 1:
+                    return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, workout.id]))
+                else:
+                    return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
     else:
+        # need to add if check for what type of form to display. can only do this after a dropdown choice is selected, find a way to display a default form
+        # can send all forms for different types of workouts from here by: form1 = CreateWorkoutForm, form2 = CreateStrengthForm etc.
+        # then pass all to context
+        # then in template use javascript and a dropdown to display the correct form
+        # can have default be whatever default type user wants to put as their default workout type
         form = CreateWorkoutForm(**{'user':request.user}, initial={'gender': request.user.workout_default_gender,
                                           })
         if request.user.is_coach or request.user.is_gym_owner:
