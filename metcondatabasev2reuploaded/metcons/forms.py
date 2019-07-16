@@ -3,7 +3,15 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm
-from metcons.models import User
+from metcons.models import User, Movement
+
+movement_choices = [(i.name, i.name) for i in Movement.objects.all()]
+
+weight_unit_choices = [
+    ('lbs', 'lbs'),
+    ('kgs', 'kgs'),
+    ('%', '%'),
+    ]
 
 repetition_frequency_choices = [
     ('none', ''),
@@ -89,6 +97,24 @@ class CreateWorkoutForm(forms.Form):
     workout_scaling = forms.CharField(widget=forms.Textarea, max_length=4000, help_text='Enter any scaling options.', required=False)
     estimated_duration = forms.IntegerField(help_text='Enter an estimate of how long it will take to complete the workout in minutes (whole numbers only).', required=False)
     gender = forms.ChoiceField(widget=forms.Select(), choices=workout_gender_choices, help_text='Is this workout (and the weights you have entered) applicable for both Males and Females or only one?')
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(CreateWorkoutForm, self).__init__(*args, **kwargs)
+        if user.is_coach or user.is_gym_owner:
+            self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
+            self.fields['group_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
+            self.fields['hide_from_athletes?'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
+            self.fields['date_to_unhide'] = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
+
+class CreateStrengthWorkoutForm(forms.Form):
+    #modify this to allow for changing number of movements/sets/reps/weights to be created
+    movement = forms.MultipleChoiceField(widget=forms.Select(), choices=movement_choices, help_text='What Movement would you like to perform?')
+    comment = forms.CharField(widget=forms.Textarea, max_length=4000)
+    sets = forms.IntegerField(help_text='How many sets would you like to perform?')
+    reps = forms.IntegerField(help_text='How many reps would you like to perform?')
+    weight = forms.DecimalField(min_value=0.0, max_value=99999.9, decimal_places=1, max_digits=6)
+    weight_units = forms.ChoiceField(widget=forms.Select(), choices=weight_unit_choices, help_text='What units is the weight in?')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
