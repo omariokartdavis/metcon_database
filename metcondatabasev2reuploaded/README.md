@@ -5,28 +5,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-# change users role status to only 1 role at work
-
-## 7/15/19
+## 7/16/19
 (uploaded at work)
+- models.py (requires migrations)
 - views.py
-- utils.py
-- user_page.html
-- user_page.css
+- forms.py
+- create_workout.html
 
-## functionality completed on 7/15/19
-- moved infinite scroll into base_generic.js
-- added hover effects for previous/next month buttons on user calendar
-- added more margin-right to workoutcontent p/form
-- added classes for assigned_workout_name/not_assigned_workout_name to user page to allow different stylings
-- added workout name classes to calendar workouts including assigned/notassigned
-- added {% if not user.is_coach or not user.is_gym_owner %} class="athlete_user" {% endif %} to tab div on user_page
-  - changed to if user.is_athlete after the below
-- changed signup to only give user.is_role = True for specific role. Removed extra roles for users in admin page
-- added styling for div .tab.athlete-user to give border radius on all sides for athletes
-- removed bulletpoints from calendar and added div class='calendar-workout-names' to replace the ul class styling
-- added if checks for if users exist in groups/coaches/athletes before adding/removing them
-- in views.py: replaced all if in or if not in with if filter.exists() where applicable.
+## functionality completed on 7/16/19
+- created strengthworkout, strengthexercise, and set models
+- modified WorkoutInstance model to also serve as strengthworkoutinstance without creating new model
+- started modifying views and create_workout to handle multiple types of workouts
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -58,6 +47,19 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- change createstrengthworkoutform to allow for multiple movements and varying reps per each set as well as weight
+- can add a class if statement to the create_workout.html class="{% if user.default_sport == 'specific sport' %}default_form{%endif%}
+- need to alter views (create workout view and all views that show info on workouts) to display properly if its a strength workout or general workout
+- need to change forms that involve workouts
+- need to download itertools and use its chain function to combine querysets
+  - may not need to do this since I modified WorkoutInstance to be for workouts and strength workouts
+  - can use if instance.workout or if instance.strength_workout to diferentiate in templates etc.
+- now that strength workouts are added. need to include them in profile list of workouts 
+  - also have to change user_page.html as they don't have all the same options
+- need to create strengthWorkoutInstance model just like WorkoutInstance model
+  - dates and youngest/oldest scheduled dates etc.
+  - need to find a way to add these into users list of workouts
+- need to create StrengthWorkoutResult model
 - don't forget to remove all "for testing purposes" code in templates like schedule_instance etc.
 - add clean validation to create group form so that groups can't be created with the same name under the same user
 - create all named workouts and create dropdown filter for them
@@ -168,41 +170,33 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
                 by "workout " + str(id)
   -would also change def `__str__` to if statement on if name exists otherwise same as above
 ### Pagination:
-- add pagination to workout list, profile page, and instance detail page for results.
+- add pagination to profile page.
+  - not sure what exactly would be paginated.
+    - this weeks workouts could maybe paginate by days?
+    - recent and incomplete workouts could just paginate workouts
 - add 'loading...' thing for infinite scroll
 ### For multiple sports:
-- maybe just add a foreignkey field in current Workout model of "sport" that has different sport choices.
-  -  should probably still create a different model for individual strength workout
-    - holds one movement with as many sets/reps/weights as need
-    - has manytomany with workout. (Should likely be a field in Workout model)
-  - number of sets as integer field
-    - this number from text input or dropdown would decide how many input boxes appear
-      - use javascript to hide input boxes until this box losses focus
-      - use javascript to prepopulate movement into boxes
-      - use javascript to potentially include supersetting
-      - have checkboxes for same weight for every set, same reps for every set so they can be autofilled
-        - if supersetting they apply to each movement individually
-          - (movement 1 all sets will have same weight and reps, movement 2 all sets will have same)
-  - weights and reps as manytomany fields?
-    - Weight model has value and unit
-      -pre create common weights? 135/225/315/405lbs? 60/100/125/140kg?
-    - reps can be pre created up to 50 just like movements/classifications
-  - Would likely make filtering workout_list easier
-  - All baseline fields in model like date_created and user can still be required.
-                But all other defining fields will have to be not required
-  - add all fields for all workouts to the current workout model (sets, reps, weights) and leave them as blank=True, null=True
-  - on the create workout template, create a dropdown that can switch between different forms for different workout types
-    - name all forms so the view can be seperated
-    - have the default form be based on users default sport
-    - could also just use multiple create workout buttons for different types. I like dropdown idea better if it can work
-  - on the create_workout_view, handle the post requests based on form name
-  - on the results and create_workout results, base the form and template off the workoutinstance.workout.sport with if statements
-  - on the workout_list create a dropdown that can choose between any or all sports. default to users sport
+- number of sets as integer field
+  - this number from text input or dropdown would decide how many input boxes appear
+    - use javascript to hide input boxes until this box losses focus
+    - use javascript to prepopulate movement into boxes
+    - use javascript to potentially include supersetting
+    - have checkboxes for same weight for every set, same reps for every set so they can be autofilled
+      - if supersetting they apply to each movement individually
+        - (movement 1 all sets will have same weight and reps, movement 2 all sets will have same)
+- on the create workout template, create a dropdown that can switch between different forms for different workout types
+  - name all forms so the view can be seperated
+  - have the default form be based on users default sport
+  - could also just use multiple create workout buttons for different types. I like dropdown idea better if it can work
+- on the create_workout_view, handle the post requests based on form name
+- on the results and create_workout results, base the form and template off the workout/strengthworkout type
+- on the workout_list create a dropdown that can choose between any or all sports. default to users sport
 - create a field on user model that has choices of different sports
   - whatever sport they choose will be their default createworkout model and default workout list to search through
-  - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?
+  - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?)
 - set up a strength workout model and strength program model
   - for strength programs, hold info about periodization rules etc. hold training maxes, days of the week when each workout ill be done
+- create Training Maxes field on user model for eventual strength programs?
 
 ## Styling:
 - style workouts on calendar for if completed or not completed that day
