@@ -46,6 +46,10 @@
   border-radius: 0 5px 5px 0;
 }
 
+.tab.athlete_user {
+	border-radius: 5px;
+}
+
 .tab button {
   background-color: inherit;
   float: left;
@@ -113,11 +117,16 @@
 
 .noAthletes {
   left: 0;
-  top: 71px;
+  top: 72px;
   position: fixed;
   width: 10%;
+  background-color: white;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
   z-index: 5;
-  border: 1px solid black;
+}
+
+.noAthletes p {
+	margin: 10px;
 }
 
 .tab button:hover, .athleteTab button:hover {
@@ -213,7 +222,7 @@
 	width: 200px;
 	padding: 20px 0px 0px 5px;
 }
-.calendar ul {
+.calendar .calendar_workout_names {
 	height: 100%;
 	padding: 0px 5px 0px 20px;
 }
@@ -231,7 +240,7 @@
 .date {
 	font-size: 16px;
 	position: relative;
-	top: 5px;
+	top: 0;
 }
 
 .next-previous-buttons {
@@ -241,12 +250,13 @@
 }
 
 .next-previous-buttons #nextMonthButton, .next-previous-buttons #previousMonthButton {
+	/*have to keep a border or border:none*/
 	position: absolute;
 	top: 10px;
 	color: black;
 	border-radius: 4px;
 	background-color: transparent;
-	box-shadow: 0 0 0 0, 0 2px 3px rgba(0,0,0,.2); /*can get rid of after comma to get rid of shadow*/
+	box-shadow: 0 0 0 0, 0 1px 3px rgba(0,0,0,.2); /*can get rid of after comma to get rid of shadow*/
 	outline: none;
 	border: 1px solid rgba(0,0,0,.15);
 	font-size: 13px;
