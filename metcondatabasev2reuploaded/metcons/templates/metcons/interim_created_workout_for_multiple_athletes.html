@@ -11,13 +11,23 @@
 			{% endif %}
 			
 			<p><strong>{{ workout.display_name }}</strong>:
-			{{ workout.workout_text|linebreaks }}</p>
+			{% if workout.is_general_workout %}
+				{{ workout.workout_text|linebreaks }}</p>
+			{% elif workout.is_strength_workout %}
+				{% for se in workout.strength_exercises.all %}
+					<p>{{ se.movement.name }}</br >
+					{% for se_set in se.set_set.all %}
+						Set {{ se_set.set_number }}: {{ se_set.reps }} reps at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}</br >
+					{% endfor %}
+					</p>
+				{% endfor %}
+			{% endif %}
 			
 			<form method='POST'>
 				{% csrf_token %}
 				<input type='submit' name='schedule workout for today for multiple athletes' value='Schedule For Today'>
 			</form>
-			<form action="{% url 'schedule_instance_for_multiple_athletes' user.username workout.id %}">
+			<form action="{% url 'schedule_instance_for_multiple_athletes' user.username last_instance.id %}">
 				{% csrf_token %}
 				<input type="submit" name ='schedule workout for future' value="Schedule Workout For Future" />
 			</form>
