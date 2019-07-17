@@ -5,17 +5,42 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 7/16/19
+## 7/16/19 and 7/17/19
 (uploaded at work)
 - models.py (requires migrations)
 - views.py
 - forms.py
+- urls.py
+- utils.py
 - create_workout.html
+- user_page.html
+- workoutinstance_detail.html
+- interim_created_workout.html
+- schedule_instance_for_multiple_athletes.html
+- edit_instance.html
+- workout_list.html
+- interim_created_workout_for_multiple_athletes.html
+- create_result.html
+- edit_result.html
+- created create_workout.js and create_workout.css
 
 ## functionality completed on 7/16/19
 - created strengthworkout, strengthexercise, and set models
 - modified WorkoutInstance model to also serve as strengthworkoutinstance without creating new model
 - started modifying views and create_workout to handle multiple types of workouts
+
+## functionality completed on 7/17/19
+- changes to create workout view to allow for 2 different types of workout
+- changed user_page, create_workout, and workoutinstance_detail to allow for strength workouts
+- changed add_workout_to_athletes view to allow strength workout
+- changed result model to allow for strength workouts
+- changed all schedule_for_multiple_users buttons to pass instance id not workout id.
+  - then change schedule for multiple athletes view to get either workout or strength workout id based on if statement
+  - this way I don't have to add if statements to every template button
+  - buttons on pages: 
+    - fixed: workoutinstance_detail, user_page, interim_created_workout_for_multiple_athletes
+    - notfixed: 
+- changed all views to allow for multiple workouts except workout_list view.
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -47,6 +72,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
+- delete_instance view might need to change still can't remember
+- change "schedule for all athletes buttons" to "schedule for multiple athletes"
+  - then go to athlete select page and schedule select page
+- change results for strength workout to use sets/reps/weights
+- still need to handle result media files better
+- ???change workout display on user_page and calendar as just "Strength"/"Workout"/"Cardio" instaed of having id number as well???
+  - when strenght workouts are hidden from athletes the current hidden text is clipped by the ellipses dropdown
+- put strength workouts in workout_list in workouts view 
 - change createstrengthworkoutform to allow for multiple movements and varying reps per each set as well as weight
 - can add a class if statement to the create_workout.html class="{% if user.default_sport == 'specific sport' %}default_form{%endif%}
 - need to alter views (create workout view and all views that show info on workouts) to display properly if its a strength workout or general workout
@@ -54,6 +87,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - need to download itertools and use its chain function to combine querysets
   - may not need to do this since I modified WorkoutInstance to be for workouts and strength workouts
   - can use if instance.workout or if instance.strength_workout to diferentiate in templates etc.
+  - may need this for workout_list view for combininb both types of workout models
 - now that strength workouts are added. need to include them in profile list of workouts 
   - also have to change user_page.html as they don't have all the same options
 - need to create strengthWorkoutInstance model just like WorkoutInstance model
