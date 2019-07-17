@@ -27,32 +27,60 @@ class Calendar(HTMLCalendar):
                                                  Q(dates_workout_completed__date_completed=date)).distinct()
             d = ''
             for instance in instances_per_day:
-                if instance.is_hidden:
-                    if instance.assigned_by_user != self.viewing_user:
-                        if instance.date_to_unhide:
+                if instance.workout:
+                    if instance.is_hidden:
+                        if instance.assigned_by_user != self.viewing_user:
+                            if instance.date_to_unhide:
+                                if date >= instance.date_to_unhide:
+                                    if date != self.now:
+                                        d+= f'Workout Hidden'
+                                    else:
+                                        d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
+                                else:
+                                    d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
+                            else:
+                                d+= f'Workout Hidden</br >'
+                        elif instance.date_to_unhide:
                             if date >= instance.date_to_unhide:
                                 if date != self.now:
-                                    d+= f'Workout Hidden'
+                                    d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} - Hidden </a></br >'
                                 else:
                                     d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
                             else:
                                 d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
                         else:
-                            d+= f'Workout Hidden</br >'
-                    elif instance.date_to_unhide:
-                        if date >= instance.date_to_unhide:
-                            if date != self.now:
-                                d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} - Hidden </a></br >'
-                            else:
-                                d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
-                        else:
-                            d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
+                            d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} - Hidden No Unhide </a></br >'
+                    elif instance.is_assigned_by_coach_or_gym_owner:
+                        d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
                     else:
-                        d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} - Hidden No Unhide </a></br >'
-                elif instance.is_assigned_by_coach_or_gym_owner:
-                    d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
+                        d += f'<a class="workout_display_name not_assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
                 else:
-                    d += f'<a class="workout_display_name not_assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
+                    if instance.is_hidden:
+                        if instance.assigned_by_user != self.viewing_user:
+                            if instance.date_to_unhide:
+                                if date >= instance.date_to_unhide:
+                                    if date != self.now:
+                                        d+= f'Workout Hidden'
+                                    else:
+                                        d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.strength_workout.display_name()} </a></br >'
+                                else:
+                                    d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.strength_workout.display_name()} </a></br >'
+                            else:
+                                d+= f'Workout Hidden</br >'
+                        elif instance.date_to_unhide:
+                            if date >= instance.date_to_unhide:
+                                if date != self.now:
+                                    d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.strength_workout.display_name()} - Hidden </a></br >'
+                                else:
+                                    d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.strength_workout.display_name()} </a></br >'
+                            else:
+                                d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.strength_workout.display_name()} </a></br >'
+                        else:
+                            d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.strength_workout.display_name()} - Hidden No Unhide </a></br >'
+                    elif instance.is_assigned_by_coach_or_gym_owner:
+                        d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.strength_workout.display_name()} </a></br >'
+                    else:
+                        d += f'<a class="workout_display_name not_assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.strength_workout.display_name()} </a></br >'
             return f"<td><span class='date'>{day}</span><div class='calendar_workout_names'> {d} </div></td>"
         return '<td></td>'
 
