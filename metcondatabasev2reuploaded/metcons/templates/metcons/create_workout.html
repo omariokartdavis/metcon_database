@@ -1,17 +1,54 @@
 {% extends "base_generic.html" %}
 
+{% block extra_css %}
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'css/create_workout.css' %}">
+{% endblock %}
 {% block content %}
 	{% if user.is_authenticated %}
 		<h1>Create Workout</h1>
 		
-		<form action ="" method="post">
-			{% csrf_token %}
-			<table>
-			{{ form.as_table }}
-			</table>
-			<input type="hidden" name="general workout">
-			<input type="submit" value="Submit">
-		</form>
+		<p>Select the type of workout:</p>
+		<select id='workout_type_selector'>
+			<option value="general_workout_form">General Workout</option>
+			<option value="strength_workout_form">Strength Workout</option>
+		</select>
+		
+		<div class="workout_form" id="general_workout_form">
+			<form method="post">
+				{% csrf_token %}
+				<table>
+				{{ form1.as_table }}
+				</table>
+				<input type="hidden" name="general workout">
+				<input type="submit" value="Submit">
+			</form>
+		</div>
+		
+		<div class="workout_form" id="strength_workout_form">
+			<form method='post'>
+				{% csrf_token %}
+				<table>
+				{{ form2.as_table }}
+				</table>
+				<input type="hidden" name="strength workout">
+				<input type="submit" value="Submit">
+			</form>
+			{% if form.errors %}
+				{% for field in form %}
+					{% for error in field.errors %}
+						<div class="alert alert-danger">
+							<strong>{{ error|escape }}</strong>
+						</div>
+					{% endfor %}
+				{% endfor %}
+				{% for error in form.non_field_errors %}
+					<div class="alert alert-danger">
+						<strong>{{ error|escape }}</strong>
+					</div>
+				{% endfor %}
+			{% endif %}
+		</div>
 		
 		{% if user.is_coach or user.is_gym_owner %}
 			{% if not user.coach.athletes.all %}
@@ -22,4 +59,8 @@
 	{% else %}
 		<p>Please login to view this page.</p>
 	{% endif %}
+{% endblock %}
+{% block extra_js %}
+	{% load static %}
+	<script src="{% static 'js/create_workout.js' %}"></script>
 {% endblock %}
