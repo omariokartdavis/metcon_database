@@ -5,9 +5,18 @@
 		{% if user.username == instance.current_user.username or user.coach in instance.current_user.athlete.coach_set.all %}
 			<h2>Would you like to schedule this workout or have you already completed it?</h2>
 			
-			<p><strong>{{ instance.workout.display_name }}</strong>:
-			{{ instance.workout.workout_text|linebreaks }}</p>
-			
+			<p><strong>{{ instance.display_workout }}</strong>:
+			{% if instance.workout %}
+				{{ instance.workout.workout_text|linebreaks }}</p>
+			{% elif instance.strength_workout %}
+				{% for se in instance.strength_workout.strength_exercises.all %}
+					<p>{{ se.movement.name }}</br >
+					{% for se_set in se.set_set.all %}
+						Set {{ se_set.set_number }}: {{ se_set.reps }} reps at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}</br >
+					{% endfor %}
+					</p>
+				{% endfor %}
+			{% endif %}
 			<form method='POST'>
 				{% csrf_token %}
 				<input type='submit' name='schedule workout for today' value='Schedule For Today'>
@@ -16,6 +25,7 @@
 				{% csrf_token %}
 				<input type="submit" name ='schedule workout for future' value="Schedule Workout In Future" />
 			</form>
+			<!--this isn't currently getting used because i'm not passing an athlete list to this template -->
 			{% if athlete_list.count <= 1 %}
 				<form action="{% url 'result_create' user.username instance.id %}">
 					{% csrf_token %}
