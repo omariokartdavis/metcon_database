@@ -5,12 +5,22 @@
 		{% if user.username == instance.current_user.username or user.coach in instance.current_user.athlete.coach_set.all %}
 			<h1> Add Result for {{ instance.display_workout }}</h1>
 			
-			<p><strong>{{ instance.workout.display_name }}</strong>:
-			{{ instance.workout.workout_text|linebreaks }}</p>
+			<p><strong>{{ instance.display_workout }}</strong>:
+			{% if instance.workout %}
+				{{ instance.edited_workout_text|linebreaks }}</p>
+			{% elif instance.strength_workout %}
+				{% for se in instance.strength_workout.strength_exercises.all %}
+					<p>{{ se.movement.name }}</br >
+					{% for se_set in se.set_set.all %}
+						Set {{ se_set.set_number }}: {{ se_set.reps }} reps at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}</br >
+					{% endfor %}
+					</p>
+				{% endfor %}
+			{% endif %}
 			<form action="" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
 				<table>
-				{{ form.as_table }}
+				{% if instance.workout %}{{ form1.as_table }}{% elif instance.strength_workout %}{{ form2.as_table }}{% endif %}
 				</table>
 				<input type="submit" value="Submit" name="add result to instance">
 				<input type="hidden" name="next" value="{{ request.path }}">
