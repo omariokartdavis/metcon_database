@@ -6,10 +6,11 @@
 			<h1>Edit {{ instance.display_workout }}</h1>
 			
 			<p><strong>If someone else has already downloaded your workout to their profile, editing this will only change your copy.</strong></p>
+			
 			<form method="post">
 				{% csrf_token %}
 				<table>
-				{{ form.as_table }}
+				{% if instance.workout %}{{ form1.as_table }}{% elif instance.strength_workout %}{{ form2.as_table }}{% endif %}
 				</table>
 				<input type="submit" value="Submit" name="edit instance">
 			</form>
