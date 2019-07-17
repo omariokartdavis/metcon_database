@@ -3,7 +3,7 @@
 {% block content %}
 	{% if user.is_authenticated %}
 		{% if user.username == workoutinstance.current_user.username or user.coach in workoutinstance.current_user.athlete.coach_set.all %}
-			<h1>{{ workoutinstance.workout.display_name }}</h1><p> - Last Completed: {% if workoutinstance.oldest_completed_date %}{{ workoutinstance.oldest_completed_date.date_completed|date:"l, F j, Y" }}{% else %} Never {% endif %}</p>
+			<h1>{{ workoutinstance.display_workout }}</h1><p> - Last Completed: {% if workoutinstance.oldest_completed_date %}{{ workoutinstance.oldest_completed_date.date_completed|date:"l, F j, Y" }}{% else %} Never {% endif %}</p>
 			<form action="{% url 'schedule_instance' user.username workoutinstance.id %}">
 				<input type="submit" value="Schedule Workout" />
 			</form>
@@ -22,10 +22,10 @@
 			{% if user.is_coach or user.is_gym_owner %}
 				{% if workoutinstance.is_assigned_by_coach_or_gym_owner %}
 					{% if workoutinstance.assigned_by_user == request.user %}
-						<form action="{% url 'schedule_instance_for_multiple_athletes' user.username workout.id %}">
+						<form action="{% url 'schedule_instance_for_multiple_athletes' user.username workoutinstance.id %}">
 							<input type="submit" value="Schedule For All Your Athletes With This Workout" />
 						</form>
-						<form action="{% url 'edit_schedule_for_multiple_athletes' user.username workout.id %}">
+						<form action="{% url 'edit_schedule_for_multiple_athletes' user.username workoutinstance.id %}">
 							<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
 						</form>
 						{% if workoutinstance.is_hidden %}
@@ -42,11 +42,21 @@
 				{% endif %}
 			{% endif %}
 			{% if user.is_coach or user.is_gym_owner %}{% if workoutinstance.is_hidden %}Hidden - will unhide to athletes on: {% if workoutinstance.date_to_unhide %}{{ workoutinstance.date_to_unhide|date:"F j, Y" }}{% else %}Never{% endif %}{% endif %}{% endif %}</p>
-			<p><strong>Description:</strong> {{ workoutinstance.edited_workout_text|linebreaks }}</p>
-			<p><strong>Scaling/Comments:</strong> {{ workoutinstance.edited_scaling_text|linebreaks }}</p>
-			<p><strong>Duration:</strong> {% if duration_minutes == 0 and duration_seconds == 0 %} No Results {% endif %}{% if duration_minutes > 0 %}{{ duration_minutes }} minutes {% endif %}{% if duration_seconds > 0 %} {{ duration_seconds }} seconds {% endif %}</p>
-			<p><strong>Number of Times You've Completed:</strong> {{ workoutinstance.number_of_times_completed }}</p>
-			
+			{% if workoutinstance.workout %}
+				<p><strong>Description:</strong> {{ workoutinstance.edited_workout_text|linebreaks }}</p>
+				<p><strong>Scaling/Comments:</strong> {{ workoutinstance.edited_scaling_text|linebreaks }}</p>
+				<p><strong>Duration:</strong> {% if duration_minutes == 0 and duration_seconds == 0 %} No Results {% endif %}{% if duration_minutes > 0 %}{{ duration_minutes }} minutes {% endif %}{% if duration_seconds > 0 %} {{ duration_seconds }} seconds {% endif %}</p>
+				<p><strong>Number of Times You've Completed:</strong> {{ workoutinstance.number_of_times_completed }}</p>
+			{% elif workoutinstance.strength_workout %}
+				{% for se in workoutinstance.strength_workout.strength_exercises.all %}
+					<p>Comments: {{ workoutinstance.comment }}</p>
+					<p><strong>{{ se.movement.name }}</strong></br >
+					{% for se_set in se.set_set.all %}
+						Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+					{% endfor %}
+					</p>
+				{% endfor %}
+			{% endif %}
 			<form action="{% url 'result_create' user.username workoutinstance.id %}">
 				<input type="submit" value="Add Result" />
 			</form>
@@ -58,14 +68,16 @@
 							<div class="infinite-item">
 								<li>
 									<p><a href="{% url 'edit_result' user.username workoutinstance.id result.id %}"><strong>{{ result.date_workout_completed|date:"F j, Y" }}</strong></a> - <form action="{% url 'delete_result' user.username workoutinstance.id result.id %}"><input type="submit" value="Delete Result" /></form></p>
-									{% if result.duration_in_minutes > 0 %}
-										<p>{{ result.duration_in_minutes }} minutes</p>
-									{% endif %}
-									{% if result.duration_remainder > 0 %}
-										<p>{{ result.duration_remainder }} seconds</p>
-									{% endif %}
-									{% if result.duration_in_minutes == 0 and result.duration_remainder == 0 %}
-										<p>No Duration Results</p>
+									{% if workoutinstance.workout %}
+										{% if result.duration_in_minutes > 0 %}
+											<p>{{ result.duration_in_minutes }} minutes</p>
+										{% endif %}
+										{% if result.duration_remainder > 0 %}
+											<p>{{ result.duration_remainder }} seconds</p>
+										{% endif %}
+										{% if result.duration_in_minutes == 0 and result.duration_remainder == 0 %}
+											<p>No Duration Results</p>
+										{% endif %}
 									{% endif %}
 									<p>{{ result.result_text }}</p>
 									{% if result.resultfile_set.all %}
