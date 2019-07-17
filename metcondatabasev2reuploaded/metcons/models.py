@@ -156,6 +156,8 @@ class Workout(models.Model):
 
         classification = models.ForeignKey(Classification, default=3, blank=True, null=True, on_delete=models.SET_NULL)
 
+        def is_general_workout(self):
+                return True
         
         def update_movements_and_classification(self):
                 self.update_movements()
@@ -188,14 +190,14 @@ class Workout(models.Model):
                 self.classification = None
 
         def update_estimated_duration(self):
-                instances = WorkoutInstance.objects.filter(workout__id=self.id, duration_in_seconds__gt=0)
+                instances = WorkoutInstance.objects.filter(workout=self, duration_in_seconds__gt=0)
                 if instances:
                         self.estimated_duration_in_seconds = instances.aggregate(
                                         duration=Avg('duration_in_seconds'))['duration']
                         self.save()
                 
         def update_times_completed(self):
-                instances = WorkoutInstance.objects.filter(workout__id=self.id)
+                instances = WorkoutInstance.objects.filter(workout=self)
                 if instances:
                         self.number_of_times_completed = instances.aggregate(
                                 times_completed=Sum('number_of_times_completed'))['times_completed']
@@ -204,7 +206,7 @@ class Workout(models.Model):
                 self.save()
                 
         def number_of_instances(self):
-                count = WorkoutInstance.objects.filter(workout__id = self.id).count()
+                count = WorkoutInstance.objects.filter(workout=self).count()
                 return count
 
         number_of_instances.short_description = 'Instances'
@@ -265,7 +267,7 @@ class WorkoutInstance(models.Model):
         oldest_completed_date = models.ForeignKey(Date, related_name="oldest_completed_date", on_delete=models.SET_NULL, null=True, blank=True)
         edited_workout_text = models.TextField(max_length=2000, blank=True, null=True)
         edited_scaling_text = models.TextField(max_length=4000, blank=True, null=True)
-        edited_comment= models.TextField(max_length=4000, blank=True, null=True)
+        comment= models.TextField(max_length=4000, blank=True, null=True)
         is_assigned_by_coach_or_gym_owner = models.BooleanField(default=False)
         assigned_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'assigned_by_user', on_delete=models.SET_NULL, null=True, blank=True)
         is_hidden = models.BooleanField(default=False)
@@ -415,7 +417,10 @@ class WorkoutInstance(models.Model):
         def update_times_completed(self):
                 self.number_of_times_completed = Result.objects.filter(workoutinstance=self).count()
                 self.save()
-                self.workout.update_times_completed()
+                if self.workout:
+                        self.workout.update_times_completed()
+                elif self.strength_workout:
+                        self.strength_workout.update_times_completed()
                 
         def display_workout(self):
                 if self.workout:
@@ -528,7 +533,6 @@ class StrengthExercise(models.Model):
         date_added_to_database = models.DateTimeField(auto_now_add = True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         movement = models.ForeignKey(Movement, on_delete=models.SET_NULL, null=True)
-        comment = models.TextField(max_length=4000, blank=True, null=True, help_text="add rest here")
         number_of_sets = models.IntegerField(default=1, verbose_name='Sets', null=True, blank=True)
 
         def display_name(self):
@@ -539,7 +543,7 @@ class Set(models.Model):
         strength_exercise = models.ForeignKey(StrengthExercise, on_delete=models.SET_NULL, null=True)
         set_number = models.IntegerField(default=1)
         reps = models.IntegerField(default=5, blank=True, null=True) #create help_text so that if reps is left blank it will assume you are going for max reps in this set. or create option in dropdown for max
-        weight = models.DecimalField(max_digits=6, decimal_places=1)
+        weight = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
         weight_unit_choices = [
                 ('lbs', 'lbs'),
                 ('kgs', 'kgs'),
@@ -555,13 +559,26 @@ class StrengthWorkout(models.Model):
         date_added_to_database = models.DateTimeField(auto_now_add = True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         strength_exercises = models.ManyToManyField(StrengthExercise, blank=True)
-        comment = models.TextField(max_length=4000, blank=True, null=True)
-        # may not need comment on here.
-        is_completed = models.BooleanField(default=False)
         created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
+        def is_strength_workout(self):
+                return True
+        
         def __str__(self):
                 return 'Strength Workout ' + str(self.id)
 
         def display_name(self):
                 return 'Strength Workout ' + str(self.id)
+
+        def number_of_instances(self):
+                count = WorkoutInstance.objects.filter(strength_workout=self).count()
+                return count
+        
+        def update_times_completed(self):
+                instances = WorkoutInstance.objects.filter(strength_workout=self)
+                if instances:
+                        self.number_of_times_completed = instances.aggregate(
+                                times_completed=Sum('number_of_times_completed'))['times_completed']
+                else:
+                        self.number_of_times_completed = 0
+                self.save()
