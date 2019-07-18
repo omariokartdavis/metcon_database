@@ -42,6 +42,9 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
     - notfixed: 
 - changed all views to allow for multiple workouts except workout_list view.
 
+## functionality copmleted on 7/18/19
+- added different display names for strenght/general workouts and display only "Strength"/ "Metcon" for this weeks workouts
+
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
   - need to clear computers cache in order to force it to reload it.
