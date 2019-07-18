@@ -220,6 +220,9 @@ class Workout(models.Model):
 
         display_name.short_description = 'Name'
 
+        def display_workout_type(self):
+                return "Metcon"
+
         def display_movement(self):
                 """Create a string for the movement. required to display movements in admin site"""
                 return ', '.join(movement.name for movement in self.movements.all()[:3])
@@ -434,6 +437,16 @@ class WorkoutInstance(models.Model):
 
         display_workout.short_description = 'Workout'
 
+        def display_workout_type(self):
+                if self.workout:
+                        workout_type = self.workout.display_workout_type()
+                        return workout_type
+                elif self.strength_workout:
+                        workout_type = self.strength_workout.display_workout_type()
+                        return workout_type
+                else:
+                        return 'Workout Deleted'
+
         def display_dates_completed(self):
                 """Create a string for the classification. required to display classificaitons in admin site"""
                 now = timezone.localtime(timezone.now()).date()
@@ -493,7 +506,7 @@ class Result(models.Model):
                         return name
                 else:
                         return 'Workout Deleted'
-        display_workout.short_description = 'Workout'
+        display_workout.short_description = 'Workout'        
 
         def display_result(self):
                 if self.workoutinstance:
@@ -569,6 +582,12 @@ class StrengthWorkout(models.Model):
 
         def display_name(self):
                 return 'Strength Workout ' + str(self.id)
+
+        def display_truncated_name(self):
+                return 'Strength ' + str(self.id)
+
+        def display_workout_type(self):
+                return "Strength"
 
         def number_of_instances(self):
                 count = WorkoutInstance.objects.filter(strength_workout=self).count()
