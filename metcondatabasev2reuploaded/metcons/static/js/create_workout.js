@@ -9,3 +9,11 @@ $(document).ready(function() {
 		target_form.style.display = "block";
 	});
 });
+
+function addMoreMovements() {
+	var form_idx = $('#id_form-TOTAL_FORMS').val();
+	$('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+	$('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1)
+}
+
+document.getElementById("add_more").addEventListener("click", addMoreMovements, false);
