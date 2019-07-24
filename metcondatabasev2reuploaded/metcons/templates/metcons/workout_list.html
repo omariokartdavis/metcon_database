@@ -94,20 +94,22 @@
 			<p>There are no workouts in the database with all of the following filters: {% for i in filter_list %}{{i}}{% if not forloop.last %}, {% endif %}{% endfor %}.</p>
 		{% endif %}
 	{% else %}
-		<p>Showing 10 most recent workouts added to database. To view all workouts in database please login or signup.</p>
-		{% if most_recent_workouts %}
-			<p>Total Number of Workouts in Database: {{ num_workouts_total }}
-			<ul>
-				{% for workout in most_recent_workouts %}
-					<li>
-						<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
-						<br />{{ workout.workout_text|linebreaks }}
-						Classification: {{ workout.classification }}
-						<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-					</li>
-				{% endfor %}
-			</ul>
-		{% endif %}
+		<div class="tabContentReplacement">
+			<h2>Showing 10 most recent workouts added to database. To view all workouts in database please login or signup.</h2>
+			{% if most_recent_workouts %}
+				<h2>Total Number of Workouts in Database: {{ num_workouts_total }}</h2>
+				<div class="listedWorkouts">
+					{% for workout in most_recent_workouts %}
+						<div class="workoutContent">
+							<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a></p>
+							<br />{{ workout.workout_text|linebreaks }}
+							<p>Classification: {{ workout.classification }}
+							<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+		</div>
 	{% endif %}
 {% endblock %}
 {% block extra_js %}
