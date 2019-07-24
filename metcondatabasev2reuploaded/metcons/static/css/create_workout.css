@@ -1,3 +1,7 @@
 #strength_workout_form {
 	display: none;
 }
+
+#empty_form {
+	display: none;
+}
