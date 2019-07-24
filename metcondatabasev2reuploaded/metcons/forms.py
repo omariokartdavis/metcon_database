@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import formset_factory
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
@@ -104,12 +105,11 @@ class CreateWorkoutForm(forms.Form):
         if user.is_coach or user.is_gym_owner:
             self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
             self.fields['group_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
-            self.fields['hide_from_athletes?'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
+            self.fields['hide_from_athletes'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
             self.fields['date_to_unhide'] = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
 
 class CreateStrengthWorkoutForm(forms.Form):
-    #modify this to allow for changing number of movements/sets/reps/weights to be created
-    #if movement is a multiplechoicefield it is requiring a list of items be selected
+    #modify this to allow for changing number of sets/reps/weights to be created
     movement = forms.ChoiceField(widget=forms.Select(), choices=movement_choices, help_text='What Movement would you like to perform?')
     comment = forms.CharField(widget=forms.Textarea, max_length=4000, required=False, help_text='Required rest or effort')
     sets = forms.IntegerField(help_text='How many sets would you like to perform?')
@@ -123,8 +123,10 @@ class CreateStrengthWorkoutForm(forms.Form):
         if user.is_coach or user.is_gym_owner:
             self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
             self.fields['group_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
-            self.fields['hide_from_athletes?'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
+            self.fields['hide_from_athletes'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
             self.fields['date_to_unhide'] = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
+
+StrengthWorkoutFormset = formset_factory(CreateStrengthWorkoutForm, extra=1)
 
 class CreateGeneralResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
