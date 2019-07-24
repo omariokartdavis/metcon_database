@@ -27,25 +27,59 @@
 		
 		<div class="workout_form" id="strength_workout_form">
 			<form method='post'>
-				{% csrf_token %}
-				<table>
-				{{ form2.as_table }}
-				</table>
-				<input type="hidden" name="strength workout">
-				<input type="submit" value="Submit">
-			</form>
-			{% if form.errors %}
-				{% for field in form %}
-					{% for error in field.errors %}
-						<div class="alert alert-danger">
-							<strong>{{ error|escape }}</strong>
+				<div class="tabContentReplacement">
+					{% csrf_token %}
+					{{ formset.management_form }}
+					<div class="listedWorkouts">
+						<div id="form_set">
+							{% for form in formset %}
+								<div class="workoutContent">
+									<label>{{ form.movement.label }}</label>
+									{{ form.movement }}<br />
+									<label>{{ form.sets.label }}</label>
+									{{ form.sets }}<br />
+									<label>{{ form.reps.label }}</label>
+									{{ form.reps }}<br />
+									<label>{{ form.weight.label }}</label>
+									{{ form.weight }}<br />
+									<label>{{ form.weight_units.label }}</label>
+									{{ form.weight_units }}<br />
+									{% if forloop.first %}
+										<label>{{ form.comment.label }}</label>
+										{{ form.comment }}<br />
+										<label>{{ form.athlete_to_assign.label }}</label>
+										{{ form.athlete_to_assign }}<br />
+										<label>{{ form.group_to_assign.label }}</label>
+										{{ form.group_to_assign }}<br />
+										<label>{{ form.hide_from_athletes.label }}</label>
+										{{ form.hide_from_athletes }}<br />
+										<label>{{ form.date_to_unhide.label }}</label>
+										{{ form.date_to_unhide }}
+									{% endif %}
+								</div>
+							{% endfor %}
 						</div>
-					{% endfor %}
-				{% endfor %}
-				{% for error in form.non_field_errors %}
-					<div class="alert alert-danger">
-						<strong>{{ error|escape }}</strong>
+						<input type="button" value="Add More" id="add_more">
+						<div id="empty_form">
+							<div class="workoutContent">
+								{% for i in formset.empty_form %}
+									{% if i.label == "Group to assign" or i.label == "Athlete to assign" or i.label == "Hide from athletes" or i.label == "Date to unhide" or i.label == "Comment" %}
+									{% else %}
+										<label>{{ i.label }}<label> {{ i }}<br />
+									{% endif %}
+								{% endfor %}
+							</div>
+						</div>
+						<input type="hidden" name="strength workout">
+						<input type="submit" value="Submit">
 					</div>
+				</div>
+			</form>
+			{% if form2.errors %}
+				{% for dict in form2.errors %}
+					{% for error in dict.values %}
+						{{ error }}
+					{% endfor %}
 				{% endfor %}
 			{% endif %}
 		</div>
