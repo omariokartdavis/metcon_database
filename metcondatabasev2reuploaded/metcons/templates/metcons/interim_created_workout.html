@@ -12,7 +12,7 @@
 				{% for se in instance.strength_workout.strength_exercises.all %}
 					<p>{{ se.movement.name }}</br >
 					{% for se_set in se.set_set.all %}
-						Set {{ se_set.set_number }}: {{ se_set.reps }} reps at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}</br >
+						Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
 					{% endfor %}
 					</p>
 				{% endfor %}
@@ -25,21 +25,18 @@
 				{% csrf_token %}
 				<input type="submit" name ='schedule workout for future' value="Schedule Workout In Future" />
 			</form>
-			<!--this isn't currently getting used because i'm not passing an athlete list to this template -->
-			{% if athlete_list.count <= 1 %}
-				<form action="{% url 'result_create' user.username instance.id %}">
-					{% csrf_token %}
-					<input type="submit" name="created workout previous day add result" value="Add Result In Past" >
-				</form>
-				<form action="{% url 'result_create' user.username instance.id %}">
-					{% csrf_token %}
-					<input type="submit" name="created workout today add result" value="Add Result For Today" >
-				</form>
-				<form action="{% url 'workoutinstance-detail' user.username instance.id %}">
-					{% csrf_token %}
-					<input type="submit" value="No, Go To Workout">
-				</form>
-			{% endif %}
+			<form action="{% url 'result_create' user.username instance.id %}">
+				{% csrf_token %}
+				<input type="submit" name="created workout previous day add result" value="Add Result In Past" >
+			</form>
+			<form action="{% url 'result_create' user.username instance.id %}">
+				{% csrf_token %}
+				<input type="submit" name="created workout today add result" value="Add Result For Today" >
+			</form>
+			<form action="{% url 'workoutinstance-detail' user.username instance.id %}">
+				{% csrf_token %}
+				<input type="submit" value="No, Go To Workout">
+			</form>
 			<form action="{% url 'profile' user.username %}">
 				{% csrf_token %}
 				<input type="submit" value="No, Go To Profile">
