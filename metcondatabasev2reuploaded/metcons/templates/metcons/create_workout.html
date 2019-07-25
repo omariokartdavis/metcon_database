@@ -34,42 +34,50 @@
 						<div id="form_set">
 							{% for form in formset %}
 								<div class="workoutContent">
-									<label>{{ form.movement.label }}</label>
-									{{ form.movement }}<br />
-									<label>{{ form.sets.label }}</label>
-									{{ form.sets }}<br />
-									<label>{{ form.reps.label }}</label>
-									{{ form.reps }}<br />
-									<label>{{ form.weight.label }}</label>
-									{{ form.weight }}<br />
-									<label>{{ form.weight_units.label }}</label>
-									{{ form.weight_units }}<br />
-									{% if forloop.first %}
-										<label>{{ form.comment.label }}</label>
+									<p>
+										<label>{{ form.movement.label }}:</label>
+										{{ form.movement }}<br />
+										<label>{{ form.sets.label }}:</label>
+										{{ form.sets }}<br />
+										<label>{{ form.reps.label }}:</label>
+										{{ form.reps }}<br />
+										<label>{{ form.weight.label }}:</label>
+										{{ form.weight }}<br />
+										<label>{{ form.weight_units.label }}:</label>
+										{{ form.weight_units }}<br />
+										<label>{{ form.comment.label }}:</label>
 										{{ form.comment }}<br />
-										<label>{{ form.athlete_to_assign.label }}</label>
-										{{ form.athlete_to_assign }}<br />
-										<label>{{ form.group_to_assign.label }}</label>
-										{{ form.group_to_assign }}<br />
-										<label>{{ form.hide_from_athletes.label }}</label>
-										{{ form.hide_from_athletes }}<br />
-										<label>{{ form.date_to_unhide.label }}</label>
-										{{ form.date_to_unhide }}
-									{% endif %}
+										{% if forloop.first %}
+											{% if user.is_coach or user.is_gym_owner %}
+												{% if user.coach.athletes.all %}
+													<label>{{ form.athlete_to_assign.label }}:</label>
+													{{ form.athlete_to_assign }}<br />
+													<label>{{ form.group_to_assign.label }}:</label>
+													{{ form.group_to_assign }}<br />
+													<label>{{ form.hide_from_athletes.label }}:</label>
+													{{ form.hide_from_athletes }}<br />
+													<label>{{ form.date_to_unhide.label }}:</label>
+													{{ form.date_to_unhide }}
+												{% endif %}
+											{% endif %}
+										{% endif %}
+									</p>
 								</div>
 							{% endfor %}
 						</div>
-						<input type="button" value="Add More" id="add_more">
 						<div id="empty_form">
 							<div class="workoutContent">
-								{% for i in formset.empty_form %}
-									{% if i.label == "Group to assign" or i.label == "Athlete to assign" or i.label == "Hide from athletes" or i.label == "Date to unhide" or i.label == "Comment" %}
-									{% else %}
-										<label>{{ i.label }}<label> {{ i }}<br />
-									{% endif %}
-								{% endfor %}
+								<p>
+									{% for i in formset.empty_form %}
+										{% if i.label == "Group to assign" or i.label == "Athlete to assign" or i.label == "Hide from athletes" or i.label == "Date to unhide" %}
+										{% else %}
+											<label>{{ i.label }}:</label> {{ i }}<br />
+										{% endif %}
+									{% endfor %}
+								</p>
 							</div>
 						</div>
+						<input type="button" value="Add More" id="add_more">
 						<input type="hidden" name="strength workout">
 						<input type="submit" value="Submit">
 					</div>
