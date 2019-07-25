@@ -8,23 +8,38 @@
 			<p><strong>{{ instance.display_workout }}</strong>:
 			{% if instance.workout %}
 				{{ instance.edited_workout_text|linebreaks }}</p>
-			{% elif instance.strength_workout %}
-				{% for se in instance.strength_workout.strength_exercises.all %}
-					<p>{{ se.movement.name }}</br >
-					{% for se_set in se.set_set.all %}
-						Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
-					{% endfor %}
-					</p>
-				{% endfor %}
 			{% endif %}
-			{% for k, v in some_list.items %}
-				<p>{{ k.movement.name }}, {{ v }}</p>
-			{% endfor %}
 			<form action="" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
-				<table>
-				{% if instance.workout %}{{ form1.as_table }}{% elif instance.strength_workout %}{{ form2.as_table }}{% endif %}
-				</table>
+				{% if instance.strength_workout %}
+					{% for field in form2 %}
+						{% for k, v in result_text_and_strength_exercises.items %}
+							{% if field.label == k %}
+								<p><strong>{{ v.movement.name }}</strong></br >
+								{% for se_set in v.set_set.all %}
+									Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
+								{% endfor %}
+								</p>
+								<table>
+									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+									<td>{{ field }}</tr>
+								</table>
+							{% endif %}
+						{% endfor %}
+					{% endfor %}
+					{% for field in form2 %}
+							{% if field.label not in result_text_and_strength_exercises %}
+								<table>
+									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+									<td>{{ field }}</td></tr>
+								</table>
+							{% endif %}
+					{% endfor %}
+				{% elif instance.workout %}
+					<table>
+					{{ form1.as_table }}
+					</table>
+				{% endif %}
 				<input type="submit" value="Submit" name="add result to instance">
 				<input type="hidden" name="next" value="{{ request.path }}">
 			</form>
