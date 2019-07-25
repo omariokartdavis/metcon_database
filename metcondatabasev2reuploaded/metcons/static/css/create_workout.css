@@ -2,6 +2,14 @@
 	display: none;
 }
 
-#empty_form {
+#strength_workout_empty_form {
+	display: none;
+}
+
+#cardio_workout_form {
+	display: none;
+}
+
+#cardio_workout_empty_form {
 	display: none;
 }
