@@ -111,11 +111,11 @@ class CreateWorkoutForm(forms.Form):
 class CreateStrengthWorkoutForm(forms.Form):
     #modify this to allow for changing number of sets/reps/weights to be created
     movement = forms.ChoiceField(widget=forms.Select(), choices=movement_choices, help_text='What Movement would you like to perform?')
-    comment = forms.CharField(widget=forms.Textarea, max_length=4000, required=False, help_text='Required rest or effort')
     sets = forms.IntegerField(help_text='How many sets would you like to perform?')
     reps = forms.IntegerField(help_text='How many reps would you like to perform?', required=False)
     weight = forms.DecimalField(min_value=0.0, max_value=99999.9, decimal_places=1, max_digits=6, required=False)
     weight_units = forms.ChoiceField(widget=forms.Select(), choices=weight_unit_choices, help_text='What units is the weight in?', required=False)
+    comment = forms.CharField(widget=forms.Textarea, max_length=4000, required=False, help_text='Required rest or effort')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -137,11 +137,19 @@ class CreateGeneralResultForm(forms.Form):
     date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
 
 class CreateStrengthResultForm(forms.Form):
-    result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.pop('instance', None)
+        super(CreateStrengthResultForm, self).__init__(*args, **kwargs)
+        if instance.strength_workout:
+            for i in range(1, instance.strength_workout.strength_exercises.count()+1):
+                field_name = 'result_text_%s' % (i,)
+                self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
+                
+    #result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
     media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
     media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable.')
     date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
-    
+
 class ScheduleInstanceForm(forms.Form):
     date_to_be_added = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
     repeat_yes = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
