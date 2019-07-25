@@ -48,12 +48,12 @@
 				<p><strong>Duration:</strong> {% if duration_minutes == 0 and duration_seconds == 0 %} No Results {% endif %}{% if duration_minutes > 0 %}{{ duration_minutes }} minutes {% endif %}{% if duration_seconds > 0 %} {{ duration_seconds }} seconds {% endif %}</p>
 				<p><strong>Number of Times You've Completed:</strong> {{ workoutinstance.number_of_times_completed }}</p>
 			{% elif workoutinstance.strength_workout %}
-				<p><strong>Comments:</strong> {{ workoutinstance.comment|linebreaks }}</p>
 				{% for se in workoutinstance.strength_workout.strength_exercises.all %}
 					<p><strong>{{ se.movement.name }}</strong></br >
 					{% for se_set in se.set_set.all %}
 						Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
 					{% endfor %}
+					{% if se.comment %}{{ se.comment }}{% endif %}
 					</p>
 				{% endfor %}
 			{% endif %}
