@@ -54,7 +54,7 @@ class Calendar(HTMLCalendar):
                         d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
                     else:
                         d += f'<a class="workout_display_name not_assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
-                else:
+                elif instance.strength_workout:
                     if instance.is_hidden:
                         if instance.assigned_by_user != self.viewing_user:
                             if instance.date_to_unhide:
