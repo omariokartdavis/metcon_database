@@ -270,7 +270,6 @@ class WorkoutInstance(models.Model):
         oldest_completed_date = models.ForeignKey(Date, related_name="oldest_completed_date", on_delete=models.SET_NULL, null=True, blank=True)
         edited_workout_text = models.TextField(max_length=2000, blank=True, null=True)
         edited_scaling_text = models.TextField(max_length=4000, blank=True, null=True)
-        comment= models.TextField(max_length=4000, blank=True, null=True)
         is_assigned_by_coach_or_gym_owner = models.BooleanField(default=False)
         assigned_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'assigned_by_user', on_delete=models.SET_NULL, null=True, blank=True)
         is_hidden = models.BooleanField(default=False)
@@ -547,6 +546,7 @@ class StrengthExercise(models.Model):
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         movement = models.ForeignKey(Movement, on_delete=models.SET_NULL, null=True)
         number_of_sets = models.IntegerField(default=1, verbose_name='Sets', null=True, blank=True)
+        comment = models.TextField(max_length=4000, blank=True, null=True)
 
         def display_name(self):
                 if self.movement:
