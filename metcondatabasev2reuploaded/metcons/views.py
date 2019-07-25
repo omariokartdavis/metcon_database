@@ -605,6 +605,8 @@ def workoutinstancedetailview(request, username, pk):
         workout=instance.workout
     elif instance.strength_workout:
         workout=instance.strength_workout
+    elif instance.cardio_workout:
+        workout=instance.cardio_workout
 
     if instance.duration_in_seconds:
         duration_minutes = (instance.duration_in_seconds // 60)
@@ -708,7 +710,10 @@ def schedule_instance_for_multiple_athletes(request, username, pk):
     elif instance.strength_workout:
         workout = instance.strength_workout
         athletes = user.coach.athletes.filter(user__workoutinstance__strength_workout=workout)
-    
+    elif instance.cardio_workout:
+        workout = instance.cardio_workout
+        athletes = user.coach.athletes.filter(user__workoutinstance__cardio_workout=workout)
+        
     if request.method == 'POST':
         if 'schedule for all athletes' in request.POST:
             form = ScheduleInstanceForm(request.POST)
@@ -810,12 +815,23 @@ def edit_schedule(request, username, pk):
         now = timezone.localtime(timezone.now()).date()
         form = EditScheduleForm()
         if future_dates_plus_yesterday:
-            form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now)]
+            if instance.is_hidden and instance.date_to_unhide:
+                form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now) if date.date_completed < instance.date_to_unhide]
+            elif instance.is_hidden and not instance.date_to_unhide:
+                form.fields.pop('date_to_be_removed')
+            else:
+                form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now)]
         else:
             form.fields.pop('date_to_be_removed')
         if 'previous day edit schedule' in request.GET:
             yesterday = now - timezone.timedelta(days=1)
-            form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=yesterday)]
+            if instance.is_hidden and instance.date_to_unhide:
+                form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=yesterday) if date.date_completed < instance.date_to_unhide]
+## this doesn't make much sense here in this context of a workout being scheduled for yesterday but hidden with no date.
+##            elif instance.is_hidden and not instance.date_to_unhide:
+##                form.fields.pop('date_to_be_removed')
+            else:
+                form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=yesterday)]
             form.fields['date_to_be_removed'].initial = yesterday
             form.fields['date_to_be_added'].initial = now
 
@@ -837,8 +853,10 @@ def edit_schedule_for_multiple_athletes(request, username, pk):
     elif instance.strength_workout:
         workout = instance.strength_workout
         athletes = user.coach.athletes.filter(user__workoutinstance__strength_workout=workout)
-    
-
+    elif instance.cardio_workout:
+        workout = instance.cardio_workout
+        athletes = user.coach.athletes.filter(user__workoutinstance__cardio_workout=workout)
+        
     if request.method == 'POST':
         if 'edit schedule for all athletes' in request.POST:
             form = EditScheduleForm(request.POST)
@@ -947,7 +965,14 @@ def delete_schedule(request, username, pk):
 
     else:
         form = DeleteScheduleForm()
-        form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now)]
+        if instance.is_hidden and instance.date_to_unhide:
+            form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now) if date.date_completed < instance.date_to_unhide]
+        elif instance.is_hidden and not instance.date_to_unhide:
+            form.fields.pop('date_to_be_removed')
+        else:
+            form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now)]
+
+        #form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in instance.dates_to_be_completed.filter(date_completed__gte=now)]
         #not sure if I want to have an initial choice here.
         #form.fields['date_to_be_removed'].initial = instance.youngest_scheduled_date.date_completed
 
@@ -1027,11 +1052,12 @@ def edit_instance(request, username, pk):
 
                     return HttpResponseRedirect(instance.get_absolute_url())
             elif instance.strength_workout:
-                form = EditStrengthInstanceForm(request.POST)
+                form = EditStrengthInstanceForm(request.POST, **{'instance': instance})
                 if form.is_valid():
                     base_workout = instance.strength_workout
                     # moved comments from instance to individual strength exercises. instance.comment = form.cleaned_data['comment']
                     #add more things to change to this like movements/weights/sets/reps later
+                    
                     instance.save()
                     if base_workout:
                         if request.user == base_workout.created_by_user:
@@ -1065,7 +1091,7 @@ def edit_instance(request, username, pk):
                                          'workout_text': instance.edited_workout_text,
                                          'scaling_text': instance.edited_scaling_text,
                                          })
-        form2 = EditStrengthInstanceForm()#initial={'comment': instance.comment})
+        form2 = EditStrengthInstanceForm(**{'instance': instance})#initial={'comment': instance.comment})
 
     context = {
         'form1': form1,
@@ -1100,6 +1126,12 @@ def delete_instance(request, username, pk):
 @login_required                
 def create_result(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
+    result_text_and_strength_exercises = {}
+    if instance.strength_workout:
+        for i in instance.strength_workout.strength_exercises.all():
+            result_name = 'Result text %s' % (i.strength_exercise_number,)
+            result_text_and_strength_exercises[result_name] = i
+            
     if request.method == 'POST':
         if 'add result to instance' in request.POST:
             if instance.workout:
@@ -1132,7 +1164,7 @@ def create_result(request, username, pk):
                     return HttpResponseRedirect(instance.get_absolute_url())
                 
             elif instance.strength_workout:
-                form = CreateStrengthResultForm(request.POST, request.FILES)
+                form = CreateStrengthResultForm(request.POST, request.FILES, **{'instance':instance})
 
                 if form.is_valid():
                     if form.cleaned_data['date_completed'] == dt.date.today():
@@ -1140,8 +1172,12 @@ def create_result(request, username, pk):
                     else:
                         date_in_datetime = dt.datetime.combine(form.cleaned_data['date_completed'], dt.datetime.min.time())
                         aware_datetime=timezone.make_aware(date_in_datetime)
+                    all_result_texts = ''
+                    for k, v in result_text_and_strength_exercises.items():
+                        name = 'result_text_%s' % (v.strength_exercise_number,)
+                        all_result_texts += (v.movement.name + ': ' + form.cleaned_data[name] + '\n')
                     result = Result(workoutinstance=instance,
-                                    result_text=form.cleaned_data['result_text'],
+                                    result_text=all_result_texts,
                                     date_workout_completed=aware_datetime)
                     result.save()
                     instance.add_date_completed(timezone.localtime(result.date_workout_completed).date())
@@ -1165,10 +1201,6 @@ def create_result(request, username, pk):
             duration_seconds=0
         form1 = CreateGeneralResultForm(initial={'duration_minutes': duration_minutes, 'duration_seconds': duration_seconds})
         form2 = CreateStrengthResultForm(**{'instance':instance})
-
-        some_list = {}
-        for k, v in zip(instance.strength_workout.strength_exercises.all(), form2.fields):
-            some_list[k] = v
             
         if 'created workout today add result' in request.GET:
             now = timezone.localtime(timezone.now()).date()
@@ -1183,7 +1215,7 @@ def create_result(request, username, pk):
         'form1': form1,
         'form2': form2,
         'instance': instance,
-        'some_list': some_list,
+        'result_text_and_strength_exercises': result_text_and_strength_exercises,
         }
 
     return render(request, 'metcons/create_result.html', context)
@@ -1294,6 +1326,9 @@ def add_workout_to_athletes(request, username, pk):
         workout = Workout.objects.get(id=pk)
     if 'strength_workout' in request.GET:
         workout = StrengthWorkout.objects.get(id=pk)
+    if 'cardio_workout' in request.GET:
+        workout = CardioWorkout.objects.get(id=pk) #haven't added this into workout detail or workout list yet
+        
     user = request.user
     athletes = user.coach.athletes.all()
     groups = user.coach.group_set.all()
@@ -1472,7 +1507,7 @@ def create_workout(request):
             formset = StrengthWorkoutFormset(request.POST, form_kwargs={'user': request.user})
             if request.user.is_coach or request.user.is_gym_owner:
                 # in a formset, request.POST data comes in labeled by form number as below.
-                # only need to get assigned athletes for 1 form
+                # only need to get assigned athletes for first form
                 athlete_to_assign = request.POST.getlist('form-0-athlete_to_assign')
                 formset[0].fields['athlete_to_assign'].choices = [(i, i) for i in athlete_to_assign]
                 group_to_assign = request.POST.getlist('form-0-group_to_assign')
@@ -1501,6 +1536,7 @@ def create_workout(request):
                             users_to_assign_workout.append(current_user)
                 else:
                     users_to_assign_workout.append(current_user)
+                se_number = 1
                 for form in formset:
                     if Movement.objects.filter(name=form.cleaned_data['movement']):
                         strength_movement = Movement.objects.get(name=form.cleaned_data['movement'])
@@ -1511,8 +1547,10 @@ def create_workout(request):
                     comment = form.cleaned_data['comment']
                     strength_exercise = StrengthExercise(movement=strength_movement,
                                                          number_of_sets=form.cleaned_data['sets'],
-                                                         comment=comment)
+                                                         comment=comment,
+                                                         strength_exercise_number=se_number)
                     strength_exercise.save()
+                    se_number += 1
                     #add if statement here once dynamic form is implemented so that if all sets, reps, and weight are the same it only creates 1 set
                     # will have to have an if statement on template display as well so that it knows to represent differently.
                     for i in range(1, strength_exercise.number_of_sets + 1):
@@ -1546,100 +1584,108 @@ def create_workout(request):
                     else:
                         instance = WorkoutInstance.objects.get(strength_workout=strength_workout, current_user=i)
 
-                print(len(users_to_assign_workout))
-                print(users_to_assign_workout)
                 if len(users_to_assign_workout) > 1:
                     return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, instance.id]))
                 else:
                     return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
             else:
-                return render(request, 'metcons/create_workout.html', {'formset':formset})
-                        
+                return render(request, 'metcons/create_workout.html', {'formset_strength':formset})
+            
+        elif 'cardio workout' in request.POST:
+            formset = CardioWorkoutFormset(request.POST, form_kwargs={'user': request.user})
+            if request.user.is_coach or request.user.is_gym_owner:
+                # in a formset, request.POST data comes in labeled by form number as below.
+                # only need to get assigned athletes for first form
+                athlete_to_assign = request.POST.getlist('form-0-athlete_to_assign')
+                formset[0].fields['athlete_to_assign'].choices = [(i, i) for i in athlete_to_assign]
+                group_to_assign = request.POST.getlist('form-0-group_to_assign')
+                formset[0].fields['group_to_assign'].choices = [(i, i) for i in group_to_assign]
+            if formset.is_valid():
+                current_user = User.objects.get(username=request.user.username)
+                users_to_assign_workout = []
+                cardio_workout = CardioWorkout(created_by_user=current_user)
+                cardio_workout.save()
+                hidden=False
+                date_to_unhide=None
+                if current_user.is_coach or current_user.is_gym_owner:
+                    if formset[0].cleaned_data['athlete_to_assign']:
+                        for i in formset[0].cleaned_data['athlete_to_assign']:
+                            user = User.objects.get(username=i)
+                            if user not in users_to_assign_workout:
+                                users_to_assign_workout.append(user)
+                    if formset[0].cleaned_data['group_to_assign']:
+                        for i in formset[0].cleaned_data['group_to_assign']:
+                            group = Group.objects.get(name=i, coach=current_user.coach)
+                            for i in group.athletes.all():
+                                if i.user not in users_to_assign_workout:
+                                    users_to_assign_workout.append(i.user)
+                    if not formset[0].cleaned_data['athlete_to_assign'] and not formset[0].cleaned_data['group_to_assign']:
+                        if current_user not in users_to_assign_workout:
+                            users_to_assign_workout.append(current_user)
+                else:
+                    users_to_assign_workout.append(current_user)
+                ce_number = 1
+                for form in formset:
+                    #can potentially check for duplicates here as cardio workouts don't also create independent sets after.
+                    # maybe not because editing a cardio exercises comment will change it for everyone else.
+                    if Movement.objects.filter(name=form.cleaned_data['movement']):
+                        cardio_movement = Movement.objects.get(name=form.cleaned_data['movement'])
+                    else:
+                        cardio_movement = Movement(name=form.cleaned_data['movement'])
+                        cardio_movement.save()
+                        # add in ability to send a notification to myself that a new movement has been created so it can be viewed and accepted.
+                    comment = form.cleaned_data['comment']
+                    cardio_exercise = CardioExercise(movement=cardio_movement,
+                                                     distance=form.cleaned_data['distance'],
+                                                     number_of_reps=form.cleaned_data['reps'],
+                                                     pace=form.cleaned_data['pace'],
+                                                     rest=form.cleaned_data['rest'],
+                                                     comment=comment,
+                                                     cardio_exercise_number=ce_number)
+                    cardio_exercise.save()
+                    ce_number += 1
+                    cardio_workout.cardio_exercises.add(cardio_exercise)
+                    cardio_workout.save()
 
-##            old code before I added formsets   
-##            form = CreateStrengthWorkoutForm(request.POST, **{'user':request.user})
-##            if request.user.is_coach or request.user.is_gym_owner:
-##                athlete_to_assign = request.POST.getlist('athlete_to_assign')
-##                form.fields['athlete_to_assign'].choices = [(i, i) for i in athlete_to_assign]
-##                group_to_assign = request.POST.getlist('group_to_assign')
-##                form.fields['group_to_assign'].choices = [(i, i) for i in group_to_assign]
-##            if form.is_valid():
-##                current_user = User.objects.get(username=request.user.username)
-##                users_to_assign_workout = []
-##                if current_user.is_coach or current_user.is_gym_owner:
-##                    if form.cleaned_data['athlete_to_assign']:
-##                        for i in form.cleaned_data['athlete_to_assign']:
-##                            user = User.objects.get(username=i)
-##                            users_to_assign_workout.append(user)
-##                    if form.cleaned_data['group_to_assign']:
-##                        for i in form.cleaned_data['group_to_assign']:
-##                            group = Group.objects.get(name=i, coach=current_user.coach)
-##                            for i in group.athletes.all():
-##                                users_to_assign_workout.append(i.user)
-##                    if not form.cleaned_data['athlete_to_assign'] and not form.cleaned_data['group_to_assign']:
-##                        users_to_assign_workout.append(current_user)
-##                else:
-##                    users_to_assign_workout.append(current_user)
-##                #if not StrengthExercise.objects.filter(movement__name=form.cleaned_data['movement'], number_of_sets=form.cleaned_data['sets']).exists():
-##                # I think you have to create this new everytime. using an old strength exercise will overwrite the sets and cause issues for other users.
-##                # need to make this a for loop for every movement. will encompass all of strength exercise and new sets creation
-##                if Movement.objects.filter(name=form.cleaned_data['movement']):
-##                    strength_movement = Movement.objects.get(name=form.cleaned_data['movement'])
-##                else:
-##                    strength_movement = Movement(name=form.cleaned_data['movement'])
-##                    strength_movement.save()
-##                    # add in ability to send a notification to myself that a new movement has been created so it can be viewed and accepted.
-##                strength_exercise = StrengthExercise(movement=strength_movement,
-##                                                     number_of_sets=form.cleaned_data['sets'])
-##                strength_exercise.save()
-##                #add if statement here once dynamic form is implemented so that if all sets, reps, and weight are the same it only creates 1 set
-##                # will have to have an if statement on template display as well so that it knows to represent differently.
-##                for i in range(1, strength_exercise.number_of_sets + 1):
-##                    new_set = Set(strength_exercise=strength_exercise, set_number=i, reps=form.cleaned_data['reps'],
-##                                  weight=form.cleaned_data['weight'], weight_units=form.cleaned_data['weight_units'])
-##                    new_set.save()
-##                strength_workout = StrengthWorkout(created_by_user=current_user)
-##                strength_workout.save()
-##                strength_workout.strength_exercises.add(strength_exercise) #make sure to change this once multiple exercises are available
-##                strength_workout.save()
-##
-##                if (request.user.is_coach and form.cleaned_data['hide_from_athletes?']) or (request.user.is_gym_owner and form.cleaned_data['hide_from_athletes?']):
-##                    hidden=True
-##                    date_to_unhide = form.cleaned_data['date_to_unhide']
-##                else:
-##                    hidden=False
-##                    date_to_unhide = None
-##                        
-##                for i in users_to_assign_workout:
-##                    if not WorkoutInstance.objects.filter(strength_workout=strength_workout, current_user=i):
-##                        if i != request.user:
-##                            assigned = True
-##                        else:
-##                            assigned = False
-##                        instance = WorkoutInstance(strength_workout=strength_workout, current_user = i,
-##                                                   comment=form.cleaned_data['comment'],
-##                                                   is_assigned_by_coach_or_gym_owner=assigned)
-##                        instance.save()
-##                        if instance.is_assigned_by_coach_or_gym_owner:
-##                            instance.is_hidden=hidden
-##                            instance.date_to_unhide=date_to_unhide
-##                            instance.assigned_by_user=current_user
-##                            instance.save()
-##                    else:
-##                        instance = WorkoutInstance.objects.get(strength_workout=strength_workout, current_user=i)
-##
-##                if len(users_to_assign_workout) > 1:
-##                    return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, instance.id]))
-##                else:
-##                    return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
-##            else:
-##                return render(request, 'metcons/create_workout.html', {'formset':form})
+                if (request.user.is_coach and formset[0].cleaned_data['hide_from_athletes']) or (request.user.is_gym_owner and formset[0].cleaned_data['hide_from_athletes']):
+                    hidden=True
+                    date_to_unhide = formset[0].cleaned_data['date_to_unhide']
+                else:
+                    hidden=False
+                    date_to_unhide = None
+                            
+                for i in users_to_assign_workout:
+                    if not WorkoutInstance.objects.filter(cardio_workout=cardio_workout, current_user=i):
+                        if i != request.user:
+                            assigned = True
+                        else:
+                            assigned = False
+                        instance = WorkoutInstance(cardio_workout=cardio_workout, current_user = i,
+                                                   is_assigned_by_coach_or_gym_owner=assigned)
+                        instance.save()
+                        if instance.is_assigned_by_coach_or_gym_owner:
+                            instance.is_hidden=hidden
+                            instance.date_to_unhide=date_to_unhide
+                            instance.assigned_by_user=current_user
+                            instance.save()
+                    else:
+                        instance = WorkoutInstance.objects.get(cardio_workout=cardio_workout, current_user=i)
 
+                if len(users_to_assign_workout) > 1:
+                    return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, instance.id]))
+                else:
+                    return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
+            else:
+                return render(request, 'metcons/create_workout.html', {'formset_strength':formset_strength})
+        
     else:
         # can have default be whatever default type user wants to put as their default workout type
         form1 = CreateWorkoutForm(**{'user':request.user}, initial={'gender': request.user.workout_default_gender})
-        formset = StrengthWorkoutFormset(form_kwargs={'user': request.user})
-        forms= [i for i in formset]
+        formset_strength = StrengthWorkoutFormset(form_kwargs={'user': request.user})
+        formset_cardio = CardioWorkoutFormset(form_kwargs={'user': request.user})
+        forms = [i for i in formset_strength]
+        for i in formset_cardio:
+            forms.append(i)
         forms.append(form1)
         
         if request.user.is_coach or request.user.is_gym_owner:
@@ -1657,7 +1703,8 @@ def create_workout(request):
             
     context = {
         'form1': form1,
-        'formset': formset,
+        'formset_strength': formset_strength,
+        'formset_cardio': formset_cardio,
         }
 
     return render(request, 'metcons/create_workout.html', context)
@@ -1691,6 +1738,9 @@ def interim_created_workout_for_multiple_athletes(request, username, pk):
     elif instance.strength_workout:
         workout = instance.strength_workout
         athletes = user.coach.athletes.filter(user__workoutinstance__strength_workout=workout)
+    elif instance.cardio_workout:
+        workout = instance.cardio_workout
+        athletes = user.coach.athletes.filter(user__workoutinstance__cardio_workout=workout)
 
     if request.method == 'POST':
         if user.is_coach:
