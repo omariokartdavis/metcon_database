@@ -10,7 +10,14 @@
 			<form method="post">
 				{% csrf_token %}
 				<table>
-				{% if instance.workout %}{{ form1.as_table }}{% elif instance.strength_workout %}{{ form2.as_table }}{% endif %}
+				{% if instance.workout %}
+					{{ form1.as_table }}
+				{% elif instance.strength_workout %}
+					{% for field in form2 %}
+						<tr><td><label><strong>{{ field.label }}: </strong></label></td>
+						<td>{{ field }}</td></tr>
+					{% endfor %}
+				{% endif %}
 				</table>
 				<input type="submit" value="Submit" name="edit instance">
 			</form>
