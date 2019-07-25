@@ -10,10 +10,17 @@ $(document).ready(function() {
 	});
 });
 
-function addMoreMovements() {
+function addMoreStrengthMovements() {
 	var form_idx = $('#id_form-TOTAL_FORMS').val();
-	$('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+	$('#strength_form_set').append($('#strength_workout_empty_form').html().replace(/__prefix__/g, form_idx));
 	$('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1)
 }
 
-document.getElementById("add_more").addEventListener("click", addMoreMovements, false);
+function addMoreCardioMovements() {
+	var form_idx = $('#id_form-TOTAL_FORMS').val();
+	$('#cardio_form_set').append($('#cardio_workout_empty_form').html().replace(/__prefix__/g, form_idx));
+	$('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1)
+}
+
+document.getElementById("strength_add_more").addEventListener("click", addMoreStrengthMovements, false);
+document.getElementById("cardio_add_more").addEventListener("click", addMoreCardioMovements, false);
