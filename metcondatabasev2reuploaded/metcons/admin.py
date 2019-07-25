@@ -12,6 +12,7 @@ class WorkoutInstanceInline(admin.TabularInline):
               ]
     readonly_fields = ['display_workout']
     
+    
 @admin.register(User)
 class UserProfileAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
@@ -80,6 +81,14 @@ class WorkoutAdmin(admin.ModelAdmin):
                    'created_by_user',
                    )
     inlines = [WorkoutInstanceInline]
+
+@admin.register(StrengthWorkout)
+class StrengthWorkoutAdmin(admin.ModelAdmin):
+    list_display = ('display_name',
+                    'created_by_user',
+                    'number_of_times_completed',
+                    'date_created',
+                    'date_added_to_database')
     
 @admin.register(Movement)
 class MovementAdmin(admin.ModelAdmin):
@@ -137,3 +146,4 @@ class ResultFileAdmin(admin.ModelAdmin):
     
 admin.site.register(Date)
     
+admin.site.register(StrengthExercise)
