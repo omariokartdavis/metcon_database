@@ -17,6 +17,9 @@
 					</p>
 				{% endfor %}
 			{% endif %}
+			{% for k, v in some_list.items %}
+				<p>{{ k.movement.name }}, {{ v }}</p>
+			{% endfor %}
 			<form action="" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
 				<table>
