@@ -263,6 +263,7 @@ class WorkoutInstance(models.Model):
         date_added_by_user = models.DateTimeField(auto_now_add=True)
         workout = models.ForeignKey(Workout, on_delete=models.SET_NULL, null=True, blank=True)
         strength_workout = models.ForeignKey('StrengthWorkout', on_delete=models.SET_NULL, null=True, blank=True)
+        cardio_workout = models.ForeignKey('CardioWorkout', on_delete=models.SET_NULL, null=True, blank=True)
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         duration_in_seconds = models.IntegerField(default=0, verbose_name = 'Duration (sec)', null=True, blank=True)
         current_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name = 'User', null=True, blank=True)
@@ -547,6 +548,7 @@ class StrengthExercise(models.Model):
         movement = models.ForeignKey(Movement, on_delete=models.SET_NULL, null=True)
         number_of_sets = models.IntegerField(default=1, verbose_name='Sets', null=True, blank=True)
         comment = models.TextField(max_length=4000, blank=True, null=True)
+        strength_exercise_number = models.IntegerField(default=1)
 
         def display_name(self):
                 if self.movement:
@@ -595,6 +597,57 @@ class StrengthWorkout(models.Model):
         
         def update_times_completed(self):
                 instances = WorkoutInstance.objects.filter(strength_workout=self)
+                if instances:
+                        self.number_of_times_completed = instances.aggregate(
+                                times_completed=Sum('number_of_times_completed'))['times_completed']
+                else:
+                        self.number_of_times_completed = 0
+                self.save()
+                
+class CardioExercise(models.Model):
+        date_created = models.DateTimeField(default=timezone.now)
+        date_added_to_database = models.DateTimeField(auto_now_add = True)
+        number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
+        movement = models.ForeignKey(Movement, on_delete=models.SET_NULL, null=True)
+        distance = models.IntegerField(default=0, null=True, blank=True)
+        number_of_reps = models.IntegerField(default=1, verbose_name='Reps', null=True, blank=True)
+        comment = models.TextField(max_length=4000, blank=True, null=True)
+        pace = models.CharField(max_length=100, blank=True, null=True)
+        rest = models.IntegerField(default=0, null=True, blank=True)
+        cardio_exercise_number = models.IntegerField(default=1)
+
+        def display_name(self):
+                if self.movement:
+                        return 'cardio Exercise: ' + str(self.movement) + ', id: ' + str(self.id)
+                
+class CardioWorkout(models.Model):
+        date_created = models.DateTimeField(default=timezone.now)
+        date_added_to_database = models.DateTimeField(auto_now_add = True)
+        number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
+        cardio_exercises = models.ManyToManyField(CardioExercise, blank=True)
+        created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+        def is_cardio_workout(self):
+                return True
+        
+        def __str__(self):
+                return 'Cardio Workout ' + str(self.id)
+
+        def display_name(self):
+                return 'Cardio Workout ' + str(self.id)
+
+        def display_truncated_name(self):
+                return 'Cardio ' + str(self.id)
+
+        def display_workout_type(self):
+                return "Cardio"
+
+        def number_of_instances(self):
+                count = WorkoutInstance.objects.filter(cardio_workout=self).count()
+                return count
+        
+        def update_times_completed(self):
+                instances = WorkoutInstance.objects.filter(cardio_workout=self)
                 if instances:
                         self.number_of_times_completed = instances.aggregate(
                                 times_completed=Sum('number_of_times_completed'))['times_completed']
