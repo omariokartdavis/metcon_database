@@ -50,7 +50,7 @@
 								{% for se in i.strength_workout.strength_exercises.all %}
 									<p><strong>{{ se.movement.name }}</strong></br >
 									{% for se_set in se.set_set.all %}
-										Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+										Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 									{% endfor %}
 									</p>
 								{% endfor %}
@@ -115,7 +115,7 @@
 																{% for se in i.strength_workout.strength_exercises.all %}
 																	<p><strong>{{ se.movement.name }}</strong></br >
 																	{% for se_set in se.set_set.all %}
-																		Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+																		Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 																	{% endfor %}
 																	{% if se.comment %}{{ se.comment }}{% endif %}
 																	</p>
@@ -151,7 +151,7 @@
 															{% for se in i.strength_workout.strength_exercises.all %}
 																<p><strong>{{ se.movement.name }}</strong></br >
 																{% for se_set in se.set_set.all %}
-																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 																{% endfor %}
 																{% if se.comment %}{{ se.comment }}{% endif %}
 																</p>
@@ -206,7 +206,7 @@
 															{% for se in i.strength_workout.strength_exercises.all %}
 																<p><strong>{{ se.movement.name }}</strong></br >
 																{% for se_set in se.set_set.all %}
-																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 																{% endfor %}
 																{% if se.comment %}{{ se.comment }}{% endif %}
 																</p>
@@ -247,7 +247,7 @@
 															{% for se in i.strength_workout.strength_exercises.all %}
 																<p><strong>{{ se.movement.name }}</strong></br >
 																{% for se_set in se.set_set.all %}
-																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 																{% endfor %}
 																{% if se.comment %}{{ se.comment }}{% endif %}
 																</p>
@@ -293,7 +293,7 @@
 														{% for se in i.strength_workout.strength_exercises.all %}
 															<p><strong>{{ se.movement.name }}</strong></br >
 															{% for se_set in se.set_set.all %}
-																Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+																Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 															{% endfor %}
 															{% if se.comment %}{{ se.comment }}{% endif %}
 															</p>
@@ -343,7 +343,7 @@
 												{% for se in i.strength_workout.strength_exercises.all %}
 													<p><strong>{{ se.movement.name }}</strong></br >
 													{% for se_set in se.set_set.all %}
-														Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+														Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 													{% endfor %}
 													{% if se.comment %}{{ se.comment }}{% endif %}
 													</p>
@@ -403,7 +403,7 @@
 															{% for se in i.strength_workout.strength_exercises.all %}
 																<p><strong>{{ se.movement.name }}</strong></br >
 																{% for se_set in se.set_set.all %}
-																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 																{% endfor %}
 																{% if se.comment %}{{ se.comment }}{% endif %}
 																</p>
@@ -439,7 +439,7 @@
 															{% for se in i.strength_workout.strength_exercises.all %}
 																<p><strong>{{ se.movement.name }}</strong></br >
 																{% for se_set in se.set_set.all %}
-																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 																{% endfor %}
 																{% if se.comment %}{{ se.comment }}{% endif %}
 																</p>
@@ -478,7 +478,7 @@
 												{% for se in i.strength_workout.strength_exercises.all %}
 													<p><strong>{{ se.movement.name }}</strong></br >
 													{% for se_set in se.set_set.all %}
-														Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+														Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 													{% endfor %}
 													{% if se.comment %}{{ se.comment }}{% endif %}
 													</p>
@@ -514,7 +514,7 @@
 											{% for se in i.strength_workout.strength_exercises.all %}
 												<p><strong>{{ se.movement.name }}</strong></br >
 												{% for se_set in se.set_set.all %}
-													Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+													Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 												{% endfor %}
 												{% if se.comment %}{{ se.comment }}{% endif %}
 												</p>
@@ -579,7 +579,7 @@
 									{% for se in i.strength_workout.strength_exercises.all %}
 										<p><strong>{{ se.movement.name }}</strong></br >
 										{% for se_set in se.set_set.all %}
-											Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+											Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 										{% endfor %}
 										{% if se.comment %}{{ se.comment }}{% endif %}
 										</p>
@@ -626,7 +626,7 @@
 								{% for se in i.strength_workout.strength_exercises.all %}
 									<p><strong>{{ se.movement.name }}</strong></br >
 									{% for se_set in se.set_set.all %}
-										Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+										Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 									{% endfor %}
 									{% if se.comment %}{{ se.comment }}{% endif %}
 									</p>
@@ -687,7 +687,7 @@
 									{% for se in i.strength_workout.strength_exercises.all %}
 										<p><strong>{{ se.movement.name }}</strong></br >
 										{% for se_set in se.set_set.all %}
-											Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+											Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 										{% endfor %}
 										{% if se.comment %}{{ se.comment }}{% endif %}
 										</p>
@@ -733,7 +733,7 @@
 								{% for se in i.strength_workout.strength_exercises.all %}
 									<p><strong>{{ se.movement.name }}</strong></br >
 									{% for se_set in se.set_set.all %}
-										Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}</br >
+										Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 									{% endfor %}
 									{% if se.comment %}{{ se.comment }}{% endif %}
 									</p>
