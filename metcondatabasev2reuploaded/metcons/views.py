@@ -1030,7 +1030,7 @@ def edit_instance(request, username, pk):
                 form = EditStrengthInstanceForm(request.POST)
                 if form.is_valid():
                     base_workout = instance.strength_workout
-                    instance.comment = form.cleaned_data['comment']
+                    # moved comments from instance to individual strength exercises. instance.comment = form.cleaned_data['comment']
                     #add more things to change to this like movements/weights/sets/reps later
                     instance.save()
                     if base_workout:
@@ -1065,7 +1065,7 @@ def edit_instance(request, username, pk):
                                          'workout_text': instance.edited_workout_text,
                                          'scaling_text': instance.edited_scaling_text,
                                          })
-        form2 = EditStrengthInstanceForm(initial={'comment': instance.comment})
+        form2 = EditStrengthInstanceForm()#initial={'comment': instance.comment})
 
     context = {
         'form1': form1,
@@ -1164,8 +1164,12 @@ def create_result(request, username, pk):
             duration_minutes=0
             duration_seconds=0
         form1 = CreateGeneralResultForm(initial={'duration_minutes': duration_minutes, 'duration_seconds': duration_seconds})
-        form2 = CreateStrengthResultForm()
-        
+        form2 = CreateStrengthResultForm(**{'instance':instance})
+
+        some_list = {}
+        for k, v in zip(instance.strength_workout.strength_exercises.all(), form2.fields):
+            some_list[k] = v
+            
         if 'created workout today add result' in request.GET:
             now = timezone.localtime(timezone.now()).date()
             form1.fields['date_completed'].initial = now
@@ -1179,6 +1183,7 @@ def create_result(request, username, pk):
         'form1': form1,
         'form2': form2,
         'instance': instance,
+        'some_list': some_list,
         }
 
     return render(request, 'metcons/create_result.html', context)
@@ -1479,7 +1484,6 @@ def create_workout(request):
                 strength_workout.save()
                 hidden=False
                 date_to_unhide=None
-                comment=''
                 if current_user.is_coach or current_user.is_gym_owner:
                     if formset[0].cleaned_data['athlete_to_assign']:
                         for i in formset[0].cleaned_data['athlete_to_assign']:
@@ -1504,11 +1508,11 @@ def create_workout(request):
                         strength_movement = Movement(name=form.cleaned_data['movement'])
                         strength_movement.save()
                         # add in ability to send a notification to myself that a new movement has been created so it can be viewed and accepted.
+                    comment = form.cleaned_data['comment']
                     strength_exercise = StrengthExercise(movement=strength_movement,
-                                                         number_of_sets=form.cleaned_data['sets'])
+                                                         number_of_sets=form.cleaned_data['sets'],
+                                                         comment=comment)
                     strength_exercise.save()
-                    if form.cleaned_data['comment']:
-                        comment += form.cleaned_data['comment']
                     #add if statement here once dynamic form is implemented so that if all sets, reps, and weight are the same it only creates 1 set
                     # will have to have an if statement on template display as well so that it knows to represent differently.
                     for i in range(1, strength_exercise.number_of_sets + 1):
@@ -1532,7 +1536,6 @@ def create_workout(request):
                         else:
                             assigned = False
                         instance = WorkoutInstance(strength_workout=strength_workout, current_user = i,
-                                                   comment=comment,
                                                    is_assigned_by_coach_or_gym_owner=assigned)
                         instance.save()
                         if instance.is_assigned_by_coach_or_gym_owner:
