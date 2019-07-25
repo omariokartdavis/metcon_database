@@ -8,6 +8,8 @@ from metcons.models import User, Movement
 
 movement_choices = [(i.name, i.name) for i in Movement.objects.all()]
 
+cardio_choices = [(i.name, i.name) for i in Movement.objects.filter(classification__name='Cardio')]
+
 weight_unit_choices = [
     ('lbs', 'lbs'),
     ('kgs', 'kgs'),
@@ -112,7 +114,7 @@ class CreateStrengthWorkoutForm(forms.Form):
     #modify this to allow for changing number of sets/reps/weights to be created
     movement = forms.ChoiceField(widget=forms.Select(), choices=movement_choices, help_text='What Movement would you like to perform?')
     sets = forms.IntegerField(help_text='How many sets would you like to perform?')
-    reps = forms.IntegerField(help_text='How many reps would you like to perform?', required=False)
+    reps = forms.IntegerField(help_text='If reps left blank it is assumed max possible reps should be performed.', required=False)
     weight = forms.DecimalField(min_value=0.0, max_value=99999.9, decimal_places=1, max_digits=6, required=False)
     weight_units = forms.ChoiceField(widget=forms.Select(), choices=weight_unit_choices, help_text='What units is the weight in?', required=False)
     comment = forms.CharField(widget=forms.Textarea, max_length=4000, required=False, help_text='Required rest or effort')
@@ -127,6 +129,25 @@ class CreateStrengthWorkoutForm(forms.Form):
             self.fields['date_to_unhide'] = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
 
 StrengthWorkoutFormset = formset_factory(CreateStrengthWorkoutForm, extra=1)
+
+class CreateCardioWorkoutForm(forms.Form):
+    movement = forms.ChoiceField(widget=forms.Select(), choices=cardio_choices, help_text='What Movement would you like to perform?')
+    distance = forms.IntegerField(help_text='What distance?')
+    reps = forms.IntegerField(required=False)
+    rest = forms.IntegerField(required=False, help_text='In seconds.')
+    pace = forms.CharField(max_length=100, required=False)
+    comment = forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(CreateCardioWorkoutForm, self).__init__(*args, **kwargs)
+        if user.is_coach or user.is_gym_owner:
+            self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
+            self.fields['group_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
+            self.fields['hide_from_athletes'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
+            self.fields['date_to_unhide'] = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
+
+CardioWorkoutFormset = formset_factory(CreateCardioWorkoutForm, extra=1)
 
 class CreateGeneralResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
@@ -188,7 +209,14 @@ class EditInstanceForm(forms.Form):
         return data
 
 class EditStrengthInstanceForm(forms.Form):
-    comment = forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.pop('instance', None)
+        super(EditStrengthInstanceForm, self).__init__(*args, **kwargs)
+        if instance.strength_workout:
+            for i in instance.strength_workout.strength_exercises.all():
+                field_name = 'comment_%s' % (i.strength_exercise_number,)
+                self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
+                self.fields[field_name].initial = i.comment
     
 class EditGeneralResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000)
