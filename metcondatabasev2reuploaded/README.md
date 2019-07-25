@@ -5,45 +5,15 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 7/16/19 and 7/17/19 and 7/18/19 7/24/19
-(uploaded at work)
+## 7/24/19
+(uploaded at home)
 - models.py (requires migrations)
 - views.py
 - forms.py
-- urls.py
-- utils.py
 - create_workout.html
 - user_page.html
 - workoutinstance_detail.html
-- interim_created_workout.html
-- schedule_instance_for_multiple_athletes.html
-- edit_instance.html
-- workout_list.html
-- interim_created_workout_for_multiple_athletes.html
 - create_result.html
-- edit_result.html
-- created create_workout.js and create_workout.css
-
-## functionality completed on 7/16/19
-- created strengthworkout, strengthexercise, and set models
-- modified WorkoutInstance model to also serve as strengthworkoutinstance without creating new model
-- started modifying views and create_workout to handle multiple types of workouts
-
-## functionality completed on 7/17/19
-- changes to create workout view to allow for 2 different types of workout
-- changed user_page, create_workout, and workoutinstance_detail to allow for strength workouts
-- changed add_workout_to_athletes view to allow strength workout
-- changed result model to allow for strength workouts
-- changed all schedule_for_multiple_users buttons to pass instance id not workout id.
-  - then change schedule for multiple athletes view to get either workout or strength workout id based on if statement
-  - this way I don't have to add if statements to every template button
-  - buttons on pages: 
-    - fixed: workoutinstance_detail, user_page, interim_created_workout_for_multiple_athletes
-    - notfixed: 
-- changed all views to allow for multiple workouts except workout_list view.
-
-## functionality copmleted on 7/18/19
-- added different display names for strenght/general workouts and display only "Strength"/ "Metcon" for this weeks workouts
 
 ## functionality completed on 7/24/19
 - fixed display of strength workouts reps on user_page to be same as workoutinstance detail page
@@ -56,6 +26,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - if strength workout
   - break forms into specific labels etc.
   - only show assign to athletes at the end of all forms.
+-  add comments back to strength exercise so each exercise can have its own comment
+  - add comment entry in forms back in create_workout.html
+  - also move comments into the for loop for strength exercises on workoutinstance_detail page
+  - potentially show comments on user_page
+- moved comment to end of create_workout form
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -87,14 +62,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - not necessary anyway
         
 ## Functionality to add:
-- check how create strength workout with multiple movements works for athletes/gym owners
-- potentially add comments back to strength exercise so each exercise can have its own comment
-  - if I do this, add comment entry in forms back in create_workout.html
-  - also move comments into the for loop for strength exercises on workoutinstance_detail page
-  - potentially show comments on user_page
+- add a "you have this workout set to unhide on: date" to interim schedule and schedule workouts pages if came from interim schedule
+- may need to change edit_instance form for strength workouts
+  - need to figure out editing comments for each strength exercise
+- add a "You've already completed this workout" to workout list and include completed workouts by default
 - change "schedule for all athletes buttons" to "schedule for multiple athletes"
   - then go to athlete select page and schedule select page
 - change results for strength workout to use sets/reps/weights
+  - still haven't figured out proper positioning but have created multiple result adds for each strength exercise
 - still need to handle result media files better
 - put strength workouts in workout_list in workouts view 
 - change createstrengthworkoutform to allow for multiple movements and varying reps per each set as well as weight
