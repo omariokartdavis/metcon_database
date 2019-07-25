@@ -5,32 +5,39 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 7/24/19
-(uploaded at home)
+## 7/25/19
+(uploaded at work)
+- created all_update_funcs.py in metcondatabase base folder
 - models.py (requires migrations)
 - views.py
+- admin.py
+- utils.py
 - forms.py
+- create_workout.css
+- create_workout.js
+- create_result.html
 - create_workout.html
+- edit_instance.html
+- interim_created_workout.html
+- interim_created_workout_for_multiple_athletes.html
+- schedule_instance_for_multiple_athletes.html
 - user_page.html
 - workoutinstance_detail.html
-- create_result.html
 
-## functionality completed on 7/24/19
-- fixed display of strength workouts reps on user_page to be same as workoutinstance detail page
-- fixed display of strength workouts reps on create_result to be same as workoutinstance detail page
-- fixed display of strength workouts reps on schedule for multiple athletes to be same as workoutinstance detail page
-- fixed display of workouts if not logged in and searching for workouts
-- add workout_list_minus_user_created to workout_list view and use that list for if a user isn't logged in.
-  - altered most_recent_workouts in view for workout_list to be this
-- in create workout template
-  - if strength workout
-  - break forms into specific labels etc.
-  - only show assign to athletes at the end of all forms.
--  add comments back to strength exercise so each exercise can have its own comment
-  - add comment entry in forms back in create_workout.html
-  - also move comments into the for loop for strength exercises on workoutinstance_detail page
-  - potentially show comments on user_page
-- moved comment to end of create_workout form
+
+## functionality completed on 7/25/19
+- added strength workouts and exercises to admin page
+- fixed calendar issue if strengthworkout was deleted
+- create result for strength workouts now puts a result input field under each exercise description.
+- fixed display of reps on multiple pages
+- changed edit instance to edit comments for strength workout
+- fixed:currently an athlete can see if a workout is scheduled for another date even if that workout is hidden for that date.
+  - in the delete/edit schedule views for date choices.
+  - made an if statement saying if date < date to unhide, show it in list
+  - athletes can still find out if a workout is hidden if they previously have the workout and go and schedule it for a future
+    date past the current hidden date. It will then show on the calendar as being hidden and they will know that workout is scheduled
+    - don't plan on doing anything to address this
+- added cardioworkout and exercise models and most accompanying views
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -60,8 +67,15 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - if removed it will list every workout over and over again based on the number of dates it has in the future/recent/past
                 but they will be ordered based on their youngest/oldest dates only. 
   - not necessary anyway
+- athletes can still find out if a workout is hidden if they previously have the workout and go and schedule it for a future
+  date past the current hidden date. It will then show on the calendar as being hidden and they will know that workout is scheduled
+  - don't plan on doing anything to address this
         
 ## Functionality to add:
+- add cardio stuff to admin
+- check all views/templates and add info for cardio workouts
+  - user_page and utils, interim, schedule, instance detail etc.
+- need to add distance units to cardio exercise model and views/templates/forms
 - add a "you have this workout set to unhide on: date" to interim schedule and schedule workouts pages if came from interim schedule
 - may need to change edit_instance form for strength workouts
   - need to figure out editing comments for each strength exercise
@@ -69,26 +83,20 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - change "schedule for all athletes buttons" to "schedule for multiple athletes"
   - then go to athlete select page and schedule select page
 - change results for strength workout to use sets/reps/weights
-  - still haven't figured out proper positioning but have created multiple result adds for each strength exercise
 - still need to handle result media files better
 - put strength workouts in workout_list in workouts view 
-- change createstrengthworkoutform to allow for multiple movements and varying reps per each set as well as weight
+- change createstrengthworkoutform to allow for varying reps per each set as well as weight
 - can add a class if statement to the create_workout.html class="{% if user.default_sport == 'specific sport' %}default_form{%endif%}
 - need to alter views (create workout view and all views that show info on workouts) to display properly if its a strength workout or general workout
 - need to download itertools and use its chain function to combine querysets
   - may not need to do this since I modified WorkoutInstance to be for workouts and strength workouts
   - can use if instance.workout or if instance.strength_workout to diferentiate in templates etc.
-  - may need this for workout_list view for combininb both types of workout models
+  - may need this for workout_list view for combining both types of workout models
 - don't forget to remove all "for testing purposes" code in templates like schedule_instance etc.
 - add clean validation to create group form so that groups can't be created with the same name under the same user
 - create all named workouts and create dropdown filter for them
   - can make a dropdown list of only named workouts
   - would likely add to movement_list.py or something
-- currently an athlete can see if a workout is scheduled for another date even if that workout is hidden for that date.
-  - they can see this in the edit schedule and delete schedule pages
-  - change this in a view somewhere?
-  - possibly in the delete/edit schedule views for date choices.
-  - make an if statement saying if date >= date to unhide, dont show it in list unless you are a coach
 - change workoutinstance_detail so when sent to from calendar it shows only the results from that day
   - add a show all results button that then shows everything.
   - may not be able to do this as it is from a <a> get_absolute_url. would need to add a hidden input.
@@ -101,21 +109,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - count can be an aggregate sum of requests currently and later any other things like messages etc.
 - create edit group page to allow changing of group name
   - can also possibly combine add/delete athletes to group on this page
-- can load all future/recent/etc. workouts for all athletes on user_page visit then filter them in template instead of causing
-  page reload and filtering in views. not sure if this would be better or not.
-  - or can just load in all future workouts from the start and filter based off athlete name
-    - in view:
-      - all_athletes_future_workouts = for i in athletes = WorkoutInstance.objcets.filter(current_user=i...)
-    - then in template have buttons for each athlete and filter workouts displayed based on which athlete is clicked.
-  - this way page does not have to reload
 - add videos/pictures to movements to create a database of movement technique
-- create tests for request model
+- create tests for request, strengthworkout, strengthexercise, and set models
 - break user sign up into two or more pages, first page has basic info (name, username, password, email, is athlete/coach etc)
   - second page can have more specific stuff based on their athlete/coach choice on first page
   - not sure which page should ask about sports, probably second
     - if athlete ask what sport they mainly focus on, if coach what sports do their athletes play and what sport do they play etc.
 - add main_sport field to user model
-- add is_completed_rx and is_completed_scaled to result model?
+- ?add is_completed_rx and is_completed_scaled to result model?
 - gym owners need some distinction between adding athletes/coaches and adding members.
 - if workout is_hidden and only has instances with users who all belong to the same coach/gym then don't show workout in workout list.
   - will have to be done on the workout_list query view.
