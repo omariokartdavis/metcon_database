@@ -16,6 +16,13 @@ weight_unit_choices = [
     ('%', '%'),
     ]
 
+distance_unit_choices = [
+    ('m', 'm'),
+    ('ft', 'ft'),
+    ('km', 'km'),
+    ('mi', 'mi'),
+    ]
+
 repetition_frequency_choices = [
     ('none', ''),
     (1, 'Daily'),
@@ -133,6 +140,7 @@ StrengthWorkoutFormset = formset_factory(CreateStrengthWorkoutForm, extra=1)
 class CreateCardioWorkoutForm(forms.Form):
     movement = forms.ChoiceField(widget=forms.Select(), choices=cardio_choices, help_text='What Movement would you like to perform?')
     distance = forms.IntegerField(help_text='What distance?')
+    distance_units = forms.ChoiceField(widget=forms.Select(), choices=distance_unit_choices, help_text='What units is the distance in?', required=False)
     reps = forms.IntegerField(required=False)
     rest = forms.IntegerField(required=False, help_text='In seconds.')
     pace = forms.CharField(max_length=100, required=False)
@@ -166,7 +174,19 @@ class CreateStrengthResultForm(forms.Form):
                 field_name = 'result_text_%s' % (i,)
                 self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
                 
-    #result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
+    media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
+    media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable.')
+    date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
+
+class CreateCardioResultForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.pop('instance', None)
+        super(CreateCardioResultForm, self).__init__(*args, **kwargs)
+        if instance.cardio_workout:
+            for i in range(1, instance.cardio_workout.cardio_exercises.count()+1):
+                field_name = 'result_text_%s' % (i,)
+                self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
+                
     media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
     media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable.')
     date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
@@ -215,6 +235,16 @@ class EditStrengthInstanceForm(forms.Form):
         if instance.strength_workout:
             for i in instance.strength_workout.strength_exercises.all():
                 field_name = 'comment_%s' % (i.strength_exercise_number,)
+                self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
+                self.fields[field_name].initial = i.comment
+
+class EditCardioInstanceForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.pop('instance', None)
+        super(EditCardioInstanceForm, self).__init__(*args, **kwargs)
+        if instance.cardio_workout:
+            for i in instance.cardio_workout.cardio_exercises.all():
+                field_name = 'comment_%s' % (i.cardio_exercise_number,)
                 self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
                 self.fields[field_name].initial = i.comment
     
