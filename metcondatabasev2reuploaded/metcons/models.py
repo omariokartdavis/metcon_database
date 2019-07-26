@@ -639,9 +639,19 @@ class CardioExercise(models.Model):
         rest = models.IntegerField(default=0, null=True, blank=True)
         cardio_exercise_number = models.IntegerField(default=1)
 
+        def rest_in_minutes(self):
+                #for template display
+                rest = self.rest // 60
+                return rest
+
+        def rest_remainder(self):
+                #for template display
+                remainder = self.rest % 60
+                return remainder
+        
         def display_name(self):
                 if self.movement:
-                        return 'cardio Exercise: ' + str(self.movement) + ', id: ' + str(self.id)
+                        return 'Cardio Exercise: ' + str(self.movement) + ', id: ' + str(self.id)
                 
 class CardioWorkout(models.Model):
         date_created = models.DateTimeField(default=timezone.now)
