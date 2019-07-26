@@ -98,7 +98,9 @@
 			<form method='post'>
 				<div class="tabContentReplacement">
 					{% csrf_token %}
-					{{ formset_cardio.management_form }}
+					<input type="hidden" name="form-TOTAL_FORMS" value="1" id="cardio_id_form-TOTAL_FORMS" />
+					<input type="hidden" name="form-INITIAL_FORMS" value="0" id="cardio_id_form-INITIAL_FORMS" />
+					<input type="hidden" name="form-MAX_NUM_FORMS" id="cardio_id_form-MAX_NUM_FORMS" />
 					<div class="listedWorkouts">
 						<div id="cardio_form_set">
 							{% for form in formset_cardio %}
@@ -112,8 +114,8 @@
 										{{ form.distance_units }}<br />
 										<label>{{ form.reps.label }}:</label>
 										{{ form.reps }}<br />
-										<label>{{ form.rest.label }}:</label>
-										{{ form.rest }}{{ form.rest.help_text}} <br />
+										<label>{{ form.rest_minutes.label }}:</label>
+										{{ form.rest_minutes }}:{{ form.rest_seconds }}<br />
 										<label>{{ form.pace.label }}:</label>
 										{{ form.pace }}<br />
 										<label>{{ form.comment.label }}:</label>
@@ -141,9 +143,10 @@
 								<p>
 									{% for i in formset_cardio.empty_form %}
 										{% if i.label == "Group to assign" or i.label == "Athlete to assign" or i.label == "Hide from athletes" or i.label == "Date to unhide" %}
+										{% elif i.label == "Rest Seconds" %}
+											: {{ i }}
 										{% else %}
-											<label>{{ i.label }}:</label> {{ i }}<br />
-											{% if i.label == "Rest" %}{{ i.help_text }}<br />{% endif %}
+											{% if not forloop.first %}<br />{% endif %}<label>{{ i.label }}:</label> {{ i }}
 										{% endif %}
 									{% endfor %}
 								</p>
