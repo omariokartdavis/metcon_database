@@ -76,7 +76,7 @@
 							<h2>{{k|date:"l"}}</h2>
 						{% endif %}
 						{% for i in v %}
-							{% if i.workout or i.strength_workout %}
+							{% if i.workout or i.strength_workout or i.cardio_workout %}
 								{% if i.youngest_scheduled_date %}
 									<div class="workoutContent">
 										{% if i.is_hidden %}
@@ -109,7 +109,7 @@
 															<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 																<input type="submit" value="Add Result" name="add result">
 															</form>
-															{% if i.edited_workout_text %}
+															{% if i.workout %}
 																{{ i.edited_workout_text|linebreaks }}</p>
 															{% elif i.strength_workout %}
 																{% for se in i.strength_workout.strength_exercises.all %}
@@ -119,6 +119,12 @@
 																	{% endfor %}
 																	{% if se.comment %}{{ se.comment }}{% endif %}
 																	</p>
+																{% endfor %}
+															{% elif i.cardio_workout %}
+																{% for ce in i.cardio_workout.cardio_exercises.all %}
+																	<p><strong>{{ ce.movement.name }}</strong></br >
+																	{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+																	{% if ce.comment %}{{ ce.comment }}{% endif %}
 																{% endfor %}
 															{% endif %}
 														{% endif %}
@@ -145,7 +151,7 @@
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 															<input type="submit" value="Add Result" name="add result">
 														</form>
-														{% if i.edited_workout_text %}
+														{% if i.workout %}
 															{{ i.edited_workout_text|linebreaks }}</p>
 														{% elif i.strength_workout %}
 															{% for se in i.strength_workout.strength_exercises.all %}
@@ -155,6 +161,12 @@
 																{% endfor %}
 																{% if se.comment %}{{ se.comment }}{% endif %}
 																</p>
+															{% endfor %}
+														{% elif i.cardio_workout %}
+															{% for ce in i.cardio_workout.cardio_exercises.all %}
+																<p><strong>{{ ce.movement.name }}</strong></br >
+																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+																{% if ce.comment %}{{ ce.comment }}{% endif %}
 															{% endfor %}
 														{% endif %}
 													{% endif %}
@@ -200,7 +212,7 @@
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 															<input type="submit" value="Add Result" name="add result">
 														</form>
-														{% if i.edited_workout_text %}
+														{% if i.workout %}
 															{{ i.edited_workout_text|linebreaks }}</p>
 														{% elif i.strength_workout %}
 															{% for se in i.strength_workout.strength_exercises.all %}
@@ -210,6 +222,12 @@
 																{% endfor %}
 																{% if se.comment %}{{ se.comment }}{% endif %}
 																</p>
+															{% endfor %}
+														{% elif i.cardio_workout %}
+															{% for ce in i.cardio_workout.cardio_exercises.all %}
+																<p><strong>{{ ce.movement.name }}</strong></br >
+																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+																{% if ce.comment %}{{ ce.comment }}{% endif %}
 															{% endfor %}
 														{% endif %}
 													{% else %}
@@ -241,7 +259,7 @@
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 															<input type="submit" value="Add Result" name="add result">
 														</form>
-														{% if i.edited_workout_text %}
+														{% if i.workout %}
 															{{ i.edited_workout_text|linebreaks }}</p>
 														{% elif i.strength_workout %}
 															{% for se in i.strength_workout.strength_exercises.all %}
@@ -251,6 +269,12 @@
 																{% endfor %}
 																{% if se.comment %}{{ se.comment }}{% endif %}
 																</p>
+															{% endfor %}
+														{% elif i.cardio_workout %}
+															{% for ce in i.cardio_workout.cardio_exercises.all %}
+																<p><strong>{{ ce.movement.name }}</strong></br >
+																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+																{% if ce.comment %}{{ ce.comment }}{% endif %}
 															{% endfor %}
 														{% endif %}
 													{% endif %}
@@ -287,7 +311,7 @@
 													<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 														<input type="submit" value="Add Result" name="add result">
 													</form>
-													{% if i.edited_workout_text %}
+													{% if i.workout %}
 														{{ i.edited_workout_text|linebreaks }}</p>
 													{% elif i.strength_workout %}
 														{% for se in i.strength_workout.strength_exercises.all %}
@@ -297,6 +321,12 @@
 															{% endfor %}
 															{% if se.comment %}{{ se.comment }}{% endif %}
 															</p>
+														{% endfor %}
+													{% elif i.cardio_workout %}
+														{% for ce in i.cardio_workout.cardio_exercises.all %}
+															<p><strong>{{ ce.movement.name }}</strong></br >
+															{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+															{% if ce.comment %}{{ ce.comment }}{% endif %}
 														{% endfor %}
 													{% endif %}
 												{% endif %}
@@ -337,7 +367,7 @@
 											<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 												<input type="submit" value="Add Result" name="add result">
 											</form>
-											{% if i.edited_workout_text %}
+											{% if i.workout %}
 												{{ i.edited_workout_text|linebreaks }}</p>
 											{% elif i.strength_workout %}
 												{% for se in i.strength_workout.strength_exercises.all %}
@@ -347,6 +377,12 @@
 													{% endfor %}
 													{% if se.comment %}{{ se.comment }}{% endif %}
 													</p>
+												{% endfor %}
+											{% elif i.cardio_workout %}
+												{% for ce in i.cardio_workout.cardio_exercises.all %}
+													<p><strong>{{ ce.movement.name }}</strong></br >
+													{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+													{% if ce.comment %}{{ ce.comment }}{% endif %}
 												{% endfor %}
 											{% endif %}
 										{% endif %}
@@ -365,7 +401,7 @@
 						<h2>{{k|date:"l"}}</h2>
 					{% endif %}
 					{% for i in v %}
-						{% if i.workout or i.strength_workout %}
+						{% if i.workout or i.strength_workout or i.cardio_workout %}
 							{% if i.youngest_scheduled_date %}
 								<div class="workoutContent">
 									{% if i.is_hidden %}
@@ -397,7 +433,7 @@
 														<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 															<input type="submit" value="Add Result" name="add result">
 														</form>
-														{% if i.edited_workout_text %}
+														{% if i.workout %}
 															{{ i.edited_workout_text|linebreaks }}</p>
 														{% elif i.strength_workout %}
 															{% for se in i.strength_workout.strength_exercises.all %}
@@ -407,6 +443,12 @@
 																{% endfor %}
 																{% if se.comment %}{{ se.comment }}{% endif %}
 																</p>
+															{% endfor %}
+														{% elif i.cardio_workout %}
+															{% for ce in i.cardio_workout.cardio_exercises.all %}
+																<p><strong>{{ ce.movement.name }}</strong></br >
+																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+																{% if ce.comment %}{{ ce.comment }}{% endif %}
 															{% endfor %}
 														{% endif %}
 													{% endif %}
@@ -433,18 +475,24 @@
 													<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 														<input type="submit" value="Add Result" name="add result">
 													</form>
-													{% if i.edited_workout_text %}
-															{{ i.edited_workout_text|linebreaks }}</p>
-														{% elif i.strength_workout %}
-															{% for se in i.strength_workout.strength_exercises.all %}
-																<p><strong>{{ se.movement.name }}</strong></br >
-																{% for se_set in se.set_set.all %}
-																	Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
-																{% endfor %}
-																{% if se.comment %}{{ se.comment }}{% endif %}
-																</p>
+													{% if i.workout %}
+														{{ i.edited_workout_text|linebreaks }}</p>
+													{% elif i.strength_workout %}
+														{% for se in i.strength_workout.strength_exercises.all %}
+															<p><strong>{{ se.movement.name }}</strong></br >
+															{% for se_set in se.set_set.all %}
+																Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 															{% endfor %}
-														{% endif %}
+															{% if se.comment %}{{ se.comment }}{% endif %}
+															</p>
+														{% endfor %}
+													{% elif i.cardio_workout %}
+														{% for ce in i.cardio_workout.cardio_exercises.all %}
+															<p><strong>{{ ce.movement.name }}</strong></br >
+															{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+															{% if ce.comment %}{{ ce.comment }}{% endif %}
+														{% endfor %}
+													{% endif %}
 												{% endif %}
 											{% else %}
 												<p>Workout Hidden - This workout is not scheduled to unhide.</p>
@@ -472,7 +520,7 @@
 											<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 												<input type="submit" value="Add Result" name="add result">
 											</form>
-											{% if i.edited_workout_text %}
+											{% if i.workout %}
 												{{ i.edited_workout_text|linebreaks }}</p>
 											{% elif i.strength_workout %}
 												{% for se in i.strength_workout.strength_exercises.all %}
@@ -482,6 +530,12 @@
 													{% endfor %}
 													{% if se.comment %}{{ se.comment }}{% endif %}
 													</p>
+												{% endfor %}
+											{% elif i.cardio_workout %}
+												{% for ce in i.cardio_workout.cardio_exercises.all %}
+													<p><strong>{{ ce.movement.name }}</strong></br >
+													{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+													{% if ce.comment %}{{ ce.comment }}{% endif %}
 												{% endfor %}
 											{% endif %}
 										{% endif %}
@@ -508,7 +562,7 @@
 										<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 											<input type="submit" value="Add Result" name="add result">
 										</form>
-										{% if i.edited_workout_text %}
+										{% if i.workout %}
 											{{ i.edited_workout_text|linebreaks }}</p>
 										{% elif i.strength_workout %}
 											{% for se in i.strength_workout.strength_exercises.all %}
@@ -518,6 +572,12 @@
 												{% endfor %}
 												{% if se.comment %}{{ se.comment }}{% endif %}
 												</p>
+											{% endfor %}
+										{% elif i.cardio_workout %}
+											{% for ce in i.cardio_workout.cardio_exercises.all %}
+												<p><strong>{{ ce.movement.name }}</strong></br >
+												{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+												{% if ce.comment %}{{ ce.comment }}{% endif %}
 											{% endfor %}
 										{% endif %}
 									{% endif %}
@@ -538,7 +598,7 @@
 				{% if chosen_users_recent_past_workouts %}
 					<h2>Recent Workouts</h2>
 					{% for i in chosen_users_recent_past_workouts %}
-						{% if i.workout or i.strength_workout %}
+						{% if i.workout or i.strength_workout or i.cardio_workout %}
 							<div class="workoutContent">
 								<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
 								<div class="dropdownContainerWorkoutButtons">
@@ -573,7 +633,7 @@
 								<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 									<input type="submit" value="Add Result" name="add result">
 								</form>
-								{% if i.edited_workout_text %}
+								{% if i.workout %}
 									{{ i.edited_workout_text|linebreaks }}</p>
 								{% elif i.strength_workout %}
 									{% for se in i.strength_workout.strength_exercises.all %}
@@ -583,6 +643,12 @@
 										{% endfor %}
 										{% if se.comment %}{{ se.comment }}{% endif %}
 										</p>
+									{% endfor %}
+								{% elif i.cardio_workout %}
+									{% for ce in i.cardio_workout.cardio_exercises.all %}
+										<p><strong>{{ ce.movement.name }}</strong></br >
+										{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+										{% if ce.comment %}{{ ce.comment }}{% endif %}
 									{% endfor %}
 								{% endif %}
 							</div>
@@ -595,7 +661,7 @@
 			{% elif recent_past_workouts %}
 				<h2>Recent Workouts</h2>
 				{% for i in recent_past_workouts %}
-					{% if i.workout or i.strength_workout %}
+					{% if i.workout or i.strength_workout or i.cardio_workout %}
 						<div class="workoutContent">
 							<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
 							<div class="dropdownContainerWorkoutButtons">
@@ -620,7 +686,7 @@
 							<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 								<input type="submit" value="Add Result" name="add result">
 							</form>
-							{% if i.edited_workout_text %}
+							{% if i.workout %}
 								{{ i.edited_workout_text|linebreaks }}</p>
 							{% elif i.strength_workout %}
 								{% for se in i.strength_workout.strength_exercises.all %}
@@ -630,6 +696,12 @@
 									{% endfor %}
 									{% if se.comment %}{{ se.comment }}{% endif %}
 									</p>
+								{% endfor %}
+							{% elif i.cardio_workout %}
+								{% for ce in i.cardio_workout.cardio_exercises.all %}
+									<p><strong>{{ ce.movement.name }}</strong></br >
+									{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+									{% if ce.comment %}{{ ce.comment }}{% endif %}
 								{% endfor %}
 							{% endif %}
 						</div>
@@ -647,7 +719,7 @@
 				{% if chosen_users_incomplete_workouts %}
 					<h2>Pending Wokouts</h2>
 					{% for i in chosen_users_incomplete_workouts %}
-						{% if i.workout or i.strength_workout %}
+						{% if i.workout or i.strength_workout or i.cardio_workout %}
 							<div class="workoutContent">
 								<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
 								<div class="dropdownContainerWorkoutButtons">
@@ -681,7 +753,7 @@
 								<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 									<input type="submit" value="Add Result" name="add result">
 								</form>
-								{% if i.edited_workout_text %}
+								{% if i.workout %}
 									{{ i.edited_workout_text|linebreaks }}</p>
 								{% elif i.strength_workout %}
 									{% for se in i.strength_workout.strength_exercises.all %}
@@ -691,6 +763,12 @@
 										{% endfor %}
 										{% if se.comment %}{{ se.comment }}{% endif %}
 										</p>
+									{% endfor %}
+								{% elif i.cardio_workout %}
+									{% for ce in i.cardio_workout.cardio_exercises.all %}
+										<p><strong>{{ ce.movement.name }}</strong></br >
+										{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+										{% if ce.comment %}{{ ce.comment }}{% endif %}
 									{% endfor %}
 								{% endif %}
 							</div>
@@ -703,7 +781,7 @@
 			{% elif incomplete_workouts %}
 				<h2>Pending Workouts</h2>
 				{% for i in incomplete_workouts %}
-					{% if i.workout or i.strength_workout %}
+					{% if i.workout or i.strength_workout or i.cardio_workout %}
 						<div class="workoutContent">
 							<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
 							<div class="dropdownContainerWorkoutButtons">
@@ -727,7 +805,7 @@
 							<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 								<input type="submit" value="Add Result" name="add result">
 							</form>
-							{% if i.edited_workout_text %}
+							{% if i.workout %}
 								{{ i.edited_workout_text|linebreaks }}</p>
 							{% elif i.strength_workout %}
 								{% for se in i.strength_workout.strength_exercises.all %}
@@ -737,6 +815,12 @@
 									{% endfor %}
 									{% if se.comment %}{{ se.comment }}{% endif %}
 									</p>
+								{% endfor %}
+							{% elif i.cardio_workout %}
+								{% for ce in i.cardio_workout.cardio_exercises.all %}
+									<p><strong>{{ ce.movement.name }}</strong></br >
+									{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+									{% if ce.comment %}{{ ce.comment }}{% endif %}
 								{% endfor %}
 							{% endif %}
 						</div>
