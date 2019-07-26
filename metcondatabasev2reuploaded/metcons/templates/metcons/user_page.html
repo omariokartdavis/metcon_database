@@ -54,6 +54,12 @@
 									{% endfor %}
 									</p>
 								{% endfor %}
+							{% elif i.cardio_workout %}
+								{% for ce in i.cardio_workout.cardio_exercises.all %}
+									<p><strong>{{ ce.movement.name }}</strong></br >
+									{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
+									{% if ce.comment %}{{ ce.comment }}{% endif %}
+								{% endfor %}
 							{% endif %}
 								<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
 									<input type="submit" value="Yes, Add Result" name="previous day add result">
@@ -123,7 +129,7 @@
 															{% elif i.cardio_workout %}
 																{% for ce in i.cardio_workout.cardio_exercises.all %}
 																	<p><strong>{{ ce.movement.name }}</strong></br >
-																	{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+																	{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 																	{% if ce.comment %}{{ ce.comment }}{% endif %}
 																{% endfor %}
 															{% endif %}
@@ -165,7 +171,7 @@
 														{% elif i.cardio_workout %}
 															{% for ce in i.cardio_workout.cardio_exercises.all %}
 																<p><strong>{{ ce.movement.name }}</strong></br >
-																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 																{% if ce.comment %}{{ ce.comment }}{% endif %}
 															{% endfor %}
 														{% endif %}
@@ -226,7 +232,7 @@
 														{% elif i.cardio_workout %}
 															{% for ce in i.cardio_workout.cardio_exercises.all %}
 																<p><strong>{{ ce.movement.name }}</strong></br >
-																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 																{% if ce.comment %}{{ ce.comment }}{% endif %}
 															{% endfor %}
 														{% endif %}
@@ -273,7 +279,7 @@
 														{% elif i.cardio_workout %}
 															{% for ce in i.cardio_workout.cardio_exercises.all %}
 																<p><strong>{{ ce.movement.name }}</strong></br >
-																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 																{% if ce.comment %}{{ ce.comment }}{% endif %}
 															{% endfor %}
 														{% endif %}
@@ -325,7 +331,7 @@
 													{% elif i.cardio_workout %}
 														{% for ce in i.cardio_workout.cardio_exercises.all %}
 															<p><strong>{{ ce.movement.name }}</strong></br >
-															{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+															{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 															{% if ce.comment %}{{ ce.comment }}{% endif %}
 														{% endfor %}
 													{% endif %}
@@ -381,7 +387,7 @@
 											{% elif i.cardio_workout %}
 												{% for ce in i.cardio_workout.cardio_exercises.all %}
 													<p><strong>{{ ce.movement.name }}</strong></br >
-													{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+													{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 													{% if ce.comment %}{{ ce.comment }}{% endif %}
 												{% endfor %}
 											{% endif %}
@@ -447,7 +453,7 @@
 														{% elif i.cardio_workout %}
 															{% for ce in i.cardio_workout.cardio_exercises.all %}
 																<p><strong>{{ ce.movement.name }}</strong></br >
-																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+																{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 																{% if ce.comment %}{{ ce.comment }}{% endif %}
 															{% endfor %}
 														{% endif %}
@@ -489,7 +495,7 @@
 													{% elif i.cardio_workout %}
 														{% for ce in i.cardio_workout.cardio_exercises.all %}
 															<p><strong>{{ ce.movement.name }}</strong></br >
-															{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+															{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 															{% if ce.comment %}{{ ce.comment }}{% endif %}
 														{% endfor %}
 													{% endif %}
@@ -534,7 +540,7 @@
 											{% elif i.cardio_workout %}
 												{% for ce in i.cardio_workout.cardio_exercises.all %}
 													<p><strong>{{ ce.movement.name }}</strong></br >
-													{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+													{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 													{% if ce.comment %}{{ ce.comment }}{% endif %}
 												{% endfor %}
 											{% endif %}
@@ -576,7 +582,7 @@
 										{% elif i.cardio_workout %}
 											{% for ce in i.cardio_workout.cardio_exercises.all %}
 												<p><strong>{{ ce.movement.name }}</strong></br >
-												{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+												{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 												{% if ce.comment %}{{ ce.comment }}{% endif %}
 											{% endfor %}
 										{% endif %}
@@ -647,7 +653,7 @@
 								{% elif i.cardio_workout %}
 									{% for ce in i.cardio_workout.cardio_exercises.all %}
 										<p><strong>{{ ce.movement.name }}</strong></br >
-										{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+										{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 										{% if ce.comment %}{{ ce.comment }}{% endif %}
 									{% endfor %}
 								{% endif %}
@@ -700,7 +706,7 @@
 							{% elif i.cardio_workout %}
 								{% for ce in i.cardio_workout.cardio_exercises.all %}
 									<p><strong>{{ ce.movement.name }}</strong></br >
-									{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+									{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 									{% if ce.comment %}{{ ce.comment }}{% endif %}
 								{% endfor %}
 							{% endif %}
@@ -767,7 +773,7 @@
 								{% elif i.cardio_workout %}
 									{% for ce in i.cardio_workout.cardio_exercises.all %}
 										<p><strong>{{ ce.movement.name }}</strong></br >
-										{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+										{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 										{% if ce.comment %}{{ ce.comment }}{% endif %}
 									{% endfor %}
 								{% endif %}
@@ -819,7 +825,7 @@
 							{% elif i.cardio_workout %}
 								{% for ce in i.cardio_workout.cardio_exercises.all %}
 									<p><strong>{{ ce.movement.name }}</strong></br >
-									{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+									{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
 									{% if ce.comment %}{{ ce.comment }}{% endif %}
 								{% endfor %}
 							{% endif %}
