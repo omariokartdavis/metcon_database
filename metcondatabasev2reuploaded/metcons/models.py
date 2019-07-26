@@ -424,6 +424,8 @@ class WorkoutInstance(models.Model):
                         self.workout.update_times_completed()
                 elif self.strength_workout:
                         self.strength_workout.update_times_completed()
+                elif self.cardio_workout:
+                        self.cardio_workout.update_times_completed()
                 
         def display_workout(self):
                 if self.workout:
@@ -431,6 +433,9 @@ class WorkoutInstance(models.Model):
                         return name
                 elif self.strength_workout:
                         name = self.strength_workout.display_name()
+                        return name
+                elif self.cardio_workout:
+                        name = self.cardio_workout.display_name()
                         return name
                 else:
                         return 'Workout Deleted'
@@ -443,6 +448,9 @@ class WorkoutInstance(models.Model):
                         return workout_type
                 elif self.strength_workout:
                         workout_type = self.strength_workout.display_workout_type()
+                        return workout_type
+                elif self.cardio_workout:
+                        workout_type = self.cardio_workout.display_workout_type()
                         return workout_type
                 else:
                         return 'Workout Deleted'
@@ -553,21 +561,29 @@ class StrengthExercise(models.Model):
         def display_name(self):
                 if self.movement:
                         return 'Strength Exercise: ' + str(self.movement) + ', id: ' + str(self.id)
+                else:
+                        return 'Strength Movement Deleted'
 
 class Set(models.Model):
         strength_exercise = models.ForeignKey(StrengthExercise, on_delete=models.SET_NULL, null=True)
         set_number = models.IntegerField(default=1)
-        reps = models.IntegerField(default=5, blank=True, null=True) #create help_text so that if reps is left blank it will assume you are going for max reps in this set. or create option in dropdown for max
+        reps = models.IntegerField(default=5, blank=True, null=True)
         weight = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
         weight_unit_choices = [
                 ('lbs', 'lbs'),
                 ('kgs', 'kgs'),
                 ('%', '%'),
                 ]
-        weight_units = models.CharField(max_length=1, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+        weight_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
 
         class Meta:
                 ordering = ['set_number']
+
+        def display_name(self):
+                if self.strength_exercise:
+                        return "Set " + str(self.set_number) + ' of ' + self.strength_exercise.display_name()
+                else:
+                        return 'Strength Exercise Deleted'
                 
 class StrengthWorkout(models.Model):
         date_created = models.DateTimeField(default=timezone.now)
@@ -610,6 +626,13 @@ class CardioExercise(models.Model):
         number_of_times_completed = models.IntegerField(default=0, verbose_name='Times Completed')
         movement = models.ForeignKey(Movement, on_delete=models.SET_NULL, null=True)
         distance = models.IntegerField(default=0, null=True, blank=True)
+        distance_unit_choices = [
+                ('m', 'm'),
+                ('ft', 'ft'),
+                ('km', 'km'),
+                ('mi', 'mi'),
+                ]
+        distance_units = models.CharField(max_length=2, blank=True, null=True, choices = distance_unit_choices, default='m')
         number_of_reps = models.IntegerField(default=1, verbose_name='Reps', null=True, blank=True)
         comment = models.TextField(max_length=4000, blank=True, null=True)
         pace = models.CharField(max_length=100, blank=True, null=True)
