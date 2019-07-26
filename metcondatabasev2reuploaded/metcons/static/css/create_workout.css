@@ -13,3 +13,7 @@
 #cardio_workout_empty_form {
 	display: none;
 }
+
+.rest_input {
+	width: 30px;
+}
