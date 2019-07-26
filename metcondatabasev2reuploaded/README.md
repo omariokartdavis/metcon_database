@@ -5,35 +5,33 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 7/25/19
-(uploaded at home)
-- models.py (migrations)
-- admin.py
+## 7/26/19
+(uploaded at work)
+- models.py (no migrations)
+- urls.py
 - views.py
 - forms.py
-- utils.py
-- create_result.html
+- base_generic.css
+- user_page.css
+- create_workout.css
+- create_workout.js
+- user_page.js
 - create_workout.html
+- edit_schedule.html
+- edit_schedule_for_multiple_athletes.html
+- interim_created_workout.html
+- interim_created_workout_for_multiple_athletes.html
+- schedule_instance.html
+- schedule_instance_for_multiple_athletes.html
 - user_page.html
 - workoutinstance_detail.html
 
-## functionality completed on 7/25/19
-- added strength workouts and exercises to admin page
-- fixed calendar issue if strengthworkout was deleted
-- create result for strength workouts now puts a result input field under each exercise description.
-- fixed display of reps on multiple pages
-- changed edit instance to edit comments for strength workout
-- fixed:currently an athlete can see if a workout is scheduled for another date even if that workout is hidden for that date.
-  - in the delete/edit schedule views for date choices.
-  - made an if statement saying if date < date to unhide, show it in list
-  - athletes can still find out if a workout is hidden if they previously have the workout and go and schedule it for a future
-    date past the current hidden date. It will then show on the calendar as being hidden and they will know that workout is scheduled
-    - don't plan on doing anything to address this
-- added cardioworkout and exercise models and most accompanying views
-- add cardio stuff to admin
-- add distance units to cardio exercise model and views/templates/forms
-- added cardio workouts to user_page, workoutinstance_detail, utils
-  - createcardioresultform, editcardioinstanceform
+## functionality completed on 7/26/19
+- fixed issue with edit_schedule_for_multiple_athletes not going to correct url.
+- added always visible scrollbar to all pages so there is no jarring center movement back and forth
+- fixed dropdowncontainerworkoutbuttons always having a shadow even when not displayed
+- fixed issue of create cardio workout not creating exercises past the first one
+- changed cardio display on a lot of templates
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -69,7 +67,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
         
 ## Functionality to add:
 - check all views/templates and add info for cardio workouts
-  - htmls: interim, schedule, edit_instance, edit_result
+  - htmls: edit_instance, edit_result
   - views: edit_instance, edit_result
 - edit strength instance form and cardio instance form should be nearly the same as the create forms
 - add a "you have this workout set to unhide on: date" to interim schedule and schedule workouts pages if came from interim schedule
@@ -214,6 +212,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - create Training Maxes field on user model for eventual strength programs?
 
 ## Styling:
+- in workoutinstance_detail style page so that workout is on left with results on right.
+  - when you scroll workout should be fixed on left and results should scroll on right
 - style workouts on calendar for if completed or not completed that day
   - if statement in utils on instance
     - if instance.dates_workout_completed.filter(date_completed=date).exists():
