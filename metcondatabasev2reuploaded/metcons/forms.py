@@ -142,7 +142,8 @@ class CreateCardioWorkoutForm(forms.Form):
     distance = forms.IntegerField(help_text='What distance?')
     distance_units = forms.ChoiceField(widget=forms.Select(), choices=distance_unit_choices, help_text='What units is the distance in?', required=False)
     reps = forms.IntegerField(required=False)
-    rest = forms.IntegerField(required=False, help_text='In seconds.')
+    rest_minutes = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'rest_input'}), required=False, label='Rest')
+    rest_seconds = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'rest_input'}), required = False, label='Rest Seconds')
     pace = forms.CharField(max_length=100, required=False)
     comment = forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
 
