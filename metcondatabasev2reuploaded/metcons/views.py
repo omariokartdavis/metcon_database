@@ -904,11 +904,25 @@ def edit_schedule_for_multiple_athletes(request, username, pk):
         now = timezone.localtime(timezone.now()).date()
         yesterday = now - timezone.timedelta(days=1)
         workout_scheduled_dates = []
-        for i in athletes:
-            instance = i.user.workoutinstance_set.get(workout=workout)
-            for date in instance.dates_to_be_completed.filter(date_completed__gte=yesterday):
-                if date not in workout_scheduled_dates:
-                    workout_scheduled_dates.append(date)
+        if instance.workout:
+            for i in athletes:
+                instance = i.user.workoutinstance_set.get(workout=workout)
+                for date in instance.dates_to_be_completed.filter(date_completed__gte=yesterday):
+                    if date not in workout_scheduled_dates:
+                        workout_scheduled_dates.append(date)
+        elif instance.strength_workout:
+            for i in athletes:
+                instance = i.user.workoutinstance_set.get(strength_workout=workout)
+                for date in instance.dates_to_be_completed.filter(date_completed__gte=yesterday):
+                    if date not in workout_scheduled_dates:
+                        workout_scheduled_dates.append(date)
+        elif instance.cardio_workout:
+            for i in athletes:
+                instance = i.user.workoutinstance_set.get(cardio_workout=workout)
+                for date in instance.dates_to_be_completed.filter(date_completed__gte=yesterday):
+                    if date not in workout_scheduled_dates:
+                        workout_scheduled_dates.append(date)
+                        
         if workout_scheduled_dates:
             form.fields['date_to_be_removed'].choices = [(date.date_completed, date.date_completed) for date in workout_scheduled_dates]
         else:
@@ -1690,12 +1704,17 @@ def create_workout(request):
                         cardio_movement.save()
                         # add in ability to send a notification to myself that a new movement has been created so it can be viewed and accepted.
                     comment = form.cleaned_data['comment']
+                    rest = 0
+                    if form.cleaned_data['rest_minutes']:
+                        rest += (int(form.cleaned_data['rest_minutes'] * 60))
+                    if form.cleaned_data['rest_seconds']:
+                        rest += int(form.cleaned_data['rest_seconds'])
                     cardio_exercise = CardioExercise(movement=cardio_movement,
                                                      distance=form.cleaned_data['distance'],
                                                      distance_units=form.cleaned_data['distance_units'],
                                                      number_of_reps=form.cleaned_data['reps'],
                                                      pace=form.cleaned_data['pace'],
-                                                     rest=form.cleaned_data['rest'],
+                                                     rest=rest,
                                                      comment=comment,
                                                      cardio_exercise_number=ce_number)
                     cardio_exercise.save()
