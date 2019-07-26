@@ -11,7 +11,14 @@ class WorkoutInstanceInline(admin.TabularInline):
               'edited_workout_text',
               ]
     readonly_fields = ['display_workout']
-    
+
+class SetInline(admin.TabularInline):
+    model = Set
+    extra = 0
+
+    fields = ['display_name', 'set_number', 'reps', 'weight', 'weight_units']
+
+    readonly_fields = ['display_name']
     
 @admin.register(User)
 class UserProfileAdmin(UserAdmin):
@@ -89,6 +96,41 @@ class StrengthWorkoutAdmin(admin.ModelAdmin):
                     'number_of_times_completed',
                     'date_created',
                     'date_added_to_database')
+
+@admin.register(StrengthExercise)
+class StrengthExerciseAdmin(admin.ModelAdmin):
+    list_display = ('display_name',
+                    'movement',
+                    'number_of_sets',
+                    'strength_exercise_number')
+    inlines = [SetInline]
+
+@admin.register(Set)
+class SetAdmin(admin.ModelAdmin):
+    list_display = ('display_name',
+                    'set_number',
+                    'reps',
+                    'weight',
+                    'weight_units')
+
+@admin.register(CardioWorkout)
+class CardioWorkoutAdmin(admin.ModelAdmin):
+    list_display = ('display_name',
+                    'created_by_user',
+                    'number_of_times_completed',
+                    'date_created',
+                    'date_added_to_database')
+
+@admin.register(CardioExercise)
+class CardioExerciseAdmin(admin.ModelAdmin):
+    list_display = ('display_name',
+                    'movement',
+                    'distance',
+                    'distance_units',
+                    'number_of_reps',
+                    'pace',
+                    'rest',
+                    'cardio_exercise_number')
     
 @admin.register(Movement)
 class MovementAdmin(admin.ModelAdmin):
@@ -146,4 +188,4 @@ class ResultFileAdmin(admin.ModelAdmin):
     
 admin.site.register(Date)
     
-admin.site.register(StrengthExercise)
+
