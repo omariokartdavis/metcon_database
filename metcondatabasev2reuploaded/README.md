@@ -1,29 +1,21 @@
 When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movements_list. mainsite_workouts.
 
-# Run update_instance_dates and update_instance_hidden every day
+# Run all_update_funcs.py every day
 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
 ## 7/25/19
-(uploaded at work)
-- created all_update_funcs.py in metcondatabase base folder
-- models.py (requires migrations)
-- views.py
+(uploaded at home)
+- models.py (migrations)
 - admin.py
-- utils.py
+- views.py
 - forms.py
-- create_workout.css
-- create_workout.js
+- utils.py
 - create_result.html
 - create_workout.html
-- edit_instance.html
-- interim_created_workout.html
-- interim_created_workout_for_multiple_athletes.html
-- schedule_instance_for_multiple_athletes.html
 - user_page.html
 - workoutinstance_detail.html
-
 
 ## functionality completed on 7/25/19
 - added strength workouts and exercises to admin page
@@ -38,6 +30,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
     date past the current hidden date. It will then show on the calendar as being hidden and they will know that workout is scheduled
     - don't plan on doing anything to address this
 - added cardioworkout and exercise models and most accompanying views
+- add cardio stuff to admin
+- add distance units to cardio exercise model and views/templates/forms
+- added cardio workouts to user_page, workoutinstance_detail, utils
+  - createcardioresultform, editcardioinstanceform
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -72,10 +68,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
-- add cardio stuff to admin
 - check all views/templates and add info for cardio workouts
-  - user_page and utils, interim, schedule, instance detail etc.
-- need to add distance units to cardio exercise model and views/templates/forms
+  - htmls: interim, schedule, edit_instance, edit_result
+  - views: edit_instance, edit_result
+- edit strength instance form and cardio instance form should be nearly the same as the create forms
 - add a "you have this workout set to unhide on: date" to interim schedule and schedule workouts pages if came from interim schedule
 - may need to change edit_instance form for strength workouts
   - need to figure out editing comments for each strength exercise
