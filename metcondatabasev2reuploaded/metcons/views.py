@@ -739,11 +739,13 @@ def schedule_instance_for_multiple_athletes(request, username, pk):
                     if instance.workout:
                         for i in athletes:
                             instance = WorkoutInstance.objects.get(current_user=i.user, workout=workout)
-                            instance.add_date_to_be_completed(*list_of_dates_to_schedule)
                     elif instance.strength_workout:
                         for i in athletes:
                             instance = WorkoutInstance.objects.get(current_user=i.user, strength_workout=workout)
-                            instance.add_date_to_be_completed(*list_of_dates_to_schedule)
+                    elif instance.cardio_workout:
+                        for i in athletes:
+                            instance = WorkoutInstance.objects.get(current_user=i.user, cardio_workout=workout)
+                    instance.add_date_to_be_completed(*list_of_dates_to_schedule)
 
                     return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -1126,11 +1128,15 @@ def delete_instance(request, username, pk):
 @login_required                
 def create_result(request, username, pk):
     instance = WorkoutInstance.objects.get(id=pk)
-    result_text_and_strength_exercises = {}
+    result_text_and_exercises = {}
     if instance.strength_workout:
         for i in instance.strength_workout.strength_exercises.all():
             result_name = 'Result text %s' % (i.strength_exercise_number,)
-            result_text_and_strength_exercises[result_name] = i
+            result_text_and_exercises[result_name] = i
+    elif instance.cardio_workout:
+        for i in instance.cardio_workout.cardio_exercises.all():
+            result_name = 'Result text %s' % (i.cardio_exercise_number,)
+            result_text_and_exercises[result_name] = i
             
     if request.method == 'POST':
         if 'add result to instance' in request.POST:
@@ -1173,8 +1179,38 @@ def create_result(request, username, pk):
                         date_in_datetime = dt.datetime.combine(form.cleaned_data['date_completed'], dt.datetime.min.time())
                         aware_datetime=timezone.make_aware(date_in_datetime)
                     all_result_texts = ''
-                    for k, v in result_text_and_strength_exercises.items():
+                    for k, v in result_text_and_exercises.items():
                         name = 'result_text_%s' % (v.strength_exercise_number,)
+                        all_result_texts += (v.movement.name + ': ' + form.cleaned_data[name] + '\n')
+                    result = Result(workoutinstance=instance,
+                                    result_text=all_result_texts,
+                                    date_workout_completed=aware_datetime)
+                    result.save()
+                    instance.add_date_completed(timezone.localtime(result.date_workout_completed).date())
+                    instance.update_times_completed()
+
+                    if request.FILES:
+                        for i in request.FILES.getlist('media_file'):
+                            resultfile = ResultFile(result=result,
+                                                caption = form.cleaned_data['media_file_caption'],
+                                                file=i,
+                                                content_type = i.content_type)
+                            resultfile.save()
+
+                    return HttpResponseRedirect(instance.get_absolute_url())
+                
+            elif instance.cardio_workout:
+                form = CreateCardioResultForm(request.POST, request.FILES, **{'instance':instance})
+
+                if form.is_valid():
+                    if form.cleaned_data['date_completed'] == dt.date.today():
+                        aware_datetime = timezone.now()
+                    else:
+                        date_in_datetime = dt.datetime.combine(form.cleaned_data['date_completed'], dt.datetime.min.time())
+                        aware_datetime=timezone.make_aware(date_in_datetime)
+                    all_result_texts = ''
+                    for k, v in result_text_and_exercises.items():
+                        name = 'result_text_%s' % (v.cardio_exercise_number,)
                         all_result_texts += (v.movement.name + ': ' + form.cleaned_data[name] + '\n')
                     result = Result(workoutinstance=instance,
                                     result_text=all_result_texts,
@@ -1201,21 +1237,24 @@ def create_result(request, username, pk):
             duration_seconds=0
         form1 = CreateGeneralResultForm(initial={'duration_minutes': duration_minutes, 'duration_seconds': duration_seconds})
         form2 = CreateStrengthResultForm(**{'instance':instance})
-            
+        form3 = CreateCardioResultForm(**{'instance':instance})
+        forms = [form1, form2, form3]
+        
         if 'created workout today add result' in request.GET:
             now = timezone.localtime(timezone.now()).date()
-            form1.fields['date_completed'].initial = now
-            form2.fields['date_completed'].initial = now
+            for form in forms:
+                form.fields['date_completed'].initial = now
         elif 'previous day add result' in request.GET or 'created workout previous day add result' in request.GET:
             yesterday = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
-            form1.fields['date_completed'].initial = yesterday
-            form2.fields['date_completed'].initial = yesterday
+            for form in forms:
+                form.fields['date_completed'].initial = yesterday
 
     context = {
         'form1': form1,
         'form2': form2,
+        'form3': form3,
         'instance': instance,
-        'result_text_and_strength_exercises': result_text_and_strength_exercises,
+        'result_text_and_exercises': result_text_and_exercises,
         }
 
     return render(request, 'metcons/create_result.html', context)
@@ -1369,6 +1408,14 @@ def add_workout_to_athletes(request, username, pk):
                                                            is_hidden=hidden,
                                                            date_to_unhide=date_to_unhide)
                                 instance.save()
+                        elif workout.is_cardio_workout():
+                            if not WorkoutInstance.objects.filter(cardio_workout=workout, current_user=current_user).exists():
+                                instance = WorkoutInstance(cardio_workout=workout, current_user=current_user,
+                                                           is_assigned_by_coach_or_gym_owner=True,
+                                                           assigned_by_user=user,
+                                                           is_hidden=hidden,
+                                                           date_to_unhide=date_to_unhide)
+                                instance.save()
                 if form.cleaned_data['group_to_assign']:
                     for i in form.cleaned_data['group_to_assign']:
                         group = Group.objects.get(name=i, coach=user.coach)
@@ -1388,6 +1435,14 @@ def add_workout_to_athletes(request, username, pk):
                             elif workout.is_strength_workout():
                                 if not WorkoutInstance.objects.filter(strength_workout=workout, current_user=current_user).exists():
                                     instance = WorkoutInstance(strength_workout=workout, current_user=current_user,
+                                                               is_assigned_by_coach_or_gym_owner=True,
+                                                               assigned_by_user=user,
+                                                               is_hidden=hidden,
+                                                               date_to_unhide=date_to_unhide)
+                                    instance.save()
+                            elif workout.is_cardio_workout():
+                                if not WorkoutInstance.objects.filter(cardio_workout=workout, current_user=current_user).exists():
+                                    instance = WorkoutInstance(cardio_workout=workout, current_user=current_user,
                                                                is_assigned_by_coach_or_gym_owner=True,
                                                                assigned_by_user=user,
                                                                is_hidden=hidden,
@@ -1637,6 +1692,7 @@ def create_workout(request):
                     comment = form.cleaned_data['comment']
                     cardio_exercise = CardioExercise(movement=cardio_movement,
                                                      distance=form.cleaned_data['distance'],
+                                                     distance_units=form.cleaned_data['distance_units'],
                                                      number_of_reps=form.cleaned_data['reps'],
                                                      pace=form.cleaned_data['pace'],
                                                      rest=form.cleaned_data['rest'],
