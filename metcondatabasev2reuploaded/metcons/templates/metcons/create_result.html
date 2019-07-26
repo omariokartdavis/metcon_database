@@ -13,7 +13,7 @@
 				{% csrf_token %}
 				{% if instance.strength_workout %}
 					{% for field in form2 %}
-						{% for k, v in result_text_and_strength_exercises.items %}
+						{% for k, v in result_text_and_exercises.items %}
 							{% if field.label == k %}
 								<p><strong>{{ v.movement.name }}</strong></br >
 								{% for se_set in v.set_set.all %}
@@ -28,7 +28,30 @@
 						{% endfor %}
 					{% endfor %}
 					{% for field in form2 %}
-							{% if field.label not in result_text_and_strength_exercises %}
+							{% if field.label not in result_text_and_exercises %}
+								<table>
+									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+									<td>{{ field }}</td></tr>
+								</table>
+							{% endif %}
+					{% endfor %}
+				{% elif instance.cardio_workout %}
+					{% for field in form3 %}
+						{% for k, v in result_text_and_exercises.items %}
+							{% if field.label == k %}
+								<p><strong>{{ v.movement.name }}</strong></br >
+									{% if v.number_of_reps %}{{ v.number_of_reps }} x {% endif %}{{ v.distance }}{{ v.distance_units }}{% if v.rest %} with {{ v.rest }} seconds rest{% endif %}{% if v.pav %} at {{ v.pav }}{% endif %}</br >
+									{% if v.comment %}{{ v.comment }}{% endif %}
+								</p>
+								<table>
+									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+									<td>{{ field }}</tr>
+								</table>
+							{% endif %}
+						{% endfor %}
+					{% endfor %}
+					{% for field in form3 %}
+							{% if field.label not in result_text_and_exercises %}
 								<table>
 									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
 									<td>{{ field }}</td></tr>
