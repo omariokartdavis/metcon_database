@@ -17,9 +17,9 @@ function addMoreStrengthMovements() {
 }
 
 function addMoreCardioMovements() {
-	var form_idx = $('#id_form-TOTAL_FORMS').val();
+	var form_idx = $('#cardio_id_form-TOTAL_FORMS').val();
 	$('#cardio_form_set').append($('#cardio_workout_empty_form').html().replace(/__prefix__/g, form_idx));
-	$('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1)
+	$('#cardio_id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1)
 }
 
 document.getElementById("strength_add_more").addEventListener("click", addMoreStrengthMovements, false);
