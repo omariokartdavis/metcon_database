@@ -56,6 +56,12 @@
 					{% if se.comment %}{{ se.comment }}{% endif %}
 					</p>
 				{% endfor %}
+			{% elif workoutinstance.cardio_workout %}
+				{% for ce in workoutinstance.cardio_workout.cardio_exercises.all %}
+					<p><strong>{{ ce.movement.name }}</strong></br >
+					{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {{ ce.rest }} seconds rest{% endif %}{% if ce.pace %} at {{ ce.pace }}{% endif %}</br >
+					{% if ce.comment %}{{ ce.comment }}{% endif %}
+				{% endfor %}
 			{% endif %}
 			<form action="{% url 'result_create' user.username workoutinstance.id %}">
 				<input type="submit" value="Add Result" />
