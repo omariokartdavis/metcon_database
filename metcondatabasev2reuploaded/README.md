@@ -5,7 +5,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 7/26/19
+## 8/27/19
 (uploaded at work)
 - models.py (no migrations)
 - urls.py
@@ -25,6 +25,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - schedule_instance_for_multiple_athletes.html
 - user_page.html
 - workoutinstance_detail.html
+
+## functionality completed on 8/27/19
+- fixed editing strength workout comments
+- added editing of strength workouts reps and weights
 
 ## functionality completed on 7/26/19
 - fixed issue with edit_schedule_for_multiple_athletes not going to correct url.
@@ -66,13 +70,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- ?add a "mark completed" button for strength/cardio workouts where you don't really need to add comments/results??
 - check all views/templates and add info for cardio workouts
   - htmls: edit_instance, edit_result
   - views: edit_instance, edit_result
-- edit strength instance form and cardio instance form should be nearly the same as the create forms
+- edit cardio instance form should be nearly the same as the create form
 - add a "you have this workout set to unhide on: date" to interim schedule and schedule workouts pages if came from interim schedule
-- may need to change edit_instance form for strength workouts
-  - need to figure out editing comments for each strength exercise
 - add a "You've already completed this workout" to workout list and include completed workouts by default
 - change "schedule for all athletes buttons" to "schedule for multiple athletes"
   - then go to athlete select page and schedule select page
