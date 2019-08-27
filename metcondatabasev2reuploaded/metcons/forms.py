@@ -171,8 +171,8 @@ class CreateStrengthResultForm(forms.Form):
         instance = kwargs.pop('instance', None)
         super(CreateStrengthResultForm, self).__init__(*args, **kwargs)
         if instance.strength_workout:
-            for i in range(1, instance.strength_workout.strength_exercises.count()+1):
-                field_name = 'result_text_%s' % (i,)
+            for i in instance.strength_workout.strength_exercises.all():
+                field_name = 'result_text_%s' % (i.strength_exercise_number,)
                 self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
                 
     media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
@@ -184,8 +184,8 @@ class CreateCardioResultForm(forms.Form):
         instance = kwargs.pop('instance', None)
         super(CreateCardioResultForm, self).__init__(*args, **kwargs)
         if instance.cardio_workout:
-            for i in range(1, instance.cardio_workout.cardio_exercises.count()+1):
-                field_name = 'result_text_%s' % (i,)
+            for i in instance.cardio_workout.cardio_exercises.all():
+                field_name = 'result_text_%s' % (i.cardio_exercise_number,)
                 self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
                 
     media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
@@ -235,6 +235,16 @@ class EditStrengthInstanceForm(forms.Form):
         super(EditStrengthInstanceForm, self).__init__(*args, **kwargs)
         if instance.strength_workout:
             for i in instance.strength_workout.strength_exercises.all():
+                movement_name = 'movement_%s' % (i.strength_exercise_number,)
+                self.fields[movement_name] = forms.ChoiceField(widget=forms.Select(), choices=movement_choices, required=False)
+                self.fields[movement_name].initial = i.movement
+                for q in i.set_set.all():
+                    field_name = '%s_Set_%d_Reps' % (i.movement, q.set_number,)
+                    self.fields[field_name] = forms.IntegerField(required=False, label = '%s, Set %d Reps' % (i.movement, q.set_number,))
+                    self.fields[field_name].initial = q.reps
+                    field_name = '%s_Set_%d_Weight' % (i.movement, q.set_number,)
+                    self.fields[field_name] = forms.DecimalField(required=False, label = '%s, Set %d Weight' % (i.movement, q.set_number,))
+                    self.fields[field_name].initial = q.weight
                 field_name = 'comment_%s' % (i.strength_exercise_number,)
                 self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
                 self.fields[field_name].initial = i.comment
