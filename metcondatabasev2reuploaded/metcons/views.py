@@ -736,16 +736,23 @@ def schedule_instance_for_multiple_athletes(request, username, pk):
                         local_date += timezone.timedelta(days=repeat_frequency)
 
                 if athletes:
-                    if instance.workout:
-                        for i in athletes:
-                            instance = WorkoutInstance.objects.get(current_user=i.user, workout=workout)
-                    elif instance.strength_workout:
-                        for i in athletes:
-                            instance = WorkoutInstance.objects.get(current_user=i.user, strength_workout=workout)
-                    elif instance.cardio_workout:
-                        for i in athletes:
-                            instance = WorkoutInstance.objects.get(current_user=i.user, cardio_workout=workout)
-                    instance.add_date_to_be_completed(*list_of_dates_to_schedule)
+                    for i in athletes:
+                        if instance.workout:
+                            instance_to_schedule = WorkoutInstance.objects.get(current_user=i.user, workout=workout)
+                        elif instance.strength_workout:
+                            instance_to_schedule = WorkoutInstance.objects.get(current_user=i.user, strength_workout=workout)
+                        elif instance.cardio_workout:
+                            instance_to_schedule = WorkoutInstance.objects.get(current_user=i.user, cardio_workout=workout)
+                        instance_to_schedule.add_date_to_be_completed(*list_of_dates_to_schedule)
+                        
+##                    elif instance.strength_workout:
+##                        for i in athletes:
+##                            instance_to_schedule = WorkoutInstance.objects.get(current_user=i.user, strength_workout=workout)
+##                            instance_to_schedule.add_date_to_be_completed(*list_of_dates_to_schedule)
+##                    elif instance.cardio_workout:
+##                        for i in athletes:
+##                            instance_to_schedule = WorkoutInstance.objects.get(current_user=i.user, cardio_workout=workout)
+##                            instance_to_schedule.add_date_to_be_completed(*list_of_dates_to_schedule)
 
                     return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
@@ -1071,9 +1078,22 @@ def edit_instance(request, username, pk):
                 form = EditStrengthInstanceForm(request.POST, **{'instance': instance})
                 if form.is_valid():
                     base_workout = instance.strength_workout
-                    # moved comments from instance to individual strength exercises. instance.comment = form.cleaned_data['comment']
                     #add more things to change to this like movements/weights/sets/reps later
-                    
+                    for i in base_workout.strength_exercises.all():
+                        if i.comment != form.cleaned_data['comment_%s' % (i.strength_exercise_number,)]:
+                            i.comment = form.cleaned_data['comment_%s' % (i.strength_exercise_number,)]
+                            i.save()
+                        for q in i.set_set.all():
+                            if q.reps != form.cleaned_data['%s_Set_%d_Reps' % (i.movement, q.set_number,)]:
+                                q.reps = form.cleaned_data['%s_Set_%d_Reps' % (i.movement, q.set_number,)]
+                                q.save()
+                            if q.weight != form.cleaned_data['%s_Set_%d_Weight' % (i.movement, q.set_number,)]:
+                                q.weight = form.cleaned_data['%s_Set_%d_Weight' % (i.movement, q.set_number,)]
+                                q.save()
+                        if i.movement.name != form.cleaned_data['movement_%s' % (i.strength_exercise_number,)]:
+                            i.movement = Movement.objects.get(name=form.cleaned_data['movement_%s' % (i.strength_exercise_number,)])
+                            i.save()
+                        
                     instance.save()
                     if base_workout:
                         if request.user == base_workout.created_by_user:
@@ -1823,8 +1843,13 @@ def interim_created_workout_for_multiple_athletes(request, username, pk):
                 now = timezone.localtime(timezone.now()).date()
                 if athletes:
                     for i in athletes:
-                        instance = WorkoutInstance.objects.get(current_user=i.user, workout=workout)
-                        instance.add_date_to_be_completed(now)
+                        if instance.workout:
+                            new_instance = WorkoutInstance.objects.get(current_user=i.user, workout=workout)
+                        elif instance.strength_workout:
+                            new_instance = WorkoutInstance.objects.get(current_user=i.user, strength_workout=workout)
+                        elif instance.cardio_workout:
+                            new_instance = WorkoutInstance.objects.get(current_user=i.user, cardio_workout=workout)
+                        new_instance.add_date_to_be_completed(now)
 
                     return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
