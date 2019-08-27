@@ -53,7 +53,7 @@
 					{% for se_set in se.set_set.all %}
 						Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 					{% endfor %}
-					{% if se.comment %}{{ se.comment }}{% endif %}
+					{% if se.comment %}{{ se.comment|linebreaks }}{% endif %}
 					</p>
 				{% endfor %}
 			{% elif workoutinstance.cardio_workout %}
