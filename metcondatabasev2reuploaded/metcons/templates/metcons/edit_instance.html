@@ -17,6 +17,11 @@
 						<tr><td><label><strong>{{ field.label }}: </strong></label></td>
 						<td>{{ field }}</td></tr>
 					{% endfor %}
+				{% elif instance.cardio_workout %}
+					{% for field in form3 %}
+						<tr><td><label><strong>{{ field.label }}: </strong></label></td>
+						<td>{{ field }}</td></tr>
+					{% endfor %}
 				{% endif %}
 				</table>
 				<input type="submit" value="Submit" name="edit instance">
