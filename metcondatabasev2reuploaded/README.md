@@ -5,7 +5,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 8/27/19
+## 8/28/19
 (uploaded at work)
 - models.py (no migrations)
 - urls.py
@@ -17,6 +17,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - create_workout.js
 - user_page.js
 - create_workout.html
+- create_result.html
+- edit_instance.html
 - edit_schedule.html
 - edit_schedule_for_multiple_athletes.html
 - interim_created_workout.html
@@ -70,10 +72,22 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- change strengthresultform to take setsxrepsxweightxunits and a comment instead of just result text
+  - this will help with tracking progress later.
+- change result model for strength instances to allow sets, reps, weight, units and a comment
+- can add a model called "strength maxes" and foreignkey it to a user
+  - model would foreign key to a movement and have a weight for that movement
+  - could potentially have 1rm, 2rm, 3rm, 5rm, 10rm with associated weights for each
+  - when creating a result on strength workout it would have to update users personal maxes or create a new one if doesnt exist
+  - this way progress can be tracked.
+- create strength maxes page as well as add new strength max
+  - add strength max contains list of movements and boxes for all rep max weights
+- can create leaderboard page for workouts/strength etc.
+  - will show movement/workout with best time/weight and username
 - ?add a "mark completed" button for strength/cardio workouts where you don't really need to add comments/results??
 - check all views/templates and add info for cardio workouts
   - htmls: edit_instance, edit_result
-  - views: edit_instance, edit_result
+  - views: edit_instance, edit_result, create_result should add target pace to result if left blank
 - edit cardio instance form should be nearly the same as the create form
 - add a "you have this workout set to unhide on: date" to interim schedule and schedule workouts pages if came from interim schedule
 - add a "You've already completed this workout" to workout list and include completed workouts by default
