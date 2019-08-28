@@ -11,10 +11,12 @@
 			{% endif %}
 			<form action="" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
+				<input type="submit" value="Submit" name="add result to instance">
+				<input type="hidden" name="next" value="{{ request.path }}">
 				{% if instance.strength_workout %}
 					{% for field in form2 %}
 						{% for k, v in result_text_and_exercises.items %}
-							{% if field.label == k %}
+							{% if field.name == k %}
 								<p><strong>{{ v.movement.name }}</strong></br >
 								{% for se_set in v.set_set.all %}
 									Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
@@ -22,13 +24,15 @@
 								</p>
 								<table>
 									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
-									<td>{{ field }}</tr>
+									<td>{{ field }}</td></tr>
+									<tr><td></td>
+									<td>{{ field.help_text|linebreaks }}</td></tr>
 								</table>
 							{% endif %}
 						{% endfor %}
 					{% endfor %}
 					{% for field in form2 %}
-							{% if field.label not in result_text_and_exercises %}
+							{% if field.name not in result_text_and_exercises %}
 								<table>
 									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
 									<td>{{ field }}</td></tr>
@@ -38,20 +42,22 @@
 				{% elif instance.cardio_workout %}
 					{% for field in form3 %}
 						{% for k, v in result_text_and_exercises.items %}
-							{% if field.label == k %}
+							{% if field.name == k %}
 								<p><strong>{{ v.movement.name }}</strong></br >
 									{% if v.number_of_reps %}{{ v.number_of_reps }} x {% endif %}{{ v.distance }}{{ v.distance_units }}{% if v.rest %} with {{ v.rest }} seconds rest{% endif %}{% if v.pav %} at {{ v.pav }}{% endif %}</br >
 									{% if v.comment %}{{ v.comment }}{% endif %}
 								</p>
 								<table>
 									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
-									<td>{{ field }}</tr>
+									<td>{{ field }}</td></tr>
+									<tr><td></td>
+									<td>{{ field.help_text|linebreaks }}</td></tr>
 								</table>
 							{% endif %}
 						{% endfor %}
 					{% endfor %}
 					{% for field in form3 %}
-							{% if field.label not in result_text_and_exercises %}
+							{% if field.name not in result_text_and_exercises %}
 								<table>
 									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
 									<td>{{ field }}</td></tr>
