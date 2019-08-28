@@ -173,7 +173,7 @@ class CreateStrengthResultForm(forms.Form):
         if instance.strength_workout:
             for i in instance.strength_workout.strength_exercises.all():
                 field_name = 'result_text_%s' % (i.strength_exercise_number,)
-                self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
+                self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, label = 'Comments', help_text="Enter your results here.\nYou can leave this blank if you completed as is.\nOtherwise some examples could be: 'Failed final set', 'Did 2 extra reps each set', 'changed weight to XXX'", required=False)
                 
     media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
     media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable.')
@@ -186,7 +186,7 @@ class CreateCardioResultForm(forms.Form):
         if instance.cardio_workout:
             for i in instance.cardio_workout.cardio_exercises.all():
                 field_name = 'result_text_%s' % (i.cardio_exercise_number,)
-                self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
+                self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, label = 'Comments', help_text="Enter your results here.\nExamples: 'Average Pace: XX:XX', 'Failed to hit pace on rep X', 'changed rest to X:XX'", required=False)
                 
     media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
     media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable.')
@@ -255,8 +255,29 @@ class EditCardioInstanceForm(forms.Form):
         super(EditCardioInstanceForm, self).__init__(*args, **kwargs)
         if instance.cardio_workout:
             for i in instance.cardio_workout.cardio_exercises.all():
+                movement_name = 'movement_%s' % (i.cardio_exercise_number,)
+                self.fields[movement_name] = forms.ChoiceField(widget=forms.Select(), choices=cardio_choices, required=False)
+                self.fields[movement_name].initial = i.movement
+                reps_field_name = movement_name + '_reps'
+                self.fields[reps_field_name] = forms.IntegerField(required=False, label = 'Number of Reps')
+                self.fields[reps_field_name].initial = i.number_of_reps
+                distance_field_name = movement_name + '_distance'
+                self.fields[distance_field_name] = forms.IntegerField(required=False, label = 'Distance')
+                self.fields[distance_field_name].initial = i.distance
+                distance_units_field_name = movement_name + '_distance_units'
+                self.fields[distance_units_field_name] = forms.ChoiceField(widget=forms.Select(), choices = distance_unit_choices, required=False, label = 'Distance Units')
+                self.fields[distance_units_field_name].initial = i.distance_units
+                rest_minutes_field_name = movement_name + '_rest_minutes'
+                self.fields[rest_minutes_field_name] = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'rest_input'}), required=False, label='Rest (minutes)')
+                self.fields[rest_minutes_field_name].initial = i.rest_in_minutes()
+                rest_seconds_field_name = movement_name + '_rest_seconds'
+                self.fields[rest_seconds_field_name] = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'rest_input'}), required=False, label='Rest (seconds)')
+                self.fields[rest_seconds_field_name].initial = i.rest_remainder()
+                pace_field_name = movement_name + '_pace'
+                self.fields[pace_field_name] = forms.CharField(required=False, max_length=100, label='Pace')
+                self.fields[pace_field_name].initial = i.pace
                 field_name = 'comment_%s' % (i.cardio_exercise_number,)
-                self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
+                self.fields[field_name] = forms.CharField(widget=forms.Textarea, label = 'Comments', max_length=4000, required=False)
                 self.fields[field_name].initial = i.comment
     
 class EditGeneralResultForm(forms.Form):
