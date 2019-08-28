@@ -1074,11 +1074,12 @@ def edit_instance(request, username, pk):
                         instance.save()
 
                     return HttpResponseRedirect(instance.get_absolute_url())
+                
             elif instance.strength_workout:
                 form = EditStrengthInstanceForm(request.POST, **{'instance': instance})
                 if form.is_valid():
                     base_workout = instance.strength_workout
-                    #add more things to change to this like movements/weights/sets/reps later
+
                     for i in base_workout.strength_exercises.all():
                         if i.comment != form.cleaned_data['comment_%s' % (i.strength_exercise_number,)]:
                             i.comment = form.cleaned_data['comment_%s' % (i.strength_exercise_number,)]
@@ -1098,6 +1099,7 @@ def edit_instance(request, username, pk):
                     if base_workout:
                         if request.user == base_workout.created_by_user:
                             if base_workout.number_of_instances() == 1:
+                                #add changes to base workout here if I want to go that route.
                                 base_workout.save()
 
                     request_user = User.objects.get(username=request.user.username)
@@ -1114,7 +1116,62 @@ def edit_instance(request, username, pk):
                         instance.assigned_by_user=request_user
                         instance.save()
                     return HttpResponseRedirect(instance.get_absolute_url())
-                                
+                
+            elif instance.cardio_workout:
+                form = EditCardioInstanceForm(request.POST, **{'instance': instance})
+                if form.is_valid():
+                    base_workout = instance.cardio_workout
+
+                    for i in base_workout.cardio_exercises.all():
+                        if i.comment != form.cleaned_data['comment_%s' % (i.cardio_exercise_number,)]:
+                            i.comment = form.cleaned_data['comment_%s' % (i.cardio_exercise_number,)]
+                            i.save()
+                        if i.number_of_reps != form.cleaned_data['movement_%s_reps' % (i.cardio_exercise_number,)]:
+                            i.number_of_reps = form.cleaned_data['movement_%s_reps' % (i.cardio_exercise_number,)]
+                            i.save()
+                        if i.distance != form.cleaned_data['movement_%s_distance' % (i.cardio_exercise_number,)]:
+                            i.distance = form.cleaned_data['movement_%s_distance' % (i.cardio_exercise_number,)]
+                            i.save()
+                        if i.distance_units != form.cleaned_data['movement_%s_distance_units' % (i.cardio_exercise_number,)]:
+                            i.distance_units = form.cleaned_data['movement_%s_distance_units' % (i.cardio_exercise_number,)]
+                            i.save()
+                        edited_rest = 0
+                        if form.cleaned_data['movement_%s_rest_minutes' % (i.cardio_exercise_number,)]:
+                            edited_rest += form.cleaned_data['movement_%s_rest_minutes' % (i.cardio_exercise_number,)] * 60
+                        if form.cleaned_data['movement_%s_rest_seconds' % (i.cardio_exercise_number,)]:
+                            edited_rest += form.cleaned_data['movement_%s_rest_seconds' % (i.cardio_exercise_number,)]
+                        if i.rest != edited_rest and edited_rest != 0:
+                            i.rest = edited_rest
+                            i.save()
+                        if i.pace != form.cleaned_data['movement_%s_pace' % (i.cardio_exercise_number,)]:
+                            i.pace = form.cleaned_data['movement_%s_pace' % (i.cardio_exercise_number,)]
+                            i.save()
+                        if i.movement.name != form.cleaned_data['movement_%s' % (i.cardio_exercise_number,)]:
+                            i.movement = Movement.objects.get(name=form.cleaned_data['movement_%s' % (i.cardio_exercise_number,)])
+                            i.save()
+
+                    instance.save()
+                    if base_workout:
+                        if request.user == base_workout.created_by_user:
+                            if base_workout.number_of_instances() == 1:
+                                #add changes to base workout here if I want to go that route.
+                                base_workout.save()
+
+                    request_user = User.objects.get(username=request.user.username)
+                    current_user = instance.current_user
+
+                    if current_user != request_user:
+                        assigned=True
+                        assigned_by = request_user
+                    else:
+                        assigned=False
+
+                    if assigned:
+                        instance.is_assigned_by_coach_or_gym_owner=assigned
+                        instance.assigned_by_user=request_user
+                        instance.save()
+                    return HttpResponseRedirect(instance.get_absolute_url())
+
     else:
         if instance.duration_in_seconds:
             duration_minutes=instance.duration_in_seconds // 60
@@ -1128,10 +1185,12 @@ def edit_instance(request, username, pk):
                                          'scaling_text': instance.edited_scaling_text,
                                          })
         form2 = EditStrengthInstanceForm(**{'instance': instance})#initial={'comment': instance.comment})
-
+        form3 = EditCardioInstanceForm(**{'instance': instance})
+        
     context = {
         'form1': form1,
         'form2': form2,
+        'form3': form3,
         'instance': instance,
         }
 
@@ -1165,11 +1224,11 @@ def create_result(request, username, pk):
     result_text_and_exercises = {}
     if instance.strength_workout:
         for i in instance.strength_workout.strength_exercises.all():
-            result_name = 'Result text %s' % (i.strength_exercise_number,)
+            result_name = 'result_text_%s' % (i.strength_exercise_number,)
             result_text_and_exercises[result_name] = i
     elif instance.cardio_workout:
         for i in instance.cardio_workout.cardio_exercises.all():
-            result_name = 'Result text %s' % (i.cardio_exercise_number,)
+            result_name = 'result_text_%s' % (i.cardio_exercise_number,)
             result_text_and_exercises[result_name] = i
             
     if request.method == 'POST':
@@ -1215,7 +1274,13 @@ def create_result(request, username, pk):
                     all_result_texts = ''
                     for k, v in result_text_and_exercises.items():
                         name = 'result_text_%s' % (v.strength_exercise_number,)
-                        all_result_texts += (v.movement.name + ': ' + form.cleaned_data[name] + '\n')
+                        if not form.cleaned_data[name]:
+                            final_set_reps = str(v.set_set.get(set_number=v.number_of_sets).reps)
+                            final_set_weight = str(v.set_set.get(set_number=v.number_of_sets).weight)
+                            final_set_units = str(v.set_set.get(set_number=v.number_of_sets).weight_units)
+                            all_result_texts += (v.movement.name + ': ' + final_set_weight + final_set_units + ' ' + 'for ' + final_set_reps + ' reps' + '\n')
+                        else:
+                            all_result_texts += (v.movement.name + ': ' + form.cleaned_data[name] + '\n')
                     result = Result(workoutinstance=instance,
                                     result_text=all_result_texts,
                                     date_workout_completed=aware_datetime)
