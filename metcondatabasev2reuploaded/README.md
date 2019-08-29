@@ -72,6 +72,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- can create leaderboard on each movement page as well
 - change strengthresultform to take setsxrepsxweightxunits and a comment instead of just result text
   - this will help with tracking progress later.
 - change result model for strength instances to allow sets, reps, weight, units and a comment
@@ -98,7 +99,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - put strength workouts in workout_list in workouts view 
 - change createstrengthworkoutform to allow for varying reps per each set as well as weight
 - can add a class if statement to the create_workout.html class="{% if user.default_sport == 'specific sport' %}default_form{%endif%}
-- need to alter views (create workout view and all views that show info on workouts) to display properly if its a strength workout or general workout
 - need to download itertools and use its chain function to combine querysets
   - may not need to do this since I modified WorkoutInstance to be for workouts and strength workouts
   - can use if instance.workout or if instance.strength_workout to diferentiate in templates etc.
