@@ -156,7 +156,7 @@ class CreateCardioWorkoutForm(forms.Form):
             self.fields['hide_from_athletes'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
             self.fields['date_to_unhide'] = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
 
-CardioWorkoutFormset = formset_factory(CreateCardioWorkoutForm, extra=1)
+CardioWorkoutFormset = formset_factory(CreateCardioWorkoutForm, extra=0)
 
 class CreateGeneralResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
