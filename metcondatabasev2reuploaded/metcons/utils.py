@@ -108,7 +108,10 @@ class Calendar(HTMLCalendar):
                         d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.cardio_workout.display_truncated_name()} </a></br >'
                     else:
                         d += f'<a class="workout_display_name not_assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.cardio_workout.display_truncated_name()} </a></br >'
-            return f"<td><span class='date'>{day}</span><div class='calendar_workout_names'> {d} </div></td>"
+            if date == dt.date.today():
+                return f"<td class='todaysdate'><span class='date'>{day}</span><div class='calendar_workout_names'> {d} </div></td>"
+            else:
+                return f"<td><span class='date'>{day}</span><div class='calendar_workout_names'> {d} </div></td>"
         return '<td></td>'
 
     # formats a week as a tr 
