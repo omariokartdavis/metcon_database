@@ -5,12 +5,13 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 8/28/19
+## 9/12/19
 (uploaded at work)
 - models.py (no migrations)
 - urls.py
 - views.py
 - forms.py
+- utils.py
 - base_generic.css
 - user_page.css
 - create_workout.css
@@ -28,6 +29,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - user_page.html
 - workoutinstance_detail.html
 
+## functionality completed on 9/12/19
+- figure out how to higlight current day on calendar page.
+  - in utils calendar in the return function for formatday. if date == dt.date.today() add class 'todaysdate' to td (this dates cell)
+- changed calendards first week day to sunday like normal calendars
+    
 ## functionality completed on 8/27/19
 - fixed editing strength workout comments
 - added editing of strength workouts reps and weights
@@ -72,6 +78,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- workouts are currently displayed on user homepage in order of date they were created in the database.
+  - if they were created on same day they are then by which one was created first.
 - can create leaderboard on each movement page as well
 - change strengthresultform to take setsxrepsxweightxunits and a comment instead of just result text
   - this will help with tracking progress later.
