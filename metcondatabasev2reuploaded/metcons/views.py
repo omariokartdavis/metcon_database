@@ -1,17 +1,22 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
-from metcons.models import *
+from django.urls import reverse
+from metcons.models import User, Athlete, Coach, GymOwner, Group, Request, Classification, Movement, Workout, \
+    WorkoutInstance, Result, ResultFile, StrengthExercise, Set, StrengthWorkout, CardioExercise, CardioWorkout
 from django.views import generic
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.decorators import login_required, permission_required
-from metcons.forms import *
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from metcons.forms import SignUpForm, AddAthleteToCoachForm, AddCoachForm, \
+    AddWorkoutToAthletesForm, CreateGroupForm, AddAthletesToGroupForm, RemoveAthletesFromGroupForm, CreateWorkoutForm, \
+    StrengthWorkoutFormset, CardioWorkoutFormset, CreateGeneralResultForm, \
+    CreateStrengthResultForm, CreateCardioResultForm, ScheduleInstanceForm, EditScheduleForm, DeleteScheduleForm, \
+    HideInstanceForm, EditInstanceForm, EditStrengthInstanceForm, EditCardioInstanceForm, EditGeneralResultForm, EditStrengthResultForm
 from django.utils import timezone
 import datetime as dt
-from django.db.models import Max, Min, Q
+from django.db.models import Q
 from django.core.paginator import Paginator
-import re, calendar
+import re
 from django.contrib.auth import login, authenticate
 from metcons.utils import Calendar
 from django.utils.safestring import mark_safe
@@ -173,6 +178,7 @@ def profile(request, username):
                 month = 12
             
     cal = Calendar(year, month, this_user, request.user, now)
+    cal.setfirstweekday(6) #changes calendar weekstart to sunday, monday is default (0)
     html_cal = cal.formatmonth(withyear=True)   
     context['calendar'] = mark_safe(html_cal)
         
@@ -242,7 +248,6 @@ def create_group(request, username):
 
 @login_required
 def group_detail(request, username, pk):
-    user = request.user
     group = Group.objects.get(id=pk)
     athletes_in_group = group.athletes.all()
 
@@ -255,7 +260,6 @@ def group_detail(request, username, pk):
 
 @login_required
 def delete_group(request, username, pk):
-    user = request.user
     group = Group.objects.get(id=pk)
 
     if request.method == "POST":
@@ -406,7 +410,7 @@ def remove_coach_or_athlete(request, username):
 @login_required
 def request_detail(request, username, pk):
     user = User.objects.get(username=request.user.username)
-    specific_request = Request.objects.get(id=pk, requestee=request.user)
+    specific_request = Request.objects.get(id=pk, requestee=user)
 
     if request.method == 'POST':
         if 'confirm' in request.POST:
@@ -475,7 +479,6 @@ def profileredirect(request):
 def workoutlistview(request):
     # default object list excludes users workouts that have been completed and workouts that were created by other users.
     object_list = Workout.objects.all()
-    now = timezone.localtime(timezone.now()).date()
     
     query1 = request.GET.getlist('q')
     query2 = request.GET.get('z')
@@ -675,7 +678,6 @@ def schedule_instance(request, username, pk):
 
                 if current_user != request_user:
                     assigned=True
-                    assigned_by = request_user
                 else:
                     assigned=False
 
@@ -809,7 +811,6 @@ def edit_schedule(request, username, pk):
 
                 if current_user != request_user:
                     assigned=True
-                    assigned_by = request_user
                 else:
                     assigned=False
 
@@ -975,7 +976,6 @@ def delete_schedule(request, username, pk):
 
                 if current_user != request_user:
                     assigned=True
-                    assigned_by = request_user
                 else:
                     assigned=False
 
@@ -1064,7 +1064,6 @@ def edit_instance(request, username, pk):
 
                     if current_user != request_user:
                         assigned=True
-                        assigned_by = request_user
                     else:
                         assigned=False
 
@@ -1107,7 +1106,6 @@ def edit_instance(request, username, pk):
 
                     if current_user != request_user:
                         assigned=True
-                        assigned_by = request_user
                     else:
                         assigned=False
 
@@ -1162,7 +1160,6 @@ def edit_instance(request, username, pk):
 
                     if current_user != request_user:
                         assigned=True
-                        assigned_by = request_user
                     else:
                         assigned=False
 
@@ -1836,13 +1833,13 @@ def create_workout(request):
                 else:
                     return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
             else:
-                return render(request, 'metcons/create_workout.html', {'formset_strength':formset_strength})
+                return render(request, 'metcons/create_workout.html', {'formset_strength':formset})
         
     else:
         # can have default be whatever default type user wants to put as their default workout type
         form1 = CreateWorkoutForm(**{'user':request.user}, initial={'gender': request.user.workout_default_gender})
         formset_strength = StrengthWorkoutFormset(form_kwargs={'user': request.user})
-        formset_cardio = CardioWorkoutFormset(form_kwargs={'user': request.user})
+        formset_cardio = CardioWorkoutFormset(form_kwargs={'user': request.user}, initial=[{'movement': 'Row'}])
         forms = [i for i in formset_strength]
         for i in formset_cardio:
             forms.append(i)
