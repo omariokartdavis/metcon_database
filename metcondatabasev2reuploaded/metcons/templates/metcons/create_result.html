@@ -44,7 +44,7 @@
 						{% for k, v in result_text_and_exercises.items %}
 							{% if field.name == k %}
 								<p><strong>{{ v.movement.name }}</strong></br >
-									{% if v.number_of_reps %}{{ v.number_of_reps }} x {% endif %}{{ v.distance }}{{ v.distance_units }}{% if v.rest %} with {{ v.rest }} seconds rest{% endif %}{% if v.pav %} at {{ v.pav }}{% endif %}</br >
+									{% if v.number_of_reps %}{{ v.number_of_reps }} x {% endif %}{{ v.distance }}{{ v.distance_units }}{% if v.rest %} with {% if v.rest_in_minutes > 0 %}{{ v.rest_in_minutes }}min{% endif %}{% if v.rest_remainder > 0 %} {{ v.rest_remainder }}s{% endif %} rest{% endif %}{% if v.pace %} at {{ v.pace }} pace{% endif %}</br >
 									{% if v.comment %}{{ v.comment }}{% endif %}
 								</p>
 								<table>
