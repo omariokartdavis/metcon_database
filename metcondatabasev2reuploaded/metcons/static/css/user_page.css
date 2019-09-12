@@ -222,6 +222,11 @@
 	width: 200px;
 	padding: 20px 0px 0px 5px;
 }
+
+.calendar td.todaysdate {
+	background-color: yellow;
+}
+
 .calendar .calendar_workout_names {
 	height: 100%;
 	padding: 0px 5px 0px 20px;
