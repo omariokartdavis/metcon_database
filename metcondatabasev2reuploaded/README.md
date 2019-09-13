@@ -5,7 +5,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 9/12/19
+## 9/13/19
 (uploaded at work)
 - models.py (no migrations)
 - urls.py
@@ -15,10 +15,15 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - base_generic.css
 - user_page.css
 - create_workout.css
+- workout_list.css
 - create_workout.js
 - user_page.js
+- base_generic.js
 - create_workout.html
 - create_result.html
+- delete_instance.html
+- delete_schedule.html
+- hide_instance.html
 - edit_instance.html
 - edit_schedule.html
 - edit_schedule_for_multiple_athletes.html
@@ -27,7 +32,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - schedule_instance.html
 - schedule_instance_for_multiple_athletes.html
 - user_page.html
+- workout_list.html
+- workout_detail.html
 - workoutinstance_detail.html
+
+## functionality completed on 9/13/19
+- moved workout search filters to center of screen
+- changed tabcontentreplacement on base_generic.css to position relative so workout lists wouldn't show over other things
+- centered many pages ( all pages is workout dropdown menus on user page)
 
 ## functionality completed on 9/12/19
 - figure out how to higlight current day on calendar page.
@@ -78,6 +90,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- still need to center multiple pages
+- add an "add workout to others profiles" on a workouts page if you are a coach
+  - allows you to add a workout from one athlete to another or to yourself.
+- add tag to workouts for is_named workout and name, then add ability to filter by them
+- created settings/questions page that contains basic questions to help user experience
+  - initial workout gender, initial cardio movement etc.
 - workouts are currently displayed on user homepage in order of date they were created in the database.
   - if they were created on same day they are then by which one was created first.
 - can create leaderboard on each movement page as well
