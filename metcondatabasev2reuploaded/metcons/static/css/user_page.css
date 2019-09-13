@@ -161,43 +161,6 @@
 	border-radius: 5px;
 }
 
-.workoutContent .dropdownOpenerWorkoutButtons {
-	font-size: 20px;
-	position: absolute;
-	right: 20px;
-	top: 10px;
-	color: #66b2b2;
-	cursor: pointer;
-	background-color: white;
-	z-index: 3;
-	border: none;
-}
-
-.workoutContent .dropdownOpenerWorkoutButtons:hover {
-	color: #e9ebee;
-}
-
-.workoutContent .dropdownContainerWorkoutButtons {
-	height: 0;
-	width: 0;
-	box-shadow: none; /*0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);*/
-	position: absolute;
-	right: 20px;
-	top: 40px;
-	overflow-y: hidden;
-	overflow-x: hidden;
-	z-index: 4;
-	background-color: white;
-}
-
-.workoutContent .dropdownContainerWorkoutButtons button {
-	position: absolute;
-}
-
-.workoutContent .dropdownContainerWorkoutButtons:hover {
-	overflow-y: auto;
-}
-
 .calendar {
 	width: 98%;
 	margin: auto;
