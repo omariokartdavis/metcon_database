@@ -5,37 +5,43 @@
 		{% if user.username == instance.current_user.username or user.coach in instance.current_user.athlete.coach_set.all %}
 			<h1>Edit Schedule For {{ instance.display_workout }}</h1>
 			
-			{% if instance.workout %}
-				<p>{{ instance.workout.workout_text|linebreaks }}</p>
-			{% elif instance.strength_workout %}
-				{% for se in instance.strength_workout.strength_exercises.all %}
-					<p><strong>{{ se.movement.name }}</strong></br >
-					{% for se_set in se.set_set.all %}
-						Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
-					{% endfor %}
-					</p>
-				{% endfor %}
-			{% elif instance.cardio_workout %}
-				{% for ce in instance.cardio_workout.cardio_exercises.all %}
-					<p><strong>{{ ce.movement.name }}</strong></br >
-					{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
-					{% if ce.comment %}{{ ce.comment }}{% endif %}
-				{% endfor %}
-			{% endif %}
-			
-			{% if future_dates_plus_yesterday %}
-				<p>Hold Ctrl while clicking to select multiple dates to be removed.</p>
-			{% endif %}
-			
-			<form method="post">
-				{% csrf_token %}
-				<table>
-				{{ form.as_table }}
-				</table>
-				<input type="submit" value="Submit" name="edit schedule">
-			</form>
-			<br /><br /><br /><br /><br /><br /><p>For testing purposes only. This workout has been scheduled for the following past dates: </p>
-			<p>{% for i in instance.get_scheduled_dates_in_past %}{{ i.date_completed|date:"l, F j, Y" }}{% if not forloop.last %}, {% endif %}{% endfor %}
+			<div class="tabContentReplacement">
+				<div class="listedWorkouts">
+					<div class="workoutContent">
+						{% if instance.workout %}
+							<p>{{ instance.workout.workout_text|linebreaks }}</p>
+						{% elif instance.strength_workout %}
+							{% for se in instance.strength_workout.strength_exercises.all %}
+								<p><strong>{{ se.movement.name }}</strong></br >
+								{% for se_set in se.set_set.all %}
+									Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
+								{% endfor %}
+								</p>
+							{% endfor %}
+						{% elif instance.cardio_workout %}
+							{% for ce in instance.cardio_workout.cardio_exercises.all %}
+								<p><strong>{{ ce.movement.name }}</strong></br >
+								{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
+								{% if ce.comment %}{{ ce.comment }}{% endif %}
+							{% endfor %}
+						{% endif %}
+						
+						{% if future_dates_plus_yesterday %}
+							<p>Hold Ctrl while clicking to select multiple dates to be removed.</p>
+						{% endif %}
+						
+						<form method="post">
+							{% csrf_token %}
+							<table>
+							{{ form.as_table }}
+							</table>
+							<input type="submit" value="Submit" name="edit schedule">
+						</form>
+						<br /><br /><br /><br /><br /><br /><p>For testing purposes only. This workout has been scheduled for the following past dates: </p>
+						<p>{% for i in instance.get_scheduled_dates_in_past %}{{ i.date_completed|date:"l, F j, Y" }}{% if not forloop.last %}, {% endif %}{% endfor %}
+					</div>
+				</div>
+			</div>
 		{% else %}
 			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
 		{% endif %}
