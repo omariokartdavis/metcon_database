@@ -4,6 +4,27 @@ var infinite = new Waypoint.Infinite({
 
 var dropdown = document.getElementsByClassName("dropdownOpener");
 
+var workoutDropdowns = document.getElementsByClassName("dropdownOpenerWorkoutButtons");
+
+function workoutDropdownFunction() {
+	this.classList.toggle("active");
+	var dropdownContent = this.nextElementSibling;
+	if (dropdownContent.style.height == "auto") {
+		dropdownContent.style.height = "0";
+		dropdownContent.style.width = "0";
+		dropdownContent.style.boxShadow = "none";
+	} else {
+		dropdownContent.style.height = "auto";
+		dropdownContent.style.width = "auto";
+		dropdownContent.style.boxShadow = "0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2)";
+	}
+};
+
+var i;
+for (var i = 0; i < workoutDropdowns.length; i++) {
+	workoutDropdowns[i].addEventListener("click", workoutDropdownFunction, false)
+}
+
 function dropdownFunction() {
 	this.classList.toggle("active");
 	var dropdownContent = this.nextElementSibling;
