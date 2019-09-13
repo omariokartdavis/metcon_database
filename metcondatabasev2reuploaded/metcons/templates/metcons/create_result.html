@@ -4,74 +4,79 @@
 	{% if user.is_authenticated %}
 		{% if user.username == instance.current_user.username or user.coach in instance.current_user.athlete.coach_set.all %}
 			<h1> Add Result for {{ instance.display_workout }}</h1>
-			
-			<p><strong>{{ instance.display_workout }}</strong>:
-			{% if instance.workout %}
-				{{ instance.edited_workout_text|linebreaks }}</p>
-			{% endif %}
-			<form action="" method="post" enctype="multipart/form-data">
-				{% csrf_token %}
-				<input type="submit" value="Submit" name="add result to instance">
-				<input type="hidden" name="next" value="{{ request.path }}">
-				{% if instance.strength_workout %}
-					{% for field in form2 %}
-						{% for k, v in result_text_and_exercises.items %}
-							{% if field.name == k %}
-								<p><strong>{{ v.movement.name }}</strong></br >
-								{% for se_set in v.set_set.all %}
-									Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
+			<div class="tabContentReplacement">
+				<div class="listedWorkouts">
+					<div class="workoutContent">
+						<p><strong>{{ instance.display_workout }}</strong>:
+						{% if instance.workout %}
+							{{ instance.edited_workout_text|linebreaks }}</p>
+						{% endif %}
+						<form action="" method="post" enctype="multipart/form-data">
+							{% csrf_token %}
+							<input type="submit" value="Submit" name="add result to instance">
+							<input type="hidden" name="next" value="{{ request.path }}">
+							{% if instance.strength_workout %}
+								{% for field in form2 %}
+									{% for k, v in result_text_and_exercises.items %}
+										{% if field.name == k %}
+											<p><strong>{{ v.movement.name }}</strong></br >
+											{% for se_set in v.set_set.all %}
+												Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
+											{% endfor %}
+											</p>
+											<table>
+												<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+												<td>{{ field }}</td></tr>
+												<tr><td></td>
+												<td>{{ field.help_text|linebreaks }}</td></tr>
+											</table>
+										{% endif %}
+									{% endfor %}
 								{% endfor %}
-								</p>
+								{% for field in form2 %}
+										{% if field.name not in result_text_and_exercises %}
+											<table>
+												<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+												<td>{{ field }}</td></tr>
+											</table>
+										{% endif %}
+								{% endfor %}
+							{% elif instance.cardio_workout %}
+								{% for field in form3 %}
+									{% for k, v in result_text_and_exercises.items %}
+										{% if field.name == k %}
+											<p><strong>{{ v.movement.name }}</strong></br >
+												{% if v.number_of_reps %}{{ v.number_of_reps }} x {% endif %}{{ v.distance }}{{ v.distance_units }}{% if v.rest %} with {% if v.rest_in_minutes > 0 %}{{ v.rest_in_minutes }}min{% endif %}{% if v.rest_remainder > 0 %} {{ v.rest_remainder }}s{% endif %} rest{% endif %}{% if v.pace %} at {{ v.pace }} pace{% endif %}</br >
+												{% if v.comment %}{{ v.comment }}{% endif %}
+											</p>
+											<table>
+												<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+												<td>{{ field }}</td></tr>
+												<tr><td></td>
+												<td>{{ field.help_text|linebreaks }}</td></tr>
+											</table>
+										{% endif %}
+									{% endfor %}
+								{% endfor %}
+								{% for field in form3 %}
+										{% if field.name not in result_text_and_exercises %}
+											<table>
+												<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+												<td>{{ field }}</td></tr>
+											</table>
+										{% endif %}
+								{% endfor %}
+							{% elif instance.workout %}
 								<table>
-									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
-									<td>{{ field }}</td></tr>
-									<tr><td></td>
-									<td>{{ field.help_text|linebreaks }}</td></tr>
+								{{ form1.as_table }}
 								</table>
 							{% endif %}
-						{% endfor %}
-					{% endfor %}
-					{% for field in form2 %}
-							{% if field.name not in result_text_and_exercises %}
-								<table>
-									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
-									<td>{{ field }}</td></tr>
-								</table>
-							{% endif %}
-					{% endfor %}
-				{% elif instance.cardio_workout %}
-					{% for field in form3 %}
-						{% for k, v in result_text_and_exercises.items %}
-							{% if field.name == k %}
-								<p><strong>{{ v.movement.name }}</strong></br >
-									{% if v.number_of_reps %}{{ v.number_of_reps }} x {% endif %}{{ v.distance }}{{ v.distance_units }}{% if v.rest %} with {% if v.rest_in_minutes > 0 %}{{ v.rest_in_minutes }}min{% endif %}{% if v.rest_remainder > 0 %} {{ v.rest_remainder }}s{% endif %} rest{% endif %}{% if v.pace %} at {{ v.pace }} pace{% endif %}</br >
-									{% if v.comment %}{{ v.comment }}{% endif %}
-								</p>
-								<table>
-									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
-									<td>{{ field }}</td></tr>
-									<tr><td></td>
-									<td>{{ field.help_text|linebreaks }}</td></tr>
-								</table>
-							{% endif %}
-						{% endfor %}
-					{% endfor %}
-					{% for field in form3 %}
-							{% if field.name not in result_text_and_exercises %}
-								<table>
-									<tr><td><label><strong>{{ field.label }}:</strong></label></td>
-									<td>{{ field }}</td></tr>
-								</table>
-							{% endif %}
-					{% endfor %}
-				{% elif instance.workout %}
-					<table>
-					{{ form1.as_table }}
-					</table>
-				{% endif %}
-				<input type="submit" value="Submit" name="add result to instance">
-				<input type="hidden" name="next" value="{{ request.path }}">
-			</form>
+							<input type="submit" value="Submit" name="add result to instance">
+							<input type="hidden" name="next" value="{{ request.path }}">
+						</form>
+					</div>
+				</div>
+			</div>
 		{% else %}
 			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
 		{% endif %}
