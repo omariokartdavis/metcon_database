@@ -7,7 +7,7 @@
 {% block content %}
 	<h1>Workout List</h1>
 	{% if user.is_authenticated %}
-		<div class="dropdown">
+		<div class="dropdown centered">
 			<form method='GET'>
 				<input type="text" class = "textinput" placeholder="Search Movements.."  name="q" id="myMovementInput">
 				<div id="myMovementDropdown" class="dropdown-content">
@@ -37,16 +37,18 @@
 				</div>
 				<input type="text" class = "textinput" placeholder="Search Usernames.."  name="h" id="myUsernameInput">
 				<input type='submit' class='button' id='filtersubmitbutton'>
-				<br /><input type="checkbox" class="checkboxinput" name="t" id="popularitycheckbox">
-				<label for="popularitycheckbox">Sort By Most Popular</label>
-				<input type="checkbox" class="checkboxinput" name="s" id="include_completed_checkbox">
-				<label for="include_completed_checkbox">Include Workouts You Have Completed</label>
-				<input type="checkbox" class="checkboxinput" name="f" id="include_user_created_checkbox">
-				<label for="include_user_created_checkbox">Include Workouts Other Users Created</label>
+				<div class="checkboxinputs">
+					<br /><input type="checkbox" class="checkboxinput" name="t" id="popularitycheckbox">
+					<label for="popularitycheckbox">Sort By Most Popular</label>
+					<input type="checkbox" class="checkboxinput" name="s" id="include_completed_checkbox">
+					<label for="include_completed_checkbox">Include Workouts You Have Completed</label>
+					<input type="checkbox" class="checkboxinput" name="f" id="include_user_created_checkbox">
+					<label for="include_user_created_checkbox">Include Workouts Other Users Created</label>
+				</div>
 			</form>
 		</div>
 		{% if workout_list %}
-			<p>Number of workouts with applied filters: {{ num_workouts_filtered }}/{{ num_workouts_total }}
+			<div class="filter_text"><p>Number of workouts with applied filters: {{ num_workouts_filtered }}/{{ num_workouts_total }}</div>
 			<div class="tabContentReplacement">
 				<h2>{% if filter_list %}Filters: {% for i in filter_list %}{{i}}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}</h2>
 				<div class="listedWorkouts">
@@ -91,7 +93,7 @@
 				{% endif %}
 			</div>
 		{% else %}
-			<p>There are no workouts in the database with all of the following filters: {% for i in filter_list %}{{i}}{% if not forloop.last %}, {% endif %}{% endfor %}.</p>
+			<div class="filter_text"><p>There are no workouts in the database with all of the following filters: {% for i in filter_list %}{{i}}{% if not forloop.last %}, {% endif %}{% endfor %}.</p></div>
 		{% endif %}
 	{% else %}
 		<div class="tabContentReplacement">
