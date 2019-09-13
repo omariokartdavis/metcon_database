@@ -90,6 +90,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- move text on bottom of create_workout.html page to center
 - still need to center multiple pages
 - add an "add workout to others profiles" on a workouts page if you are a coach
   - allows you to add a workout from one athlete to another or to yourself.
