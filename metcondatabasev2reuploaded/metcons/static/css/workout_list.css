@@ -23,6 +23,27 @@
 
 .durationinput:focus {outline: 3px solid #ddd;}
 
+.centered {
+  width: 80%;
+  left: 10%;
+  top: 5px;
+}
+
+.checkboxinputs {
+  position: relative;
+  top: -8px;
+  width: 50%;
+  left: 25%;
+  text-align: center;
+}
+
+.filter_text {
+  position: relative;
+  width: 20%;
+  left: 40%;
+  text-align: center;
+}
+
 .dropdown {
   position: relative;
   display: inline-block;
