@@ -13,8 +13,9 @@
 	opacity: 0;
 	visibility: hidden;
 }
+
 body {
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 }
 
 html {
@@ -30,6 +31,12 @@ h1 {
 	z-index: 9;
 	width: 40%;
 	border: 1px solid black;
+}
+
+.center_stuff {
+	position: relative;
+	width: 100%;
+	text-align: center;
 }
 
 .blankAcrossTop {
@@ -319,8 +326,8 @@ h1 {
 .tabContentReplacement {
   border-top: none;
   left: 10%;
-  top: 200px;
-  position: absolute;
+  top: 5px; /*this was originally 200px and position was absolute. but on changing width screens position absolute eventually makes listed workouts show over other things */
+  position: relative;
   z-index: 1;
   width: 80%;
   /*border: 1px solid black;*/
@@ -367,4 +374,41 @@ h1 {
 
 .workout_display_name:hover {
 	color: #e9ebee;
+}
+
+.workoutContent .dropdownOpenerWorkoutButtons {
+	font-size: 20px;
+	position: absolute;
+	right: 20px;
+	top: 10px;
+	color: #66b2b2;
+	cursor: pointer;
+	background-color: white;
+	z-index: 3;
+	border: none;
+}
+
+.workoutContent .dropdownOpenerWorkoutButtons:hover {
+	color: #e9ebee;
+}
+
+.workoutContent .dropdownContainerWorkoutButtons {
+	height: 0;
+	width: 0;
+	box-shadow: none; /*0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);*/
+	position: absolute;
+	right: 20px;
+	top: 40px;
+	overflow-y: hidden;
+	overflow-x: hidden;
+	z-index: 4;
+	background-color: white;
+}
+
+.workoutContent .dropdownContainerWorkoutButtons button {
+	position: absolute;
+}
+
+.workoutContent .dropdownContainerWorkoutButtons:hover {
+	overflow-y: auto;
 }
