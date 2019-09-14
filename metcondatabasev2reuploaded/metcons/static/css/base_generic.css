@@ -352,7 +352,7 @@ h1 {
 	position: relative;
 }
 
-.workoutContent p, .workoutContent form {
+.workoutContent p, .workoutContent form, .workoutContent h3, .workoutContent #UpdateWorkoutButton {
 	position: relative;
 	left: 10px;
 	margin-right: 20px;
