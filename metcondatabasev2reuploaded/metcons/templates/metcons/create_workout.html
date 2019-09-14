@@ -175,10 +175,13 @@
 			{% endif %}
 		</div>
 		{% if user.is_coach or user.is_gym_owner %}
-			{% if not user.coach.athletes.all %}
-				<p>You have no athletes. If you want to create this workout for your own athletes, add them first by <a href="{% url 'add_athletes' user.username %}">Clicking Here!</a></p>
-			{% endif %}
-			<p>If no athletes or groups are chosen, the workout will be assigned to yourself.</p>
+			<div class="center_stuff">
+				{% if not user.coach.athletes.all %}
+					<p>You have no athletes. If you want to create this workout for your own athletes, add them first by <a href="{% url 'add_athletes' user.username %}">Clicking Here!</a></p>
+				{% else %}
+					<p>If no athletes or groups are chosen, the workout will be assigned to yourself.</p>
+				{% endif %}
+			</div>
 		{% endif %}
 	{% else %}
 		<p>Please login to view this page.</p>
