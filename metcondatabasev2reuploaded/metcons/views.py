@@ -1203,8 +1203,11 @@ def delete_instance(request, username, pk):
                 base_workout = instance.workout
             elif instance.strength_workout:
                 base_workout = instance.strength_workout
+            elif instance.cardio_workout:
+                base_workout = instance.cardio_workout
             instance.delete()
-            base_workout.update_estimated_duration()
+            if base_workout.is_general_workout():
+                base_workout.update_estimated_duration()
             base_workout.update_times_completed()
 
             return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
