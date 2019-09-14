@@ -47,7 +47,7 @@
 								{% endif %}
 							{% endif %}
 						</div>
-						{% if user.is_coach or user.is_gym_owner %}{% if workoutinstance.is_hidden %}Hidden - will unhide to athletes on: {% if workoutinstance.date_to_unhide %}{{ workoutinstance.date_to_unhide|date:"F j, Y" }}{% else %}Never{% endif %}{% endif %}{% endif %}</p>
+						{% if user.is_coach or user.is_gym_owner %}{% if workoutinstance.is_hidden %}<p>Hidden - will unhide to athletes on: {% if workoutinstance.date_to_unhide %}{{ workoutinstance.date_to_unhide|date:"F j, Y" }}{% else %}Never{% endif %}{% endif %}{% endif %}</p>
 						{% if workoutinstance.workout %}
 							<p><strong>Description:</strong> {{ workoutinstance.edited_workout_text|linebreaks }}</p>
 							<p><strong>Scaling/Comments:</strong> {{ workoutinstance.edited_scaling_text|linebreaks }}</p>
