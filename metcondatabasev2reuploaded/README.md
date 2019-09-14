@@ -5,57 +5,15 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 9/13/19
-(uploaded at work)
-- models.py (no migrations)
-- urls.py
+## 9/14/19
+(uploaded at home)
 - views.py
-- forms.py
 - utils.py
-- base_generic.css
-- user_page.css
-- create_workout.css
-- workout_list.css
-- create_workout.js
-- user_page.js
-- base_generic.js
-- create_workout.html
-- create_result.html
-- delete_instance.html
-- delete_schedule.html
-- hide_instance.html
-- edit_instance.html
-- edit_schedule.html
-- edit_schedule_for_multiple_athletes.html
-- interim_created_workout.html
-- interim_created_workout_for_multiple_athletes.html
-- schedule_instance.html
-- schedule_instance_for_multiple_athletes.html
-- user_page.html
-- workout_list.html
-- workout_detail.html
-- workoutinstance_detail.html
 
-## functionality completed on 9/13/19
-- moved workout search filters to center of screen
-- changed tabcontentreplacement on base_generic.css to position relative so workout lists wouldn't show over other things
-- centered many pages ( all pages is workout dropdown menus on user page)
+## functionality completed on 9/14/19
+- fixed error on delete_instance where deleting a strength workout failed due to not having an estimated duration to update.
+- fixed calendar error on athletes page where hidden workouts didn't have a new line break after the text
 
-## functionality completed on 9/12/19
-- figure out how to higlight current day on calendar page.
-  - in utils calendar in the return function for formatday. if date == dt.date.today() add class 'todaysdate' to td (this dates cell)
-- changed calendards first week day to sunday like normal calendars
-    
-## functionality completed on 8/27/19
-- fixed editing strength workout comments
-- added editing of strength workouts reps and weights
-
-## functionality completed on 7/26/19
-- fixed issue with edit_schedule_for_multiple_athletes not going to correct url.
-- added always visible scrollbar to all pages so there is no jarring center movement back and forth
-- fixed dropdowncontainerworkoutbuttons always having a shadow even when not displayed
-- fixed issue of create cardio workout not creating exercises past the first one
-- changed cardio display on a lot of templates
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -90,6 +48,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- need to change help text on repeat frequency etc. to make it more clear when scheduling workouts
+  - will repeat XX number of days + the day you already have selected (starting on a monday plus repeating 5 days will repeat saturday)
 - move text on bottom of create_workout.html page to center
 - still need to center multiple pages
 - add an "add workout to others profiles" on a workouts page if you are a coach
