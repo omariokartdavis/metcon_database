@@ -33,7 +33,7 @@ class Calendar(HTMLCalendar):
                             if instance.date_to_unhide:
                                 if date >= instance.date_to_unhide:
                                     if date != self.now:
-                                        d+= f'Workout Hidden'
+                                        d+= f'Workout Hidden</br >'
                                     else:
                                         d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.workout.display_name()} </a></br >'
                                 else:
@@ -60,7 +60,7 @@ class Calendar(HTMLCalendar):
                             if instance.date_to_unhide:
                                 if date >= instance.date_to_unhide:
                                     if date != self.now:
-                                        d+= f'Workout Hidden'
+                                        d+= f'Workout Hidden</br >'
                                     else:
                                         d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.strength_workout.display_truncated_name()} </a></br >'
                                 else:
@@ -87,7 +87,7 @@ class Calendar(HTMLCalendar):
                             if instance.date_to_unhide:
                                 if date >= instance.date_to_unhide:
                                     if date != self.now:
-                                        d+= f'Workout Hidden'
+                                        d+= f'Workout Hidden</br >'
                                     else:
                                         d += f'<a class="workout_display_name assigned_workout_name" href="{ instance.get_absolute_url() }"> {instance.cardio_workout.display_truncated_name()} </a></br >'
                                 else:
