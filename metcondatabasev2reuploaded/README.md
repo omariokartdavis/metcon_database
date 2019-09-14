@@ -9,11 +9,16 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 (uploaded at home)
 - views.py
 - utils.py
+- base_generic.css
+- create_workout.html
+- workoutinstance_detail.html
 
 ## functionality completed on 9/14/19
 - fixed error on delete_instance where deleting a strength workout failed due to not having an estimated duration to update.
 - fixed calendar error on athletes page where hidden workouts didn't have a new line break after the text
-
+- moved workout type selection and "if no athletes" warning to center of page
+- fixed missing p tag on workoutinstance_detail
+- fixed css for h3 and #UpdateWorkoutButton in workoutContent in base_generic.css
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -48,6 +53,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- fix add workotu to peopls pages to be in middle of screen
 - need to change help text on repeat frequency etc. to make it more clear when scheduling workouts
   - will repeat XX number of days + the day you already have selected (starting on a monday plus repeating 5 days will repeat saturday)
 - move text on bottom of create_workout.html page to center
