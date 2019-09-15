@@ -30,7 +30,7 @@ h1 {
 	position: fixed;
 	z-index: 9;
 	width: 40%;
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 }
 
 .center_stuff {
@@ -47,7 +47,7 @@ h1 {
 	z-index: 3;
 	position: fixed;
 	height: 70px;
-	border: 1px solid black;
+	border: 1px solid #66b2b2;
 }
 
 .relAcrossTop {
@@ -92,7 +92,7 @@ h1 {
 	transition: 0.3s;
 	outline: none;
 	margin: 0;
-	border: 1px solid white;
+	/*border: 1px solid white;*/
 	font-family: "Times New Roman", Times, serif;
 }
 
@@ -114,7 +114,7 @@ h1 {
 	padding: 0;
 	margin: 0;
 	outline: none;
-	border: 1px solid white;
+	/*border: 1px solid white;*/
 }
 
 .dropdownContainer {
@@ -134,14 +134,14 @@ h1 {
 	position: absolute;
 	right: 0;
 	padding-right: 8px;
-	border: 1px solid white;
+	/*border: 1px solid white;*/
 }
 
 /* need a space between classes if you are selecting an element within a div where the div has one class and the element you want has the second class */
 /* if the single element had both classes then you would not include a space between class selectors */
 .dropdownContainer .fa-minus-circle, .dropdownContainer .fa-plus-circle {
 	font-size: 20px;
-	border: 1px solid white;
+	/*border: 1px solid white;*/
 }
 
 .dropdownContainer {
@@ -156,7 +156,7 @@ h1 {
 
 .dropdownContainer button.hasMinusSign, .dropdownContainer p, .dropdownContainer form, a.hasMinusSign, .dropdownContainer button {
 	display: inline;
-	border: 1px solid white;
+	/*border: 1px solid white;*/
 }
 
 .dropdownContainer a, .dropdownContainer p, .dropdownContainer button {
@@ -175,7 +175,7 @@ h1 {
 	font-size: 30px;
 	z-index: 6;
 	text-align: center;
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 }
 
 .right-sidebar-nav {
@@ -212,7 +212,7 @@ h1 {
 	outline: none;
 	margin: 0;
 	font-family: "Times New Roman", Times, serif;
-	border: 1px solid white;
+	/*border: 1px solid white;*/
 }
 
 .right-sidebar-nav a {
@@ -238,7 +238,7 @@ h1 {
 	margin: 0;
 	outline: none;
 	padding: 0;
-	border: 1px solid white;
+	/*border: 1px solid white;*/
 }
 
 .blockRightSidebar {
@@ -248,7 +248,7 @@ h1 {
 	width: 60px;
 	height: 20px;
 	z-index: 8;
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 }
 
 #right_sidenav_open_button {
@@ -260,7 +260,7 @@ h1 {
 	text-align: center;
 	z-index: 6;
 	color: black;
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 }
 
 .notifications .fa-circle {
@@ -284,7 +284,7 @@ h1 {
 	right: 20px;
 	z-index: 8;
 	height: 15px;
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 }
 	
 .home-search-create-buttons {
@@ -293,7 +293,7 @@ h1 {
 	left: 100px;
 	z-index: 6;
 	font-size: 40px;
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 }
 
 .home-search-create-buttons a {
