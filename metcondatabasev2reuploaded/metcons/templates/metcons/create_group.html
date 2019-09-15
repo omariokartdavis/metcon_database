@@ -6,15 +6,21 @@
 			{% if athletes %}
 				<h1>Create Group</h1>
 				
-				<form method="post">
-					{% csrf_token %}
-					<table>
-					{{ form.as_table }}
-					</table>
-					<input type="submit" value="Submit" name="create group">
-				</form>
+				<div class="tabContentReplacement">
+					<div class="listedWorkouts">
+						<div class="workoutContent">
+							<form method="post">
+								{% csrf_token %}
+								<table>
+								{{ form.as_table }}
+								</table>
+								<input type="submit" value="Submit" name="create group">
+							</form>
+						</div>
+					</div>
+				</div>
 			{% else %}
-				<p>You have no athletes, please add athletes first by <a href="{% url 'add_athletes' user.username %}">Clicking Here!</a></p>
+				<div class="center_stuff"><p>You have no athletes, please add athletes first by <a href="{% url 'add_athletes' user.username %}">Clicking Here!</a></p></div>
 			{% endif %}
 		{% endif %}
 	{% else %}
