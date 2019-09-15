@@ -4,26 +4,32 @@
 	{% if user.is_authenticated %}
 		{% if user.is_coach or user.is_gym_owner %}
 			{% if user.coach == group.coach %}
-				<h1>{{ group.name }}</h2>
-				<form action="{% url 'delete_group' user.username group.id %}">
-					{% csrf_token %}
-					<input type='submit' value='Delete Group' name='delete group'>
-				</form>
-				<form action="{% url 'add_athletes_to_group' user.username group.id %}">
-					{% csrf_token %}
-					<input type="submit" value='Add Athletes To Group'>
-				</form>
-				<form action="{% url 'remove_athletes_from_group' user.username group.id %}">
-					{% csrf_token %}
-					<input type="submit" value='Remove Athletes From Group'>
-				</form>
-				<ul>
-					{% for i in athletes_in_group %}
-						<li>
-							<p>{{ i.user.username }}</p>
-						</li>
-					{% endfor %}
-				</ul>
+				<h1>{{ group.name }}</h1>
+				<div class="tabContentReplacement">
+					<div class="listedWorkouts">
+						<div class="workoutContent">
+							<form action="{% url 'delete_group' user.username group.id %}">
+								{% csrf_token %}
+								<input type='submit' value='Delete Group' name='delete group'>
+							</form>
+							<form action="{% url 'add_athletes_to_group' user.username group.id %}">
+								{% csrf_token %}
+								<input type="submit" value='Add Athletes To Group'>
+							</form>
+							<form action="{% url 'remove_athletes_from_group' user.username group.id %}">
+								{% csrf_token %}
+								<input type="submit" value='Remove Athletes From Group'>
+							</form>
+							<ul>
+								{% for i in athletes_in_group %}
+									<li>
+										<p>{{ i.user.username }}</p>
+									</li>
+								{% endfor %}
+							</ul>
+						</div>
+					</div>
+				</div>
 			{% endif %}
 		{% else %}
 			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
