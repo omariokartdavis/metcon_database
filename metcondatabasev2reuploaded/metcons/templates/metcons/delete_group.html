@@ -6,19 +6,25 @@
 			{% if user.coach == group.coach %}
 				<h1>Delete Group {{ group.name }}</h1>
 				
-				<ul>
-					{% for i in athletes_in_group %}
-						<li>
-							<p>{{ i.user.username }}</p>
-						</li>
-					{% endfor %}
-				</ul>
+				<div class="tabContentReplacement">
+					<div class="listedWorkouts">
+						<div class="workoutContent">
+							<ul>
+								{% for i in athletes_in_group %}
+									<li>
+										<p>{{ i.user.username }}</p>
+									</li>
+								{% endfor %}
+							</ul>
 
-				<p>Are you sure you want to delete this group?</p>
-				<form method="post">
-					{% csrf_token %}
-					<input type="submit" value="Delete Group" name="yes, delete group">
-				</form>
+							<p>Are you sure you want to delete this group?</p>
+							<form method="post">
+								{% csrf_token %}
+								<input type="submit" value="Delete Group" name="yes, delete group">
+							</form>
+						</div>
+					</div>
+				</div>
 			{% endif %}
 		{% else %}
 			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
