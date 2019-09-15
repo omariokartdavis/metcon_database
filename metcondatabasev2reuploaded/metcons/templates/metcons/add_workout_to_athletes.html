@@ -4,17 +4,23 @@
 	{% if user.is_authenticated %}
 		{% if user.is_coach or user.is_gym_owner %}
 			{% if athletes %}
-				<h1>Add Workout To Athletes</h1>
-				
-				<form method="post">
-					{% csrf_token %}
-					<table>
-					{{ form.as_table }}
-					</table>
-					<input type="submit" value="Submit">
-				</form>
+				<div class="tabContentReplacement">
+					<div class="listedWorkouts">
+						<div class="workoutContent">
+							<h1>Add Workout To Athletes</h1>
+							
+							<form method="post">
+								{% csrf_token %}
+								<table>
+								{{ form.as_table }}
+								</table>
+								<input type="submit" value="Submit">
+							</form>
+						</div>
+					</div>
+				</div>
 			{% else %}
-				<p>You have no athletes. Add athletes by <a href="{% url 'add_athletes' user.username %}">Clicking Here!</a></p>
+				<div class="center_stuff"><p>You have no athletes. Add athletes by <a href="{% url 'add_athletes' user.username %}">Clicking Here!</a></p></div>
 			{% endif %}
 		{% else %}
 			<p>You must be a coach to access this page</p>
