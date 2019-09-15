@@ -2,12 +2,19 @@
 
 {% block content %}
 	<h1>Metcon Database Home</h1>
-	<p>Welcome to the Metcon Database, a website developed by <em>Omari</em></p>
-	<p><a href="{% url 'signup' %}">Sign Up</a> or <a href="{% url 'login' %}">Login</a></p>
-	<h2>Dynamic content</h2>
-	<p>The Database has the following record counts:</p>
-	<ul>
-		<li><strong>Workouts:</strong> {{ num_workouts }}</li>
-		<li><strong>Movements:</strong> {{ num_movements }}</li>
-	</ul>
+	
+	<div class="tabContentReplacement">
+		<div class="listedWorkouts">
+			<div class="workoutContent">
+				<p>Welcome to the Metcon Database, a website developed by <em>Omari</em></p>
+				<p><a href="{% url 'signup' %}">Sign Up</a> or <a href="{% url 'login' %}">Login</a></p>
+				<h2>Dynamic content</h2>
+				<p>The Database has the following record counts:</p>
+				<ul>
+					<li><strong>Workouts:</strong> {{ num_workouts }}</li>
+					<li><strong>Movements:</strong> {{ num_movements }}</li>
+				</ul>
+			</div>
+		</div>
+	</div>
 {% endblock %}
