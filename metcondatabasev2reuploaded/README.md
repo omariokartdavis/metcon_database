@@ -5,11 +5,32 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
+## 9/15/19
+(uploaded at home)
+- login.html
+- index.html
+- base_generic.css
+- interim_created_workout.html
+- interim_created_workout_for_multiple_athletes.html
+- add_workout_to_athletes.html
+- delete_group.html
+- remove_athletes_from_group.html
+- group_detail.html
+- add_athletes_to_group.html
+- request_detail.html
+- add_athlete_page.html
+- add_coach_page.html
+- create_group.html
+- movement_list.html
+- movement_form.html
+- movement_dtail.html
+- signup.html
+- workout_list.html
+
 ## 9/14/19
 (uploaded at home)
 - views.py
 - utils.py
-- base_generic.css
 - create_workout.html
 - workoutinstance_detail.html
 
@@ -53,7 +74,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
-- fix add workotu to peopls pages to be in middle of screen
+- center content on following pages:
+  - all registration templates except login
+- remove create movement link in sidebar
+- add create movement popup on create workout page
 - need to change help text on repeat frequency etc. to make it more clear when scheduling workouts
   - will repeat XX number of days + the day you already have selected (starting on a monday plus repeating 5 days will repeat saturday)
 - move text on bottom of create_workout.html page to center
