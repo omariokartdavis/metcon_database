@@ -3,44 +3,50 @@
 {% block content %}
 	{% if user.is_authenticated %}
 		{% if user.is_coach or user.is_gym_owner %}
-			<h2>Would you like to schedule this workout now?</h2>
+			<div class="center_stuff"><h2>Would you like to schedule this workout now?</h2></div>
 			
-			{% if athletes %}
-				<p>Schedule this workout for the following athletes: 
-				{% for i in athletes %}{{ i.user.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-			{% endif %}
-			
-			<p><strong>{{ workout.display_name }}</strong>:
-			{% if workout.is_general_workout %}
-				{{ workout.workout_text|linebreaks }}</p>
-			{% elif workout.is_strength_workout %}
-				{% for se in workout.strength_exercises.all %}
-					<p><strong>{{ se.movement.name }}</strong></br >
-					{% for se_set in se.set_set.all %}
-						Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
-					{% endfor %}
-					</p>
-				{% endfor %}
-			{% elif workout.is_cardio_workout %}
-				{% for ce in workout.cardio_exercises.all %}
-					<p><strong>{{ ce.movement.name }}</strong></br >
-					{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
-					{% if ce.comment %}{{ ce.comment }}{% endif %}
-				{% endfor %}
-			{% endif %}
-			
-			<form method='POST'>
-				{% csrf_token %}
-				<input type='submit' name='schedule workout for today for multiple athletes' value='Schedule For Today'>
-			</form>
-			<form action="{% url 'schedule_instance_for_multiple_athletes' user.username last_instance.id %}">
-				{% csrf_token %}
-				<input type="submit" name ='schedule workout for future' value="Schedule Workout For Future" />
-			</form>
-			<form action="{% url 'profile' user.username %}">
-				{% csrf_token %}
-				<input type="submit" value="No, Go To Profile">
-			</form>
+			<div class="tabContentReplacement">
+				<div class="listedWorkouts">
+					<div class="workoutContent">
+						{% if athletes %}
+							<p>Schedule this workout for the following athletes: 
+							{% for i in athletes %}{{ i.user.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+						{% endif %}
+						
+						<p><strong>{{ workout.display_name }}</strong>:
+						{% if workout.is_general_workout %}
+							{{ workout.workout_text|linebreaks }}</p>
+						{% elif workout.is_strength_workout %}
+							{% for se in workout.strength_exercises.all %}
+								<p><strong>{{ se.movement.name }}</strong></br >
+								{% for se_set in se.set_set.all %}
+									Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
+								{% endfor %}
+								</p>
+							{% endfor %}
+						{% elif workout.is_cardio_workout %}
+							{% for ce in workout.cardio_exercises.all %}
+								<p><strong>{{ ce.movement.name }}</strong></br >
+								{% if ce.number_of_reps %}{{ ce.number_of_reps }} x {% endif %}{{ ce.distance }}{{ ce.distance_units }}{% if ce.rest %} with {% if ce.rest_in_minutes > 0 %}{{ ce.rest_in_minutes }}min{% endif %}{% if ce.rest_remainder > 0 %} {{ ce.rest_remainder }}s{% endif %} rest{% endif %}{% if ce.pace %} at {{ ce.pace }} pace{% endif %}</br >
+								{% if ce.comment %}{{ ce.comment }}{% endif %}
+							{% endfor %}
+						{% endif %}
+						
+						<form method='POST'>
+							{% csrf_token %}
+							<input type='submit' name='schedule workout for today for multiple athletes' value='Schedule For Today'>
+						</form>
+						<form action="{% url 'schedule_instance_for_multiple_athletes' user.username last_instance.id %}">
+							{% csrf_token %}
+							<input type="submit" name ='schedule workout for future' value="Schedule Workout For Future" />
+						</form>
+						<form action="{% url 'profile' user.username %}">
+							{% csrf_token %}
+							<input type="submit" value="No, Go To Profile">
+						</form>
+					</div>
+				</div>
+			</div>
 		{% endif %}
 	{% endif %}
 {% endblock %}
