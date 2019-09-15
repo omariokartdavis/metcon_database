@@ -5,17 +5,23 @@
 		{% if user.is_coach or user.is_gym_owner %}
 			<h1>Remove Athlete's From Group</h1>
 
-			<h2>{{ group.name }}</h2>
-			
-			<form method="post">
-				{% csrf_token %}
-				<table>
-				{{ form.as_table }}
-				</table>
-				<input type="submit" value="Submit" name="remove athletes from group">
-			</form>
-			
-			<p>If there are no athletes left in the group after an athlete is removed, the group will be deleted.</p>
+			<div class="tabContentReplacement">
+				<div class="listedWorkouts">
+					<div class="workoutContent">
+						<h2>{{ group.name }}</h2>
+						
+						<form method="post">
+							{% csrf_token %}
+							<table>
+							{{ form.as_table }}
+							</table>
+							<input type="submit" value="Submit" name="remove athletes from group">
+						</form>
+						
+						<p>If there are no athletes left in the group after an athlete is removed, the group will be deleted.</p>
+					</div>
+				</div>
+			</div>
 		{% endif %}
 	{% else %}
 		<p>Please login to view this page.</p>
