@@ -3,22 +3,28 @@
 {% block content %}
 	<h1>Movement List</h1>
 	{% if movement_list %}
-		<ul>
-			<div class="infinite-container">
-				{% for movement in movement_list %}
-					<div class="infinite-item">
-						<li>
-							<a href="{{ movement.get_absolute_url }}">{{ movement.name }}</a>
-						</li>
-					</div>
-				{% endfor %}
+		<div class="tabContentReplacement">
+			<div class="listedWorkouts">
+				<div class="workoutContent">
+					<ul>
+						<div class="infinite-container">
+							{% for movement in movement_list %}
+								<div class="infinite-item">
+									<li>
+										<a href="{{ movement.get_absolute_url }}">{{ movement.name }}</a>
+									</li>
+								</div>
+							{% endfor %}
+						</div>
+					</ul>
+					{% if page_obj.has_next %}
+						<a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}">More</a>
+					{% endif %}
+				</div>
 			</div>
-		</ul>
-		{% if page_obj.has_next %}
-			<a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}">More</a>
-		{% endif %}
+		</div>
 	{% else %}
-		<p>There are no movements in the database.</p>
+		<div class="center_stuff"><p>There are no movements in the database.</p></div>
 	{% endif %}
 {% endblock %}
 {% block pagination %}{% endblock %}
