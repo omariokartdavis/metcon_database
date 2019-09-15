@@ -103,8 +103,8 @@
 				<div class="listedWorkouts">
 					{% for workout in most_recent_workouts %}
 						<div class="workoutContent">
-							<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a></p>
-							<br />{{ workout.workout_text|linebreaks }}
+							<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
+							<br />{{ workout.workout_text|linebreaks }}</p>
 							<p>Classification: {{ workout.classification }}
 							<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 						</div>
