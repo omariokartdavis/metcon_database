@@ -3,14 +3,21 @@
 {% block content %}
 	{% if user.is_authenticated %}
 		<h1>Create Movement</h1>
-		<form action="" method="post">
-			{% csrf_token %}
-			<table>
-			{{ form.as_table }}
-			</table>
-			<input type="submit" value="Submit">
-		</form>
+		
+		<div class="tabContentReplacement">
+			<div class="listedWorkouts">
+				<div class="workoutContent">
+					<form action="" method="post">
+						{% csrf_token %}
+						<table>
+						{{ form.as_table }}
+						</table>
+						<input type="submit" value="Submit">
+					</form>
+				</div>
+			</div>
+		</div>
 	{% else %}
-		<p>Please login to view this page.</p>
+		<div class="center_stuff"><p>Please login to view this page.</p></div>
 	{% endif %}
 {% endblock %}
