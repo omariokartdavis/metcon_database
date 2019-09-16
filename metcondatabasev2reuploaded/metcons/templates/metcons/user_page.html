@@ -61,9 +61,9 @@
 									{% if ce.comment %}{{ ce.comment }}{% endif %}
 								{% endfor %}
 							{% endif %}
-								<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-									<input type="submit" value="Yes, Add Result" name="previous day add result">
-								</form>
+							<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
+								<input type="submit" value="Yes, Add Result" name="previous day add result">
+							</form>
 							<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
 								<input type="submit" value="No, Re-Schedule" name="previous day edit schedule">
 							</form>
@@ -398,8 +398,8 @@
 						{% endfor %}
 					{% endfor %}
 				{% else %}
-					<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled for this week.
-					</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+					<div class="center_stuff"><p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no workouts scheduled for this week.
+					</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p></div>
 				{% endif %}
 			{% elif dict_of_this_weeks_workouts %}
 				{% for k, v in dict_of_this_weeks_workouts.items %}
@@ -593,8 +593,8 @@
 					{% endfor %}
 				{% endfor %}
 			{% else %}
-				<p>You have no workouts scheduled for this week.
-				</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+				<div class="center_stuff"><p>You have no workouts scheduled for this week.
+				</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p></div>
 			{% endif %}
 		</div>
 	</div>
@@ -657,12 +657,18 @@
 										{% if ce.comment %}{{ ce.comment }}{% endif %}
 									{% endfor %}
 								{% endif %}
+								<hr>
+								<p>Latest Result:</br >
+								{% if i.workout %}
+									<p>{% if i.result_set.all.latest.duration_in_minutes > 0 or i.result_set.all.latest.duration_remainder > 0 %}Time: {% endif %}{% if i.result_set.all.latest.duration_in_minutes > 0 %}{{ i.result_set.all.latest.duration_in_minutes }}:{% endif %}{% if i.result_set.all.latest.duration_remainder > 0 %}{{ i.result_set.all.latest.duration_remainder }}{% endif %}{% if i.result_set.all.latest.duration_in_minutes > 0 and i.result_set.all.latest.duration_remainder == 0 %}00{% endif %}</p>
+								{% endif %}
+								{{ i.result_set.all.latest.result_text|linebreaks }}</p>
 							</div>
 						{% endif %}
 					{% endfor %}
 				{% else %}
-					<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} not completed any workouts in the past 2 weeks.
-					</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+					<div class="center_stuff"><p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} not completed any workouts in the past 2 weeks.
+					</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p></div>
 				{% endif %}
 			{% elif recent_past_workouts %}
 				<h2>Recent Workouts</h2>
@@ -710,12 +716,18 @@
 									{% if ce.comment %}{{ ce.comment }}{% endif %}
 								{% endfor %}
 							{% endif %}
+							<hr>
+							<p>Latest Result:</br >
+							{% if i.workout %}
+								<p>{% if i.result_set.all.latest.duration_in_minutes > 0 or i.result_set.all.latest.duration_remainder > 0 %}Time: {% endif %}{% if i.result_set.all.latest.duration_in_minutes > 0 %}{{ i.result_set.all.latest.duration_in_minutes }}:{% endif %}{% if i.result_set.all.latest.duration_remainder > 0 %}{{ i.result_set.all.latest.duration_remainder }}{% endif %}{% if i.result_set.all.latest.duration_in_minutes > 0 and i.result_set.all.latest.duration_remainder == 0 %}00{% endif %}</p>
+							{% endif %}
+							{{ i.result_set.all.latest.result_text|linebreaks }}</p>
 						</div>
 					{% endif %}
 				{% endfor %}
 			{% else %}
-				<p>You have not completed any workouts in the past 2 weeks.
-				</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+				<div class="center_stuff"><p>You have not completed any workouts in the past 2 weeks.
+				</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p></div>
 			{% endif %}
 		</div>
 	</div>
@@ -781,8 +793,8 @@
 						{% endif %}
 					{% endfor %}
 				{% else %}
-					<p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no incomplete workouts.
-					</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+					<div class="center_stuff"><p>{% if chosen_user == request.user %}You have{% else %}{{ chosen_user }} has{% endif %} no incomplete workouts.
+					</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p></div>
 				{% endif %}
 			{% elif incomplete_workouts %}
 				<h2>Pending Workouts</h2>
@@ -833,8 +845,8 @@
 					{% endif %}
 				{% endfor %}
 			{% else %}
-				<p>You have no incomplete workouts.
-				</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p>
+				<div class="center_stuff"><p>You have no incomplete workouts.
+				</br >Find new workouts by <a href="{% url 'workouts' %}">Clicking Here!</a></p></div>
 			{% endif %}
 		</div>
 	</div>
