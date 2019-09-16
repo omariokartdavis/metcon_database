@@ -33,6 +33,10 @@ h1 {
 	/*border: 1px solid black;*/
 }
 
+hr {
+	width: 95%;
+}
+
 .center_stuff {
 	position: relative;
 	width: 100%;
