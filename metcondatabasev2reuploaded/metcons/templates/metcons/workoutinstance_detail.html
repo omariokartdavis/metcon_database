@@ -83,17 +83,13 @@
 							{% for result in result_list %}
 								<div class="infinite-item">
 									<div class="workoutContent">
-										<p><a href="{% url 'edit_result' user.username workoutinstance.id result.id %}"><strong>{{ result.date_workout_completed|date:"F j, Y" }}</strong></a> - <form action="{% url 'delete_result' user.username workoutinstance.id result.id %}"><input type="submit" value="Delete Result" /></form></p>
+										<p><a href="{% url 'edit_result' user.username workoutinstance.id result.id %}"><strong>{{ result.date_workout_completed|date:"F j, Y" }}</strong></a><form action="{% url 'delete_result' user.username workoutinstance.id result.id %}"><input type="submit" value="Delete Result" /></form></p>
 										{% if workoutinstance.workout %}
-											{% if result.duration_in_minutes > 0 %}
-												<p>{{ result.duration_in_minutes }} minutes</p>
-											{% endif %}
-											{% if result.duration_remainder > 0 %}
-												<p>{{ result.duration_remainder }} seconds</p>
-											{% endif %}
+											<p>{% if result.duration_in_minutes > 0 or result.duration_remainder > 0 %}Time: {% endif %}{% if result.duration_in_minutes > 0 %}{{ result.duration_in_minutes }}:{% endif %}{% if result.duration_remainder > 0 %}{{ result.duration_remainder }}{% else %}00{% endif %}
 											{% if result.duration_in_minutes == 0 and result.duration_remainder == 0 %}
-												<p>No Duration Results</p>
+												No Duration Results
 											{% endif %}
+											</p>
 										{% endif %}
 										<p>{{ result.result_text|linebreaks }}</p>
 										{% if result.resultfile_set.all %}
