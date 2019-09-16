@@ -489,6 +489,9 @@ class Result(models.Model):
         result_text = models.TextField(max_length=2000, blank = True)
         duration_in_seconds = models.IntegerField(default=0, verbose_name='Duration (sec)', null=True, blank=True)
 
+        class Meta:
+            get_latest_by= ['date_workout_completed', 'date_created']
+            
         def duration_in_minutes(self):
                 #for template display
                 duration = self.duration_in_seconds // 60
