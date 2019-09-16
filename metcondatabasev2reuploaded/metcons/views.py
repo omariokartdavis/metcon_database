@@ -1260,7 +1260,7 @@ def create_result(request, username, pk):
                                                 content_type = i.content_type)
                             resultfile.save()
 
-                    return HttpResponseRedirect(instance.get_absolute_url())
+                    return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
                 
             elif instance.strength_workout:
                 form = CreateStrengthResultForm(request.POST, request.FILES, **{'instance':instance})
@@ -1296,7 +1296,7 @@ def create_result(request, username, pk):
                                                 content_type = i.content_type)
                             resultfile.save()
 
-                    return HttpResponseRedirect(instance.get_absolute_url())
+                    return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
                 
             elif instance.cardio_workout:
                 form = CreateCardioResultForm(request.POST, request.FILES, **{'instance':instance})
@@ -1326,7 +1326,7 @@ def create_result(request, username, pk):
                                                 content_type = i.content_type)
                             resultfile.save()
 
-                    return HttpResponseRedirect(instance.get_absolute_url())
+                    return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
     else:
         if instance.duration_in_seconds:
             duration_minutes=instance.duration_in_seconds // 60
