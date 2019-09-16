@@ -5,41 +5,19 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 9/15/19
-(uploaded at home)
-- login.html
-- index.html
-- base_generic.css
-- interim_created_workout.html
-- interim_created_workout_for_multiple_athletes.html
-- add_workout_to_athletes.html
-- delete_group.html
-- remove_athletes_from_group.html
-- group_detail.html
-- add_athletes_to_group.html
-- request_detail.html
-- add_athlete_page.html
-- add_coach_page.html
-- create_group.html
-- movement_list.html
-- movement_form.html
-- movement_dtail.html
-- signup.html
-- workout_list.html
-
-## 9/14/19
-(uploaded at home)
+## 9/16/19
+(uploaded at work)
+- user_page.html
 - views.py
-- utils.py
-- create_workout.html
+- models.py (no migrations)
+- base_generic.css
 - workoutinstance_detail.html
 
-## functionality completed on 9/14/19
-- fixed error on delete_instance where deleting a strength workout failed due to not having an estimated duration to update.
-- fixed calendar error on athletes page where hidden workouts didn't have a new line break after the text
-- moved workout type selection and "if no athletes" warning to center of page
-- fixed missing p tag on workoutinstance_detail
-- fixed css for h3 and #UpdateWorkoutButton in workoutContent in base_generic.css
+## functionality completed on 9/16/19
+- centered the "You have no workouts" text
+- changed redirect after add result to be home page
+- added get_latest_by to meta of results and show latest result in recent workouts tab on userpage along with additional styling
+- removed - from results display on workoutisntance_detail
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -74,6 +52,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- if result is created for cardio workout and all comment sections are blank, use the workout as the result_text
+- still haven't changed edit_result.html or edit_result view for cardio workouts
+- create hidden input on popups for yesterdays scheduled workouts so that when it goes to the add result or reschedule page,
+  after clicking submit it will send you back to the homepage and to the popup.
 - center content on following pages:
   - all registration templates except login
 - remove create movement link in sidebar
