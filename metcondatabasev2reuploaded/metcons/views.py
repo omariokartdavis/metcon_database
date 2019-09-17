@@ -11,7 +11,8 @@ from metcons.forms import SignUpForm, AddAthleteToCoachForm, AddCoachForm, \
     AddWorkoutToAthletesForm, CreateGroupForm, AddAthletesToGroupForm, RemoveAthletesFromGroupForm, CreateWorkoutForm, \
     StrengthWorkoutFormset, CardioWorkoutFormset, CreateGeneralResultForm, \
     CreateStrengthResultForm, CreateCardioResultForm, ScheduleInstanceForm, EditScheduleForm, DeleteScheduleForm, \
-    HideInstanceForm, EditInstanceForm, EditStrengthInstanceForm, EditCardioInstanceForm, EditGeneralResultForm, EditStrengthResultForm
+    HideInstanceForm, EditInstanceForm, EditStrengthInstanceForm, EditCardioInstanceForm, EditGeneralResultForm, EditStrengthResultForm, \
+    EditCardioResultForm
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Q
@@ -41,6 +42,12 @@ def profile(request, username):
     request_list = Request.objects.filter(requestee=request.user, is_confirmed=False)
 
     now = timezone.localtime(timezone.now()).date()
+    
+    # will update the users hidden workouts when they enter their page
+    hidden_workouts = WorkoutInstance.objects.filter(current_user=request.user, is_hidden=True, date_to_unhide__isnull=False, last_time_hidden_date_was_checked__lt=now)
+    for i in hidden_workouts.iterator():
+        i.check_unhide_date()
+        
     end_of_week = now + timezone.timedelta(days=7)
     long_future_workouts = WorkoutInstance.objects.filter(current_user=request.user,
                                                           youngest_scheduled_date__date_completed__gte=end_of_week).exclude(
@@ -81,6 +88,8 @@ def profile(request, username):
                                                                         dates_to_be_completed__date_completed=yesterday).exclude(
                                                                             dates_workout_completed__date_completed=yesterday).distinct().order_by('-youngest_scheduled_date')
     
+
+    
     context = {
         'users_workouts': users_workouts,
         'long_future_workouts': long_future_workouts,
@@ -116,6 +125,13 @@ def profile(request, username):
             else:
                 chosen_user = User.objects.get(username=request.user.username)
             this_user = chosen_user
+            
+            # will update hidden workouts for the chosen athlete only once that athlete is clicked on the coaches page
+            chosen_users_hidden_workouts = WorkoutInstance.objects.filter(current_user=chosen_user, is_hidden=True, date_to_unhide__isnull=False, last_time_hidden_date_was_checked__lt=now)
+            
+            for i in chosen_users_hidden_workouts.iterator():
+                i.check_unhide_date()
+                
             chosen_users_workouts = WorkoutInstance.objects.filter(current_user=chosen_user)
             chosen_users_incomplete_workouts = WorkoutInstance.objects.filter(current_user=chosen_user,
                                                 youngest_scheduled_date=None,
@@ -147,6 +163,9 @@ def profile(request, username):
                     chosen_users_dict_of_this_weeks_workouts[date_to_check] = query_of_date
                 date_to_check += timezone.timedelta(days=1)
 
+            
+            
+                
             context['chosen_users_incomplete_workouts'] = chosen_users_incomplete_workouts
             context['chosen_users_long_future_workouts'] = chosen_users_long_future_workouts
             context['chosen_users_recent_past_workouts'] = chosen_users_recent_past_workouts
@@ -624,6 +643,7 @@ def workoutinstancedetailview(request, username, pk):
             if 'unhide instance' in request.POST:
                 instance.is_hidden = False
                 instance.date_to_unhide = None
+                instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date()
                 instance.save()
                 
                 return HttpResponseRedirect(instance.get_absolute_url())
@@ -1017,6 +1037,7 @@ def hide_instance(request, username, pk):
             if form.is_valid():
                 if instance.is_assigned_by_coach_or_gym_owner:
                     instance.is_hidden=True
+                    instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date()
                     if form.cleaned_data['date_to_unhide']:
                         instance.date_to_unhide = form.cleaned_data['date_to_unhide']
                     else:
@@ -1310,7 +1331,24 @@ def create_result(request, username, pk):
                     all_result_texts = ''
                     for k, v in result_text_and_exercises.items():
                         name = 'result_text_%s' % (v.cardio_exercise_number,)
-                        all_result_texts += (v.movement.name + ': ' + form.cleaned_data[name] + '\n')
+                        if not form.cleaned_data[name]:
+                            if v.rest > 0:
+                                if v.rest_in_minutes() > 0:
+                                    if v.rest_remainder() > 0:
+                                        rest = ' with ' + str(v.rest_in_minutes()) + ':' + str(v.rest_remainder()) + ' rest '
+                                    else:
+                                        rest = ' with ' + str(v.rest_in_minutes()) + 'min rest '
+                                else:
+                                    rest = ' with ' + str(v.rest_remainder()) + 's rest '
+                            else:
+                                rest = ''
+                            if v.pace:
+                                pace = ' at ' + v.pace + ' pace'
+                            else:
+                                pace = ''
+                            all_result_texts += (v.movement.name + ': ' + str(v.number_of_reps) + ' x ' + str(v.distance) + v.distance_units + rest + pace + '\n')
+                        else:
+                            all_result_texts += (v.movement.name + ': ' + form.cleaned_data[name] + '\n')
                     result = Result(workoutinstance=instance,
                                     result_text=all_result_texts,
                                     date_workout_completed=aware_datetime)
@@ -1411,6 +1449,27 @@ def edit_result(request, username, pk, resultid):
                     else:
                         result.save()
                     return HttpResponseRedirect(instance.get_absolute_url())
+            elif instance.cardio_workout:
+                form = EditCardioResultForm(request.POST)
+                
+                if form.is_valid():
+                    if form.cleaned_data['date_completed'] == dt.date.today():
+                        aware_datetime = timezone.now()
+                    else:
+                        date_in_datetime = dt.datetime.combine(form.cleaned_data['date_completed'], dt.datetime.min.time())
+                        aware_datetime=timezone.make_aware(date_in_datetime)
+                    if result.result_text != form.cleaned_data['result_text']:
+                        result.result_text = form.cleaned_data['result_text']
+                    local_aware_datetime = timezone.localtime(aware_datetime)
+                    if timezone.localtime(result.date_workout_completed).date() != local_aware_datetime.date():
+                        instance.remove_date_completed(timezone.localtime(result.date_workout_completed).date())
+                        result.date_workout_completed = aware_datetime
+                        result.save()
+                        instance.add_date_completed(timezone.localtime(result.date_workout_completed).date())
+                    else:
+                        result.save()
+                    return HttpResponseRedirect(instance.get_absolute_url())
+                
                     
     else:
         if result.duration_in_seconds:
@@ -1426,9 +1485,12 @@ def edit_result(request, username, pk, resultid):
                                         })
         form2 = EditStrengthResultForm(initial={'result_text': result.result_text,
                                                 'date_completed': result.date_workout_completed})
+        form3 = EditCardioResultForm(initial={'result_text': result.result_text,
+                                                'date_completed': result.date_workout_completed})
     context = {
         'form1': form1,
         'form2': form2,
+        'form3': form3,
         'instance': instance,
         'result': result,
         }
@@ -1485,6 +1547,7 @@ def add_workout_to_athletes(request, username, pk):
                 else:
                     hidden=False
                     date_to_unhide = None
+                now = timezone.localtime(timezone.now()).date()
                 if form.cleaned_data['athlete_to_assign']:
                     for i in form.cleaned_data['athlete_to_assign']:
                         current_user = User.objects.get(username=i)
@@ -1497,7 +1560,8 @@ def add_workout_to_athletes(request, username, pk):
                                                            is_assigned_by_coach_or_gym_owner=True,
                                                            assigned_by_user=user,
                                                            is_hidden=hidden,
-                                                           date_to_unhide=date_to_unhide)
+                                                           date_to_unhide=date_to_unhide,
+                                                           last_time_hidden_date_was_checked=now)
                                 instance.save()
                         elif workout.is_strength_workout():
                             if not WorkoutInstance.objects.filter(strength_workout=workout, current_user=current_user).exists():
@@ -1505,7 +1569,8 @@ def add_workout_to_athletes(request, username, pk):
                                                            is_assigned_by_coach_or_gym_owner=True,
                                                            assigned_by_user=user,
                                                            is_hidden=hidden,
-                                                           date_to_unhide=date_to_unhide)
+                                                           date_to_unhide=date_to_unhide,
+                                                           last_time_hidden_date_was_checked=now)
                                 instance.save()
                         elif workout.is_cardio_workout():
                             if not WorkoutInstance.objects.filter(cardio_workout=workout, current_user=current_user).exists():
@@ -1513,7 +1578,8 @@ def add_workout_to_athletes(request, username, pk):
                                                            is_assigned_by_coach_or_gym_owner=True,
                                                            assigned_by_user=user,
                                                            is_hidden=hidden,
-                                                           date_to_unhide=date_to_unhide)
+                                                           date_to_unhide=date_to_unhide,
+                                                           last_time_hidden_date_was_checked=now)
                                 instance.save()
                 if form.cleaned_data['group_to_assign']:
                     for i in form.cleaned_data['group_to_assign']:
@@ -1529,7 +1595,8 @@ def add_workout_to_athletes(request, username, pk):
                                                                is_assigned_by_coach_or_gym_owner=True,
                                                                assigned_by_user=user,
                                                                is_hidden=hidden,
-                                                               date_to_unhide=date_to_unhide)
+                                                               date_to_unhide=date_to_unhide,
+                                                               last_time_hidden_date_was_checked=now)
                                     instance.save()
                             elif workout.is_strength_workout():
                                 if not WorkoutInstance.objects.filter(strength_workout=workout, current_user=current_user).exists():
@@ -1537,7 +1604,8 @@ def add_workout_to_athletes(request, username, pk):
                                                                is_assigned_by_coach_or_gym_owner=True,
                                                                assigned_by_user=user,
                                                                is_hidden=hidden,
-                                                               date_to_unhide=date_to_unhide)
+                                                               date_to_unhide=date_to_unhide,
+                                                               last_time_hidden_date_was_checked=now)
                                     instance.save()
                             elif workout.is_cardio_workout():
                                 if not WorkoutInstance.objects.filter(cardio_workout=workout, current_user=current_user).exists():
@@ -1545,7 +1613,8 @@ def add_workout_to_athletes(request, username, pk):
                                                                is_assigned_by_coach_or_gym_owner=True,
                                                                assigned_by_user=user,
                                                                is_hidden=hidden,
-                                                               date_to_unhide=date_to_unhide)
+                                                               date_to_unhide=date_to_unhide,
+                                                               last_time_hidden_date_was_checked=now)
                                     instance.save()
 
                 return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, instance.id]))
@@ -1648,6 +1717,7 @@ def create_workout(request):
                             instance.is_hidden=hidden
                             instance.date_to_unhide=date_to_unhide
                             instance.assigned_by_user=current_user
+                            instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date()
                             instance.save()
                     else:
                         instance = WorkoutInstance.objects.get(workout=workout, current_user=i)
@@ -1733,6 +1803,7 @@ def create_workout(request):
                         if instance.is_assigned_by_coach_or_gym_owner:
                             instance.is_hidden=hidden
                             instance.date_to_unhide=date_to_unhide
+                            instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date()
                             instance.assigned_by_user=current_user
                             instance.save()
                     else:
@@ -1826,6 +1897,7 @@ def create_workout(request):
                         if instance.is_assigned_by_coach_or_gym_owner:
                             instance.is_hidden=hidden
                             instance.date_to_unhide=date_to_unhide
+                            instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date()
                             instance.assigned_by_user=current_user
                             instance.save()
                     else:
