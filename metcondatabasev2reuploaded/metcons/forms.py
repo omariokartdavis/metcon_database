@@ -303,3 +303,7 @@ class EditGeneralResultForm(forms.Form):
 class EditStrengthResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
     date_completed = forms.DateField(widget=forms.SelectDateWidget(), required=False)
+    
+class EditCardioResultForm(forms.Form):
+    result_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
+    date_completed = forms.DateField(widget=forms.SelectDateWidget(), required=False)
