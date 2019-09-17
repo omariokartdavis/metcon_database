@@ -5,14 +5,30 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 9/16/19
+## 9/17/19
 (uploaded at work)
 - user_page.html
 - views.py
-- models.py (no migrations)
+- models.py (migrations)
+- forms.py
 - base_generic.css
+- delete_result
+- edit_result.html
+- edit_instance.html
+- workout_list.html
 - workoutinstance_detail.html
 
+## functionality completed on 9/17/19
+- added last_time_hidden_date_checked to workout instances.
+- added a hidden date check everytime user or coach goes to their homepage.
+  - only checks instances that are hidden, have a unhide date, and haven't been checked today
+- change the check unhide date function to check if workout is scheduled in the future.
+  - if it is, change the unhide date to the future date and keep the workout hidden.
+  - this way if the workout is scheduled 3 times in a week and you reach the first date, it will move the unhide to the next one which
+    will stop the athlete from knowing when it is scheduled next
+- added cardio instance to edit_result view and html.
+- centered content on edit_result and edit_instance.html
+  
 ## functionality completed on 9/16/19
 - centered the "You have no workouts" text
 - changed redirect after add result to be home page
@@ -52,6 +68,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- add "change unhide date" page and link for coaches
 - if result is created for cardio workout and all comment sections are blank, use the workout as the result_text
 - still haven't changed edit_result.html or edit_result view for cardio workouts
 - create hidden input on popups for yesterdays scheduled workouts so that when it goes to the add result or reschedule page,
@@ -228,6 +245,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - create Training Maxes field on user model for eventual strength programs?
 
 ## Styling:
+- style add result/submit buttons to be full width. move them all the the bottom of their containers. 
+  - blue text that when hovered over turns the full width blue and the text grey
 - in workoutinstance_detail style page so that workout is on left with results on right.
   - when you scroll workout should be fixed on left and results should scroll on right
 - style workouts on calendar for if completed or not completed that day
