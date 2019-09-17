@@ -88,9 +88,11 @@
 						{% endfor %}
 					</div>
 				</div>
-				{% if workout_list.has_next %}
-					<a class="infinite-more-link" href="?page={{ workout_list.next_page_number }}{% load getlistasparam %}{% if request.GET|get_list:'q' %}{% for i in request.GET|get_list:'q' %}&q={{ i }}{% endfor %}{% endif %}{% if request.GET.x %}&x={{ request.GET.x }}{% endif %}{% if request.GET.y %}&y={{ request.GET.y }}{% endif %}{% if request.GET.z %}&z={{ request.GET.z }}{% endif %}{% if request.GET.h %}&h={{ request.GET.h }}{% endif %}{% if request.GET.t %}&t=on{% endif %}{% if request.GET.s %}&s=on{% endif %}{% if request.GET.f %}&f=on{% endif %}">More</a>
-				{% endif %}
+				<div class="center_stuff">
+					{% if workout_list.has_next %}
+						<a class="infinite-more-link" href="?page={{ workout_list.next_page_number }}{% load getlistasparam %}{% if request.GET|get_list:'q' %}{% for i in request.GET|get_list:'q' %}&q={{ i }}{% endfor %}{% endif %}{% if request.GET.x %}&x={{ request.GET.x }}{% endif %}{% if request.GET.y %}&y={{ request.GET.y }}{% endif %}{% if request.GET.z %}&z={{ request.GET.z }}{% endif %}{% if request.GET.h %}&h={{ request.GET.h }}{% endif %}{% if request.GET.t %}&t=on{% endif %}{% if request.GET.s %}&s=on{% endif %}{% if request.GET.f %}&f=on{% endif %}">More</a>
+					{% endif %}
+				</div>
 			</div>
 		{% else %}
 			<div class="filter_text"><p>There are no workouts in the database with all of the following filters: {% for i in filter_list %}{{i}}{% if not forloop.last %}, {% endif %}{% endfor %}.</p></div>
