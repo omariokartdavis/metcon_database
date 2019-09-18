@@ -7,18 +7,18 @@
 				<h1>{{ group.name }}</h1>
 				<div class="tabContentReplacement">
 					<div class="listedWorkouts">
-						<div class="workoutContent">
+						<div class="workoutContent no_padding">
 							<form action="{% url 'delete_group' user.username group.id %}">
 								{% csrf_token %}
-								<input type='submit' value='Delete Group' name='delete group'>
+								<input type='submit' class="input_submit dropdownContainerWorkoutButtons_submit first_input_submit" value='Delete Group' name='delete group'>
 							</form>
 							<form action="{% url 'add_athletes_to_group' user.username group.id %}">
 								{% csrf_token %}
-								<input type="submit" value='Add Athletes To Group'>
+								<input type="submit" class="input_submit dropdownContainerWorkoutButtons_submit" value='Add Athletes To Group'>
 							</form>
 							<form action="{% url 'remove_athletes_from_group' user.username group.id %}">
 								{% csrf_token %}
-								<input type="submit" value='Remove Athletes From Group'>
+								<input type="submit" class="input_submit dropdownContainerWorkoutButtons_submit" value='Remove Athletes From Group'>
 							</form>
 							<ul>
 								{% for i in athletes_in_group %}
@@ -32,9 +32,9 @@
 				</div>
 			{% endif %}
 		{% else %}
-			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
+			<div class='center_stuff'><p>You do not have permission to view this page. Please login with an account that has proper permissions.</p></div>
 		{% endif %}
 	{% else %}
-		<p>Please login to view this page.</p>
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
 	{% endif %}
 {% endblock %}
