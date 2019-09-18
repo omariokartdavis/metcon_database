@@ -62,12 +62,12 @@
 										<input type="hidden" name="workout_type" value="{% if workout.is_general_workout %}general_workout{% elif workout.is_strength_workout %}strength_workout{% endif %}">
 										<input type="hidden" name="workout" value={{ workout.id }}>
 										<input type="hidden" name="currentuser" value= {{ user.username }}>
-										<input type="submit" value="Add Workout to Profile" name="add_workout_to_profile">
+										<input type="submit" class='input_submit add_workout_to_profile_submit' value="Add Workout to Profile" name="add_workout_to_profile">
 									</form>
 									{% if user.is_coach or user.is_gym_owner %}
 										<form class="post_workout_form" action="{% url 'add_workout_to_athletes' user.username workout.id %}">
 											<input type="hidden" name="{% if workout.is_general_workout %}general_workout{% elif workout.is_strength_workout %}strength_workout{% endif %}">
-											<input type="submit" value="Add Workout To Athletes" name="add_workout_to_athletes">
+											<input type="submit" class='input_submit add_workout_to_profile_submit' value="Add Workout To Athletes" name="add_workout_to_athletes">
 										</form>
 									{% endif %}
 									{% if workout.is_general_workout %}
