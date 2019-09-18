@@ -28,31 +28,35 @@
 						{% endif %}
 						<form method='POST'>
 							{% csrf_token %}
-							<input type='submit' name='schedule workout for today' value='Schedule For Today'>
+							<input type='submit' name='schedule workout for today' class='input_submit dropdownContainerWorkoutButtons_submit' value='Schedule For Today'>
 						</form>
 						<form action="{% url 'schedule_instance' user.username instance.id %}">
 							{% csrf_token %}
-							<input type="submit" name ='schedule workout for future' value="Schedule Workout In Future" />
+							<input type="submit" name ='schedule workout for future' class='input_submit dropdownContainerWorkoutButtons_submit' value="Schedule Workout In Future" />
 						</form>
 						<form action="{% url 'result_create' user.username instance.id %}">
 							{% csrf_token %}
-							<input type="submit" name="created workout previous day add result" value="Add Result In Past" >
+							<input type="submit" name="created workout previous day add result" class='input_submit dropdownContainerWorkoutButtons_submit' value="Add Result In Past" >
 						</form>
 						<form action="{% url 'result_create' user.username instance.id %}">
 							{% csrf_token %}
-							<input type="submit" name="created workout today add result" value="Add Result For Today" >
+							<input type="submit" name="created workout today add result" class='input_submit dropdownContainerWorkoutButtons_submit' value="Add Result For Today" >
 						</form>
 						<form action="{% url 'workoutinstance-detail' user.username instance.id %}">
 							{% csrf_token %}
-							<input type="submit" value="No, Go To Workout">
+							<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="No, Go To Workout">
 						</form>
 						<form action="{% url 'profile' user.username %}">
 							{% csrf_token %}
-							<input type="submit" value="No, Go To Profile">
+							<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit last_input_submit' value="No, Go To Profile">
 						</form>
 					</div>
 				</div>
 			</div>
+		{% else %}
+			<div class='center_stuff'><p>You do not have permission to view this page. Please login with an account that has proper permissions.</p></div>
 		{% endif %}
+	{% else %}
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
 	{% endif %}
 {% endblock %}
