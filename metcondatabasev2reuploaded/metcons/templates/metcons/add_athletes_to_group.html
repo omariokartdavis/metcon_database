@@ -15,13 +15,15 @@
 							<table>
 							{{ form.as_table }}
 							</table>
-							<input type="submit" value="Submit" name="add athletes to group">
+							<input type="submit" class="input_submit" value="Submit" name="add athletes to group">
 						</form>
 					</div>
 				</div>
 			</div>
 		{% endif %}
 	{% else %}
-		<p>Please login to view this page.</p>
+		<div class='center_stuff'>
+			<p>Please login to view this page.</p>
+		</div>
 	{% endif %}
 {% endblock %}
