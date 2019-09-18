@@ -4,7 +4,7 @@
 	{% if user.is_authenticated %}
 		{% if user.username == workoutinstance.current_user.username or user.coach in workoutinstance.current_user.athlete.coach_set.all %}
 			<h1>{{ workoutinstance.display_workout }}</h1>
-			<div class="tabContentReplacement">
+			<div class="tabContentReplacement z_2">
 				<div class="listedWorkouts">
 					<div class="workoutContent">
 						<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
@@ -78,7 +78,7 @@
 			{% if result_list %}
 				<div class="tabContentReplacement">
 					<div class="listedWorkouts">
-						<h2><strong>Results:</strong></h2>
+						<h2>Results:</h2>
 						<div class="infinite-container">
 							{% for result in result_list %}
 								<div class="infinite-item">
@@ -120,9 +120,9 @@
 				</div>
 			{% endif %}
 		{% else %}
-			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
+			<div class='center_stuff'><p>You do not have permission to view this page. Please login with an account that has proper permissions.</p></div>
 		{% endif %}
 	{% else %}
-		<p>Please login to view this page.</p>
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
 	{% endif %}
 {% endblock %}
