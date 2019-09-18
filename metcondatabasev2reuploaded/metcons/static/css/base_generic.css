@@ -33,7 +33,7 @@ h1 {
 	/*border: 1px solid black;*/
 }
 
-input[type=submit].input_submit {
+.input_submit {
 	width: 100%;
 	height: 30px;
 	background-color: white;
@@ -43,24 +43,66 @@ input[type=submit].input_submit {
 	border-radius: 0px 0px 5px 5px;
 }
 
-input[type=submit].input_submit:hover {
+.input_submit:hover {
 	background-color: #66b2b2;
 	color: #e9ebee;
 	transition: 0.25s;
 }
 
-input[type=submit].add_result_submit, input[type=submit].delete_result_submit {
+.add_result_submit, .delete_result_submit {
 	border-radius: 0px 0px 5px 5px;
 }
 
-input[type=submit].dropdownContainerWorkoutButtons_submit {
+.dropdownContainerWorkoutButtons_submit {
 	border-radius: 0;
 }
 
-input[type=submit].add_workout_to_profile_submit {
+.left_and_right_input_submit {
 	width: 50%;
 }
 
+.left_submit {
+	border-radius: 0px 0px 0px 5px;
+	margin-right: -4px;
+}
+
+.right_submit {
+	border-radius: 0px 0px 5px 0px;
+}
+
+form.create_movement_form {
+	display: inline;
+}
+
+.inline_display {
+	display: inline;
+}
+
+.create_workout_submit_buttons {
+	box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+	border-radius: 5px;
+}
+
+.create_workout_input_submit {
+	border-radius: 5px;
+}
+
+.create_workout_left_submit {
+	border-radius: 5px 0px 0px 5px;
+	margin-right: -4px;
+}
+
+.create_workout_right_submit {
+	border-radius: 0px 5px 5px 0px;
+}
+
+.last_input_submit {
+	border-radius: 0px 0px 5px 5px;
+}
+
+.first_input_submit {
+	border-radius: 5px 5px 0px 0px;
+}
 
 hr {
 	width: 95%;
@@ -373,6 +415,10 @@ hr {
 	text-align: center;
 }
 
+.z_2 {
+	z-index: 2;
+}
+
 .workoutContent {
 	background-color: white;
 	border-radius: 5px;
@@ -386,7 +432,7 @@ hr {
 	position: relative;
 }
 
-.workoutContent p, .workoutContent h3, .workoutContent #UpdateWorkoutButton {
+.workoutContent p, .workoutContent h3 {
 	position: relative;
 	left: 10px;
 	margin-right: 20px;
@@ -446,4 +492,13 @@ hr {
 
 .workoutContent .dropdownContainerWorkoutButtons:hover {
 	overflow-y: auto;
+}
+
+.no_padding {
+	padding: 0px;
+}
+
+.infinite-more-link {
+	color: #66b2b2;
+	text-decoration: none;
 }
