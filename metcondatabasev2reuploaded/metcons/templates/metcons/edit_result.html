@@ -13,7 +13,7 @@
 							<table>
 							{% if instance.workout %}{{ form1.as_table }}{% elif instance.strength_workout %}{{ form2.as_table }}{% elif instance.cardio_workout %}{{ form3.as_table }}{% endif %}
 							</table>
-							<input type="submit" value="Submit" name="edit result">
+							<input type="submit" class="input_submit" value="Submit" name="edit result">
 						</form>
 					</div>
 				</div>
@@ -22,6 +22,6 @@
 			<div class="center_stuff"><p>You do not have permission to view this page. Please login with an account that has proper permissions.</p></div>
 		{% endif %}
 	{% else %}
-		<p>Please login to view this page.</p>
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
 	{% endif %}
 {% endblock %}
