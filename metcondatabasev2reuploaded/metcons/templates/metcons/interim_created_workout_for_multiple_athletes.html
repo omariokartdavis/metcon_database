@@ -34,19 +34,23 @@
 						
 						<form method='POST'>
 							{% csrf_token %}
-							<input type='submit' name='schedule workout for today for multiple athletes' value='Schedule For Today'>
+							<input type='submit' name='schedule workout for today for multiple athletes' class='input_submit dropdownContainerWorkoutButtons_submit' value='Schedule For Today'>
 						</form>
 						<form action="{% url 'schedule_instance_for_multiple_athletes' user.username last_instance.id %}">
 							{% csrf_token %}
-							<input type="submit" name ='schedule workout for future' value="Schedule Workout For Future" />
+							<input type="submit" name ='schedule workout for future' class='input_submit dropdownContainerWorkoutButtons_submit' value="Schedule Workout For Future" />
 						</form>
 						<form action="{% url 'profile' user.username %}">
 							{% csrf_token %}
-							<input type="submit" value="No, Go To Profile">
+							<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit last_input_submit' value="No, Go To Profile">
 						</form>
 					</div>
 				</div>
 			</div>
+		{% else %}
+			<div class='center_stuff'><p>You do not have permission to view this page. Please login with an account that has proper permissions.</p></div>
 		{% endif %}
+	{% else %}
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
 	{% endif %}
 {% endblock %}
