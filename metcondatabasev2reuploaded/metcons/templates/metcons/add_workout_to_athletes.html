@@ -14,7 +14,7 @@
 								<table>
 								{{ form.as_table }}
 								</table>
-								<input type="submit" value="Submit">
+								<input type="submit" class="input_submit" value="Submit">
 							</form>
 						</div>
 					</div>
@@ -23,9 +23,13 @@
 				<div class="center_stuff"><p>You have no athletes. Add athletes by <a href="{% url 'add_athletes' user.username %}">Clicking Here!</a></p></div>
 			{% endif %}
 		{% else %}
-			<p>You must be a coach to access this page</p>
+			<div class='center_stuff'>
+				<p>You must be a coach to access this page</p>
+			</div>
 		{% endif %}
 	{% else %}
-		<p>Please login to view this page.</p>
+		<div class='center_stuff'>
+			<p>Please login to view this page.</p>
+		</div>
 	{% endif %}
 {% endblock %}
