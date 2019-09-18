@@ -64,6 +64,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- check results display on workoutinstance_detail.html for general workouts with no time results
 - need to find a good style for the search submit button on workout_list.html
 - add "change unhide date" page and link for coaches
 - still haven't changed edit_result.html or edit_result view for cardio workouts
