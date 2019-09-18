@@ -57,19 +57,6 @@
 							<div class="infinite-item">
 								<div class="workoutContent">
 									<p><a class="workout_display_name" href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
-									<form class="post_workout_form" method='POST'>
-										{% csrf_token %}
-										<input type="hidden" name="workout_type" value="{% if workout.is_general_workout %}general_workout{% elif workout.is_strength_workout %}strength_workout{% endif %}">
-										<input type="hidden" name="workout" value={{ workout.id }}>
-										<input type="hidden" name="currentuser" value= {{ user.username }}>
-										<input type="submit" class='input_submit add_workout_to_profile_submit' value="Add Workout to Profile" name="add_workout_to_profile">
-									</form>
-									{% if user.is_coach or user.is_gym_owner %}
-										<form class="post_workout_form" action="{% url 'add_workout_to_athletes' user.username workout.id %}">
-											<input type="hidden" name="{% if workout.is_general_workout %}general_workout{% elif workout.is_strength_workout %}strength_workout{% endif %}">
-											<input type="submit" class='input_submit add_workout_to_profile_submit' value="Add Workout To Athletes" name="add_workout_to_athletes">
-										</form>
-									{% endif %}
 									{% if workout.is_general_workout %}
 										<br />{{ workout.workout_text|linebreaks }}</p>
 										<p>Classification: {{ workout.classification }}
@@ -83,15 +70,28 @@
 											</p>
 										{% endfor %}
 									{% endif %}
+									<form class="post_workout_form" method='POST'>
+										{% csrf_token %}
+										<input type="hidden" name="workout_type" value="{% if workout.is_general_workout %}general_workout{% elif workout.is_strength_workout %}strength_workout{% endif %}">
+										<input type="hidden" name="workout" value={{ workout.id }}>
+										<input type="hidden" name="currentuser" value= {{ user.username }}>
+										<input type="submit" class='input_submit{% if user.is_coach or user.is_gym_owner %} left_and_right_input_submit left_submit{% endif %}' value="Add Workout to Profile" name="add_workout_to_profile">
+									</form>
+									{% if user.is_coach or user.is_gym_owner %}
+										<form class="post_workout_form" action="{% url 'add_workout_to_athletes' user.username workout.id %}">
+											<input type="submit" class='input_submit{% if user.is_coach or user.is_gym_owner %} left_and_right_input_submit right_submit{% endif %}' value="Add Workout To Athletes" name="add_workout_to_athletes">
+											<input type="hidden" name="{% if workout.is_general_workout %}general_workout{% elif workout.is_strength_workout %}strength_workout{% endif %}">
+										</form>
+									{% endif %}
 								</div>
 							</div>
 						{% endfor %}
 					</div>
-				</div>
-				<div class="center_stuff">
-					{% if workout_list.has_next %}
-						<a class="infinite-more-link" href="?page={{ workout_list.next_page_number }}{% load getlistasparam %}{% if request.GET|get_list:'q' %}{% for i in request.GET|get_list:'q' %}&q={{ i }}{% endfor %}{% endif %}{% if request.GET.x %}&x={{ request.GET.x }}{% endif %}{% if request.GET.y %}&y={{ request.GET.y }}{% endif %}{% if request.GET.z %}&z={{ request.GET.z }}{% endif %}{% if request.GET.h %}&h={{ request.GET.h }}{% endif %}{% if request.GET.t %}&t=on{% endif %}{% if request.GET.s %}&s=on{% endif %}{% if request.GET.f %}&f=on{% endif %}">More</a>
-					{% endif %}
+					<div class="center_stuff">
+						{% if workout_list.has_next %}
+							<a class="infinite-more-link" href="?page={{ workout_list.next_page_number }}{% load getlistasparam %}{% if request.GET|get_list:'q' %}{% for i in request.GET|get_list:'q' %}&q={{ i }}{% endfor %}{% endif %}{% if request.GET.x %}&x={{ request.GET.x }}{% endif %}{% if request.GET.y %}&y={{ request.GET.y }}{% endif %}{% if request.GET.z %}&z={{ request.GET.z }}{% endif %}{% if request.GET.h %}&h={{ request.GET.h }}{% endif %}{% if request.GET.t %}&t=on{% endif %}{% if request.GET.s %}&s=on{% endif %}{% if request.GET.f %}&f=on{% endif %}">More</a>
+						{% endif %}
+					</div>
 				</div>
 			</div>
 		{% else %}
@@ -105,7 +105,7 @@
 				<div class="listedWorkouts">
 					{% for workout in most_recent_workouts %}
 						<div class="workoutContent">
-							<p><a href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
+							<p><a class="workout_display_name" href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
 							<br />{{ workout.workout_text|linebreaks }}</p>
 							<p>Classification: {{ workout.classification }}
 							<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
