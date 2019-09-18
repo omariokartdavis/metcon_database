@@ -5,31 +5,79 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
-## 9/17/19
-(uploaded at home)
-- views.py
+## 9/18/19
+(uploaded at work)
 - base_generic.css
-- user_page.html
+- add_athlete_page.html
+- add_athletes_to_group.html
+- add_coach_page.html
+- add_workout_to_athletes.html
+- create_group.html
+- create_result.html
+- create_workout.html
+- delete_group.html
+- delete_instance.html
+- delete_result.html
+- delete_schedule.html
+- edit_instance.html
+- edit_result.html
+- edit_schedule.html
+- edit_schedule_for_multiple_athletes.html
+- group_detail.html
+- hide_instance.html
+- interim_created_workout.html
+- interim_created_workout_for_multiple_athletes.html
+- movement_form.html
+- remove_athletes_from_group.html
+- remove_coach_or_athlete.html
+- request_detail.html
+- schedule_instance.html
+- schedule_instance_for_multiple_athletes.html
+- signup.html
+- workout_detail.html
 - workout_list.html
 - workoutinstance_detail.html
 
 ## styled input submit buttons on following pages:
+- add_workout_to_athletes.html
+- create_group.html
+- create_result.html
+- create_workout.html
+- delete_group.html
+- delete_instance.html
+- delete_result.html
+- delete_schedule.html
+- edit_instance.html
+- edit_result.html
+- edit_schedule.html
+- edit_schedule_for_multiple_athletes.html
+- group_detail.html
+- hide_instance.html
+- interim_created_workout.html
+- interim_created_workout_for_multiple_athletes.html
+- movement_form.html
+- remove_athletes_from_group.html
+- remove_coach_or_athlete.html
+- request_detail.html
+- schedule_instance.html
+- schedule_instance_for_multiple_athletes.html
+- signup.html
 - user_page.html
-- some of workout_list.html(still need to make buttons inline with each other and move to bottom of content)
+- workout_detail.html
+- workout_list.html (still need to style search submit button)
 - workoutinstance_detail.html
 
-## functionality completed on 9/17/19
-- added last_time_hidden_date_checked to workout instances.
-- added a hidden date check everytime user or coach goes to their homepage.
-  - only checks instances that are hidden, have a unhide date, and haven't been checked today
-- change the check unhide date function to check if workout is scheduled in the future.
-  - if it is, change the unhide date to the future date and keep the workout hidden.
-  - this way if the workout is scheduled 3 times in a week and you reach the first date, it will move the unhide to the next one which
-    will stop the athlete from knowing when it is scheduled next
-- added cardio instance to edit_result view and html.
-- centered content on edit_result and edit_instance.html
-- if result is created for cardio workout and all comment sections are blank, use the workout as the result_text
-- added styling to add_result buttons on workoutinstance_detail and user_page and all dropdown workout buttons under ellipses
+## pages with no buttons to style:
+- movement_detail.html
+- movement_list.html
+
+## pages that aren't used and can be deleted:
+- remove_athletes_from_coach.html
+- remove_coaches_from_athlets.html
+- request_list.html
+
+## functionality completed on 9/18/19
+- style all buttons on all standard templates (did not do registration templates) (haven't style search submit button on workout_list)
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -64,6 +112,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- get rid of the window reload function on workout_detail and move it to a js file or something.
 - check results display on workoutinstance_detail.html for general workouts with no time results
 - need to find a good style for the search submit button on workout_list.html
 - add "change unhide date" page and link for coaches
