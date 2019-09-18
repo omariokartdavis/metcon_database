@@ -10,37 +10,37 @@
 						<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
 						<div class="dropdownContainerWorkoutButtons">
 							<form action="{% url 'schedule_instance' user.username workoutinstance.id %}">
-								<input type="submit" value="Schedule Workout" />
+								<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Schedule Workout" />
 							</form>
 							<form class="post_workout_form" action="{% url 'edit_schedule' user.username workoutinstance.id %}">
-								<input type="submit" value="Edit Schedule" name="edit schedule">
+								<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Edit Schedule" name="edit schedule">
 							</form>
 							<form class="post_workout_form" action="{% url 'delete_schedule' user.username workoutinstance.id %}">
-								<input type="submit" value="Delete Schedule" name="Delete schedule">
+								<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Delete Schedule" name="Delete schedule">
 							</form>
 							<form action="{% url 'edit_instance' user.username workoutinstance.id %}">
-								<input type="submit" value="Edit Workout" />
+								<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Edit Workout" />
 							</form>
 							<form action="{% url 'delete_instance' user.username workoutinstance.id %}">
-								<input type="submit" value="Delete Workout" />
+								<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Delete Workout" />
 							</form>
 							{% if user.is_coach or user.is_gym_owner %}
 								{% if workoutinstance.is_assigned_by_coach_or_gym_owner %}
 									{% if workoutinstance.assigned_by_user == request.user %}
 										<form action="{% url 'schedule_instance_for_multiple_athletes' user.username workoutinstance.id %}">
-											<input type="submit" value="Schedule For All Your Athletes With This Workout" />
+											<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Schedule For All Your Athletes With This Workout" />
 										</form>
 										<form action="{% url 'edit_schedule_for_multiple_athletes' user.username workoutinstance.id %}">
-											<input type="submit" value="Edit Schedule For All Your Athletes With This Workout" />
+											<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Edit Schedule For All Your Athletes With This Workout" />
 										</form>
 										{% if workoutinstance.is_hidden %}
 											<form class="post_workout_form" method='POST'>
 												{% csrf_token %}
-												<input type="submit" value="Unhide" name="unhide instance">
+												<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Unhide" name="unhide instance">
 											</form>
 										{% else %}
 											<form class="post_workout_form" action="{% url 'hide_instance' user.username workoutinstance.id %}">
-												<input type="submit" value="Hide">
+												<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Hide">
 											</form>
 										{% endif %}
 									{% endif %}
@@ -70,7 +70,7 @@
 							{% endfor %}
 						{% endif %}
 						<form action="{% url 'result_create' user.username workoutinstance.id %}">
-							<input type="submit" value="Add Result" />
+							<input type="submit" class='input_submit add_result_submit' value="Add Result" />
 						</form>
 					</div>
 				</div>
@@ -83,7 +83,7 @@
 							{% for result in result_list %}
 								<div class="infinite-item">
 									<div class="workoutContent">
-										<p><a href="{% url 'edit_result' user.username workoutinstance.id result.id %}"><strong>{{ result.date_workout_completed|date:"F j, Y" }}</strong></a><form action="{% url 'delete_result' user.username workoutinstance.id result.id %}"><input type="submit" value="Delete Result" /></form></p>
+										<p><a href="{% url 'edit_result' user.username workoutinstance.id result.id %}"><strong>{{ result.date_workout_completed|date:"F j, Y" }}</strong></a></p>
 										{% if workoutinstance.workout %}
 											<p>{% if result.duration_in_minutes > 0 or result.duration_remainder > 0 %}Time: {% endif %}{% if result.duration_in_minutes > 0 %}{{ result.duration_in_minutes }}:{% endif %}{% if result.duration_remainder > 0 %}{{ result.duration_remainder }}{% else %}00{% endif %}
 											{% if result.duration_in_minutes == 0 and result.duration_remainder == 0 %}
@@ -106,6 +106,9 @@
 												<p>Caption: {{ resultfile.caption }}</p>
 											{% endfor %}
 										{% endif %}
+										<form action="{% url 'delete_result' user.username workoutinstance.id result.id %}">
+											<input type="submit" class='input_submit delete_result_submit' value="Delete Result" />
+										</form>
 									</div>
 								</div>
 							{% endfor %}
