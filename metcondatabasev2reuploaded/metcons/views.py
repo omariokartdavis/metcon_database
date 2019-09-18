@@ -643,7 +643,7 @@ def workoutinstancedetailview(request, username, pk):
             if 'unhide instance' in request.POST:
                 instance.is_hidden = False
                 instance.date_to_unhide = None
-                instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date()
+                instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
                 instance.save()
                 
                 return HttpResponseRedirect(instance.get_absolute_url())
@@ -1037,7 +1037,7 @@ def hide_instance(request, username, pk):
             if form.is_valid():
                 if instance.is_assigned_by_coach_or_gym_owner:
                     instance.is_hidden=True
-                    instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date()
+                    instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
                     if form.cleaned_data['date_to_unhide']:
                         instance.date_to_unhide = form.cleaned_data['date_to_unhide']
                     else:
@@ -1548,6 +1548,7 @@ def add_workout_to_athletes(request, username, pk):
                     hidden=False
                     date_to_unhide = None
                 now = timezone.localtime(timezone.now()).date()
+                yesterday = now - timezone.timedelta(days=1)
                 if form.cleaned_data['athlete_to_assign']:
                     for i in form.cleaned_data['athlete_to_assign']:
                         current_user = User.objects.get(username=i)
@@ -1561,7 +1562,7 @@ def add_workout_to_athletes(request, username, pk):
                                                            assigned_by_user=user,
                                                            is_hidden=hidden,
                                                            date_to_unhide=date_to_unhide,
-                                                           last_time_hidden_date_was_checked=now)
+                                                           last_time_hidden_date_was_checked=yesterday)
                                 instance.save()
                         elif workout.is_strength_workout():
                             if not WorkoutInstance.objects.filter(strength_workout=workout, current_user=current_user).exists():
@@ -1570,7 +1571,7 @@ def add_workout_to_athletes(request, username, pk):
                                                            assigned_by_user=user,
                                                            is_hidden=hidden,
                                                            date_to_unhide=date_to_unhide,
-                                                           last_time_hidden_date_was_checked=now)
+                                                           last_time_hidden_date_was_checked=yesterday)
                                 instance.save()
                         elif workout.is_cardio_workout():
                             if not WorkoutInstance.objects.filter(cardio_workout=workout, current_user=current_user).exists():
@@ -1579,7 +1580,7 @@ def add_workout_to_athletes(request, username, pk):
                                                            assigned_by_user=user,
                                                            is_hidden=hidden,
                                                            date_to_unhide=date_to_unhide,
-                                                           last_time_hidden_date_was_checked=now)
+                                                           last_time_hidden_date_was_checked=yesterday)
                                 instance.save()
                 if form.cleaned_data['group_to_assign']:
                     for i in form.cleaned_data['group_to_assign']:
@@ -1596,7 +1597,7 @@ def add_workout_to_athletes(request, username, pk):
                                                                assigned_by_user=user,
                                                                is_hidden=hidden,
                                                                date_to_unhide=date_to_unhide,
-                                                               last_time_hidden_date_was_checked=now)
+                                                               last_time_hidden_date_was_checked=yesterday)
                                     instance.save()
                             elif workout.is_strength_workout():
                                 if not WorkoutInstance.objects.filter(strength_workout=workout, current_user=current_user).exists():
@@ -1605,7 +1606,7 @@ def add_workout_to_athletes(request, username, pk):
                                                                assigned_by_user=user,
                                                                is_hidden=hidden,
                                                                date_to_unhide=date_to_unhide,
-                                                               last_time_hidden_date_was_checked=now)
+                                                               last_time_hidden_date_was_checked=yesterday)
                                     instance.save()
                             elif workout.is_cardio_workout():
                                 if not WorkoutInstance.objects.filter(cardio_workout=workout, current_user=current_user).exists():
@@ -1614,7 +1615,7 @@ def add_workout_to_athletes(request, username, pk):
                                                                assigned_by_user=user,
                                                                is_hidden=hidden,
                                                                date_to_unhide=date_to_unhide,
-                                                               last_time_hidden_date_was_checked=now)
+                                                               last_time_hidden_date_was_checked=yesterday)
                                     instance.save()
 
                 return HttpResponseRedirect(reverse('interim_created_workout_for_multiple_athletes', args=[request.user.username, instance.id]))
@@ -1717,7 +1718,7 @@ def create_workout(request):
                             instance.is_hidden=hidden
                             instance.date_to_unhide=date_to_unhide
                             instance.assigned_by_user=current_user
-                            instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date()
+                            instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
                             instance.save()
                     else:
                         instance = WorkoutInstance.objects.get(workout=workout, current_user=i)
@@ -1803,7 +1804,7 @@ def create_workout(request):
                         if instance.is_assigned_by_coach_or_gym_owner:
                             instance.is_hidden=hidden
                             instance.date_to_unhide=date_to_unhide
-                            instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date()
+                            instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
                             instance.assigned_by_user=current_user
                             instance.save()
                     else:
@@ -1897,7 +1898,7 @@ def create_workout(request):
                         if instance.is_assigned_by_coach_or_gym_owner:
                             instance.is_hidden=hidden
                             instance.date_to_unhide=date_to_unhide
-                            instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date()
+                            instance.last_time_hidden_date_was_checked = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
                             instance.assigned_by_user=current_user
                             instance.save()
                     else:
