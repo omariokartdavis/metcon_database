@@ -5,32 +5,44 @@
 		{% if remove_coach %}
 			<h1>Remove Coach</h1>
 			
-			<p>Are you sure you would like to remove {{ athlete_or_coach_user }} as your coach?</p>
-			<p>Removing this user as your coach will no longer allow them to assign you workouts or view your workouts.</p>
-			<p>Any workouts this user has already assigned to you will remain</p>
-			<form method='POST'>
-				{% csrf_token %}
-				<input type='submit' name='remove coach' value='Yes, Remove Coach'>
-			</form>
-			<form action="{% url 'profile' user.username %}">
-				<input type="submit" value="No, Go To Profile">
-			</form>
+			<div class="tabContentReplacement">
+				<div class="listedWorkouts">
+					<div class="workoutContent">
+						<p>Are you sure you would like to remove {{ athlete_or_coach_user }} as your coach?</p>
+						<p>Removing this user as your coach will no longer allow them to assign you workouts or view your workouts.</p>
+						<p>Any workouts this user has already assigned to you will remain</p>
+						<form class='inline_display' method='POST'>
+							{% csrf_token %}
+							<input type='submit' name='remove coach' class='input_submit left_and_right_input_submit left_submit' value='Yes, Remove Coach'>
+						</form>
+						<form class='inline_display' action="{% url 'profile' user.username %}">
+							<input type="submit" class='input_submit left_and_right_input_submit right_submit' value="No, Go To Profile">
+						</form>
+					</div>
+				</div>
+			</div>
 		{% elif remove_athlete %}
 			<h1>Remove Athlete</h1>
 			
-			<p>Are you sure you would like to remove {{ athlete_or_coach_user }} as one of you athletes?</p>
-			<p>Removing this athlete will no longer allow you to assign workouts to them or view their workouts.</p>
-			<p>Any workouts you have already assigned to them will remain.</p>
-			<p>This athlete will also be removed from any groups they are in.</p>
-			<form method='POST'>
-				{% csrf_token %}
-				<input type='submit' name='remove athlete' value='Yes, Remove Athlete'>
-			</form>
-			<form action="{% url 'profile' user.username %}">
-				<input type="submit" value="No, Go To Profile">
-			</form>
+			<div class="tabContentReplacement">
+				<div class="listedWorkouts">
+					<div class="workoutContent">
+						<p>Are you sure you would like to remove {{ athlete_or_coach_user }} as one of you athletes?</p>
+						<p>Removing this athlete will no longer allow you to assign workouts to them or view their workouts.</p>
+						<p>Any workouts you have already assigned to them will remain.</p>
+						<p>This athlete will also be removed from any groups they are in.</p>
+						<form class='inline_display' method='POST'>
+							{% csrf_token %}
+							<input type='submit' name='remove athlete' class='input_submit left_and_right_input_submit left_submit' value='Yes, Remove Athlete'>
+						</form>
+						<form class='inline_display' action="{% url 'profile' user.username %}">
+							<input type="submit" class='input_submit left_and_right_input_submit right_submit' value="No, Go To Profile">
+						</form>
+					</div>
+				</div>
+			</div>
 		{% endif %}
 	{% else %}
-		<p>Please login to view this page.</p>
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
 	{% endif %}
 {% endblock %}
