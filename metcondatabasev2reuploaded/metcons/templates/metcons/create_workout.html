@@ -27,8 +27,10 @@
 							{{ form1.as_table }}
 							</table>
 						</div>
-						<input type="hidden" name="general workout">
-						<input type="submit" value="Submit">
+						<div class="create_workout_submit_buttons">
+							<input type="hidden" name="general workout">
+							<input type="submit" class='input_submit create_workout_input_submit' value="Submit">
+						</div>
 					</div>
 				</div>
 			</form>
@@ -88,9 +90,11 @@
 								</p>
 							</div>
 						</div>
-						<input type="button" value="Add More" id="strength_add_more">
-						<input type="hidden" name="strength workout">
-						<input type="submit" value="Submit">
+						<div class="create_workout_submit_buttons">
+							<input type="hidden" name="strength workout">
+							<input type="submit" class='input_submit left_and_right_input_submit create_workout_left_submit' value="Submit">
+							<input type="button" class='input_submit left_and_right_input_submit create_workout_right_submit' value="Add More" id="strength_add_more">
+						</div>
 					</div>
 				</div>
 			</form>
@@ -160,14 +164,16 @@
 								</p>
 							</div>
 						</div>
-						<input type="button" value="Add More" id="cardio_add_more">
-						<input type="hidden" name="cardio workout">
-						<input type="submit" value="Submit">
+						<div class="create_workout_submit_buttons">
+							<input type="hidden" name="cardio workout">
+							<input type="submit" class='input_submit left_and_right_input_submit create_workout_left_submit' value="Submit">
+							<input type="button" class='input_submit left_and_right_input_submit create_workout_right_submit' value="Add More" id="cardio_add_more">
+						</div>
 					</div>
 				</div>
 			</form>
-			{% if formset_strength.errors %}
-				{% for dict in formset_strength.errors %}
+			{% if formset_cardio.errors %}
+				{% for dict in formset_cardio.errors %}
 					{% for error in dict.values %}
 						{{ error }}
 					{% endfor %}
@@ -184,7 +190,7 @@
 			</div>
 		{% endif %}
 	{% else %}
-		<p>Please login to view this page.</p>
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
 	{% endif %}
 {% endblock %}
 {% block extra_js %}
