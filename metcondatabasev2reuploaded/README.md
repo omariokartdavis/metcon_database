@@ -6,16 +6,16 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
 ## 9/17/19
-(uploaded at work)
-- user_page.html
+(uploaded at home)
 - views.py
-- models.py (migrations)
-- forms.py
 - base_generic.css
-- delete_result
-- edit_result.html
-- edit_instance.html
+- user_page.html
 - workout_list.html
+- workoutinstance_detail.html
+
+## styled input submit buttons on following pages:
+- user_page.html
+- some of workout_list.html(still need to make buttons inline with each other and move to bottom of content)
 - workoutinstance_detail.html
 
 ## functionality completed on 9/17/19
@@ -28,12 +28,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
     will stop the athlete from knowing when it is scheduled next
 - added cardio instance to edit_result view and html.
 - centered content on edit_result and edit_instance.html
-  
-## functionality completed on 9/16/19
-- centered the "You have no workouts" text
-- changed redirect after add result to be home page
-- added get_latest_by to meta of results and show latest result in recent workouts tab on userpage along with additional styling
-- removed - from results display on workoutisntance_detail
+- if result is created for cardio workout and all comment sections are blank, use the workout as the result_text
+- added styling to add_result buttons on workoutinstance_detail and user_page and all dropdown workout buttons under ellipses
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -68,11 +64,9 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- need to find a good style for the search submit button on workout_list.html
 - add "change unhide date" page and link for coaches
-- if result is created for cardio workout and all comment sections are blank, use the workout as the result_text
 - still haven't changed edit_result.html or edit_result view for cardio workouts
-- create hidden input on popups for yesterdays scheduled workouts so that when it goes to the add result or reschedule page,
-  after clicking submit it will send you back to the homepage and to the popup.
 - center content on following pages:
   - all registration templates except login
 - remove create movement link in sidebar
@@ -80,7 +74,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - need to change help text on repeat frequency etc. to make it more clear when scheduling workouts
   - will repeat XX number of days + the day you already have selected (starting on a monday plus repeating 5 days will repeat saturday)
 - move text on bottom of create_workout.html page to center
-- still need to center multiple pages
 - add an "add workout to others profiles" on a workouts page if you are a coach
   - allows you to add a workout from one athlete to another or to yourself.
 - add tag to workouts for is_named workout and name, then add ability to filter by them
