@@ -27,7 +27,7 @@
 								{% endfor %}
 							{% endif %}
 							</table>
-							<input type="submit" value="Submit" name="edit instance">
+							<input type="submit" class="input_submit" value="Submit" name="edit instance">
 						</form>
 					</div>
 				</div>
@@ -36,6 +36,6 @@
 			<div class="center_stuff"><p>You do not have permission to view this page. Please login with an account that has proper permissions.</p></div>
 		{% endif %}
 	{% else %}
-		<p>Please login to view this page.</p>
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
 	{% endif %}
 {% endblock %}
