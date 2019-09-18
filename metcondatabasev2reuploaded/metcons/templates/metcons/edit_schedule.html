@@ -35,17 +35,15 @@
 							<table>
 							{{ form.as_table }}
 							</table>
-							<input type="submit" value="Submit" name="edit schedule">
+							<input type="submit" class="input_submit" value="Submit" name="edit schedule">
 						</form>
-						<br /><br /><br /><br /><br /><br /><p>For testing purposes only. This workout has been scheduled for the following past dates: </p>
-						<p>{% for i in instance.get_scheduled_dates_in_past %}{{ i.date_completed|date:"l, F j, Y" }}{% if not forloop.last %}, {% endif %}{% endfor %}
 					</div>
 				</div>
 			</div>
 		{% else %}
-			<p>You do not have permission to view this page. Please login with an account that has proper permissions.</p>
+			<div class='center_stuff'><p>You do not have permission to view this page. Please login with an account that has proper permissions.</p></div>
 		{% endif %}
 	{% else %}
-		<p>Please login to view this page.</p>
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
 	{% endif %}
 {% endblock %}
