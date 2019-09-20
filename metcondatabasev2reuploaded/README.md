@@ -112,6 +112,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - don't plan on doing anything to address this
         
 ## Functionality to add:
+- form textareas extend pass the workoutcontent border on small screens. need to fix this
 - get rid of the window reload function on workout_detail and move it to a js file or something.
 - check results display on workoutinstance_detail.html for general workouts with no time results
 - need to find a good style for the search submit button on workout_list.html
