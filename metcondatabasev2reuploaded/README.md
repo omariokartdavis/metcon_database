@@ -5,6 +5,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
+## 9/21/19
+(on home tablet)
+- workoutinstance_detail.html
+- views.py
+- workout_list.css (do not download this to other computers until you look at what the values used to be for search input sizes)
+
 ## 9/18/19
 (uploaded at work)
 - base_generic.css
@@ -75,6 +81,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - remove_athletes_from_coach.html
 - remove_coaches_from_athlets.html
 - request_list.html
+
+## functionality completed on 9/21/19
+- fixed workoutinstance_detail display of time results.
+- creating a result does not default to time=0 if no input is given. if nothing is given it will throw an error.
+- changed size of search inputs on workout_list to be percentages so they work better with small screens
 
 ## functionality completed on 9/18/19
 - style all buttons on all standard templates (did not do registration templates) (haven't style search submit button on workout_list)
