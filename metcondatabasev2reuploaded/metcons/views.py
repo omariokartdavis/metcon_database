@@ -1258,7 +1258,14 @@ def create_result(request, username, pk):
                 form = CreateGeneralResultForm(request.POST, request.FILES)
 
                 if form.is_valid():
-                    duration_in_seconds = ((form.cleaned_data['duration_minutes']) * 60) + form.cleaned_data['duration_seconds']
+                    if form.cleaned_data['duration_minutes'] and form.cleaned_data['duration_seconds']:
+                        duration_in_seconds = ((form.cleaned_data['duration_minutes']) * 60) + form.cleaned_data['duration_seconds']
+                    elif form.cleaned_data['duration_minutes']:
+                        duration_in_seconds = ((form.cleaned_data['duration_minutes']) * 60)
+                    elif form.cleaned_data['duration_seconds']:
+                        duration_in_seconds = form.cleaned_data['duration_seconds']
+                    else:
+                        duration_in_seconds = 0
                     if form.cleaned_data['date_completed'] == dt.date.today():
                         aware_datetime = timezone.now()
                     else:
