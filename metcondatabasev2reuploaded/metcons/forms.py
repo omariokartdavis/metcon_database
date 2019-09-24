@@ -142,8 +142,8 @@ class CreateCardioWorkoutForm(forms.Form):
     distance = forms.IntegerField(help_text='What distance?')
     distance_units = forms.ChoiceField(widget=forms.Select(), choices=distance_unit_choices, help_text='What units is the distance in?', required=False)
     reps = forms.IntegerField(required=False)
-    rest_minutes = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'rest_input'}), required=False, label='Rest')
-    rest_seconds = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'rest_input'}), required = False, label='Rest Seconds')
+    rest_minutes = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'rest_input'}), required=False, label='Rest')
+    rest_seconds = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'rest_input'}), required = False, label='Rest Seconds')
     pace = forms.CharField(max_length=100, required=False)
     comment = forms.CharField(widget=forms.Textarea, max_length=4000, required=False)
 
@@ -268,10 +268,10 @@ class EditCardioInstanceForm(forms.Form):
                 self.fields[distance_units_field_name] = forms.ChoiceField(widget=forms.Select(), choices = distance_unit_choices, required=False, label = 'Distance Units')
                 self.fields[distance_units_field_name].initial = i.distance_units
                 rest_minutes_field_name = movement_name + '_rest_minutes'
-                self.fields[rest_minutes_field_name] = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'rest_input'}), required=False, label='Rest (minutes)')
+                self.fields[rest_minutes_field_name] = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'rest_input'}), required=False, label='Rest (minutes)')
                 self.fields[rest_minutes_field_name].initial = i.rest_in_minutes()
                 rest_seconds_field_name = movement_name + '_rest_seconds'
-                self.fields[rest_seconds_field_name] = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'rest_input'}), required=False, label='Rest (seconds)')
+                self.fields[rest_seconds_field_name] = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'rest_input'}), required=False, label='Rest (seconds)')
                 self.fields[rest_seconds_field_name].initial = i.rest_remainder()
                 pace_field_name = movement_name + '_pace'
                 self.fields[pace_field_name] = forms.CharField(required=False, max_length=100, label='Pace')
