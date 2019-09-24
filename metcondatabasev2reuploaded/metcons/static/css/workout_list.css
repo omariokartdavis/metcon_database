@@ -1,5 +1,5 @@
 .textinput {
-  border-box: box-sizing;
+  box-sizing: border-box;
   background-position: 14px 12px;
   background-repeat: no-repeat;
   font-size: 1em;
@@ -7,22 +7,37 @@
   border: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
   width: 14%;
+  height: 50px;
+  border-radius: 5px;
 }
 
-.textinput:focus {outline: 3px solid #ddd;}
+.textinput:focus {
+  box-shadow: 0 0 0 2px #ddd;
+  outline: none;
+}
 
-.durationinput {
-  border-box: box-sizing;
+::placeholder {
+	font-size: 1em;
+}
+
+#minDurationInput, #maxDurationInput {
+  box-sizing: border-box;
   background-position: 14px 12px;
   background-repeat: no-repeat;
   font-size: 16px;
   padding: 14px 0px 12px 10px;
   border: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
-  width: 125px;
+  width: 12%;
+  max-width: 100%;
+  height: 50px;
+  border-radius: 5px;
 }
 
-.durationinput:focus {outline: 3px solid #ddd;}
+#minDurationInput:focus, #maxDurationInput:focus {
+  box-shadow: 0 0 0 2px #ddd;
+  outline: none;
+}
 
 .centered {
   width: 90%;
@@ -48,6 +63,7 @@
 .dropdown {
   position: relative;
   display: inline-block;
+  text-align: center;
 }
 
 .dropdown-content {
@@ -72,13 +88,25 @@
 
 #filtersubmitbutton {
   display: inline-block;
+  background-color: #66b2b2;
+  color: #e9ebee;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 5%;
+  height: 48px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+  position: relative;
+  top: -2px;
+  font-weight: bold;
+  padding: 0;
 }
 
-.dropdown-content option {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
+#filtersubmitbutton:hover {
+	background-color: white;
+	color: #66b2b2;
+	font-weight: bold;
+	transition: 0.25s;
 }
 
 .dropdown option:hover {background-color: #ddd;}
