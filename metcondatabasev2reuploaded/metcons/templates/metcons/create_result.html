@@ -1,5 +1,9 @@
 {% extends "base_generic.html" %}
 
+{% block extra_css %}
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'css/create_result.css' %}">
+{% endblock %}
 {% block content %}
 	{% if user.is_authenticated %}
 		{% if user.username == instance.current_user.username or user.coach in instance.current_user.athlete.coach_set.all %}
@@ -25,9 +29,9 @@
 											{% endfor %}
 											</p>
 											<table>
-												<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+												<tr><th><label><strong>{{ field.label }}:</strong></label></th>
 												<td>{{ field }}</td></tr>
-												<tr><td></td>
+												<tr><th></th>
 												<td>{{ field.help_text|linebreaks }}</td></tr>
 											</table>
 										{% endif %}
@@ -36,7 +40,7 @@
 								{% for field in form2 %}
 										{% if field.name not in result_text_and_exercises %}
 											<table>
-												<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+												<tr><th><label><strong>{{ field.label }}:</strong></label></th>
 												<td>{{ field }}</td></tr>
 											</table>
 										{% endif %}
@@ -50,9 +54,9 @@
 												{% if v.comment %}{{ v.comment }}{% endif %}
 											</p>
 											<table>
-												<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+												<tr><th><label><strong>{{ field.label }}:</strong></label></th>
 												<td>{{ field }}</td></tr>
-												<tr><td></td>
+												<tr><th></th>
 												<td>{{ field.help_text|linebreaks }}</td></tr>
 											</table>
 										{% endif %}
@@ -61,7 +65,7 @@
 								{% for field in form3 %}
 										{% if field.name not in result_text_and_exercises %}
 											<table>
-												<tr><td><label><strong>{{ field.label }}:</strong></label></td>
+												<tr><th><label><strong>{{ field.label }}:</strong></label></th>
 												<td>{{ field }}</td></tr>
 											</table>
 										{% endif %}
