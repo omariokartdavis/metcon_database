@@ -1,0 +1,19 @@
+input[type=text] {
+	width: 80%;
+	max-width: 80%;
+}
+
+table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+th {
+	width: 30%;
+	max-width: 30%;
+	word-wrap: break-word;
+}
+
+td select {
+	max-width: 80%;
+}
