@@ -243,3 +243,9 @@
 .next-previous-buttons #previousMonthButton {
 	left: 20px;
 }
+
+th {
+	width: auto;
+	max-width: 100%;
+	word-wrap: normal;
+}
