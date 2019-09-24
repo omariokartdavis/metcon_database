@@ -5,8 +5,23 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
+## 9/24/19
+(at work)
+- forms.py
+- workout_list.css
+- base_generic.css
+- create_workout.css
+- created create_result.css
+- user_page.css
+- workout_list.js
+- add_workout_to_athletes.html
+- workout_list.html
+- workout_detail.html
+- create_result.html
+- create_workout.html
+
 ## 9/21/19
-(on home tablet)
+(on home tablet) (downloaded at work but not at home desktop)
 - workoutinstance_detail.html
 - views.py
 - workout_list.css (do not download this to other computers until you look at what the values used to be for search input sizes)
@@ -81,6 +96,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - remove_athletes_from_coach.html
 - remove_coaches_from_athlets.html
 - request_list.html
+
+## functionality completed on 9/24/19
+- changed dropdowns on workout_list page to be datalists so I don't have to manually move them on different sized screens
+- styled submit filter button on workout_list
 
 ## functionality completed on 9/21/19
 - fixed workoutinstance_detail display of time results.
