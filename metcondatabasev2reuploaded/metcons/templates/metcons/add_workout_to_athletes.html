@@ -4,11 +4,25 @@
 	{% if user.is_authenticated %}
 		{% if user.is_coach or user.is_gym_owner %}
 			{% if athletes %}
+				<h1>Add Workout To Athletes</h1>
+				
 				<div class="tabContentReplacement">
 					<div class="listedWorkouts">
 						<div class="workoutContent">
-							<h1>Add Workout To Athletes</h1>
 							
+							<p><strong>{{ workout.display_name }}:</strong>
+							{% if workout.is_general_workout %}
+								<br />{{ workout.workout_text|linebreaks }}</p>
+							{% elif workout.is_strength_workout %}
+								{% for se in workout.strength_exercises.all %}
+									<p>{{ se.movement.name }}</br >
+									{% for se_set in se.set_set.all %}
+										Set {{ se_set.set_number }}: {{ se_set.reps }} reps at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}</br >
+									{% endfor %}
+									</p>
+								{% endfor %}
+							{% endif %}
+						
 							<form method="post">
 								{% csrf_token %}
 								<table>
