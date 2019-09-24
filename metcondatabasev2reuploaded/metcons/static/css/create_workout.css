@@ -14,6 +14,20 @@
 	display: none;
 }
 
-.rest_input {
+input[type=text] {
+	width: 80%;
+	max-width: 80%;
+}
+
+input[type=number].rest_input {
 	width: 30px;
+	max-width: 30px;
+}
+
+td select {
+	max-width: 80%;
+}
+
+input[type=button] {
+	outline: none;
 }
