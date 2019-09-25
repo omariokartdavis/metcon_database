@@ -36,6 +36,7 @@
 			</form>
 		</div>
 		
+		
 		<div class="workout_form" id="strength_workout_form">
 			<form method='post'>
 				<div class="tabContentReplacement">
@@ -52,7 +53,7 @@
 													<label><strong>{{ form.movement.label }}:</strong></label>
 												</th>
 												<td>
-													{{ form.movement }}
+													{{ form.movement }}<button type="button" class="open_create_movement_button">Add Movement</button>
 												</td>
 											</tr>
 											<tr>
@@ -151,7 +152,7 @@
 														<label><strong>{{ i.label }}:</strong></label>
 													</th>
 													<td>
-														{{ i }}
+														{{ i }}{% if i.label == "Movement" %}<button type="button" class="open_create_movement_button">Add Movement</button>{% endif %}
 													</td>
 												</tr>
 											{% endif %}
@@ -170,8 +171,8 @@
 			</form>
 			{% if formset_strength.errors %}
 				{% for dict in formset_strength.errors %}
-					{% for error in dict.values %}
-						{{ error }}
+					{% for k, v in dict.items %}
+						{{ k }}: {{ v }}
 					{% endfor %}
 				{% endfor %}
 			{% endif %}
@@ -339,6 +340,18 @@
 				{% endif %}
 			</div>
 		{% endif %}
+		<div class="popup">
+			<div class="popup2">
+				<button class="input_submit first_input_submit close_create_movement_button">Close</button>
+				<form class="create_movement_form" method="post">
+					{% csrf_token %}
+					<table>
+						{{ create_movement_form.as_table }}
+					</table>
+					<input type="submit" name="create movement" class="input_submit" value="Add Movement">
+				</form>
+			</div>
+		</div>
 	{% else %}
 		<div class='center_stuff'><p>Please login to view this page.</p></div>
 	{% endif %}
