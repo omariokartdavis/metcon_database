@@ -14,6 +14,37 @@
 	visibility: hidden;
 }
 
+.popup {
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	z-index: 40;
+	opacity: 0;
+	visibility: hidden;
+}
+
+.popup2 {
+  background-color: white;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+  border-radius: 5px;
+  display: inline-block;
+  height: auto;
+  max-height: 50%;
+  width: 25.6%;
+  z-index: 50;
+  top: 15%;
+  left: 37.2%;
+  position: fixed;
+  padding-top: 5px;
+  margin: auto;
+  text-align: center;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.1s;
+}
+
 body {
 	/*border: 1px solid black;*/
 }
@@ -70,8 +101,8 @@ h1 {
 	border-radius: 0px 0px 5px 0px;
 }
 
-form.create_movement_form {
-	display: inline;
+form.not_inline {
+	display: block;
 }
 
 .inline_display {
@@ -102,6 +133,10 @@ form.create_movement_form {
 
 .first_input_submit {
 	border-radius: 5px 5px 0px 0px;
+}
+
+.post_workout_form_workout_detail {
+	display: inline;
 }
 
 textarea {
