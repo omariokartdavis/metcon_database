@@ -4,11 +4,13 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm
-from metcons.models import User, Movement
+from metcons.models import User, Movement, Classification
 
 movement_choices = [(i.name, i.name) for i in Movement.objects.all()]
 
 cardio_choices = [(i.name, i.name) for i in Movement.objects.filter(classification__name='Cardio')]
+
+classification_choices = [(i.name, i.name) for i in Classification.objects.all()]
 
 weight_unit_choices = [
     ('lbs', 'lbs'),
@@ -16,11 +18,12 @@ weight_unit_choices = [
     ('%', '%'),
     ]
 
-distance_unit_choices = [
+distance_or_time_unit_choices = [
     ('m', 'm'),
     ('ft', 'ft'),
     ('km', 'km'),
     ('mi', 'mi'),
+    ('min', 'min'),
     ]
 
 repetition_frequency_choices = [
@@ -116,6 +119,10 @@ class CreateWorkoutForm(forms.Form):
             self.fields['group_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
             self.fields['hide_from_athletes'] = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
             self.fields['date_to_unhide'] = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
+            
+class CreateMovementForm(forms.Form):
+    name = forms.CharField(max_length=200, required=True)
+    classification = forms.ChoiceField(widget=forms.Select(), choices=classification_choices, help_text='What classification does this movement have?')
 
 class CreateStrengthWorkoutForm(forms.Form):
     #modify this to allow for changing number of sets/reps/weights to be created
@@ -139,8 +146,8 @@ StrengthWorkoutFormset = formset_factory(CreateStrengthWorkoutForm, extra=1)
 
 class CreateCardioWorkoutForm(forms.Form):
     movement = forms.ChoiceField(widget=forms.Select(), choices=cardio_choices, help_text='What Movement would you like to perform?')
-    distance = forms.IntegerField(help_text='What distance?')
-    distance_units = forms.ChoiceField(widget=forms.Select(), choices=distance_unit_choices, help_text='What units is the distance in?', required=False)
+    distance = forms.IntegerField(help_text='What distance?', label='Distance/Time')
+    distance_units = forms.ChoiceField(widget=forms.Select(), choices=distance_or_time_unit_choices, help_text='What units is the distance in?', required=False)
     reps = forms.IntegerField(required=False)
     rest_minutes = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'rest_input'}), required=False, label='Rest')
     rest_seconds = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'rest_input'}), required = False, label='Rest Seconds')
@@ -262,10 +269,10 @@ class EditCardioInstanceForm(forms.Form):
                 self.fields[reps_field_name] = forms.IntegerField(required=False, label = 'Number of Reps')
                 self.fields[reps_field_name].initial = i.number_of_reps
                 distance_field_name = movement_name + '_distance'
-                self.fields[distance_field_name] = forms.IntegerField(required=False, label = 'Distance')
+                self.fields[distance_field_name] = forms.IntegerField(required=False, label = 'Distance/Time')
                 self.fields[distance_field_name].initial = i.distance
                 distance_units_field_name = movement_name + '_distance_units'
-                self.fields[distance_units_field_name] = forms.ChoiceField(widget=forms.Select(), choices = distance_unit_choices, required=False, label = 'Distance Units')
+                self.fields[distance_units_field_name] = forms.ChoiceField(widget=forms.Select(), choices = distance_or_time_unit_choices, required=False, label = 'Distance Units')
                 self.fields[distance_units_field_name].initial = i.distance_units
                 rest_minutes_field_name = movement_name + '_rest_minutes'
                 self.fields[rest_minutes_field_name] = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'rest_input'}), required=False, label='Rest (minutes)')
