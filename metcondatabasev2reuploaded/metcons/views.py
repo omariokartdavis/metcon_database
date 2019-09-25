@@ -12,7 +12,7 @@ from metcons.forms import SignUpForm, AddAthleteToCoachForm, AddCoachForm, \
     StrengthWorkoutFormset, CardioWorkoutFormset, CreateGeneralResultForm, \
     CreateStrengthResultForm, CreateCardioResultForm, ScheduleInstanceForm, EditScheduleForm, DeleteScheduleForm, \
     HideInstanceForm, EditInstanceForm, EditStrengthInstanceForm, EditCardioInstanceForm, EditGeneralResultForm, EditStrengthResultForm, \
-    EditCardioResultForm
+    EditCardioResultForm, CreateMovementForm
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Q
@@ -88,6 +88,14 @@ def profile(request, username):
                                                                         dates_to_be_completed__date_completed=yesterday).exclude(
                                                                             dates_workout_completed__date_completed=yesterday).distinct().order_by('-youngest_scheduled_date')
     
+    if request.method == 'POST':
+        if 'remove schedule' in request.POST:
+            instance = WorkoutInstance.objects.get(id=str(request.POST['instance']))
+            if this_user == instance.current_user or instance.current_user.athlete.coach_set.filter(user=this_user).exists():
+                yesterday = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
+                instance.remove_date_to_be_completed(yesterday)
+
+                return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
 
     
     context = {
@@ -1916,7 +1924,46 @@ def create_workout(request):
                 else:
                     return HttpResponseRedirect(reverse('interim_created_workout', args=[request.user.username, instance.id]))
             else:
-                return render(request, 'metcons/create_workout.html', {'formset_strength':formset})
+                return render(request, 'metcons/create_workout.html', {'formset_cardio':formset})
+        elif 'create movement' in request.POST:
+            form = CreateMovementForm(request.POST)
+            if form.is_valid():
+                if request.user.is_authenticated:
+                    classification = Classification.objects.get(name=form.cleaned_data['classification'])
+                    if not Movement.objects.filter(name=form.cleaned_data['name'].title()).exists():
+                        Movement.objects.create(name=form.cleaned_data['name'].title(), classification=classification)
+                    
+                    form1 = CreateWorkoutForm(**{'user':request.user}, initial={'gender': request.user.workout_default_gender})
+                    formset_strength = StrengthWorkoutFormset(form_kwargs={'user': request.user})
+                    formset_cardio = CardioWorkoutFormset(form_kwargs={'user': request.user}, initial=[{'movement': 'Row'}])
+                    forms = [i for i in formset_strength]
+                    for i in formset_cardio:
+                        forms.append(i)
+                    forms.append(form1)
+                    create_movement_form = CreateMovementForm()
+                    
+                    if request.user.is_coach or request.user.is_gym_owner:
+                        for form in forms:
+                            if request.user.coach.athletes.all():
+                                form.fields['athlete_to_assign'].choices = [(athlete.user.username, athlete.user.username) for athlete in request.user.coach.athletes.all()]
+                            else:
+                                form.fields.pop('athlete_to_assign')
+                                form.fields.pop('hide_from_athletes')
+                                form.fields.pop('date_to_unhide')
+                            if request.user.coach.group_set.all():
+                                form.fields['group_to_assign'].choices = [(group.name, group.name) for group in request.user.coach.group_set.all()]
+                            else:
+                                form.fields.pop('group_to_assign')
+                            
+                    context = {
+                        'form1': form1,
+                        'formset_strength': formset_strength,
+                        'formset_cardio': formset_cardio,
+                        'create_movement_form': create_movement_form,
+                        }
+                    return render(request, 'metcons/create_workout.html', context=context)
+                else:
+                    return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
         
     else:
         # can have default be whatever default type user wants to put as their default workout type
@@ -1927,6 +1974,7 @@ def create_workout(request):
         for i in formset_cardio:
             forms.append(i)
         forms.append(form1)
+        create_movement_form = CreateMovementForm()
         
         if request.user.is_coach or request.user.is_gym_owner:
             for form in forms:
@@ -1945,6 +1993,7 @@ def create_workout(request):
         'form1': form1,
         'formset_strength': formset_strength,
         'formset_cardio': formset_cardio,
+        'create_movement_form': create_movement_form,
         }
 
     return render(request, 'metcons/create_workout.html', context)
