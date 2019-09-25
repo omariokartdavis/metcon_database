@@ -1,35 +1,27 @@
-.popup {
+.background_dim_popup {
   position: absolute;
   height: 100%;
   width: 100%;
   top: 0;
   left: 0;
-  background-color: #000000;
+  background-color: black;
+  text-align: center;
   display: block;
-  z-index: 9999;
+  z-index: 30;
+  text-align: center;
+  opacity: 0.3;
+}
+
+.popup {
+	opacity: 1;
+	visibility: visible;
 }
 
 .popup2 {
-  background-color: White;
-  border: 2px solid black;
-  display: block;
-  height: 75%;
-  width: 75%;
-  z-index: 10000;
-  top: 12.5%;
-  left: 12.5%;
-  position: fixed;
-  padding-left: 10px;
-  margin: auto;
+	opacity: 1;
+	visibility: visible;
 }
 
-.popup2 .popuptext {
-  text-align: center;
-}
-
-.popup .show {
-  visibility: hidden;
-}
 
 .tab {
   overflow: hidden;
