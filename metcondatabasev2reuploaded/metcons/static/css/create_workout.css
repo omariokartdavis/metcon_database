@@ -31,3 +31,35 @@ td select {
 input[type=button] {
 	outline: none;
 }
+
+.popup2 {
+	padding: 0px;
+	top: 20%;
+}
+
+.open_create_movement_button {
+  display: inline-block;
+  background-color: #66b2b2;
+  color: #e9ebee;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 35%;
+  height: 48px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+  position: relative;
+  top: -2px;
+  font-weight: bold;
+  padding: 0;
+  margin-left: 5px;
+  height: auto;
+  min-height: 25px;
+  outline: none;
+}
+
+.open_create_movement_button:hover {
+	background-color: white;
+	color: #66b2b2;
+	font-weight: bold;
+	transition: 0.25s;
+}
