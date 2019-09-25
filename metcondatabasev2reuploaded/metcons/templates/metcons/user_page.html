@@ -38,12 +38,13 @@
 		<input type='hidden' class='defaultOpenUser' value={{ user.username }}>
 	{% endif %}
 	{% if workouts_with_no_results_yesterday %}
+			<div class="background_dim_popup"></div>
 			<div class="popup">
 				<div class="popup2">
-					<span class="popuptext" id="myPopup">
-						<p>Did you complete these workouts yesterday?</p>
+					<div class="popuptext" id="myPopup">
+						<h2>Did you complete these workouts yesterday?</h2>
 						{% for i in workouts_with_no_results_yesterday %}
-							<p>{{ i.display_workout_type }}</p>
+							<p><strong>{{ i.display_workout_type }}</strong></p>
 							{% if i.workout %}
 								<p>{{ i.edited_workout_text|linebreaks }}</p>
 							{% elif i.strength_workout %}
@@ -62,14 +63,18 @@
 								{% endfor %}
 							{% endif %}
 							<form class="post_workout_form" action="{% url 'result_create' user.username i.id %}">
-								<input type="submit" value="Yes, Add Result" name="previous day add result">
+								<input type="submit" class="input_submit dropdownContainerWorkoutButtons_submit" value="Yes, Add Result" name="previous day add result">
 							</form>
 							<form class="post_workout_form" action="{% url 'edit_schedule' user.username i.id %}">
-								<input type="submit" value="No, Re-Schedule" name="previous day edit schedule">
+								<input type="submit" class="input_submit dropdownContainerWorkoutButtons_submit" value="No, Re-Schedule" name="previous day edit schedule">
+							</form>
+							<form method='POST'>
+								{% csrf_token %}
+								<input type="hidden" name="instance" value={{ i.id }}>
+								<input type='submit' name='remove schedule' class='input_submit{% if not forloop.last %} dropdownContainerWorkoutButtons_submit{% endif %}' value='No, Remove Schedule'>
 							</form>
 						{% endfor %}
-						<p>Otherwise remove scheduled date (-link to remove the date scheduled for yesterday)</p>
-					</span>
+					</div>
 				</div>
 			</div>
 	{% endif %}
