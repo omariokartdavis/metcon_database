@@ -5,6 +5,21 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
+## 9/25/19
+(at work)
+- created mainsite_most_recent_workout.py
+- movements_list.py (added 'Any' as cardio movement)
+- forms.py
+- models.py (migrations)
+- views.py
+- user_page.css
+- base_generic.css
+- create_workout.css
+- create_workout.js
+- user_page.html
+- create_workout.html
+- workout_detail.html
+
 ## 9/24/19
 (at work)
 - forms.py
@@ -97,6 +112,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - remove_coaches_from_athlets.html
 - request_list.html
 
+## functionality completed on 9/25/19
+- added 'Any' as cardio choice and changed cardio form to allow inputs in minutes
+- updated movements_list.py to not create duplicate dates or users
+- made workouts_yesterday_with_no_results a nice popup
+  - added ability to remove yesterdays scheduled date straight from popup
+
 ## functionality completed on 9/24/19
 - changed dropdowns on workout_list page to be datalists so I don't have to manually move them on different sized screens
 - styled submit filter button on workout_list
@@ -140,28 +161,25 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - athletes can still find out if a workout is hidden if they previously have the workout and go and schedule it for a future
   date past the current hidden date. It will then show on the calendar as being hidden and they will know that workout is scheduled
   - don't plan on doing anything to address this
+- workouts are currently displayed on user homepage in order of date they were created in the database.
+  - if they were created on same day they are then ordered by which one was created first.
+- buttons in the dropdowncontainerworkoutbuttons must be input type=submit to show properly. if its just a button it won't display
+  correctly
+- can't get rid of the window reload function on workout_detail because it calls a model function
         
 ## Functionality to add:
-- form textareas extend pass the workoutcontent border on small screens. need to fix this
-- get rid of the window reload function on workout_detail and move it to a js file or something.
-- check results display on workoutinstance_detail.html for general workouts with no time results
-- need to find a good style for the search submit button on workout_list.html
+- add auto run of mainsite_most_recent_workout.py every day at some specified time.
+- create a "share workout" button to share this workout with others by username
 - add "change unhide date" page and link for coaches
-- still haven't changed edit_result.html or edit_result view for cardio workouts
 - center content on following pages:
   - all registration templates except login
-- remove create movement link in sidebar
-- add create movement popup on create workout page
 - need to change help text on repeat frequency etc. to make it more clear when scheduling workouts
   - will repeat XX number of days + the day you already have selected (starting on a monday plus repeating 5 days will repeat saturday)
-- move text on bottom of create_workout.html page to center
 - add an "add workout to others profiles" on a workouts page if you are a coach
   - allows you to add a workout from one athlete to another or to yourself.
 - add tag to workouts for is_named workout and name, then add ability to filter by them
 - created settings/questions page that contains basic questions to help user experience
   - initial workout gender, initial cardio movement etc.
-- workouts are currently displayed on user homepage in order of date they were created in the database.
-  - if they were created on same day they are then by which one was created first.
 - can create leaderboard on each movement page as well
 - change strengthresultform to take setsxrepsxweightxunits and a comment instead of just result text
   - this will help with tracking progress later.
