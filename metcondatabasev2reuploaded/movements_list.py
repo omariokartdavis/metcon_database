@@ -48,6 +48,7 @@ class MovementList:
         'Row': c,
         'Ski Erg': c,
         'Sprint': c,
+        'Any': c,
         'Squat': l,
         'Front Squat': l,
         'Back Squat': l,
@@ -110,26 +111,37 @@ from django.utils import timezone
 num_users_per_category = 5
 
 for i in range(num_users_per_category):
-    User.objects.create(username=f'testathlete{i}', password='4a0308ki9ps', is_athlete=True)
-    User.objects.create(username=f'testcoach{i}', password='4a0308ki9ps', is_coach=True)
-    User.objects.create(username=f'testgymowner{i}', password='4a0308ki9ps', is_gym_owner=True)
+    if not User.objects.filter(username=f'testathlete{i}').exists():
+        User.objects.create(username=f'testathlete{i}', password='4a0308ki9ps', is_athlete=True)
+    if not User.objects.filter(username=f'testcoach{i}').exists():
+        User.objects.create(username=f'testcoach{i}', password='4a0308ki9ps', is_coach=True)
+    if not User.objects.filter(username=f'testgymowner{i}').exists():
+        User.objects.create(username=f'testgymowner{i}', password='4a0308ki9ps', is_gym_owner=True)
     testathlete_user = User.objects.get(username=f'testathlete{i}')
     testcoach_user = User.objects.get(username=f'testcoach{i}')
     testgymowner_user = User.objects.get(username=f'testgymowner{i}')
-    Athlete.objects.create(user=testathlete_user)
-    Athlete.objects.create(user=testcoach_user)
-    Athlete.objects.create(user=testgymowner_user)
-    Coach.objects.create(user=testcoach_user)
-    Coach.objects.create(user=testgymowner_user)
-    GymOwner.objects.create(user=testgymowner_user)
+    if not Athlete.objects.filter(user=testathlete_user).exists():
+        Athlete.objects.create(user=testathlete_user)
+    if not Athlete.objects.filter(user=testcoach_user).exists():
+        Athlete.objects.create(user=testcoach_user)
+    if not Athlete.objects.filter(user=testgymowner_user).exists():
+        Athlete.objects.create(user=testgymowner_user)
+    if not Coach.objects.filter(user=testcoach_user).exists():
+        Coach.objects.create(user=testcoach_user)
+    if not Coach.objects.filter(user=testgymowner_user).exists():
+        Coach.objects.create(user=testgymowner_user)
+    if not GymOwner.objects.filter(user=testgymowner_user).exists():
+        GymOwner.objects.create(user=testgymowner_user)
     
 for i in range(366):
     date = timezone.localtime(timezone.now()).date() - timezone.timedelta(days=i)
-    Date.objects.create(date_completed=date)
+    if not Date.objects.filter(date_completed=date).exists():
+        Date.objects.create(date_completed=date)
 
 for i in range(1, 366):
     date = timezone.localtime(timezone.now()).date() + timezone.timedelta(days=i)
-    Date.objects.create(date_completed=date)
+    if not Date.objects.filter(date_completed=date).exists():
+        Date.objects.create(date_completed=date)
 
 all_classifications = ClassificationList()
 current_classifications_in_database = Classification.objects.all()
