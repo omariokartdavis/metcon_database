@@ -640,6 +640,7 @@ class CardioExercise(models.Model):
                 ('ft', 'ft'),
                 ('km', 'km'),
                 ('mi', 'mi'),
+                ('min', 'min'),
                 ]
         distance_units = models.CharField(max_length=2, blank=True, null=True, choices = distance_unit_choices, default='m')
         number_of_reps = models.IntegerField(default=1, verbose_name='Reps', null=True, blank=True)
