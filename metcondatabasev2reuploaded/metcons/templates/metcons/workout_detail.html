@@ -9,19 +9,10 @@
 				{% if user.is_authenticated %}
 					<button class="dropdownOpenerWorkoutButtons"><i class="fas fa-ellipsis-h"></i></button>
 					<div class="dropdownContainerWorkoutButtons">
-						<form method='POST'>
-							{% csrf_token %}
-							<input type="hidden" name="workout" value= {{ workout.id }}>
-							<input type="hidden" name="currentuser" value= {{ user.username }}>
-							<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Add Workout to Profile" name="add_workout_to_profile">
+						<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' id="UpdateWorkoutButton" onclick= {{ workout.update_movements_and_classification }} value="Update Workout">
+						<form class="not_inline" action="{% url 'movement_create' %}">
+							<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Create Movement" />
 						</form>
-						{% if user.is_coach or user.is_gym_owner %}
-							<form class="post_workout_form" action="{% url 'add_workout_to_athletes' user.username workout.id %}">
-								{% csrf_token %}
-								<input type="submit" class='input_submit dropdownContainerWorkoutButtons_submit' value="Add Workout To Athletes" name="add_workout_to_athletes">
-								<input type="hidden" name="{% if workout.is_general_workout %}general_workout{% elif workout.is_strength_workout %}strength_workout{% elif workout.is_cardio_workout %}cardio_workout{% endif %}">
-							</form>
-						{% endif %}
 					</div>
 				{% endif %}
 				
@@ -32,11 +23,19 @@
 				<p><strong>Number of Times Completed:</strong> {{ workout.number_of_times_completed }}</p>
 				
 				{% if user.is_authenticated %}
-					<p>Movement isn't tagged?</p>
-					<form class="create_movement_form" action="{% url 'movement_create' %}">
-						<input type="submit" class='input_submit left_and_right_input_submit left_submit' value="Create Movement" />
+					<form class="post_workout_form_workout_detail" method='POST'>
+						{% csrf_token %}
+						<input type="hidden" name="workout" value= {{ workout.id }}>
+						<input type="hidden" name="currentuser" value= {{ user.username }}>
+						<input type="submit" class='input_submit{% if user.is_coach or user.is_gym_owner %} left_and_right_input_submit left_submit{% endif %}' value="Add Workout to Profile" name="add_workout_to_profile">
 					</form>
-					<button class='input_submit left_and_right_input_submit right_submit' id="UpdateWorkoutButton" onclick= {{ workout.update_movements_and_classification }} >Update Workout</button>
+					{% if user.is_coach or user.is_gym_owner %}
+						<form class="post_workout_form_workout_detail" action="{% url 'add_workout_to_athletes' user.username workout.id %}">
+							{% csrf_token %}
+							<input type="submit" class='input_submit{% if user.is_coach or user.is_gym_owner %} left_and_right_input_submit right_submit{% endif %}' value="Add Workout To Athletes" name="add_workout_to_athletes">
+							<input type="hidden" name="{% if workout.is_general_workout %}general_workout{% elif workout.is_strength_workout %}strength_workout{% elif workout.is_cardio_workout %}cardio_workout{% endif %}">
+						</form>
+					{% endif %}
 				{% endif %}
 			</div>
 		</div>
