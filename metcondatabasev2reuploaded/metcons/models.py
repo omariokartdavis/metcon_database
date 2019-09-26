@@ -9,6 +9,9 @@ from django.contrib.auth.models import AbstractUser
 
 def get_default_localtime_date():
         return timezone.localtime(timezone.now()).date()
+    
+def get_default_localtime_date_yesterday():
+        return timezone.localtime(timezone.now()).date() - timezone.timedelta(days=1)
 
 class User(AbstractUser):
         # add workout_default type with choices such as general/metcon or strength/olympic. eventually add conditioning and others
@@ -165,7 +168,7 @@ class Workout(models.Model):
                 self.save()
                 
         def update_movements(self):
-                for i in Movement.objects.all():
+                for i in Movement.objects.all().exclude(name='Any'):
                         if i.name.lower() in self.workout_text.lower():
                                 self.movements.add(i)
         
@@ -275,7 +278,7 @@ class WorkoutInstance(models.Model):
         assigned_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'assigned_by_user', on_delete=models.SET_NULL, null=True, blank=True)
         is_hidden = models.BooleanField(default=False)
         date_to_unhide = models.DateField(blank=True, null=True)
-        last_time_hidden_date_was_checked = models.DateField(blank=True, null=True)
+        last_time_hidden_date_was_checked = models.DateField(default=get_default_localtime_date_yesterday, blank=True, null=True)
         
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
