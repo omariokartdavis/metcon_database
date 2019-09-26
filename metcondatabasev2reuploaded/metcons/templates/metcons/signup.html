@@ -6,7 +6,7 @@
 	<div class="tabContentReplacement">
 		<div class="listedWorkouts">
 			<div class="workoutContent">
-			  <form method="post">
+			  <form class="signup_form" method="post">
 				{% csrf_token %}
 				{{ form.as_p }}
 				<input type="submit" class="input_submit" value="Sign Up">
