@@ -1,4 +1,4 @@
-from metcons.models import Classification, Movement, Workout, User
+from metcons.models import Workout, User
 import datetime as dt
 import urllib.request
 from bs4 import BeautifulSoup as bs
@@ -39,6 +39,9 @@ while year >= 2018:
                 if div.find_all(string=re.compile(r'^Scaling$|^Scaled Option$')):
                     scaled = div.get_text()
                     continue
+                if not div.get_text():
+                    continue #if there is no text then this will skip that div (in 2019 crossfit.com got rid of the scaling div text but left the div and just left it blank.)
+                            # this allows me to skip that blank div without deleting the scaled text portion so that if they add it back in the future I will have it available.
                 w = []
                 for paragraph in div.select('p'):
                     if paragraph.find_all(string=re.compile('Merry Christmas|Related|Scroll for scaling options|Compare|Post|Tips and Scaling')):
@@ -51,16 +54,18 @@ while year >= 2018:
                     duration=60*(int(re.split('\s', r1[0])[3]))           
                 else:
                     duration=0
-            workout = Workout(workout_text=workout_text,
-                              scaling_or_description_text=scaling_text,
-                              where_workout_came_from='Crossfit Mainsite',
-                              classification=None,
-                              date_created=date_in_datetime,
-                              estimated_duration_in_seconds=duration,
-                              created_by_user=user,
-                              gender='B'
-                              )
-            workout.save()
-            workout.update_movements_and_classification()
+            
+            if not Workout.objects.filter(workout_text=workout_text).exists():
+                workout = Workout(workout_text=workout_text,
+                                  scaling_or_description_text=scaling_text,
+                                  where_workout_came_from='Crossfit Mainsite',
+                                  classification=None,
+                                  date_created=date_in_datetime,
+                                  estimated_duration_in_seconds=duration,
+                                  created_by_user=user,
+                                  gender='B'
+                                  )
+                workout.save()
+                workout.update_movements_and_classification()
         page_number += 1
     year -= 1
