@@ -1,9 +1,8 @@
 from django.db import models
 from django.urls import reverse
-import datetime
 import uuid
 from django.conf import settings
-from django.db.models import Count, F, Sum, Avg
+from django.db.models import Sum, Avg
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
@@ -278,7 +277,7 @@ class WorkoutInstance(models.Model):
         assigned_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'assigned_by_user', on_delete=models.SET_NULL, null=True, blank=True)
         is_hidden = models.BooleanField(default=False)
         date_to_unhide = models.DateField(blank=True, null=True)
-        last_time_hidden_date_was_checked = models.DateField(default=get_default_localtime_date_yesterday, blank=True, null=True)
+        last_time_hidden_date_was_checked = models.DateField(default=get_default_localtime_date_yesterday)
         
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
