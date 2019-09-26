@@ -1,6 +1,12 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-	<p>Logged out!</p>
-	<a href="{% url 'login' %}">Click here to login again.</a>
+	<div class="tabContentReplacement">
+		<div class="listedWorkouts">
+			<div class="workoutContent">
+				<p>Logged out!</p>
+				<a href="{% url 'login' %}">Click here to login again.</a>
+			</div>
+		</div>
+	</div>
 {% endblock %}
