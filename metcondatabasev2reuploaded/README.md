@@ -1,10 +1,5 @@
 When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movements_list. mainsite_workouts.
 
-# Run all_update_funcs.py every day
-
-# spelling mistake on remove_coach_or_athlete
-- for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
-
 ## 9/25/18
 (at home) (not at work or tablet)
 - mainsite_workouts.py
@@ -13,6 +8,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - metcons/apps.py
 - models.py (migrations)
 - base_generic.css
+- remove_coach_or_athlete.html
 
 ## 9/25/19
 (not on tablet)
