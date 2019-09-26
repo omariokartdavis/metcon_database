@@ -5,8 +5,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 # spelling mistake on remove_coach_or_athlete
 - for remove athlete it says "Are you sure you would like to remove testathlete2 as one of *you* athletes?"
 
+## 9/25/18
+(at home) (not at work or tablet)
+- mainsite_workouts.py
+- most_recent_mainsite_workout.py
+- created update.py
+- metcons/apps.py
+- models.py (migrations)
+- base_generic.css
+
 ## 9/25/19
-(at work)
+(not on tablet)
 - created mainsite_most_recent_workout.py
 - movements_list.py (added 'Any' as cardio movement)
 - forms.py
@@ -14,98 +23,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - views.py
 - user_page.css
 - base_generic.css
-- create_workout.css
-- create_workout.js
-- user_page.html
-- create_workout.html
-- workout_detail.html
-
-## 9/24/19
-(at work)
-- forms.py
-- workout_list.css
-- base_generic.css
-- create_workout.css
 - created create_result.css
-- user_page.css
+- create_workout.css
+- workout_list.css
+- create_workout.js
 - workout_list.js
 - add_workout_to_athletes.html
-- workout_list.html
-- workout_detail.html
 - create_result.html
 - create_workout.html
-
-## 9/21/19
-(on home tablet) (downloaded at work but not at home desktop)
-- workoutinstance_detail.html
-- views.py
-- workout_list.css (do not download this to other computers until you look at what the values used to be for search input sizes)
-
-## 9/18/19
-(uploaded at work)
-- base_generic.css
-- add_athlete_page.html
-- add_athletes_to_group.html
-- add_coach_page.html
-- add_workout_to_athletes.html
-- create_group.html
-- create_result.html
-- create_workout.html
-- delete_group.html
-- delete_instance.html
-- delete_result.html
-- delete_schedule.html
-- edit_instance.html
-- edit_result.html
-- edit_schedule.html
-- edit_schedule_for_multiple_athletes.html
-- group_detail.html
-- hide_instance.html
-- interim_created_workout.html
-- interim_created_workout_for_multiple_athletes.html
-- movement_form.html
-- remove_athletes_from_group.html
-- remove_coach_or_athlete.html
-- request_detail.html
-- schedule_instance.html
-- schedule_instance_for_multiple_athletes.html
-- signup.html
-- workout_detail.html
-- workout_list.html
-- workoutinstance_detail.html
-
-## styled input submit buttons on following pages:
-- add_workout_to_athletes.html
-- create_group.html
-- create_result.html
-- create_workout.html
-- delete_group.html
-- delete_instance.html
-- delete_result.html
-- delete_schedule.html
-- edit_instance.html
-- edit_result.html
-- edit_schedule.html
-- edit_schedule_for_multiple_athletes.html
-- group_detail.html
-- hide_instance.html
-- interim_created_workout.html
-- interim_created_workout_for_multiple_athletes.html
-- movement_form.html
-- remove_athletes_from_group.html
-- remove_coach_or_athlete.html
-- request_detail.html
-- schedule_instance.html
-- schedule_instance_for_multiple_athletes.html
-- signup.html
 - user_page.html
 - workout_detail.html
-- workout_list.html (still need to style search submit button)
-- workoutinstance_detail.html
-
-## pages with no buttons to style:
-- movement_detail.html
-- movement_list.html
+- workout_list.html
 
 ## pages that aren't used and can be deleted:
 - remove_athletes_from_coach.html
@@ -117,18 +45,13 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - updated movements_list.py to not create duplicate dates or users
 - made workouts_yesterday_with_no_results a nice popup
   - added ability to remove yesterdays scheduled date straight from popup
-
-## functionality completed on 9/24/19
-- changed dropdowns on workout_list page to be datalists so I don't have to manually move them on different sized screens
-- styled submit filter button on workout_list
-
-## functionality completed on 9/21/19
-- fixed workoutinstance_detail display of time results.
-- creating a result does not default to time=0 if no input is given. if nothing is given it will throw an error.
-- changed size of search inputs on workout_list to be percentages so they work better with small screens
-
-## functionality completed on 9/18/19
-- style all buttons on all standard templates (did not do registration templates) (haven't style search submit button on workout_list)
+- created update.py file
+  - uses apscheduler and background scheduling to pull metcon from crossfit.com at a certain start time and on an interval.
+  - crossfit.com puts up their workout sometime at night. at 8:30pm my time it was up for the next day
+- modified update_movements to not include the movement 'any'
+- changed font to Calibri, Arial, Helvetica, sans-serif for all body in base_generic.css
+- added default date to last_time_hidden_date_checked as yesterday for all workoutinstances.
+  - this way I don't have to go through the views and change it for every instance creation.
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -168,11 +91,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - can't get rid of the window reload function on workout_detail because it calls a model function
         
 ## Functionality to add:
-- add auto run of mainsite_most_recent_workout.py every day at some specified time.
-- create a "share workout" button to share this workout with others by username
-- add "change unhide date" page and link for coaches
+- enter every named workout into the database by hand
+- think about changing last_time_hidden_checked to blank=False, null=False so it must have a date
 - center content on following pages:
   - all registration templates except login
+- create a "share workout" button to share this workout with others by username
+- add "change unhide date" page and link for coaches
 - need to change help text on repeat frequency etc. to make it more clear when scheduling workouts
   - will repeat XX number of days + the day you already have selected (starting on a monday plus repeating 5 days will repeat saturday)
 - add an "add workout to others profiles" on a workouts page if you are a coach
@@ -180,7 +104,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - add tag to workouts for is_named workout and name, then add ability to filter by them
 - created settings/questions page that contains basic questions to help user experience
   - initial workout gender, initial cardio movement etc.
-- can create leaderboard on each movement page as well
 - change strengthresultform to take setsxrepsxweightxunits and a comment instead of just result text
   - this will help with tracking progress later.
 - change result model for strength instances to allow sets, reps, weight, units and a comment
@@ -194,17 +117,12 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - can create leaderboard page for workouts/strength etc.
   - will show movement/workout with best time/weight and username
 - ?add a "mark completed" button for strength/cardio workouts where you don't really need to add comments/results??
-- check all views/templates and add info for cardio workouts
-  - htmls: edit_instance, edit_result
-  - views: edit_instance, edit_result, create_result should add target pace to result if left blank
 - edit cardio instance form should be nearly the same as the create form
 - add a "you have this workout set to unhide on: date" to interim schedule and schedule workouts pages if came from interim schedule
 - add a "You've already completed this workout" to workout list and include completed workouts by default
 - change "schedule for all athletes buttons" to "schedule for multiple athletes"
   - then go to athlete select page and schedule select page
-- change results for strength workout to use sets/reps/weights
 - still need to handle result media files better
-- put strength workouts in workout_list in workouts view 
 - change createstrengthworkoutform to allow for varying reps per each set as well as weight
 - can add a class if statement to the create_workout.html class="{% if user.default_sport == 'specific sport' %}default_form{%endif%}
 - need to download itertools and use its chain function to combine querysets
@@ -223,9 +141,6 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
   - have to add in utils.py file in formatday() method f' string.
 - on calendar view
   - add buttons that switch the view from day/week/month and can see more details of workouts on day/week than on month
-- can create a notifications model
-  - would only hold count of notifications
-  - count can be an aggregate sum of requests currently and later any other things like messages etc.
 - create edit group page to allow changing of group name
   - can also possibly combine add/delete athletes to group on this page
 - add videos/pictures to movements to create a database of movement technique
