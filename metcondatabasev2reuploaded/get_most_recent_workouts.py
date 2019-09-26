@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup as bs
 import re
 from django.utils import timezone
 
-def get_todays_metcon():
+def get_todays_mainsite_metcon():
     user = User.objects.get(username='odavis')
     
     year = dt.date.today().year
