@@ -1361,7 +1361,11 @@ def create_result(request, username, pk):
                                 pace = ' at ' + v.pace + ' pace'
                             else:
                                 pace = ''
-                            all_result_texts += (v.movement.name + ': ' + str(v.number_of_reps) + ' x ' + str(v.distance) + v.distance_units + rest + pace + '\n')
+                            if v.number_of_reps:
+                                num_reps = str(v.number_of_reps)
+                            else:
+                                num_reps = '1'
+                            all_result_texts += (v.movement.name + ': ' + num_reps + ' x ' + str(v.distance) + v.distance_units + rest + pace + '\n')
                         else:
                             all_result_texts += (v.movement.name + ': ' + form.cleaned_data[name] + '\n')
                     result = Result(workoutinstance=instance,
