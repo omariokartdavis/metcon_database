@@ -47,6 +47,7 @@
 
 body {
 	/*border: 1px solid black;*/
+	font-family: Calibri, Arial, Helvetica, sans-serif;
 }
 
 html {
@@ -221,7 +222,6 @@ hr {
 	outline: none;
 	margin: 0;
 	/*border: 1px solid white;*/
-	font-family: "Times New Roman", Times, serif;
 }
 
 .sidebar-nav a, .sidebar-nav button {
@@ -339,7 +339,6 @@ hr {
 	transition: 0.3s;
 	outline: none;
 	margin: 0;
-	font-family: "Times New Roman", Times, serif;
 	/*border: 1px solid white;*/
 }
 
@@ -399,7 +398,8 @@ hr {
 
 .notifications p {
 	z-index: 9;
-	font-size: 10px;
+	font-size: 12px;
+	top: -28px;
 	text-align: center;
 	color: white;
 	position: relative;
@@ -484,7 +484,7 @@ hr {
 	position: relative;
 }
 
-.workoutContent p, .workoutContent h3 {
+.workoutContent p, .workoutContent h3, .workoutContent span {
 	position: relative;
 	left: 10px;
 	margin-right: 20px;
