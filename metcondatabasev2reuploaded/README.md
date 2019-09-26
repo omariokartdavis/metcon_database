@@ -1,19 +1,31 @@
 When deleting database: delete db and migrations. Run: makemigrations. migrate. createsuperuser. movements_list. mainsite_workouts.
 
-## 9/25/18
-(at home) (not at work or tablet)
+## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
+
+## 9/26/18
+(at work) (not on home or tablet)
+- changed mainsite_most_recent_workout to get_most_recent_workouts.py (also changed name of func inside)
+- update.py
+- models.py (migrations)
+- views.py
+- login.html
+- logged_out.html
+- password_reset_complete.html
+- password_reset_confirm.html
+- password_reset_done.html
+- password_reset_form.html
+- base_generic.css
+- index.html
+- signup.html
+
+
+(not on tablet only)
+- created mainsite_most_recent_workout.py
 - mainsite_workouts.py
-- most_recent_mainsite_workout.py
+- mainsite_most_recent_workout.py
+- movements_list.py (added 'Any' as cardio movement)
 - created update.py
 - metcons/apps.py
-- models.py (migrations)
-- base_generic.css
-- remove_coach_or_athlete.html
-
-## 9/25/19
-(not on tablet)
-- created mainsite_most_recent_workout.py
-- movements_list.py (added 'Any' as cardio movement)
 - forms.py
 - models.py (migrations)
 - views.py
@@ -27,6 +39,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - add_workout_to_athletes.html
 - create_result.html
 - create_workout.html
+- remove_coach_or_athlete.html
 - user_page.html
 - workout_detail.html
 - workout_list.html
@@ -36,18 +49,10 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - remove_coaches_from_athlets.html
 - request_list.html
 
-## functionality completed on 9/25/19
-- added 'Any' as cardio choice and changed cardio form to allow inputs in minutes
-- updated movements_list.py to not create duplicate dates or users
-- made workouts_yesterday_with_no_results a nice popup
-  - added ability to remove yesterdays scheduled date straight from popup
-- created update.py file
-  - uses apscheduler and background scheduling to pull metcon from crossfit.com at a certain start time and on an interval.
-  - crossfit.com puts up their workout sometime at night. at 8:30pm my time it was up for the next day
-- modified update_movements to not include the movement 'any'
-- changed font to Calibri, Arial, Helvetica, sans-serif for all body in base_generic.css
-- added default date to last_time_hidden_date_checked as yesterday for all workoutinstances.
-  - this way I don't have to go through the views and change it for every instance creation.
+## functionality completed on 9/26/19
+- removed blank=True, null=True from last_time_hidden_date_was_checked. now always has at least date of yesterday when created
+- styled registration templates
+- fixed span margin issue on signup template
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -87,10 +92,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - can't get rid of the window reload function on workout_detail because it calls a model function
         
 ## Functionality to add:
+- need to add padding-bottom to group detail page
 - enter every named workout into the database by hand
-- think about changing last_time_hidden_checked to blank=False, null=False so it must have a date
-- center content on following pages:
-  - all registration templates except login
 - create a "share workout" button to share this workout with others by username
 - add "change unhide date" page and link for coaches
 - need to change help text on repeat frequency etc. to make it more clear when scheduling workouts
@@ -248,29 +251,18 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - create Training Maxes field on user model for eventual strength programs?
 
 ## Styling:
-- style add result/submit buttons to be full width. move them all the the bottom of their containers. 
-  - blue text that when hovered over turns the full width blue and the text grey
-- in workoutinstance_detail style page so that workout is on left with results on right.
-  - when you scroll workout should be fixed on left and results should scroll on right
 - style workouts on calendar for if completed or not completed that day
   - if statement in utils on instance
     - if instance.dates_workout_completed.filter(date_completed=date).exists():
       - make names with extra class class="calendar_completed_workout_name"
-- can add red dot to website icon on browser tab if you have notifications
-  - (just like linkedin)
 - parallax scrolling: https://www.w3schools.com/howto/howto_css_parallax.asp
 - to have scrollbar, add height: somepixels; and overflow-y: auto; 
-  - find out how to style scroll bar
   - add this as a hover style to an element to only show the scroll bar on hover
 - css storage location: https://docs.djangoproject.com/en/2.2/intro/tutorial06/ `
 - change color of workout name if assigned by coach or by self
   - already aplied the classes below. Just need to style them
     - .assigned_workout_name     .not_assigned_workout_name
-- Create stylebook for all screens
-- Create table for viewing workouts
-        similar to the styling of this: https://fooplugins.github.io/FooTable/docs/examples/advanced/filter-dropdown.html
 - Add back button to previous search after filtering
-- Add filters currently active below search boxes after a filter is chosen
 - set maximum video and image size for displaying on webpage
 - add click to hide/show scaling on workout detail and instance detail pages.
   - set default to hidden
@@ -278,24 +270,16 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - create a calendar dropdown for scheduling workouts
   - when you try and schedule a workout again you should have the dates highlighted that it is already scheduled
   - and have a line detailing that highlighted dates have already been scheduled
-- move "last completed" on instancedetail page to next to the title like so:
-        Workout 287 - Last Completed: Date
-  - this is likely a display: inline
-  - Grey the text for last completed out and make it smaller than workout number.
 - use jquery UI datepicker for date choices in schedule and result forms
   - look at top answer from this question: https://stackoverflow.com/questions/12884638/select-future-dates-only-django-form
   - can give available dates to schedule form and create result form
   - create result should only have past
   - schedule should only have future dates
-- on calendar tab for workouts:
-  - create a large calendar that holds all past and future workouts by day.
 - infinite scroll:
   - https://simpleisbetterthancomplex.com/tutorial/2017/03/13/how-to-create-infinite-scroll-with-django.html
 - user_page calendar:
   - https://www.huiwenteo.com/normal/2018/07/24/django-calendar.html
   - https://alexpnt.github.io/2017/07/15/django-calendar/
-- wrap the top bar on base generic in the blue div so that they are all fixed
-  - this does not work!
   
 # Mobile App:
 - when clicking a workout either on user_page or workout_list, show buttons underneath workout after its touched
