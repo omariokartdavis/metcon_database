@@ -20,31 +20,47 @@
 							<input type="submit" class="input_submit dropdownContainerWorkoutButtons_submit" value="Submit" name="add result to instance">
 							<input type="hidden" name="next" value="{{ request.path }}">
 							{% if instance.strength_workout %}
-								{% for field in form2 %}
-									{% for k, v in result_text_and_exercises.items %}
-										{% if field.name == k %}
-											<p><strong>{{ v.movement.name }}</strong></br >
-											{% for se_set in v.set_set.all %}
+								{% if instance.is_from_strength_program %}
+									{% if instance.current_user.strength_program.strength_program.name == 'nSuns 531 LP' %}
+										{% for se in instance.strength_workout.strength_exercises.all %}
+											<p><strong>{{ se.movement.name }}</strong></br >
+											{% for se_set in se.set_set.all %}
 												Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
 											{% endfor %}
+											{% if se.comment %}{{ se.comment|linebreaks }}{% endif %}
 											</p>
-											<table>
-												<tr><th><label><strong>{{ field.label }}:</strong></label></th>
-												<td>{{ field }}</td></tr>
-												<tr><th></th>
-												<td>{{ field.help_text|linebreaks }}</td></tr>
-											</table>
-										{% endif %}
+										{% endfor %}
+										<table>
+											{{ form2.as_table }}
+										</table>
+									{% endif %}
+								{% else %}
+									{% for field in form2 %}
+										{% for k, v in result_text_and_exercises.items %}
+											{% if field.name == k %}
+												<p><strong>{{ v.movement.name }}</strong></br >
+												{% for se_set in v.set_set.all %}
+													Set {{ se_set.set_number }}: {% if se_set.reps %}{{ se_set.reps }}{% else %}Max{% endif %} rep{% if se_set.reps > 1 or not se_set.reps %}s{% endif %}{% if se_set.weight %} at {{ se_set.weight|floatformat:"-1" }}{{ se_set.weight_units }}{% endif %}{% if se_set.weight_units == '%' %} of 1 rep max{% endif %}</br >
+												{% endfor %}
+												</p>
+												<table>
+													<tr><th><label><strong>{{ field.label }}:</strong></label></th>
+													<td>{{ field }}</td></tr>
+													<tr><th></th>
+													<td>{{ field.help_text|linebreaks }}</td></tr>
+												</table>
+											{% endif %}
+										{% endfor %}
 									{% endfor %}
-								{% endfor %}
-								{% for field in form2 %}
-										{% if field.name not in result_text_and_exercises %}
-											<table>
-												<tr><th><label><strong>{{ field.label }}:</strong></label></th>
-												<td>{{ field }}</td></tr>
-											</table>
-										{% endif %}
-								{% endfor %}
+									{% for field in form2 %}
+											{% if field.name not in result_text_and_exercises %}
+												<table>
+													<tr><th><label><strong>{{ field.label }}:</strong></label></th>
+													<td>{{ field }}</td></tr>
+												</table>
+											{% endif %}
+									{% endfor %}
+								{% endif %}
 							{% elif instance.cardio_workout %}
 								{% for field in form3 %}
 									{% for k, v in result_text_and_exercises.items %}
