@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from metcons.models import User, Athlete, Coach, GymOwner, Group, Request, Classification, Movement, Workout, \
-    WorkoutInstance, Result, ResultFile, StrengthExercise, Set, StrengthWorkout, CardioExercise, CardioWorkout
+    WorkoutInstance, Result, ResultFile, StrengthExercise, Set, StrengthWorkout, CardioExercise, CardioWorkout, \
+    StrengthProgram, StrengthProgramInstance
 from django.views import generic
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,7 +13,7 @@ from metcons.forms import SignUpForm, AddAthleteToCoachForm, AddCoachForm, \
     StrengthWorkoutFormset, CardioWorkoutFormset, CreateGeneralResultForm, \
     CreateStrengthResultForm, CreateCardioResultForm, ScheduleInstanceForm, EditScheduleForm, DeleteScheduleForm, \
     HideInstanceForm, EditInstanceForm, EditStrengthInstanceForm, EditCardioInstanceForm, EditGeneralResultForm, EditStrengthResultForm, \
-    EditCardioResultForm, CreateMovementForm
+    EditCardioResultForm, CreateMovementForm, CreateStrengthProgramForm
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Q
@@ -158,7 +159,9 @@ def profile(request, username):
             chosen_users_todays_workouts = WorkoutInstance.objects.filter(current_user=chosen_user,
                                                    dates_to_be_completed__date_completed=now).exclude(
                                                        dates_workout_completed__date_completed=now).exclude(
-                                                           youngest_scheduled_date=None).distinct().order_by('-youngest_scheduled_date', 'date_added_by_user')
+                                                           youngest_scheduled_date=None).exclude(
+                                                                   workout__isnull=True, strength_workout__isnull=True, cardio_workout__isnull=True).distinct().order_by(
+                                                                           '-youngest_scheduled_date', 'date_added_by_user')
             if chosen_users_todays_workouts:
                 chosen_users_dict_of_this_weeks_workouts[now] = chosen_users_todays_workouts
                 
@@ -166,7 +169,9 @@ def profile(request, username):
             while date_to_check < end_of_week:
                 query_of_date = WorkoutInstance.objects.filter(current_user=chosen_user,
                                                    dates_to_be_completed__date_completed=date_to_check).exclude(
-                                                           youngest_scheduled_date=None).distinct().order_by('-youngest_scheduled_date', 'date_added_by_user')
+                                                           youngest_scheduled_date=None).exclude(
+                                                                   workout__isnull=True, strength_workout__isnull=True, cardio_workout__isnull=True).distinct().order_by(
+                                                                           '-youngest_scheduled_date', 'date_added_by_user')
                 if query_of_date:
                     chosen_users_dict_of_this_weeks_workouts[date_to_check] = query_of_date
                 date_to_check += timezone.timedelta(days=1)
@@ -1307,16 +1312,34 @@ def create_result(request, username, pk):
                     else:
                         date_in_datetime = dt.datetime.combine(form.cleaned_data['date_completed'], dt.datetime.min.time())
                         aware_datetime=timezone.make_aware(date_in_datetime)
-                    all_result_texts = ''
-                    for k, v in result_text_and_exercises.items():
-                        name = 'result_text_%s' % (v.strength_exercise_number,)
-                        if not form.cleaned_data[name]:
-                            final_set_reps = str(v.set_set.get(set_number=v.number_of_sets).reps)
-                            final_set_weight = str(v.set_set.get(set_number=v.number_of_sets).weight)
-                            final_set_units = str(v.set_set.get(set_number=v.number_of_sets).weight_units)
-                            all_result_texts += (v.movement.name + ': ' + final_set_weight + final_set_units + ' ' + 'for ' + final_set_reps + ' reps' + '\n')
-                        else:
-                            all_result_texts += (v.movement.name + ': ' + form.cleaned_data[name] + '\n')
+                    if instance.is_from_strength_program:
+                        if instance.current_user.strength_program.strength_program.name == 'nSuns 531 LP':
+                            main_exercise = instance.strength_workout.strength_exercises.get(strength_exercise_number=1)
+                            main_exercise_reps = str(form.cleaned_data['reps'])
+                            main_exercise_weight = str(main_exercise.set_set.get(set_number=3).weight)
+                            main_exercise_units = str(main_exercise.set_set.get(set_number=3).weight_units)
+                            secondary_exercise = instance.strength_workout.strength_exercises.get(strength_exercise_number=2)
+                            secondary_exercise_weight = str(secondary_exercise.set_set.get(set_number=3).weight)
+                            secondary_exercise_units = str(secondary_exercise.set_set.get(set_number=3).weight_units)
+                            all_result_texts = (main_exercise.movement.name + ': ' + main_exercise_reps + 'reps at ' + main_exercise_weight + main_exercise_units + '\n')
+                            all_result_texts += (secondary_exercise.movement.name + ': 6 sets at ' + secondary_exercise_weight + secondary_exercise_units + '\n')
+                            all_result_texts += form.cleaned_data['comments']
+                            
+                            next_scheduled_date = aware_datetime + timezone.timedelta(days=7)
+                            instance.add_date_to_be_completed(next_scheduled_date)
+                            # need some easy way to increase Training Max or weights for next time workout is scheduled
+                        
+                    else:
+                        all_result_texts = ''
+                        for k, v in result_text_and_exercises.items():
+                            name = 'result_text_%s' % (v.strength_exercise_number,)
+                            if not form.cleaned_data[name]:
+                                final_set_reps = str(v.set_set.get(set_number=v.number_of_sets).reps)
+                                final_set_weight = str(v.set_set.get(set_number=v.number_of_sets).weight)
+                                final_set_units = str(v.set_set.get(set_number=v.number_of_sets).weight_units)
+                                all_result_texts += (v.movement.name + ': ' + final_set_weight + final_set_units + ' ' + 'for ' + final_set_reps + ' reps' + '\n')
+                            else:
+                                all_result_texts += (v.movement.name + ': ' + form.cleaned_data[name] + '\n')
                     result = Result(workoutinstance=instance,
                                     result_text=all_result_texts,
                                     date_workout_completed=aware_datetime)
@@ -1968,16 +1991,467 @@ def create_workout(request):
                     return render(request, 'metcons/create_workout.html', context=context)
                 else:
                     return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+        elif 'strength program' in request.POST:
+            form = CreateStrengthProgramForm(request.POST, **{'user':request.user})
+            if request.user.is_coach or request.user.is_gym_owner:
+                athlete_to_assign = request.POST.getlist('athlete_to_assign')
+                form.fields['athlete_to_assign'].choices = [(i, i) for i in athlete_to_assign]
+                group_to_assign = request.POST.getlist('group_to_assign')
+                form.fields['group_to_assign'].choices = [(i, i) for i in group_to_assign]
+            if form.is_valid():
+                current_user = User.objects.get(username=request.user.username)
+                users_to_assign_program = []
+                if current_user.is_coach or current_user.is_gym_owner:
+                    if form.cleaned_data['athlete_to_assign']:
+                        for i in form.cleaned_data['athlete_to_assign']:
+                            user = User.objects.get(username=i)
+                            users_to_assign_program.append(user)
+                    if form.cleaned_data['group_to_assign']:
+                        for i in form.cleaned_data['group_to_assign']:
+                            group = Group.objects.get(name=i, coach=current_user.coach)
+                            for i in group.athletes.all():
+                                users_to_assign_program.append(i.user)
+                    if not form.cleaned_data['athlete_to_assign'] and not form.cleaned_data['group_to_assign']:
+                        users_to_assign_program.append(current_user)
+                else:
+                    users_to_assign_program.append(current_user)
+                if form.cleaned_data['strength_program'] == 'nSuns 531 LP':
+                    strength_program = StrengthProgram.objects.get(name=form.cleaned_data['strength_program'])
+                    day_variation = form.cleaned_data['day_variation']
+                    main_bench_strength_workout = StrengthWorkout(created_by_user=current_user)
+                    main_bench_strength_workout.save()
+                    main_back_squat_strength_workout = StrengthWorkout(created_by_user=current_user)
+                    main_back_squat_strength_workout.save()
+                    main_ohp_strength_workout = StrengthWorkout(created_by_user=current_user)
+                    main_ohp_strength_workout.save()
+                    main_deadlift_strength_workout = StrengthWorkout(created_by_user=current_user)
+                    main_deadlift_strength_workout.save()
+                    secondary_bench_strength_workout = StrengthWorkout(created_by_user=current_user)
+                    secondary_bench_strength_workout.save()
+                    secondary_squat_strength_workout = StrengthWorkout(created_by_user=current_user)
+                    secondary_squat_strength_workout.save()
+                    secondary_deadlift_strength_workout = StrengthWorkout(created_by_user=current_user)
+                    secondary_deadlift_strength_workout.save()
+                    
+                    if form.cleaned_data['units'] == 'lbs':
+                        round_base = 5
+                    elif form.cleaned_data['units'] == 'kgs':
+                        round_base=2
+                        
+                    for q in users_to_assign_program:
+                        if not StrengthProgramInstance.objects.filter(strength_program=strength_program, day_variation = day_variation).exists():
+                            strength_program_instance = StrengthProgramInstance(strength_program=strength_program, day_variation = day_variation)
+                            strength_program_instance.save()
+                        q.strength_program = strength_program_instance
+                        q.save()
+                        
+                        #####################################################################################################################                        
+                        #Main Bench Day
+                        
+                        bench = Movement.objects.get(name='Bench')
+                        bench_strength_exercise_t1 = StrengthExercise(movement=bench,
+                                                             number_of_sets=9,
+                                                             strength_exercise_number=1)
+                        bench_strength_exercise_t1.save()
+                        main_bench_start_date = form.cleaned_data['main_bench_start_date']
+                        
+                        set_weight_percentage = 0.65
+                        bench_t1_reps_in_set = [0, 5, 3, None, 3, 5, 3, 5, 3, None]
+                        for i in range(1, bench_strength_exercise_t1.number_of_sets+1):
+                            if i < 4:
+                                set_weight_percentage += 0.10
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                            elif i >= 4:
+                                set_weight_percentage -= 0.05
+                                rounded_set_weight_percentage = round(set_weight_percentage, 2)
+                                set_weight = round_base * round((rounded_set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                        
+                        ohp = Movement.objects.get(name='Overhead Press')
+                        ohp_strength_exercise_t2 = StrengthExercise(movement=ohp,
+                                                             number_of_sets=8,
+                                                             strength_exercise_number=2)
+                        ohp_strength_exercise_t2.save()
+                        
+                        set_weight_percentage = 0.30
+                        ohp_t2_reps_in_set = [0, 6, 5, 3, 5, 7, 4, 6, 8]
+                        for i in range(1, ohp_strength_exercise_t2.number_of_sets+1):
+                            if i < 4:
+                                set_weight_percentage += 0.10
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                            elif i >= 4:
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                
+                        main_bench_strength_workout.strength_exercises.add(bench_strength_exercise_t1, ohp_strength_exercise_t2)
+                        main_bench_strength_workout.save()
+                        
+                        if not WorkoutInstance.objects.filter(strength_workout=main_bench_strength_workout, current_user=q):
+                            if q != request.user:
+                                assigned = True
+                            else:
+                                assigned = False
+                            instance = WorkoutInstance(strength_workout=main_bench_strength_workout, current_user = q,
+                                                       is_assigned_by_coach_or_gym_owner=assigned,
+                                                       is_from_strength_program=True)
+                            instance.save()
+                            instance.add_date_to_be_completed(main_bench_start_date)
+
+                        ########################################################################################################################
+                        # Main Squat Day
+                        back_squat = Movement.objects.get(name='Back Squat')
+                        back_squat_strength_exercise_t1 = StrengthExercise(movement=back_squat,
+                                                             number_of_sets=9,
+                                                             strength_exercise_number=1)
+                        back_squat_strength_exercise_t1.save()
+                        
+                        
+                        main_squat_start_date = form.cleaned_data['main_squat_start_date']
+                        
+                        set_weight_percentage = 0.65
+                        squat_t1_reps_in_set = [0, 5, 3, None, 3, 3, 3, 5, 5, None]
+                        for i in range(1, back_squat_strength_exercise_t1.number_of_sets+1):
+                            if i < 4:
+                                set_weight_percentage += 0.10
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=back_squat_strength_exercise_t1, set_number=i, reps=squat_t1_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                            elif i >= 4:
+                                set_weight_percentage -= 0.05
+                                rounded_set_weight_percentage = round(set_weight_percentage, 2)
+                                set_weight = round_base * round((rounded_set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=back_squat_strength_exercise_t1, set_number=i, reps=squat_t1_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                        
+                        deadlift = Movement.objects.get(name='Deadlift')
+                        deadlift_strength_exercise_t2 = StrengthExercise(movement=deadlift,
+                                                             number_of_sets=8,
+                                                             strength_exercise_number=2)
+                        deadlift_strength_exercise_t2.save()
+                        
+                        set_weight_percentage = 0.40
+                        deadlift_t2_reps_in_set = [0, 5, 5, 3, 5, 7, 4, 6, 8]
+                        for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
+                            if i < 4:
+                                set_weight_percentage += 0.10
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=deadlift_strength_exercise_t2, set_number=i, reps=deadlift_t2_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                            elif i >= 4:
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=deadlift_strength_exercise_t2, set_number=i, reps=deadlift_t2_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                
+                        main_back_squat_strength_workout.strength_exercises.add(back_squat_strength_exercise_t1, deadlift_strength_exercise_t2)
+                        main_back_squat_strength_workout.save()
+                        
+                        if not WorkoutInstance.objects.filter(strength_workout=main_back_squat_strength_workout, current_user=q):
+                            if q != request.user:
+                                assigned = True
+                            else:
+                                assigned = False
+                            instance = WorkoutInstance(strength_workout=main_back_squat_strength_workout, current_user = q,
+                                                       is_assigned_by_coach_or_gym_owner=assigned,
+                                                       is_from_strength_program=True)
+                            instance.save()
+                            instance.add_date_to_be_completed(main_squat_start_date)
+                            
+                        ########################################################################################################################
+                        # Main OHP Day
+                        ohp = Movement.objects.get(name='Overhead Press')
+                        ohp_strength_exercise_t1 = StrengthExercise(movement=ohp,
+                                                             number_of_sets=9,
+                                                             strength_exercise_number=1)
+                        ohp_strength_exercise_t1.save()
+                        
+                        
+                        main_ohp_start_date = form.cleaned_data['main_ohp_start_date']
+                        
+                        set_weight_percentage = 0.65
+                        ohp_t1_reps_in_set = [0, 5, 3, None, 3, 3, 3, 5, 5, None]
+                        for i in range(1, ohp_strength_exercise_t1.number_of_sets+1):
+                            if i < 4:
+                                set_weight_percentage += 0.10
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=ohp_strength_exercise_t1, set_number=i, reps=ohp_t1_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                            elif i >= 4:
+                                set_weight_percentage -= 0.05
+                                rounded_set_weight_percentage = round(set_weight_percentage, 2)
+                                set_weight = round_base * round((rounded_set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=ohp_strength_exercise_t1, set_number=i, reps=ohp_t1_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                        
+                        incline_bench = Movement.objects.get(name='Incline Bench')
+                        incline_bench_strength_exercise_t2 = StrengthExercise(movement=incline_bench,
+                                                             number_of_sets=8,
+                                                             strength_exercise_number=2)
+                        incline_bench_strength_exercise_t2.save()
+                        
+                        set_weight_percentage = 0.30
+                        incline_bench_t2_reps_in_set = [0, 6, 5, 3, 5, 7, 4, 6, 8]
+                        for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
+                            if i < 4:
+                                set_weight_percentage += 0.10
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=incline_bench_strength_exercise_t2, set_number=i, reps=incline_bench_t2_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                            elif i >= 4:
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=incline_bench_strength_exercise_t2, set_number=i, reps=incline_bench_t2_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                
+                        main_ohp_strength_workout.strength_exercises.add(ohp_strength_exercise_t1, incline_bench_strength_exercise_t2)
+                        main_ohp_strength_workout.save()
+                        
+                        if not WorkoutInstance.objects.filter(strength_workout=main_ohp_strength_workout, current_user=q):
+                            if q != request.user:
+                                assigned = True
+                            else:
+                                assigned = False
+                            instance = WorkoutInstance(strength_workout=main_ohp_strength_workout, current_user = q,
+                                                       is_assigned_by_coach_or_gym_owner=assigned,
+                                                       is_from_strength_program=True)
+                            instance.save()
+                            instance.add_date_to_be_completed(main_ohp_start_date)
+                            
+                        ########################################################################################################################
+                        # Main Deadlift Day
+                        deadlift = Movement.objects.get(name='Deadlift')
+                        deadlift_strength_exercise_t1 = StrengthExercise(movement=deadlift,
+                                                             number_of_sets=9,
+                                                             strength_exercise_number=1)
+                        deadlift_strength_exercise_t1.save()
+                        
+                        
+                        main_deadlift_start_date = form.cleaned_data['main_deadlift_start_date']
+                        
+                        set_weight_percentage = 0.65
+                        deadlift_t1_reps_in_set = [0, 5, 3, None, 3, 3, 3, 3, 3, None]
+                        for i in range(1, deadlift_strength_exercise_t1.number_of_sets+1):
+                            if i < 4:
+                                set_weight_percentage += 0.10
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=deadlift_strength_exercise_t1, set_number=i, reps=deadlift_t1_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                            elif i >= 4:
+                                set_weight_percentage -= 0.05
+                                rounded_set_weight_percentage = round(set_weight_percentage, 2)
+                                set_weight = round_base * round((rounded_set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=deadlift_strength_exercise_t1, set_number=i, reps=deadlift_t1_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                        
+                        front_squat = Movement.objects.get(name='Front Squat')
+                        front_squat_strength_exercise_t2 = StrengthExercise(movement=front_squat,
+                                                             number_of_sets=8,
+                                                             strength_exercise_number=2)
+                        front_squat_strength_exercise_t2.save()
+                        
+                        set_weight_percentage = 0.25
+                        front_squat_t2_reps_in_set = [0, 5, 5, 3, 5, 7, 4, 6, 8]
+                        for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
+                            if i < 4:
+                                set_weight_percentage += 0.10
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=front_squat_strength_exercise_t2, set_number=i, reps=front_squat_t2_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                            elif i >= 4:
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=front_squat_strength_exercise_t2, set_number=i, reps=front_squat_t2_reps_in_set[i],
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                
+                        main_deadlift_strength_workout.strength_exercises.add(deadlift_strength_exercise_t1, front_squat_strength_exercise_t2)
+                        main_deadlift_strength_workout.save()
+                        
+                        if not WorkoutInstance.objects.filter(strength_workout=main_deadlift_strength_workout, current_user=q):
+                            if q != request.user:
+                                assigned = True
+                            else:
+                                assigned = False
+                            instance = WorkoutInstance(strength_workout=main_deadlift_strength_workout, current_user = q,
+                                                       is_assigned_by_coach_or_gym_owner=assigned,
+                                                       is_from_strength_program=True)
+                            instance.save()
+                            instance.add_date_to_be_completed(main_deadlift_start_date)
+                            
+                        ########################################################################################################################
+                        # Secondary Bench Day
+                        if day_variation == '5 Day' or day_variation == '6 Day Squat' or day_variation == '6 Day Deadlift':
+                            bench = Movement.objects.get(name='Bench')
+                            bench_strength_exercise_t1 = StrengthExercise(movement=bench,
+                                                                 number_of_sets=9,
+                                                                 strength_exercise_number=1)
+                            bench_strength_exercise_t1.save()
+                            secondary_bench_start_date = form.cleaned_data['secondary_bench_start_date']
+                            
+                            set_weight_percentage = 0.55
+                            bench_t1_reps_in_set = [0, 8, 6, 4, 4, 4, 5, 6, 7, None]
+                            for i in range(1, bench_strength_exercise_t1.number_of_sets+1):
+                                if i < 4:
+                                    set_weight_percentage += 0.10
+                                    set_weight = round_base * round((set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
+                                                  weight=set_weight, weight_units=form.cleaned_data['units'])
+                                elif i >= 4 and i < 6:
+                                    set_weight = round_base * round((set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
+                                                  weight=set_weight, weight_units=form.cleaned_data['units'])
+                                elif i >= 6:
+                                    set_weight_percentage -= 0.05
+                                    rounded_set_weight_percentage = round(set_weight_percentage, 2)
+                                    set_weight = round_base * round((rounded_set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
+                                                  weight=set_weight, weight_units=form.cleaned_data['units'])
+                            
+                            ohp = Movement.objects.get(name='Overhead Press')
+                            ohp_strength_exercise_t2 = StrengthExercise(movement=ohp,
+                                                                 number_of_sets=8,
+                                                                 strength_exercise_number=2)
+                            ohp_strength_exercise_t2.save()
+                            
+                            set_weight_percentage = 0.40 #this percentage is always 10% less than the actual first set start weight percentage
+                            ohp_t2_reps_in_set = [0, 6, 5, 3, 5, 7, 4, 6, 8]
+                            for i in range(1, ohp_strength_exercise_t2.number_of_sets+1):
+                                if i < 4:
+                                    set_weight_percentage += 0.10
+                                    set_weight = round_base * round((set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
+                                                  weight=set_weight, weight_units=form.cleaned_data['units'])
+                                elif i >= 4:
+                                    set_weight = round_base * round((set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
+                                                  weight=set_weight, weight_units=form.cleaned_data['units'])
+                                    
+                            secondary_bench_strength_workout.strength_exercises.add(bench_strength_exercise_t1, ohp_strength_exercise_t2)
+                            secondary_bench_strength_workout.save()
+                            
+                            if not WorkoutInstance.objects.filter(strength_workout=secondary_bench_strength_workout, current_user=q):
+                                if q != request.user:
+                                    assigned = True
+                                else:
+                                    assigned = False
+                                instance = WorkoutInstance(strength_workout=secondary_bench_strength_workout, current_user = q,
+                                                           is_assigned_by_coach_or_gym_owner=assigned,
+                                                           is_from_strength_program=True)
+                                instance.save()
+                                instance.add_date_to_be_completed(secondary_bench_start_date)
+                            
+                        ########################################################################################################################
+                        # Secondary Squat Day
+                        if day_variation == '6 Day Squat':
+                            back_squat = Movement.objects.get(name='Back Squat')
+                            back_squat_strength_exercise_t1 = StrengthExercise(movement=back_squat,
+                                                                 number_of_sets=8,
+                                                                 strength_exercise_number=1)
+                            back_squat_strength_exercise_t1.save()
+                            
+                            
+                            secondary_squat_start_date = form.cleaned_data['secondary_squat_start_date']
+                            
+                            set_weight_percentage = 0.72
+                            for i in range(1, back_squat_strength_exercise_t1.number_of_sets+1):
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=back_squat_strength_exercise_t1, set_number=i, reps=3,
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+    
+                            
+                            deadlift = Movement.objects.get(name='Deadlift')
+                            deadlift_strength_exercise_t2 = StrengthExercise(movement=deadlift,
+                                                                 number_of_sets=6,
+                                                                 strength_exercise_number=2)
+                            deadlift_strength_exercise_t2.save()
+                            
+                            set_weight_percentage = 0.565
+                            for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=deadlift_strength_exercise_t2, set_number=i, reps=3,
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+    
+                                    
+                            secondary_squat_strength_workout.strength_exercises.add(back_squat_strength_exercise_t1, deadlift_strength_exercise_t2)
+                            secondary_squat_strength_workout.save()
+                            
+                            if not WorkoutInstance.objects.filter(strength_workout=secondary_squat_strength_workout, current_user=q):
+                                if q != request.user:
+                                    assigned = True
+                                else:
+                                    assigned = False
+                                instance = WorkoutInstance(strength_workout=secondary_squat_strength_workout, current_user = q,
+                                                           is_assigned_by_coach_or_gym_owner=assigned,
+                                                           is_from_strength_program=True)
+                                instance.save()
+                                instance.add_date_to_be_completed(secondary_squat_start_date)
+                                
+                        ########################################################################################################################
+                        # Secondary Squat Day
+                        if day_variation == '6 Day Deadlift':
+                            deadlift = Movement.objects.get(name='Deadlift')
+                            deadlift_strength_exercise_t1 = StrengthExercise(movement=deadlift,
+                                                                 number_of_sets=8,
+                                                                 strength_exercise_number=1)
+                            deadlift_strength_exercise_t1.save()
+                            
+                            
+                            secondary_deadlift_start_date = form.cleaned_data['secondary_deadlift_start_date']
+                            
+                            set_weight_percentage = 0.72
+                            for i in range(1, deadlift_strength_exercise_t1.number_of_sets+1):
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=deadlift_strength_exercise_t1, set_number=i, reps=3,
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+    
+                            
+                            back_squat = Movement.objects.get(name='Back Squat')
+                            back_squat_strength_exercise_t2 = StrengthExercise(movement=back_squat,
+                                                                 number_of_sets=6,
+                                                                 strength_exercise_number=2)
+                            back_squat_strength_exercise_t2.save()
+                            
+                            set_weight_percentage = 0.565
+                            for i in range(1, back_squat_strength_exercise_t2.number_of_sets+1):
+                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                Set.objects.create(strength_exercise=back_squat_strength_exercise_t2, set_number=i, reps=3,
+                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+    
+                                    
+                            secondary_deadlift_strength_workout.strength_exercises.add(deadlift_strength_exercise_t1, back_squat_strength_exercise_t2)
+                            secondary_deadlift_strength_workout.save()
+                            
+                            if not WorkoutInstance.objects.filter(strength_workout=secondary_deadlift_strength_workout, current_user=q):
+                                if q != request.user:
+                                    assigned = True
+                                else:
+                                    assigned = False
+                                instance = WorkoutInstance(strength_workout=secondary_deadlift_strength_workout, current_user = q,
+                                                           is_assigned_by_coach_or_gym_owner=assigned,
+                                                           is_from_strength_program=True)
+                                instance.save()
+                                instance.add_date_to_be_completed(secondary_deadlift_start_date)
+                                
+                    return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+            else:
+                return render(request, 'metcons/create_workout.html', {'form2':form})
+                        
+                        
+                
         
     else:
         # can have default be whatever default type user wants to put as their default workout type
         form1 = CreateWorkoutForm(**{'user':request.user}, initial={'gender': request.user.workout_default_gender})
+        form2 = CreateStrengthProgramForm(**{'user':request.user})
         formset_strength = StrengthWorkoutFormset(form_kwargs={'user': request.user})
         formset_cardio = CardioWorkoutFormset(form_kwargs={'user': request.user}, initial=[{'movement': 'Row'}])
         forms = [i for i in formset_strength]
         for i in formset_cardio:
             forms.append(i)
         forms.append(form1)
+        forms.append(form2)
         create_movement_form = CreateMovementForm()
         
         if request.user.is_coach or request.user.is_gym_owner:
@@ -1995,6 +2469,7 @@ def create_workout(request):
             
     context = {
         'form1': form1,
+        'form2': form2,
         'formset_strength': formset_strength,
         'formset_cardio': formset_cardio,
         'create_movement_form': create_movement_form,
