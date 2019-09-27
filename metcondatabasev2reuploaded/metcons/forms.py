@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm
-from metcons.models import User, Movement, Classification
+from metcons.models import User, Movement, Classification, StrengthProgram
 
 movement_choices = [(i.name, i.name) for i in Movement.objects.all()]
 
@@ -12,10 +12,17 @@ cardio_choices = [(i.name, i.name) for i in Movement.objects.filter(classificati
 
 classification_choices = [(i.name, i.name) for i in Classification.objects.all()]
 
+strength_program_choices = [(i.name, i.name) for i in StrengthProgram.objects.all()]
+
 weight_unit_choices = [
     ('lbs', 'lbs'),
     ('kgs', 'kgs'),
     ('%', '%'),
+    ]
+
+strength_program_weight_unit_choices = [
+    ('lbs', 'lbs'),
+    ('kgs', 'kgs')
     ]
 
 distance_or_time_unit_choices = [
@@ -58,6 +65,14 @@ athlete_status_choices = [
     ('C', 'Coach'),
     ('G', 'Gym Owner'),
     ]
+
+day_variation_choices = [
+    ('4 Day', '4 Day'),
+    ('5 Day', '5 Day'),
+    ('6 Day Squat', '6 Day Squat'),
+    ('6 Day Deadlift', '6 Day Deadlift'),
+    ]
+
 
 def get_default_localtime():
     return timezone.localtime(timezone.now())
@@ -144,6 +159,29 @@ class CreateStrengthWorkoutForm(forms.Form):
 
 StrengthWorkoutFormset = formset_factory(CreateStrengthWorkoutForm, extra=1)
 
+class CreateStrengthProgramForm(forms.Form):
+    strength_program = forms.ChoiceField(widget=forms.Select(), choices=strength_program_choices)
+    day_variation = forms.ChoiceField(widget=forms.Select(), choices=day_variation_choices, required=False)
+    units = forms.ChoiceField(widget=forms.Select(), choices=strength_program_weight_unit_choices)
+    bench_max = forms.IntegerField(required=False, label='Bench One Rep Max')
+    main_bench_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime)
+    squat_max = forms.IntegerField(required=False, label='Back Squat One Rep Max')
+    main_squat_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime)
+    ohp_max = forms.IntegerField(required=False, label='Overhead Press One Rep Max')
+    main_ohp_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime)
+    deadlift_max = forms.IntegerField(required=False, label='Deadlift One Rep Max')
+    main_deadlift_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime)
+    secondary_bench_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False)
+    secondary_squat_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False)
+    secondary_deadlift_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False)
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(CreateStrengthProgramForm, self).__init__(*args, **kwargs)
+        if user.is_coach or user.is_gym_owner:
+            self.fields['athlete_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
+            self.fields['group_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
+    
 class CreateCardioWorkoutForm(forms.Form):
     movement = forms.ChoiceField(widget=forms.Select(), choices=cardio_choices, help_text='What Movement would you like to perform?')
     distance = forms.IntegerField(help_text='What distance?', label='Distance/Time')
@@ -178,9 +216,16 @@ class CreateStrengthResultForm(forms.Form):
         instance = kwargs.pop('instance', None)
         super(CreateStrengthResultForm, self).__init__(*args, **kwargs)
         if instance.strength_workout:
-            for i in instance.strength_workout.strength_exercises.all():
-                field_name = 'result_text_%s' % (i.strength_exercise_number,)
-                self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, label = 'Comments', help_text="Enter your results here.\nYou can leave this blank if you completed as is.\nOtherwise some examples could be: 'Failed final set', 'Did 2 extra reps each set', 'changed weight to XXX'", required=False)
+            if instance.is_from_strength_program:
+                if instance.current_user.strength_program.strength_program.name == 'nSuns 531 LP':
+                    self.fields['reps'] = forms.IntegerField(required=True, label='Reps On Heavy Set')
+                    self.fields['comments'] = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'List accessories sets, reps, and weight. Or comments on difficulty of main movements'}),
+                               max_length=4000, required=False)
+            else:
+                for i in instance.strength_workout.strength_exercises.all():
+                    field_name = 'result_text_%s' % (i.strength_exercise_number,)
+                    self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, label = 'Comments',
+                               help_text="Enter your results here.\nYou can leave this blank if you completed as is.\nOtherwise some examples could be: 'Failed final set', 'Did 2 extra reps each set', 'changed weight to XXX'", required=False)
                 
     media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
     media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable.')
