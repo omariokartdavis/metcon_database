@@ -24,7 +24,7 @@ class SetInline(admin.TabularInline):
 class UserProfileAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         (None, {
-            'fields': ('user_gender', 'workout_default_gender')
+            'fields': ('user_gender', 'workout_default_gender', 'strength_program')
             }),
         ('Athlete Status', {
             'fields': ('is_athlete', 'is_coach', 'is_gym_owner')
@@ -100,6 +100,7 @@ class StrengthWorkoutAdmin(admin.ModelAdmin):
 @admin.register(StrengthExercise)
 class StrengthExerciseAdmin(admin.ModelAdmin):
     list_display = ('display_name',
+                    'date_created',
                     'movement',
                     'number_of_sets',
                     'strength_exercise_number')
@@ -113,6 +114,16 @@ class SetAdmin(admin.ModelAdmin):
                     'weight',
                     'weight_units')
 
+@admin.register(StrengthProgram)
+class StrengthProgramAdmin(admin.ModelAdmin):
+    list_display = ('name',
+                    'weight_increase_timeline')
+    
+@admin.register(StrengthProgramInstance)
+class StrengthProgramInstanceAdmin(admin.ModelAdmin):
+    list_display = ('day_variation',
+                    'display_strength_program')
+    
 @admin.register(CardioWorkout)
 class CardioWorkoutAdmin(admin.ModelAdmin):
     list_display = ('display_name',
@@ -156,6 +167,7 @@ class WorkoutInstanceAdmin(admin.ModelAdmin):
                     'id',
                     'number_of_times_completed',
                     'duration_in_seconds',
+                    'is_from_strength_program'
                     )
     inlines = [ResultInline]
     list_filter = ['current_user']
@@ -188,4 +200,3 @@ class ResultFileAdmin(admin.ModelAdmin):
     
 admin.site.register(Date)
     
-
