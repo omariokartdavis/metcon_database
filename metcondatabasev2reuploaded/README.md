@@ -2,12 +2,23 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
 
-## 9/26/18
+
+## 9/27/19
+(at work) (not on home or tablet)
+- models.py (migrations)
+- views.py
+- admin.py
+- forms.py
+- create_workout.html
+- create_result.html
+
+## 9/26/19
 (at work) (not on home or tablet)
 - changed mainsite_most_recent_workout to get_most_recent_workouts.py (also changed name of func inside)
 - update.py
 - models.py (migrations)
 - views.py
+- admin.py
 - login.html
 - logged_out.html
 - password_reset_complete.html
