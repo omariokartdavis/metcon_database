@@ -12,6 +12,7 @@
 			<p>Select the type of workout:</p>
 			<select id='workout_type_selector'>
 				<option value="general_workout_form">General Workout</option>
+				<option value="strength_program_form">Strength Program</option>
 				<option value="strength_workout_form">Strength Workout</option>
 				<option value="cardio_workout_form">Cardio Workout</option>
 			</select>
@@ -36,6 +37,24 @@
 			</form>
 		</div>
 		
+		<div class="workout_form" id="strength_program_form">
+			<form method="post">
+				<div class="tabContentReplacement">
+					<div class="listedWorkouts">
+						<div class="workoutContent">
+							{% csrf_token %}
+							<table>
+							{{ form2.as_table }}
+							</table>
+						</div>
+						<div class="create_workout_submit_buttons">
+							<input type="hidden" name="strength program">
+							<input type="submit" class='input_submit create_workout_input_submit' value="Submit">
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
 		
 		<div class="workout_form" id="strength_workout_form">
 			<form method='post'>
