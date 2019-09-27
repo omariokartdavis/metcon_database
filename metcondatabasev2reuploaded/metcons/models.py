@@ -30,6 +30,7 @@ class User(AbstractUser):
         workout_default_gender = models.CharField(max_length=1, blank=True, null=True, choices = workout_gender_choices, default='B',
                                   help_text='This is the default gender that workouts you create will be tagged for. Can be changed on workout creation.')
         user_gender = models.CharField(max_length=1, blank=True, null=True, choices=user_gender_choices)
+        strength_program = models.ForeignKey('StrengthProgramInstance', on_delete=models.SET_NULL, null=True, blank=True)
         
         privacy_choices = [
                 ('Y', 'Private'),
@@ -278,6 +279,7 @@ class WorkoutInstance(models.Model):
         is_hidden = models.BooleanField(default=False)
         date_to_unhide = models.DateField(blank=True, null=True)
         last_time_hidden_date_was_checked = models.DateField(default=get_default_localtime_date_yesterday)
+        is_from_strength_program = models.BooleanField(default=False)
         
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
@@ -576,7 +578,7 @@ class StrengthExercise(models.Model):
                         return 'Strength Movement Deleted'
 
 class Set(models.Model):
-        strength_exercise = models.ForeignKey(StrengthExercise, on_delete=models.SET_NULL, null=True)
+        strength_exercise = models.ForeignKey(StrengthExercise, on_delete=models.CASCADE, null=True)
         set_number = models.IntegerField(default=1)
         reps = models.IntegerField(default=5, blank=True, null=True)
         weight = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
@@ -631,6 +633,30 @@ class StrengthWorkout(models.Model):
                         self.number_of_times_completed = 0
                 self.save()
                 
+class StrengthProgram(models.Model):
+        name = models.CharField(max_length=200)
+        weight_increase_timeline_choices = [
+                ('weekly', 'weekly'),
+                ('monthly', 'monthly'),
+                ]
+        
+        weight_increase_timeline = models.CharField(max_length=6, blank=True, null=True, choices=weight_increase_timeline_choices)
+        
+class StrengthProgramInstance(models.Model):
+        strength_program = models.ForeignKey(StrengthProgram, on_delete=models.CASCADE, null=True)
+        
+        day_variation_choices = [
+                ('4 Day', '4 Day'),
+                ('5 Day', '5 Day'),
+                ('6 Day Squat', '6 Day Squat'),
+                ('6 Day Deadlift', '6 Day Deadlift')
+                ]
+        day_variation = models.CharField(max_length=20, blank=True, null=True, choices=day_variation_choices)
+        
+        def display_strength_program(self):
+            return self.strength_program.name
+        
+        
 class CardioExercise(models.Model):
         date_created = models.DateTimeField(default=timezone.now)
         date_added_to_database = models.DateTimeField(auto_now_add = True)
@@ -699,3 +725,31 @@ class CardioWorkout(models.Model):
                 else:
                         self.number_of_times_completed = 0
                 self.save()
+                
+class PersonalWorkoutRecords(models.Model):
+    date_completed = models.DateTimeField(default=timezone.now)
+    date_added_to_database = models.DateTimeField(auto_now_add= True)
+    movement = models.ForeignKey(Movement, on_delete=models.SET_NULL, null=True)
+    weight_unit_choices = [
+                ('lbs', 'lbs'),
+                ('kgs', 'kgs'),
+                ]
+
+    one_rep_max = models.IntegerField(default=0)
+    one_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    two_rep_max = models.IntegerField(default=0)
+    two_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    three_rep_max = models.IntegerField(default=0)
+    three_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    five_rep_max = models.IntegerField(default=0)
+    five_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    ten_rep_max = models.IntegerField(default=0)
+    ten_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    twenty_rep_max = models.IntegerField(default=0)
+    twenty_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    training_max = models.IntegerField(default=0)
+    training_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    
+    class Meta:
+        ordering = ['-date_completed', '-id']
