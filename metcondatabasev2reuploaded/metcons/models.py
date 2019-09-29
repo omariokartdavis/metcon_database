@@ -280,6 +280,7 @@ class WorkoutInstance(models.Model):
         date_to_unhide = models.DateField(blank=True, null=True)
         last_time_hidden_date_was_checked = models.DateField(default=get_default_localtime_date_yesterday)
         is_from_strength_program = models.BooleanField(default=False)
+        strength_program_instance = models.ForeignKey('StrengthProgramInstance', on_delete=models.SET_NULL, null=True, blank=True)
         
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
@@ -726,7 +727,7 @@ class CardioWorkout(models.Model):
                         self.number_of_times_completed = 0
                 self.save()
                 
-class PersonalWorkoutRecords(models.Model):
+class PersonalWorkoutRecord(models.Model):
     date_completed = models.DateTimeField(default=timezone.now)
     date_added_to_database = models.DateTimeField(auto_now_add= True)
     movement = models.ForeignKey(Movement, on_delete=models.SET_NULL, null=True)
@@ -747,9 +748,11 @@ class PersonalWorkoutRecords(models.Model):
     ten_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
     twenty_rep_max = models.IntegerField(default=0)
     twenty_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    time_in_seconds = models.IntegerField(default=0)
     training_max = models.IntegerField(default=0)
     training_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
     created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     
     class Meta:
         ordering = ['-date_completed', '-id']
+        get_latest_by= ['date_completed', 'date_added_to_database']
