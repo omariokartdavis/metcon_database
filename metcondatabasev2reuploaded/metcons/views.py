@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from metcons.models import User, Athlete, Coach, GymOwner, Group, Request, Classification, Movement, Workout, \
     WorkoutInstance, Result, ResultFile, StrengthExercise, Set, StrengthWorkout, CardioExercise, CardioWorkout, \
-    StrengthProgram, StrengthProgramInstance
+    StrengthProgram, StrengthProgramInstance, PersonalWorkoutRecord
 from django.views import generic
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -16,7 +16,7 @@ from metcons.forms import SignUpForm, AddAthleteToCoachForm, AddCoachForm, \
     EditCardioResultForm, CreateMovementForm, CreateStrengthProgramForm
 from django.utils import timezone
 import datetime as dt
-from django.db.models import Q
+from django.db.models import Q, F
 from django.core.paginator import Paginator
 import re
 from django.contrib.auth import login, authenticate
@@ -1313,21 +1313,172 @@ def create_result(request, username, pk):
                         date_in_datetime = dt.datetime.combine(form.cleaned_data['date_completed'], dt.datetime.min.time())
                         aware_datetime=timezone.make_aware(date_in_datetime)
                     if instance.is_from_strength_program:
-                        if instance.current_user.strength_program.strength_program.name == 'nSuns 531 LP':
+                        if instance.strength_program_instance.strength_program.name == 'nSuns 531 LP':
                             main_exercise = instance.strength_workout.strength_exercises.get(strength_exercise_number=1)
-                            main_exercise_reps = str(form.cleaned_data['reps'])
+                            if main_exercise.set_set.get(set_number=3).reps:
+                                if main_exercise.set_set.get(set_number=3).reps == 3:
+                                    main_exercise_reps = 0
+                                    string_main_exercise_reps = str(3) #splitting these up allows me to calculate weight increases based on no reps because this wasn't a 1+ day
+                                elif main_exercise.set_set.get(set_number=3).reps == 4:
+                                    main_exercise_reps = 0
+                                    string_main_exercise_reps = str(4)
+                            else:
+                                main_exercise_reps = form.cleaned_data['reps']
+                                string_main_exercise_reps = str(main_exercise_reps)
                             main_exercise_weight = str(main_exercise.set_set.get(set_number=3).weight)
                             main_exercise_units = str(main_exercise.set_set.get(set_number=3).weight_units)
                             secondary_exercise = instance.strength_workout.strength_exercises.get(strength_exercise_number=2)
                             secondary_exercise_weight = str(secondary_exercise.set_set.get(set_number=3).weight)
                             secondary_exercise_units = str(secondary_exercise.set_set.get(set_number=3).weight_units)
-                            all_result_texts = (main_exercise.movement.name + ': ' + main_exercise_reps + 'reps at ' + main_exercise_weight + main_exercise_units + '\n')
+                            all_result_texts = (main_exercise.movement.name + ': ' + string_main_exercise_reps + 'reps at ' + main_exercise_weight + main_exercise_units + '\n')
                             all_result_texts += (secondary_exercise.movement.name + ': 6 sets at ' + secondary_exercise_weight + secondary_exercise_units + '\n')
                             all_result_texts += form.cleaned_data['comments']
                             
                             next_scheduled_date = aware_datetime + timezone.timedelta(days=7)
                             instance.add_date_to_be_completed(next_scheduled_date)
                             # need some easy way to increase Training Max or weights for next time workout is scheduled
+                            current_user = instance.current_user
+                            personal_record_main_exercise = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=main_exercise.movement, training_max__gt=0).latest()
+                            if main_exercise_reps > 1 and main_exercise_reps < 4:
+                                if personal_record_main_exercise.training_max_units == 'lbs':
+                                    personal_record_main_exercise.training_max = F('training_max') + 5
+                                    personal_record_main_exercise.save()
+                                else:
+                                    personal_record_main_exercise.training_max = F('training_max') + 2
+                                    personal_record_main_exercise.save()
+                            elif main_exercise_reps >= 4:
+                                if personal_record_main_exercise.training_max_units == 'lbs':
+                                    personal_record_main_exercise.training_max = F('training_max') + 10
+                                    personal_record_main_exercise.save()
+                                else:
+                                    personal_record_main_exercise.training_max = F('training_max') + 5
+                                    personal_record_main_exercise.save()
+                            personal_record_main_exercise.refresh_from_db()
+                            today = timezone.now().date()
+                            next_monday = today+timezone.timedelta(days=-today.weekday(), weeks=1)
+                            users_strength_program_workouts = WorkoutInstance.objects.filter(current_user=current_user, strength_program_instance=current_user.strength_program, dates_to_be_completed__date_completed__gte=next_monday).distinct()
+                            squat = Movement.objects.get(name='Back Squat')
+                            squat_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=squat, training_max__gt=0).latest()
+                            bench = Movement.objects.get(name='Bench')
+                            bench_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=bench, training_max__gt=0).latest()
+                            ohp = Movement.objects.get(name='Overhead Press')
+                            ohp_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=ohp, training_max__gt=0).latest()
+                            deadlift = Movement.objects.get(name='Deadlift')
+                            deadlift_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=deadlift, training_max__gt=0).latest()
+                            for i in users_strength_program_workouts:
+                                strength_workout_main_exercise = i.strength_workout.strength_exercises.get(strength_exercise_number=1)
+                                strength_workout_secondary_exercise = i.strength_workout.strength_exercises.get(strength_exercise_number=2)
+                                strength_workout_main_exercise_set_1_units = strength_workout_main_exercise.set_set.get(set_number=3).weight_units
+                                if strength_workout_main_exercise_set_1_units == 'lbs':
+                                    round_base = 5
+                                elif strength_workout_main_exercise_set_1_units == 'kgs':
+                                    round_base = 2
+                                if strength_workout_main_exercise.movement.name == main_exercise.movement.name:
+                                    strength_workout_main_exercise_set_3_reps = strength_workout_main_exercise.set_set.get(set_number=3).reps
+                                    if strength_workout_main_exercise_set_3_reps:
+                                        if strength_workout_main_exercise_set_3_reps == 4:
+                                            set_weight_percentage = 0.55
+                                            for i in range(1, strength_workout_main_exercise.number_of_sets+1):
+                                                if i < 4:
+                                                    set_weight_percentage += 0.10
+                                                    set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                                elif i >= 4 and i < 6:
+                                                    set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                                elif i >= 6:
+                                                    set_weight_percentage -= 0.05
+                                                    rounded_set_weight_percentage = round(set_weight_percentage, 2)
+                                                    set_weight = round_base * round((rounded_set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                                specific_set = strength_workout_main_exercise.set_set.get(set_number=i)
+                                                specific_set.weight=set_weight
+                                                specific_set.save()
+                                        elif strength_workout_main_exercise_set_3_reps == 3:
+                                            set_weight_percentage = 0.72
+                                            for i in range(1, strength_workout_main_exercise.number_of_sets+1):
+                                                set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                                specific_set = strength_workout_main_exercise.set_set.get(set_number=i)
+                                                specific_set.weight=set_weight
+                                                specific_set.save()                                            
+                                    else:
+                                        #Is none therefore is a 1+ set. all 1+ sets have same percentages
+                                        set_weight_percentage = 0.65
+                                        for i in range(1, strength_workout_main_exercise.number_of_sets+1):
+                                            if i < 4:
+                                                set_weight_percentage += 0.10
+                                                set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                            elif i >= 4:
+                                                set_weight_percentage -= 0.05
+                                                rounded_set_weight_percentage = round(set_weight_percentage, 2)
+                                                set_weight = round_base * round((rounded_set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                            specific_set = strength_workout_main_exercise.set_set.get(set_number=i)
+                                            specific_set.weight=set_weight
+                                            specific_set.save()
+                                if strength_workout_secondary_exercise.movement.name == 'Front Squat':
+                                    set_weight_percentage = 0.25
+                                    for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
+                                        if i < 4:
+                                            set_weight_percentage += 0.10
+                                            set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base)
+                                        elif i >= 4:
+                                            set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base)
+                                        specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
+                                        specific_set.weight=set_weight
+                                        specific_set.save()
+                                elif strength_workout_secondary_exercise.movement.name == 'Incline Bench':
+                                    set_weight_percentage = 0.30
+                                    for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
+                                        if i < 4:
+                                            set_weight_percentage += 0.10
+                                            set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base)
+                                        elif i >= 4:
+                                            set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base)
+                                        specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
+                                        specific_set.weight=set_weight
+                                        specific_set.save()
+                                elif strength_workout_secondary_exercise.movement.name == 'Overhead Press':
+                                    strength_workout_main_exercise_set_3_reps = strength_workout_main_exercise.set_set.get(set_number=3).reps
+                                    if strength_workout_main_exercise_set_3_reps:
+                                        set_weight_percentage = 0.40
+                                        for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
+                                            if i < 4:
+                                                set_weight_percentage += 0.10
+                                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base)
+                                            elif i >= 4:
+                                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base)
+                                            specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
+                                            specific_set.weight=set_weight
+                                            specific_set.save()
+                                    else:
+                                        set_weight_percentage = 0.30
+                                        for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
+                                            if i < 4:
+                                                set_weight_percentage += 0.10
+                                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base)
+                                            elif i >= 4:
+                                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base)
+                                            specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
+                                            specific_set.weight=set_weight
+                                            specific_set.save()
+                                elif strength_workout_secondary_exercise.movement.name == 'Deadlift':
+                                    strength_workout_main_exercise_set_3_reps = strength_workout_main_exercise.set_set.get(set_number=3).reps
+                                    if strength_workout_main_exercise_set_3_reps:
+                                        set_weight_percentage = 0.565
+                                        for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
+                                            set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base)
+                                            specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
+                                            specific_set.weight=set_weight
+                                            specific_set.save()
+                                    else:
+                                        set_weight_percentage = 0.40
+                                        for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
+                                            if i < 4:
+                                                set_weight_percentage += 0.10
+                                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base)
+                                            elif i >= 4:
+                                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base)
+                                            specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
+                                            specific_set.weight=set_weight
+                                            specific_set.save()
+
                         
                     else:
                         all_result_texts = ''
@@ -2042,13 +2193,40 @@ def create_workout(request):
                         if not StrengthProgramInstance.objects.filter(strength_program=strength_program, day_variation = day_variation).exists():
                             strength_program_instance = StrengthProgramInstance(strength_program=strength_program, day_variation = day_variation)
                             strength_program_instance.save()
+                        else:
+                            strength_program_instance = StrengthProgramInstance.objects.get(strength_program=strength_program, day_variation = day_variation)
                         q.strength_program = strength_program_instance
                         q.save()
+                        
+                        weight_units = form.cleaned_data['units']
+                        bench = Movement.objects.get(name='Bench')
+                        bench_max = form.cleaned_data['bench_max']
+                        ohp = Movement.objects.get(name='Overhead Press')
+                        ohp_max = form.cleaned_data['ohp_max']
+                        back_squat = Movement.objects.get(name='Back Squat')
+                        back_squat_max = form.cleaned_data['squat_max']
+                        deadlift = Movement.objects.get(name='Deadlift')
+                        deadlift_max = form.cleaned_data['deadlift_max']
+                        incline_bench = Movement.objects.get(name='Incline Bench')
+                        front_squat = Movement.objects.get(name='Front Squat')
+                        
+                        bench_record = PersonalWorkoutRecord(created_by_user=q, movement=bench, one_rep_max = bench_max, training_max = round(bench_max*0.9),
+                                                             one_rep_max_units=weight_units, training_max_units=weight_units)
+                        bench_record.save()
+                        squat_record = PersonalWorkoutRecord(created_by_user=q, movement=back_squat, one_rep_max = back_squat_max, training_max = round(back_squat_max*0.9),
+                                                             one_rep_max_units=weight_units, training_max_units=weight_units)
+                        squat_record.save()
+                        ohp_record = PersonalWorkoutRecord(created_by_user=q, movement=ohp, one_rep_max = ohp_max, training_max = round(ohp_max*0.9),
+                                                             one_rep_max_units=weight_units, training_max_units=weight_units)
+                        ohp_record.save()
+                        deadlift_record = PersonalWorkoutRecord(created_by_user=q, movement=deadlift, one_rep_max = deadlift_max, training_max = round(deadlift_max*0.9),
+                                                             one_rep_max_units=weight_units, training_max_units=weight_units)
+                        deadlift_record.save()
                         
                         #####################################################################################################################                        
                         #Main Bench Day
                         
-                        bench = Movement.objects.get(name='Bench')
+
                         bench_strength_exercise_t1 = StrengthExercise(movement=bench,
                                                              number_of_sets=9,
                                                              strength_exercise_number=1)
@@ -2060,17 +2238,17 @@ def create_workout(request):
                         for i in range(1, bench_strength_exercise_t1.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=bench_record.training_max_units)
                             elif i >= 4:
                                 set_weight_percentage -= 0.05
                                 rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                set_weight = round_base * round((rounded_set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((rounded_set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=bench_record.training_max_units)
                         
-                        ohp = Movement.objects.get(name='Overhead Press')
+                        
                         ohp_strength_exercise_t2 = StrengthExercise(movement=ohp,
                                                              number_of_sets=8,
                                                              strength_exercise_number=2)
@@ -2081,13 +2259,13 @@ def create_workout(request):
                         for i in range(1, ohp_strength_exercise_t2.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=ohp_record.training_max_units)
                             elif i >= 4:
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=ohp_record.training_max_units)
                                 
                         main_bench_strength_workout.strength_exercises.add(bench_strength_exercise_t1, ohp_strength_exercise_t2)
                         main_bench_strength_workout.save()
@@ -2099,13 +2277,13 @@ def create_workout(request):
                                 assigned = False
                             instance = WorkoutInstance(strength_workout=main_bench_strength_workout, current_user = q,
                                                        is_assigned_by_coach_or_gym_owner=assigned,
-                                                       is_from_strength_program=True)
+                                                       is_from_strength_program=True,
+                                                       strength_program_instance = strength_program_instance)
                             instance.save()
                             instance.add_date_to_be_completed(main_bench_start_date)
 
                         ########################################################################################################################
                         # Main Squat Day
-                        back_squat = Movement.objects.get(name='Back Squat')
                         back_squat_strength_exercise_t1 = StrengthExercise(movement=back_squat,
                                                              number_of_sets=9,
                                                              strength_exercise_number=1)
@@ -2119,17 +2297,16 @@ def create_workout(request):
                         for i in range(1, back_squat_strength_exercise_t1.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=back_squat_strength_exercise_t1, set_number=i, reps=squat_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=squat_record.training_max_units)
                             elif i >= 4:
                                 set_weight_percentage -= 0.05
                                 rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                set_weight = round_base * round((rounded_set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((rounded_set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=back_squat_strength_exercise_t1, set_number=i, reps=squat_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=squat_record.training_max_units)
                         
-                        deadlift = Movement.objects.get(name='Deadlift')
                         deadlift_strength_exercise_t2 = StrengthExercise(movement=deadlift,
                                                              number_of_sets=8,
                                                              strength_exercise_number=2)
@@ -2140,13 +2317,13 @@ def create_workout(request):
                         for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t2, set_number=i, reps=deadlift_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
                             elif i >= 4:
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t2, set_number=i, reps=deadlift_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
                                 
                         main_back_squat_strength_workout.strength_exercises.add(back_squat_strength_exercise_t1, deadlift_strength_exercise_t2)
                         main_back_squat_strength_workout.save()
@@ -2158,13 +2335,13 @@ def create_workout(request):
                                 assigned = False
                             instance = WorkoutInstance(strength_workout=main_back_squat_strength_workout, current_user = q,
                                                        is_assigned_by_coach_or_gym_owner=assigned,
-                                                       is_from_strength_program=True)
+                                                       is_from_strength_program=True,
+                                                       strength_program_instance = strength_program_instance)
                             instance.save()
                             instance.add_date_to_be_completed(main_squat_start_date)
                             
                         ########################################################################################################################
                         # Main OHP Day
-                        ohp = Movement.objects.get(name='Overhead Press')
                         ohp_strength_exercise_t1 = StrengthExercise(movement=ohp,
                                                              number_of_sets=9,
                                                              strength_exercise_number=1)
@@ -2178,17 +2355,16 @@ def create_workout(request):
                         for i in range(1, ohp_strength_exercise_t1.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=ohp_strength_exercise_t1, set_number=i, reps=ohp_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=ohp_record.training_max_units)
                             elif i >= 4:
                                 set_weight_percentage -= 0.05
                                 rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                set_weight = round_base * round((rounded_set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((rounded_set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=ohp_strength_exercise_t1, set_number=i, reps=ohp_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=ohp_record.training_max_units)
                         
-                        incline_bench = Movement.objects.get(name='Incline Bench')
                         incline_bench_strength_exercise_t2 = StrengthExercise(movement=incline_bench,
                                                              number_of_sets=8,
                                                              strength_exercise_number=2)
@@ -2199,13 +2375,13 @@ def create_workout(request):
                         for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=incline_bench_strength_exercise_t2, set_number=i, reps=incline_bench_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=bench_record.training_max_units)
                             elif i >= 4:
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=incline_bench_strength_exercise_t2, set_number=i, reps=incline_bench_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=bench_record.training_max_units)
                                 
                         main_ohp_strength_workout.strength_exercises.add(ohp_strength_exercise_t1, incline_bench_strength_exercise_t2)
                         main_ohp_strength_workout.save()
@@ -2217,13 +2393,13 @@ def create_workout(request):
                                 assigned = False
                             instance = WorkoutInstance(strength_workout=main_ohp_strength_workout, current_user = q,
                                                        is_assigned_by_coach_or_gym_owner=assigned,
-                                                       is_from_strength_program=True)
+                                                       is_from_strength_program=True,
+                                                       strength_program_instance = strength_program_instance)
                             instance.save()
                             instance.add_date_to_be_completed(main_ohp_start_date)
                             
                         ########################################################################################################################
                         # Main Deadlift Day
-                        deadlift = Movement.objects.get(name='Deadlift')
                         deadlift_strength_exercise_t1 = StrengthExercise(movement=deadlift,
                                                              number_of_sets=9,
                                                              strength_exercise_number=1)
@@ -2237,17 +2413,16 @@ def create_workout(request):
                         for i in range(1, deadlift_strength_exercise_t1.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t1, set_number=i, reps=deadlift_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
                             elif i >= 4:
                                 set_weight_percentage -= 0.05
                                 rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                set_weight = round_base * round((rounded_set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((rounded_set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t1, set_number=i, reps=deadlift_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
                         
-                        front_squat = Movement.objects.get(name='Front Squat')
                         front_squat_strength_exercise_t2 = StrengthExercise(movement=front_squat,
                                                              number_of_sets=8,
                                                              strength_exercise_number=2)
@@ -2258,13 +2433,13 @@ def create_workout(request):
                         for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=front_squat_strength_exercise_t2, set_number=i, reps=front_squat_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=squat_record.training_max_units)
                             elif i >= 4:
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=front_squat_strength_exercise_t2, set_number=i, reps=front_squat_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=squat_record.training_max_units)
                                 
                         main_deadlift_strength_workout.strength_exercises.add(deadlift_strength_exercise_t1, front_squat_strength_exercise_t2)
                         main_deadlift_strength_workout.save()
@@ -2276,14 +2451,15 @@ def create_workout(request):
                                 assigned = False
                             instance = WorkoutInstance(strength_workout=main_deadlift_strength_workout, current_user = q,
                                                        is_assigned_by_coach_or_gym_owner=assigned,
-                                                       is_from_strength_program=True)
+                                                       is_from_strength_program=True,
+                                                       strength_program_instance = strength_program_instance)
                             instance.save()
                             instance.add_date_to_be_completed(main_deadlift_start_date)
                             
                         ########################################################################################################################
                         # Secondary Bench Day
                         if day_variation == '5 Day' or day_variation == '6 Day Squat' or day_variation == '6 Day Deadlift':
-                            bench = Movement.objects.get(name='Bench')
+
                             bench_strength_exercise_t1 = StrengthExercise(movement=bench,
                                                                  number_of_sets=9,
                                                                  strength_exercise_number=1)
@@ -2295,21 +2471,20 @@ def create_workout(request):
                             for i in range(1, bench_strength_exercise_t1.number_of_sets+1):
                                 if i < 4:
                                     set_weight_percentage += 0.10
-                                    set_weight = round_base * round((set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                     Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
-                                                  weight=set_weight, weight_units=form.cleaned_data['units'])
+                                                  weight=set_weight, weight_units=bench_record.training_max_units)
                                 elif i >= 4 and i < 6:
-                                    set_weight = round_base * round((set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                     Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
-                                                  weight=set_weight, weight_units=form.cleaned_data['units'])
+                                                  weight=set_weight, weight_units=bench_record.training_max_units)
                                 elif i >= 6:
                                     set_weight_percentage -= 0.05
                                     rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                    set_weight = round_base * round((rounded_set_weight_percentage*form.cleaned_data['bench_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    set_weight = round_base * round((rounded_set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                     Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
-                                                  weight=set_weight, weight_units=form.cleaned_data['units'])
+                                                  weight=set_weight, weight_units=bench_record.training_max_units)
                             
-                            ohp = Movement.objects.get(name='Overhead Press')
                             ohp_strength_exercise_t2 = StrengthExercise(movement=ohp,
                                                                  number_of_sets=8,
                                                                  strength_exercise_number=2)
@@ -2320,13 +2495,13 @@ def create_workout(request):
                             for i in range(1, ohp_strength_exercise_t2.number_of_sets+1):
                                 if i < 4:
                                     set_weight_percentage += 0.10
-                                    set_weight = round_base * round((set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                     Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
-                                                  weight=set_weight, weight_units=form.cleaned_data['units'])
+                                                  weight=set_weight, weight_units=ohp_record.training_max_units)
                                 elif i >= 4:
-                                    set_weight = round_base * round((set_weight_percentage*form.cleaned_data['ohp_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                     Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
-                                                  weight=set_weight, weight_units=form.cleaned_data['units'])
+                                                  weight=set_weight, weight_units=ohp_record.training_max_units)
                                     
                             secondary_bench_strength_workout.strength_exercises.add(bench_strength_exercise_t1, ohp_strength_exercise_t2)
                             secondary_bench_strength_workout.save()
@@ -2338,14 +2513,14 @@ def create_workout(request):
                                     assigned = False
                                 instance = WorkoutInstance(strength_workout=secondary_bench_strength_workout, current_user = q,
                                                            is_assigned_by_coach_or_gym_owner=assigned,
-                                                           is_from_strength_program=True)
+                                                           is_from_strength_program=True,
+                                                           strength_program_instance = strength_program_instance)
                                 instance.save()
                                 instance.add_date_to_be_completed(secondary_bench_start_date)
                             
                         ########################################################################################################################
                         # Secondary Squat Day
                         if day_variation == '6 Day Squat':
-                            back_squat = Movement.objects.get(name='Back Squat')
                             back_squat_strength_exercise_t1 = StrengthExercise(movement=back_squat,
                                                                  number_of_sets=8,
                                                                  strength_exercise_number=1)
@@ -2356,12 +2531,11 @@ def create_workout(request):
                             
                             set_weight_percentage = 0.72
                             for i in range(1, back_squat_strength_exercise_t1.number_of_sets+1):
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=back_squat_strength_exercise_t1, set_number=i, reps=3,
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=squat_record.training_max_units)
     
                             
-                            deadlift = Movement.objects.get(name='Deadlift')
                             deadlift_strength_exercise_t2 = StrengthExercise(movement=deadlift,
                                                                  number_of_sets=6,
                                                                  strength_exercise_number=2)
@@ -2369,9 +2543,9 @@ def create_workout(request):
                             
                             set_weight_percentage = 0.565
                             for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t2, set_number=i, reps=3,
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
     
                                     
                             secondary_squat_strength_workout.strength_exercises.add(back_squat_strength_exercise_t1, deadlift_strength_exercise_t2)
@@ -2384,14 +2558,14 @@ def create_workout(request):
                                     assigned = False
                                 instance = WorkoutInstance(strength_workout=secondary_squat_strength_workout, current_user = q,
                                                            is_assigned_by_coach_or_gym_owner=assigned,
-                                                           is_from_strength_program=True)
+                                                           is_from_strength_program=True,
+                                                           strength_program_instance = strength_program_instance)
                                 instance.save()
                                 instance.add_date_to_be_completed(secondary_squat_start_date)
                                 
                         ########################################################################################################################
                         # Secondary Squat Day
                         if day_variation == '6 Day Deadlift':
-                            deadlift = Movement.objects.get(name='Deadlift')
                             deadlift_strength_exercise_t1 = StrengthExercise(movement=deadlift,
                                                                  number_of_sets=8,
                                                                  strength_exercise_number=1)
@@ -2402,9 +2576,9 @@ def create_workout(request):
                             
                             set_weight_percentage = 0.72
                             for i in range(1, deadlift_strength_exercise_t1.number_of_sets+1):
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['deadlift_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t1, set_number=i, reps=3,
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
     
                             
                             back_squat = Movement.objects.get(name='Back Squat')
@@ -2415,9 +2589,9 @@ def create_workout(request):
                             
                             set_weight_percentage = 0.565
                             for i in range(1, back_squat_strength_exercise_t2.number_of_sets+1):
-                                set_weight = round_base * round((set_weight_percentage*form.cleaned_data['squat_max']*.9)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=back_squat_strength_exercise_t2, set_number=i, reps=3,
-                                              weight=set_weight, weight_units=form.cleaned_data['units'])
+                                              weight=set_weight, weight_units=squat_record.training_max_units)
     
                                     
                             secondary_deadlift_strength_workout.strength_exercises.add(deadlift_strength_exercise_t1, back_squat_strength_exercise_t2)
@@ -2430,7 +2604,8 @@ def create_workout(request):
                                     assigned = False
                                 instance = WorkoutInstance(strength_workout=secondary_deadlift_strength_workout, current_user = q,
                                                            is_assigned_by_coach_or_gym_owner=assigned,
-                                                           is_from_strength_program=True)
+                                                           is_from_strength_program=True,
+                                                           strength_program_instance = strength_program_instance)
                                 instance.save()
                                 instance.add_date_to_be_completed(secondary_deadlift_start_date)
                                 
