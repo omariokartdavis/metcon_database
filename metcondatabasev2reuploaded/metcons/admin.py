@@ -124,6 +124,12 @@ class StrengthProgramInstanceAdmin(admin.ModelAdmin):
     list_display = ('day_variation',
                     'display_strength_program')
     
+@admin.register(PersonalWorkoutRecord)
+class PersonalWorkoutRecordAdmin(admin.ModelAdmin):
+    list_display = ('movement',
+                    'created_by_user',
+                    'date_completed')
+    
 @admin.register(CardioWorkout)
 class CardioWorkoutAdmin(admin.ModelAdmin):
     list_display = ('display_name',
