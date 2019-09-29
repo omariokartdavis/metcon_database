@@ -2,9 +2,16 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
 
+## 9/28/19
+at home (not on work or tablet)
+- models.py (migrations)
+- views.py
+- forms.py
+- admin.py
+- create_workout.css
 
 ## 9/27/19
-(at work) (not on home or tablet)
+(at work) (not on tablet)
 - models.py (migrations)
 - views.py
 - admin.py
@@ -13,7 +20,7 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - create_result.html
 
 ## 9/26/19
-(at work) (not on home or tablet)
+(at work) (not on tablet)
 - changed mainsite_most_recent_workout to get_most_recent_workouts.py (also changed name of func inside)
 - update.py
 - models.py (migrations)
@@ -60,10 +67,9 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - remove_coaches_from_athlets.html
 - request_list.html
 
-## functionality completed on 9/26/19
-- removed blank=True, null=True from last_time_hidden_date_was_checked. now always has at least date of yesterday when created
-- styled registration templates
-- fixed span margin issue on signup template
+## functionality completed on 9/28/19
+- create result for strength program 531 lp nsuns now reschedules the instance as well as increases the training max and the workouts
+  weights for the next session.
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -103,6 +109,8 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 - can't get rid of the window reload function on workout_detail because it calls a model function
         
 ## Functionality to add:
+- create page to manually enter personal records
+- create hide/show javascript functionality based on strength program variant selection.
 - need to add padding-bottom to group detail page
 - enter every named workout into the database by hand
 - create a "share workout" button to share this workout with others by username
