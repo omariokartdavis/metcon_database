@@ -218,9 +218,14 @@ class CreateStrengthResultForm(forms.Form):
         if instance.strength_workout:
             if instance.is_from_strength_program:
                 if instance.current_user.strength_program.strength_program.name == 'nSuns 531 LP':
-                    self.fields['reps'] = forms.IntegerField(required=True, label='Reps On Heavy Set')
-                    self.fields['comments'] = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'List accessories sets, reps, and weight. Or comments on difficulty of main movements'}),
-                               max_length=4000, required=False)
+                    if instance.strength_workout.strength_exercises.get(strength_exercise_number=1).set_set.get(set_number=3).reps:
+                        #this means its not a 1+ set
+                        self.fields['comments'] = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'List accessories sets, reps, and weight. Or comments on difficulty of main movements'}),
+                                   max_length=4000, required=False)
+                    else:
+                        self.fields['reps'] = forms.IntegerField(required=True, label='Reps On Heavy Set')
+                        self.fields['comments'] = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'List accessories sets, reps, and weight. Or comments on difficulty of main movements'}),
+                                   max_length=4000, required=False)
             else:
                 for i in instance.strength_workout.strength_exercises.all():
                     field_name = 'result_text_%s' % (i.strength_exercise_number,)
