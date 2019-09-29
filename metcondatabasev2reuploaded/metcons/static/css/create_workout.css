@@ -10,6 +10,10 @@
 	display: none;
 }
 
+#strength_program_form {
+	display: none;
+}
+
 #cardio_workout_empty_form {
 	display: none;
 }
