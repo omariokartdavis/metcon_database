@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm
 from metcons.models import User, Movement, Classification, StrengthProgram
+from functools import partial
 
 movement_choices = [(i.name, i.name) for i in Movement.objects.all()]
 
@@ -73,6 +74,7 @@ day_variation_choices = [
     ('6 Day Deadlift', '6 Day Deadlift'),
     ]
 
+DateInput = partial(forms.DateInput, {'class': 'datepicker'})
 
 def get_default_localtime():
     return timezone.localtime(timezone.now())
@@ -108,7 +110,7 @@ class AddWorkoutToAthletesForm(forms.Form):
     athlete_to_assign = forms.MultipleChoiceField(required=False, help_text='Which athletes would you like to assign this workout to?')
     group_to_assign = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
     hide_from_athletes = forms.BooleanField(required=False, help_text='Would you like to hide the details of this workout from assigned athletes until a specified date?')
-    date_to_unhide = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
+    date_to_unhide = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False, help_text='When would you like to unhide this workout?')
 
 class CreateGroupForm(forms.Form):
     group_name = forms.CharField(max_length = 254)
@@ -164,16 +166,16 @@ class CreateStrengthProgramForm(forms.Form):
     day_variation = forms.ChoiceField(widget=forms.Select(), choices=day_variation_choices, required=False)
     units = forms.ChoiceField(widget=forms.Select(), choices=strength_program_weight_unit_choices)
     bench_max = forms.IntegerField(required=False, label='Bench One Rep Max')
-    main_bench_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime)
+    main_bench_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime)
     squat_max = forms.IntegerField(required=False, label='Back Squat One Rep Max')
-    main_squat_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime)
+    main_squat_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime)
     ohp_max = forms.IntegerField(required=False, label='Overhead Press One Rep Max')
-    main_ohp_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime)
+    main_ohp_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime)
     deadlift_max = forms.IntegerField(required=False, label='Deadlift One Rep Max')
-    main_deadlift_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime)
-    secondary_bench_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False)
-    secondary_squat_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False)
-    secondary_deadlift_start_date = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False)
+    main_deadlift_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime)
+    secondary_bench_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False)
+    secondary_squat_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False)
+    secondary_deadlift_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False)
     
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -207,9 +209,9 @@ class CreateGeneralResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your results here.", required=False)
     duration_minutes = forms.IntegerField(required = False)
     duration_seconds = forms.IntegerField(required = False)
-    media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
-    media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable.')
-    date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
+    media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, label='Pictures or Video')
+    media_file_caption = forms.CharField(required=False, label='Caption')
+    date_completed = forms.DateField(widget=DateInput(), required=False, initial=get_default_localtime)
 
 class CreateStrengthResultForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -232,10 +234,11 @@ class CreateStrengthResultForm(forms.Form):
                     self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, label = 'Comments',
                                help_text="Enter your results here.\nYou can leave this blank if you completed as is.\nOtherwise some examples could be: 'Failed final set', 'Did 2 extra reps each set', 'changed weight to XXX'", required=False)
                 
-    media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
-    media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable.')
-    date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
-
+    media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, label='Pictures or Video')
+    media_file_caption = forms.CharField(required=False, label='Caption')
+    #date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
+    date_completed = forms.DateField(widget=DateInput(), required=False, initial=get_default_localtime)
+    
 class CreateCardioResultForm(forms.Form):
     def __init__(self, *args, **kwargs):
         instance = kwargs.pop('instance', None)
@@ -245,12 +248,12 @@ class CreateCardioResultForm(forms.Form):
                 field_name = 'result_text_%s' % (i.cardio_exercise_number,)
                 self.fields[field_name] = forms.CharField(widget=forms.Textarea, max_length=2000, label = 'Comments', help_text="Enter your results here.\nExamples: 'Average Pace: XX:XX', 'Failed to hit pace on rep X', 'changed rest to X:XX'", required=False)
                 
-    media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, help_text='Attach any pictures or videos. Hold CTRL while selecting to upload multiple files.')
-    media_file_caption = forms.CharField(required=False, help_text='Caption your media file if applicable.')
-    date_completed = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, required=False, help_text='When did you complete this workout?')
+    media_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False, label='Pictures or Video')
+    media_file_caption = forms.CharField(required=False, label='Caption')
+    date_completed = forms.DateField(widget=DateInput(), required=False, initial=get_default_localtime)
 
 class ScheduleInstanceForm(forms.Form):
-    date_to_be_added = forms.DateField(widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
+    date_to_be_added = forms.DateField(widget=DateInput(), initial=get_default_localtime, label='Date to Schedule')
     repeat_yes = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     repeat_frequency = forms.ChoiceField(widget=forms.Select, choices=repetition_frequency_choices)
     number_of_repetitions = forms.IntegerField(widget=forms.NumberInput, required=False, help_text = 'XX number of times to repeat.')
@@ -258,13 +261,13 @@ class ScheduleInstanceForm(forms.Form):
 
 class EditScheduleForm(forms.Form):
     date_to_be_removed = forms.MultipleChoiceField(required=False, help_text='What date would you like to remove?')
-    date_to_be_added = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When will you complete this workout?')
+    date_to_be_added = forms.DateField(widget=DateInput(), required=False, initial=get_default_localtime, help_text='When will you complete this workout?')
 
 class DeleteScheduleForm(forms.Form):
     date_to_be_removed = forms.MultipleChoiceField(help_text='What date would you like to remove?')
 
 class HideInstanceForm(forms.Form):
-    date_to_unhide = forms.DateField(required=False, widget=forms.SelectDateWidget(), initial=get_default_localtime, help_text='When would you like to unhide this workout?')
+    date_to_unhide = forms.DateField(widget=DateInput(), required=False, initial=get_default_localtime, help_text='When would you like to unhide this workout?')
     
 class EditInstanceForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
@@ -341,7 +344,7 @@ class EditGeneralResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000)
     duration_minutes = forms.IntegerField(required=False)
     duration_seconds = forms.IntegerField(required=False)
-    date_completed = forms.DateField(widget=forms.SelectDateWidget(), required=False)
+    date_completed = forms.DateField(widget=DateInput(), required=False)
 
     def clean_duration_minutes(self):
         data = self.cleaned_data['duration_minutes']
@@ -359,8 +362,8 @@ class EditGeneralResultForm(forms.Form):
         
 class EditStrengthResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
-    date_completed = forms.DateField(widget=forms.SelectDateWidget(), required=False)
+    date_completed = forms.DateField(widget=DateInput(), required=False)
     
 class EditCardioResultForm(forms.Form):
     result_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
-    date_completed = forms.DateField(widget=forms.SelectDateWidget(), required=False)
+    date_completed = forms.DateField(widget=DateInput(), required=False)
