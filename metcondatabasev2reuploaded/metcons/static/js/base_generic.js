@@ -81,3 +81,7 @@ document.getElementsByClassName("notifications")[0].addEventListener("mouseover"
 document.getElementById("right_sidenav_open_button").addEventListener("mouseover", openRightNav, false);
 document.getElementById("right_side_nav_close_button").addEventListener("click", closeRightNav, false);
 document.getElementsByClassName("right-sidebar-nav")[0].addEventListener("mouseleave", closeRightNav, false);
+
+$(document).ready(function() {
+    $('.datepicker').datepicker();
+});
