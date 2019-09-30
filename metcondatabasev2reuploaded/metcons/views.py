@@ -1389,15 +1389,17 @@ def create_result(request, username, pk):
                                                     rounded_set_weight_percentage = round(set_weight_percentage, 2)
                                                     set_weight = round_base * round((rounded_set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
                                                 specific_set = strength_workout_main_exercise.set_set.get(set_number=i)
-                                                specific_set.weight=set_weight
-                                                specific_set.save()
+                                                if set_weight != specific_set.weight:
+                                                    specific_set.weight=set_weight
+                                                    specific_set.save()
                                         elif strength_workout_main_exercise_set_3_reps == 3:
                                             set_weight_percentage = 0.72
                                             for i in range(1, strength_workout_main_exercise.number_of_sets+1):
                                                 set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
                                                 specific_set = strength_workout_main_exercise.set_set.get(set_number=i)
-                                                specific_set.weight=set_weight
-                                                specific_set.save()                                            
+                                                if set_weight != specific_set.weight:
+                                                    specific_set.weight=set_weight
+                                                    specific_set.save()                                         
                                     else:
                                         #Is none therefore is a 1+ set. all 1+ sets have same percentages
                                         set_weight_percentage = 0.65
@@ -1410,8 +1412,9 @@ def create_result(request, username, pk):
                                                 rounded_set_weight_percentage = round(set_weight_percentage, 2)
                                                 set_weight = round_base * round((rounded_set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
                                             specific_set = strength_workout_main_exercise.set_set.get(set_number=i)
-                                            specific_set.weight=set_weight
-                                            specific_set.save()
+                                            if set_weight != specific_set.weight:
+                                                specific_set.weight=set_weight
+                                                specific_set.save()
                                 if strength_workout_secondary_exercise.movement.name == 'Front Squat':
                                     set_weight_percentage = 0.25
                                     for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
@@ -1421,8 +1424,9 @@ def create_result(request, username, pk):
                                         elif i >= 4:
                                             set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base)
                                         specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
-                                        specific_set.weight=set_weight
-                                        specific_set.save()
+                                        if set_weight != specific_set.weight:
+                                            specific_set.weight=set_weight
+                                            specific_set.save()
                                 elif strength_workout_secondary_exercise.movement.name == 'Incline Bench':
                                     set_weight_percentage = 0.30
                                     for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
@@ -1432,8 +1436,9 @@ def create_result(request, username, pk):
                                         elif i >= 4:
                                             set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base)
                                         specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
-                                        specific_set.weight=set_weight
-                                        specific_set.save()
+                                        if set_weight != specific_set.weight:
+                                            specific_set.weight=set_weight
+                                            specific_set.save()
                                 elif strength_workout_secondary_exercise.movement.name == 'Overhead Press':
                                     strength_workout_main_exercise_set_3_reps = strength_workout_main_exercise.set_set.get(set_number=3).reps
                                     if strength_workout_main_exercise_set_3_reps:
@@ -1445,8 +1450,9 @@ def create_result(request, username, pk):
                                             elif i >= 4:
                                                 set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base)
                                             specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
-                                            specific_set.weight=set_weight
-                                            specific_set.save()
+                                            if set_weight != specific_set.weight:
+                                                specific_set.weight=set_weight
+                                                specific_set.save()
                                     else:
                                         set_weight_percentage = 0.30
                                         for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
@@ -1456,8 +1462,9 @@ def create_result(request, username, pk):
                                             elif i >= 4:
                                                 set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base)
                                             specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
-                                            specific_set.weight=set_weight
-                                            specific_set.save()
+                                            if set_weight != specific_set.weight:
+                                                specific_set.weight=set_weight
+                                                specific_set.save()
                                 elif strength_workout_secondary_exercise.movement.name == 'Deadlift':
                                     strength_workout_main_exercise_set_3_reps = strength_workout_main_exercise.set_set.get(set_number=3).reps
                                     if strength_workout_main_exercise_set_3_reps:
@@ -1465,8 +1472,9 @@ def create_result(request, username, pk):
                                         for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
                                             set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base)
                                             specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
-                                            specific_set.weight=set_weight
-                                            specific_set.save()
+                                            if set_weight != specific_set.weight:
+                                                specific_set.weight=set_weight
+                                                specific_set.save()
                                     else:
                                         set_weight_percentage = 0.40
                                         for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
@@ -1476,8 +1484,9 @@ def create_result(request, username, pk):
                                             elif i >= 4:
                                                 set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base)
                                             specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
-                                            specific_set.weight=set_weight
-                                            specific_set.save()
+                                            if set_weight != specific_set.weight:
+                                                specific_set.weight=set_weight
+                                                specific_set.save()
 
                         
                     else:
