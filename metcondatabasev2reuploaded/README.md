@@ -2,6 +2,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
 
+## 9/29/19
+at home (not on work or tablet)
+- forms.py
+- views.py
+- base_generi.css
+- base_generic.js
+- created static/css/images and added 2 files
+- created static/css/jquery-ui.css
+- created static/js/jquery-ui.js
+- base_generic.html
+
 ## 9/28/19
 at home (not on work or tablet)
 - models.py (migrations)
@@ -67,9 +78,9 @@ at home (not on work or tablet)
 - remove_coaches_from_athlets.html
 - request_list.html
 
-## functionality completed on 9/28/19
-- create result for strength program 531 lp nsuns now reschedules the instance as well as increases the training max and the workouts
-  weights for the next session.
+## functionality completed on 9/29/19
+- added datepicker for all date selections on website
+- added if statements for create result strength program to hopefully speed it up slightly
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
