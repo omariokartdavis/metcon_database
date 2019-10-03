@@ -1,5 +1,5 @@
 .background_dim_popup {
-  position: absolute;
+  position: fixed;
   height: 100%;
   width: 100%;
   top: 0;
