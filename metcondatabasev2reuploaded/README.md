@@ -2,8 +2,14 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
 
+## 10/3/19
+at work (haven't uploaded yet)
+- get_most_recent_workouts.py
+- movements_list.py
+- user_page.css
+
 ## 9/29/19
-at home (not on work or tablet)
+at home (not on tablet)
 - forms.py
 - views.py
 - base_generi.css
@@ -14,7 +20,7 @@ at home (not on work or tablet)
 - base_generic.html
 
 ## 9/28/19
-at home (not on work or tablet)
+at home (not on tablet)
 - models.py (migrations)
 - views.py
 - forms.py
@@ -78,9 +84,12 @@ at home (not on work or tablet)
 - remove_coaches_from_athlets.html
 - request_list.html
 
-## functionality completed on 9/29/19
-- added datepicker for all date selections on website
-- added if statements for create result strength program to hopefully speed it up slightly
+## functionality completed on 10/3/19
+- changed get_most_recent_workouts.py to continue getting workouts until it runs into one that it is already in the database
+  - this is simply for development when I'm not running the update background scheduler every day
+- made popup dim cover wole page on user_page even after scrolling (position:fixed)
+- fixed spelling of Dumbbel(l*) power snatch
+  - also added Dumbbell Snatch movement
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
