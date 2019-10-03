@@ -63,4 +63,6 @@ def get_todays_mainsite_metcon():
                               )
             workout.save()
             workout.update_movements_and_classification()
-        break
+        else: #this is specifically for development so that it grabs all workouts that I haven't been getting over the past couple days
+            # remove this else statement and unindent the break to make it so it only grabs the first workout
+            break
