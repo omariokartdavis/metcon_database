@@ -36,6 +36,13 @@ class UserProfileAdmin(UserAdmin):
 
 ##    inlines = [WorkoutInstanceInline] very slow and expensive with a lot of instances
 
+@admin.register(PersonalWorkoutRecord)
+class PersonalWorkoutRecordAdmin(admin.ModelAdmin):
+    list_display = ('created_by_user',
+                    'date_completed',
+                    'movement',
+                    )
+    
 admin.site.register(Classification)
 
 @admin.register(Request)
@@ -123,12 +130,6 @@ class StrengthProgramAdmin(admin.ModelAdmin):
 class StrengthProgramInstanceAdmin(admin.ModelAdmin):
     list_display = ('day_variation',
                     'display_strength_program')
-    
-@admin.register(PersonalWorkoutRecord)
-class PersonalWorkoutRecordAdmin(admin.ModelAdmin):
-    list_display = ('movement',
-                    'created_by_user',
-                    'date_completed')
     
 @admin.register(CardioWorkout)
 class CardioWorkoutAdmin(admin.ModelAdmin):
