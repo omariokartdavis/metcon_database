@@ -2,8 +2,24 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
 
+
+## 10/10/19
+at work
+pip install django-simple-history
+- metcondatabasev2/settings.py
+- models.py (migrations)
+- admin.py
+- views.py
+- urls.py
+- forms.py
+- created personal_record_list.html
+- created personal_record_detail.html
+- created create_personal_record.html
+- created edit_personal_record.html
+- base_generic.html
+
 ## 10/3/19
-at work (haven't uploaded yet)
+at work (not on home or tablet)
 - get_most_recent_workouts.py
 - movements_list.py
 - user_page.css
@@ -84,6 +100,11 @@ at home (not on tablet)
 - remove_coaches_from_athlets.html
 - request_list.html
 
+## functionality completed on 10/10/19
+- added django-simple history to track changes on models like bodyweight and onerepmax weight
+  - https://django-simple-history.readthedocs.io/en/latest/
+  
+  
 ## functionality completed on 10/3/19
 - changed get_most_recent_workouts.py to continue getting workouts until it runs into one that it is already in the database
   - this is simply for development when I'm not running the update background scheduler every day
