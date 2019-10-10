@@ -39,4 +39,8 @@ urlpatterns = [
     path('<username>/group/<int:pk>/', views.group_detail, name='group_detail'),
     path('<username>/group/<int:pk>/addathletestogroup/', views.add_athletes_to_group, name='add_athletes_to_group'),
     path('<username>/group/<int:pk>/removeathletesfromgroup/', views.remove_athletes_from_group, name='remove_athletes_from_group'),
+    path('<username>/personalrecords', views.personal_record_list, name='personal_record_list'),
+    path('<username>/personalrecords/<int:pk>/', views.personal_record_detail, name='personal_record_detail'),
+    path('<username>/personalrecords/create/', views.create_personal_record, name='create_personal_record'),
+    path('<username>/personalrecords/<int:pk>/edit/', views.edit_personal_record, name='edit_personal_record'),
 ]
