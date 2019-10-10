@@ -3,7 +3,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from metcons.models import User, Athlete, Coach, GymOwner, Group, Request, Classification, Movement, Workout, \
     WorkoutInstance, Result, ResultFile, StrengthExercise, Set, StrengthWorkout, CardioExercise, CardioWorkout, \
-    StrengthProgram, StrengthProgramInstance, PersonalWorkoutRecord
+    StrengthProgram, StrengthProgramInstance, PersonalWorkoutRecord, OneRepMax, TwoRepMax, ThreeRepMax, FiveRepMax, \
+    TenRepMax, TwentyRepMax, TrainingMax
 from django.views import generic
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,7 +14,7 @@ from metcons.forms import SignUpForm, AddAthleteToCoachForm, AddCoachForm, \
     StrengthWorkoutFormset, CardioWorkoutFormset, CreateGeneralResultForm, \
     CreateStrengthResultForm, CreateCardioResultForm, ScheduleInstanceForm, EditScheduleForm, DeleteScheduleForm, \
     HideInstanceForm, EditInstanceForm, EditStrengthInstanceForm, EditCardioInstanceForm, EditGeneralResultForm, EditStrengthResultForm, \
-    EditCardioResultForm, CreateMovementForm, CreateStrengthProgramForm
+    EditCardioResultForm, CreateMovementForm, CreateStrengthProgramForm, CreatePersonalRecordForm, EditPersonalRecordForm
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Q, F
@@ -215,6 +216,190 @@ def profile(request, username):
     context['calendar'] = mark_safe(html_cal)
         
     return render(request, 'metcons/user_page.html', context=context)
+
+@login_required
+def personal_record_list(request, username):
+    user = User.objects.get(username=username) #these need to use the passed username so that coaches can create these for athletes. have a check on the template for valid user
+    
+    record_list = PersonalWorkoutRecord.objects.filter(created_by_user = user)
+    
+    paginator = Paginator(record_list, 10)
+    page = request.GET.get('page', 1)
+    record_list = paginator.page(page)
+    
+    if request.user.is_coach:
+        coach_user = request.user.coach
+        athlete_list = coach_user.athletes.all()
+        
+    
+    context = {
+        'record_list': record_list,
+        'record_user': user,
+        'athlete_list': athlete_list,
+        }
+    
+    return render(request, 'metcons/personal_record_list.html', context=context)
+
+@login_required
+def personal_record_detail(request, username, pk):
+    user = User.objects.get(username=username)
+    
+    personal_record = PersonalWorkoutRecord.objects.get(created_by_user = user, id=pk)
+    
+    context = {
+            'personal_record': personal_record,
+            }
+    
+    return render(request, 'metcons/personal_record_detail.html', context=context)
+
+@login_required
+def create_personal_record(request, username):
+    user = User.objects.get(username=username) 
+    user_creating = User.objects.get(username=request.user.username)
+    
+    if request.method == 'POST':
+        if 'create record' in request.POST:
+            form = CreatePersonalRecordForm(request.POST)
+            if form.is_valid():
+                if not PersonalWorkoutRecord.objects.filter(created_by_user = user, movement__name = form.cleaned_data['movement']).exists():
+                    movement = Movement.objects.get(name=form.cleaned_data['movement'])
+                    
+                    new_personal_record = PersonalWorkoutRecord(created_by_user = user,
+                                                                movement=movement,)
+                    new_personal_record.save()
+                    new_one_rep_max = OneRepMax(personal_record=new_personal_record,
+                                                weight=form.cleaned_data['one_rep_max'],
+                                                weight_units = form.cleaned_data['weight_units'])
+                    new_one_rep_max.save()
+                    new_two_rep_max = TwoRepMax(personal_record=new_personal_record,
+                                                weight=form.cleaned_data['two_rep_max'],
+                                                weight_units = form.cleaned_data['weight_units'])
+                    new_two_rep_max.save()
+                    new_three_rep_max = ThreeRepMax(personal_record=new_personal_record,
+                                                weight=form.cleaned_data['three_rep_max'],
+                                                weight_units = form.cleaned_data['weight_units'])
+                    new_three_rep_max.save()
+                    new_five_rep_max = FiveRepMax(personal_record=new_personal_record,
+                                                weight=form.cleaned_data['five_rep_max'],
+                                                weight_units = form.cleaned_data['weight_units'])
+                    new_five_rep_max.save()
+                    new_ten_rep_max = TenRepMax(personal_record=new_personal_record,
+                                                weight=form.cleaned_data['ten_rep_max'],
+                                                weight_units = form.cleaned_data['weight_units'])
+                    new_ten_rep_max.save()
+                    new_twenty_rep_max = TwentyRepMax(personal_record=new_personal_record,
+                                                weight=form.cleaned_data['twenty_rep_max'],
+                                                weight_units = form.cleaned_data['weight_units'])
+                    new_twenty_rep_max.save()
+                    new_training_rep_max = TrainingMax(personal_record=new_personal_record,
+                                                weight=form.cleaned_data['training_max'],
+                                                weight_units = form.cleaned_data['weight_units'])
+                    new_training_rep_max.save()
+                    
+                    return HttpResponseRedirect(reverse('personal_record_list', args=[request.user.username]))
+                else:
+                    existing_record = PersonalWorkoutRecord.objects.get(created_by_user=user, movement__name=form.cleaned_data['movement'])
+                    
+                    if form.cleaned_data['one_rep_max'] and existing_record.onerepmax and form.cleaned_data['one_rep_max'] != existing_record.onerepmax.weight:
+                        existing_record.onerepmax.weight =form.cleaned_data['one_rep_max']
+                        existing_record.onerepmax.weight_units = form.cleaned_data['weight_units']
+                        existing_record.onerepmax.save()
+                    if form.cleaned_data['two_rep_max'] and existing_record.tworepmax and form.cleaned_data['two_rep_max'] != existing_record.tworepmax.weight:
+                        existing_record.tworepmax.weight=form.cleaned_data['two_rep_max']
+                        existing_record.tworepmax.weight_units = form.cleaned_data['weight_units']
+                        existing_record.tworepmax.save()
+                    if form.cleaned_data['three_rep_max'] and existing_record.threerepmax and form.cleaned_data['three_rep_max'] != existing_record.threerepmax.weight:
+                        existing_record.threerepmax.weight=form.cleaned_data['three_rep_max']
+                        existing_record.threerepmax.weight_units = form.cleaned_data['weight_units']
+                        existing_record.threerepmax.save()
+                    if form.cleaned_data['five_rep_max'] and existing_record.fiverepmax and form.cleaned_data['five_rep_max'] != existing_record.fiverepmax.weight:
+                        existing_record.fiverepmax.weight=form.cleaned_data['five_rep_max']
+                        existing_record.fiverepmax.weight_units = form.cleaned_data['weight_units']
+                        existing_record.fiverepmax.save()
+                    if form.cleaned_data['ten_rep_max'] and existing_record.tenrepmax and form.cleaned_data['ten_rep_max'] != existing_record.tenrepmax.weight:
+                        existing_record.tenrepmax.weight=form.cleaned_data['ten_rep_max']
+                        existing_record.tenrepmax.weight_units = form.cleaned_data['weight_units']
+                        existing_record.tenrepmax.save()
+                    if form.cleaned_data['twenty_rep_max'] and existing_record.twentyrepmax and form.cleaned_data['twenty_rep_max'] != existing_record.twentyrepmax.weight:
+                        existing_record.twentyrepmax.weight=form.cleaned_data['twenty_rep_max']
+                        existing_record.twentyrepmax.weight_units = form.cleaned_data['weight_units']
+                        existing_record.twentyrepmax.save()
+                    if form.cleaned_data['training_max'] and existing_record.trainingmax and form.cleaned_data['training_max'] != existing_record.trainingmax.weight:
+                        existing_record.trainingmax.weight=form.cleaned_data['training_max']
+                        existing_record.trainingmax.weight_units = form.cleaned_data['weight_units']
+                        existing_record.trainingmax.save()
+                    
+                    return HttpResponseRedirect(reverse('personal_record_list', args=[request.user.username]))
+            else:
+                return render(request, 'metcons/create_personal_record.html', {'form':form})
+    else:
+        form = CreatePersonalRecordForm()
+        
+        context = {
+                'form': form,
+                'creating_user': user_creating,
+                }
+        
+        return render(request, 'metcons/create_personal_record.html', context=context)
+    
+@login_required
+def edit_personal_record(request, username, pk):
+    user = User.objects.get(username=username)
+    
+    record = PersonalWorkoutRecord.objects.get(created_by_user=user, id=pk)
+    
+    if request.method == 'POST':
+        if 'edit record' in request.POST:
+            form = EditPersonalRecordForm(request.POST)
+            if form.is_valid():
+                if form.cleaned_data['one_rep_max'] != record.onerepmax.weight:
+                    record.onerepmax.weight = form.cleaned_data['one_rep_max']
+                    record.onerepmax.weight_units = form.cleaned_data['weight_units']
+                    record.onerepmax.save()
+                if form.cleaned_data['two_rep_max'] != record.tworepmax.weight:
+                    record.tworepmax.weight = form.cleaned_data['two_rep_max']
+                    record.tworepmax.weight_units = form.cleaned_data['weight_units']
+                    record.tworepmax.save()
+                if form.cleaned_data['three_rep_max'] != record.threerepmax.weight:
+                    record.threerepmax.weight = form.cleaned_data['three_rep_max']
+                    record.threerepmax.weight_units = form.cleaned_data['weight_units']
+                    record.threerepmax.save()
+                if form.cleaned_data['five_rep_max'] != record.fiverepmax.weight:
+                    record.fiverepmax.weight = form.cleaned_data['five_rep_max']
+                    record.fiverepmax.weight_units = form.cleaned_data['weight_units']
+                    record.fiverepmax.save()
+                if form.cleaned_data['ten_rep_max'] != record.tenrepmax.weight:
+                    record.tenrepmax.weight = form.cleaned_data['ten_rep_max']
+                    record.tenrepmax.weight_units = form.cleaned_data['weight_units']
+                    record.tenrepmax.save()
+                if form.cleaned_data['twenty_rep_max'] != record.twentyrepmax.weight:
+                    record.twentyrepmax.weight = form.cleaned_data['twenty_rep_max']
+                    record.twentyrepmax.weight_units = form.cleaned_data['weight_units']
+                    record.twentyrepmax.save()
+                if form.cleaned_data['training_max'] != record.trainingmax.weight:
+                    record.trainingmax.weight = form.cleaned_data['training_max']
+                    record.trainingmax.weight_units = form.cleaned_data['weight_units']
+                    record.trainingmax.save()
+                
+                return HttpResponseRedirect(reverse('personal_record_list', args=[request.user.username]))
+            else:
+                return render(request, 'metcons/edit_personal_record.html', {'form':form})
+    else:
+        form = EditPersonalRecordForm(initial={'one_rep_max': record.onerepmax.weight,
+                                               'two_rep_max': record.tworepmax.weight,
+                                               'three_rep_max': record.threerepmax.weight,
+                                               'five_rep_max': record.fiverepmax.weight,
+                                               'ten_rep_max': record.tenrepmax.weight,
+                                               'twenty_rep_max': record.twentyrepmax.weight,
+                                               'training_max': record.trainingmax.weight,
+                                               'weight_units': record.trainingmax.weight_units})
+        
+        context = {
+                'form': form,
+                }
+        
+        return render(request, 'metcons/edit_personal_record.html', context=context)
+                    
 
 @login_required
 def add_athletes_to_coach(request, username):
@@ -2219,18 +2404,53 @@ def create_workout(request):
                         incline_bench = Movement.objects.get(name='Incline Bench')
                         front_squat = Movement.objects.get(name='Front Squat')
                         
-                        bench_record = PersonalWorkoutRecord(created_by_user=q, movement=bench, one_rep_max = bench_max, training_max = round(bench_max*0.9),
-                                                             one_rep_max_units=weight_units, training_max_units=weight_units)
-                        bench_record.save()
-                        squat_record = PersonalWorkoutRecord(created_by_user=q, movement=back_squat, one_rep_max = back_squat_max, training_max = round(back_squat_max*0.9),
-                                                             one_rep_max_units=weight_units, training_max_units=weight_units)
-                        squat_record.save()
-                        ohp_record = PersonalWorkoutRecord(created_by_user=q, movement=ohp, one_rep_max = ohp_max, training_max = round(ohp_max*0.9),
-                                                             one_rep_max_units=weight_units, training_max_units=weight_units)
-                        ohp_record.save()
-                        deadlift_record = PersonalWorkoutRecord(created_by_user=q, movement=deadlift, one_rep_max = deadlift_max, training_max = round(deadlift_max*0.9),
-                                                             one_rep_max_units=weight_units, training_max_units=weight_units)
-                        deadlift_record.save()
+                        if not PersonalWorkoutRecord.objects.filter(created_by_user=q, movement=bench).exists():
+                            bench_record = PersonalWorkoutRecord(created_by_user=q, movement=bench, one_rep_max = bench_max, training_max = round(bench_max*0.9),
+                                                                 one_rep_max_units=weight_units, training_max_units=weight_units)
+                            bench_record.save()
+                        else:
+                            bench_record = PersonalWorkoutRecord.objects.get(created_by_user=q, movement=bench)
+                            bench_record.one_rep_max = bench_max
+                            bench_record.training_max = round(bench_max*0.9)
+                            bench_record.one_rep_max_units=weight_units
+                            bench_record.training_max_units=weight_units
+                            bench_record.save()
+                            
+                        if not PersonalWorkoutRecord.objects.filter(created_by_user=q, movement=back_squat).exists():
+                            squat_record = PersonalWorkoutRecord(created_by_user=q, movement=back_squat, one_rep_max = back_squat_max, training_max = round(back_squat_max*0.9),
+                                                                 one_rep_max_units=weight_units, training_max_units=weight_units)
+                            squat_record.save()
+                        else:
+                            squat_record = PersonalWorkoutRecord.objects.get(created_by_user=q, movement=back_squat)
+                            squat_record.one_rep_max = back_squat_max
+                            squat_record.training_max = round(back_squat_max*0.9)
+                            squat_record.one_rep_max_units=weight_units
+                            squat_record.training_max_units=weight_units
+                            squat_record.save()
+                            
+                        if not PersonalWorkoutRecord.objects.filter(created_by_user=q, movement=ohp).exists():
+                            ohp_record = PersonalWorkoutRecord(created_by_user=q, movement=ohp, one_rep_max = ohp_max, training_max = round(ohp_max*0.9),
+                                                                 one_rep_max_units=weight_units, training_max_units=weight_units)
+                            ohp_record.save()
+                        else:
+                            ohp_record = PersonalWorkoutRecord.objects.get(created_by_user=q, movement=ohp)
+                            ohp_record.one_rep_max = ohp_max
+                            ohp_record.training_max = round(ohp_max*0.9)
+                            ohp_record.one_rep_max_units=weight_units
+                            ohp_record.training_max_units=weight_units
+                            ohp_record.save()
+                            
+                        if not PersonalWorkoutRecord.objects.filter(created_by_user=q, movement=deadlift).exists():
+                            deadlift_record = PersonalWorkoutRecord(created_by_user=q, movement=deadlift, one_rep_max = deadlift_max, training_max = round(deadlift_max*0.9),
+                                                                 one_rep_max_units=weight_units, training_max_units=weight_units)
+                            deadlift_record.save()
+                        else:
+                            deadlift_record = PersonalWorkoutRecord.objects.get(created_by_user=q, movement=deadlift)
+                            deadlift_record.one_rep_max = deadlift_max
+                            deadlift_record.training_max = round(deadlift_max*0.9)
+                            deadlift_record.one_rep_max_units=weight_units
+                            deadlift_record.training_max_units=weight_units
+                            deadlift_record.save()
                         
                         #####################################################################################################################                        
                         #Main Bench Day
