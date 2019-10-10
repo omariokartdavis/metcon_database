@@ -122,6 +122,27 @@ class AddAthletesToGroupForm(forms.Form):
 class RemoveAthletesFromGroupForm(forms.Form):
     athlete_to_remove = forms.MultipleChoiceField(help_text='Which athletes would you like to remove from this group?')
     
+class CreatePersonalRecordForm(forms.Form):
+    weight_units = forms.ChoiceField(widget=forms.Select(), choices=weight_unit_choices, help_text='What units is the weight in?', required=False)
+    movement = forms.ChoiceField(widget=forms.Select(), choices=movement_choices, help_text='What Movement would you like to perform?')
+    one_rep_max = forms.IntegerField(required=False)
+    two_rep_max = forms.IntegerField(required=False)
+    three_rep_max = forms.IntegerField(required=False)
+    five_rep_max = forms.IntegerField(required=False)
+    ten_rep_max = forms.IntegerField(required=False)
+    twenty_rep_max = forms.IntegerField(required=False)
+    training_max = forms.IntegerField(required=False)
+    
+class EditPersonalRecordForm(forms.Form):
+    weight_units = forms.ChoiceField(widget=forms.Select(), choices=weight_unit_choices, help_text='What units is the weight in?', required=False)
+    one_rep_max = forms.IntegerField(required=False)
+    two_rep_max = forms.IntegerField(required=False)
+    three_rep_max = forms.IntegerField(required=False)
+    five_rep_max = forms.IntegerField(required=False)
+    ten_rep_max = forms.IntegerField(required=False)
+    twenty_rep_max = forms.IntegerField(required=False)
+    training_max = forms.IntegerField(required=False)
+    
 class CreateWorkoutForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your workout.")
     workout_scaling = forms.CharField(widget=forms.Textarea, max_length=4000, help_text='Enter any scaling options.', required=False)
