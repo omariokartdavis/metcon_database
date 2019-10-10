@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db.models import Sum, Avg
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+from simple_history.models import HistoricalRecords
 
 def get_default_localtime_date():
         return timezone.localtime(timezone.now()).date()
@@ -31,6 +32,8 @@ class User(AbstractUser):
                                   help_text='This is the default gender that workouts you create will be tagged for. Can be changed on workout creation.')
         user_gender = models.CharField(max_length=1, blank=True, null=True, choices=user_gender_choices)
         strength_program = models.ForeignKey('StrengthProgramInstance', on_delete=models.SET_NULL, null=True, blank=True)
+        bodyweight = models.IntegerField(null=True, blank=True)
+        history = HistoricalRecords()
         
         privacy_choices = [
                 ('Y', 'Private'),
@@ -154,11 +157,15 @@ class Workout(models.Model):
                                   help_text='Is this workout applicable for both Males and Females or only one?')
 
 
-                
+        history = HistoricalRecords()
+        
         movements = models.ManyToManyField(Movement, blank=True)
 
         classification = models.ForeignKey(Classification, default=3, blank=True, null=True, on_delete=models.SET_NULL)
 
+        class Meta:
+                ordering = ['-date_created', '-number_of_times_completed', '-id']
+                
         def is_general_workout(self):
                 return True
         
@@ -214,8 +221,6 @@ class Workout(models.Model):
 
         number_of_instances.short_description = 'Instances'
         
-        class Meta:
-                ordering = ['-date_created', '-number_of_times_completed', '-id']
 
         def display_name(self):
                 name = "Workout " + str(self.id)
@@ -281,6 +286,8 @@ class WorkoutInstance(models.Model):
         last_time_hidden_date_was_checked = models.DateField(default=get_default_localtime_date_yesterday)
         is_from_strength_program = models.BooleanField(default=False)
         strength_program_instance = models.ForeignKey('StrengthProgramInstance', on_delete=models.SET_NULL, null=True, blank=True)
+        
+        history = HistoricalRecords()
         
         class Meta:
                 ordering = ['-number_of_times_completed', '-date_added_by_user', '-id']
@@ -590,6 +597,8 @@ class Set(models.Model):
                 ]
         weight_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
 
+        history = HistoricalRecords()
+        
         class Meta:
                 ordering = ['set_number']
 
@@ -678,6 +687,8 @@ class CardioExercise(models.Model):
         rest = models.IntegerField(default=0, null=True, blank=True)
         cardio_exercise_number = models.IntegerField(default=1)
 
+        history = HistoricalRecords()
+        
         def rest_in_minutes(self):
                 #for template display
                 rest = self.rest // 60
@@ -731,28 +742,165 @@ class PersonalWorkoutRecord(models.Model):
     date_completed = models.DateTimeField(default=timezone.now)
     date_added_to_database = models.DateTimeField(auto_now_add= True)
     movement = models.ForeignKey(Movement, on_delete=models.SET_NULL, null=True)
-    weight_unit_choices = [
-                ('lbs', 'lbs'),
-                ('kgs', 'kgs'),
-                ]
 
-    one_rep_max = models.IntegerField(default=0)
-    one_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
-    two_rep_max = models.IntegerField(default=0)
-    two_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
-    three_rep_max = models.IntegerField(default=0)
-    three_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
-    five_rep_max = models.IntegerField(default=0)
-    five_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
-    ten_rep_max = models.IntegerField(default=0)
-    ten_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
-    twenty_rep_max = models.IntegerField(default=0)
-    twenty_rep_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
-    time_in_seconds = models.IntegerField(default=0)
-    training_max = models.IntegerField(default=0)
-    training_max_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
     created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['-date_completed', '-id']
         get_latest_by= ['date_completed', 'date_added_to_database']
+        
+    def display_name(self):
+        return self.movement.name
+    
+    def get_absolute_url(self):
+        return reverse('personal_record_detail', args=[str(self.created_by_user.username), str(self.id)])
+    
+class OneRepMax(models.Model):
+    date_added_to_database = models.DateTimeField(auto_now_add=True)
+    date_completed = models.DateTimeField(default=timezone.now)
+    personal_record = models.OneToOneField(PersonalWorkoutRecord, on_delete=models.SET_NULL, null=True)
+    
+    history = HistoricalRecords()
+    
+    weight_unit_choices = [
+                ('lbs', 'lbs'),
+                ('kgs', 'kgs'),
+                ]
+    weight = models.IntegerField(blank=True, null=True)
+    weight_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    
+    class Meta:
+        ordering = ['-date_completed', '-id']
+        get_latest_by= ['date_completed', 'date_added_to_database']
+        
+    def display_name(self):
+        return self.movement.name + ' One Rep Max'
+    
+class TwoRepMax(models.Model):
+    date_added_to_database = models.DateTimeField(auto_now_add=True)
+    date_completed = models.DateTimeField(default=timezone.now)
+    personal_record = models.OneToOneField(PersonalWorkoutRecord, on_delete=models.SET_NULL, null=True)
+    
+    history = HistoricalRecords()
+    
+    weight_unit_choices = [
+                ('lbs', 'lbs'),
+                ('kgs', 'kgs'),
+                ]
+    weight = models.IntegerField(blank=True, null=True)
+    weight_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    
+    class Meta:
+        ordering = ['-date_completed', '-id']
+        get_latest_by= ['date_completed', 'date_added_to_database']
+        
+    def display_name(self):
+        return self.movement.name + ' Two Rep Max'
+    
+class ThreeRepMax(models.Model):
+    date_added_to_database = models.DateTimeField(auto_now_add=True)
+    date_completed = models.DateTimeField(default=timezone.now)
+    personal_record = models.OneToOneField(PersonalWorkoutRecord, on_delete=models.SET_NULL, null=True)
+    
+    history = HistoricalRecords()
+    
+    weight_unit_choices = [
+                ('lbs', 'lbs'),
+                ('kgs', 'kgs'),
+                ]
+    weight = models.IntegerField(blank=True, null=True)
+    weight_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    
+    class Meta:
+        ordering = ['-date_completed', '-id']
+        get_latest_by= ['date_completed', 'date_added_to_database']
+        
+    def display_name(self):
+        return self.movement.name + ' Three Rep Max'
+    
+class FiveRepMax(models.Model):
+    date_added_to_database = models.DateTimeField(auto_now_add=True)
+    date_completed = models.DateTimeField(default=timezone.now)
+    personal_record = models.OneToOneField(PersonalWorkoutRecord, on_delete=models.SET_NULL, null=True)
+    
+    history = HistoricalRecords()
+    
+    weight_unit_choices = [
+                ('lbs', 'lbs'),
+                ('kgs', 'kgs'),
+                ]
+    weight = models.IntegerField(blank=True, null=True)
+    weight_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    
+    class Meta:
+        ordering = ['-date_completed', '-id']
+        get_latest_by= ['date_completed', 'date_added_to_database']
+        
+    def display_name(self):
+        return self.movement.name + ' Five Rep Max'
+    
+class TenRepMax(models.Model):
+    date_added_to_database = models.DateTimeField(auto_now_add=True)
+    date_completed = models.DateTimeField(default=timezone.now)
+    personal_record = models.OneToOneField(PersonalWorkoutRecord, on_delete=models.SET_NULL, null=True)
+    
+    history = HistoricalRecords()
+    
+    weight_unit_choices = [
+                ('lbs', 'lbs'),
+                ('kgs', 'kgs'),
+                ]
+    weight = models.IntegerField(blank=True, null=True)
+    weight_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    
+    class Meta:
+        ordering = ['-date_completed', '-id']
+        get_latest_by= ['date_completed', 'date_added_to_database']
+        
+    def display_name(self):
+        return self.movement.name + ' Ten Rep Max'
+    
+class TwentyRepMax(models.Model):
+    date_added_to_database = models.DateTimeField(auto_now_add=True)
+    date_completed = models.DateTimeField(default=timezone.now)
+    personal_record = models.OneToOneField(PersonalWorkoutRecord, on_delete=models.SET_NULL, null=True)
+    
+    history = HistoricalRecords()
+    
+    weight_unit_choices = [
+                ('lbs', 'lbs'),
+                ('kgs', 'kgs'),
+                ]
+    weight = models.IntegerField(blank=True, null=True)
+    weight_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    
+    class Meta:
+        ordering = ['-date_completed', '-id']
+        get_latest_by= ['date_completed', 'date_added_to_database']
+        
+    def display_name(self):
+        return self.movement.name + ' Twenty Rep Max'
+    
+class TrainingMax(models.Model):
+    date_added_to_database = models.DateTimeField(auto_now_add=True)
+    date_completed = models.DateTimeField(default=timezone.now)
+    personal_record = models.OneToOneField(PersonalWorkoutRecord, on_delete=models.SET_NULL, null=True)
+    
+    history = HistoricalRecords()
+    
+    weight_unit_choices = [
+                ('lbs', 'lbs'),
+                ('kgs', 'kgs'),
+                ]
+    weight = models.IntegerField(blank=True, null=True)
+    weight_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+    
+    class Meta:
+        ordering = ['-date_completed', '-id']
+        get_latest_by= ['date_completed', 'date_added_to_database']
+        
+    def display_name(self):
+        return self.movement.name + ' Training Max'
+    
