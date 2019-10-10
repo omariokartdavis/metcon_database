@@ -1,0 +1,63 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% if user.is_authenticated %}
+		{% if user.username == personal_record.created_by_user.username or user.coach in personal_record.created_by_user.athlete.coach_set.all %}
+			<h1>{{ personal_record.display_name }} Records</h1>
+		
+			<form class="center_stuff" action="{% url 'edit_personal_record' user.username personal_record.id %}">
+				<input type="submit" value="Edit Records"/>
+			</form>
+			
+			<div class="tabContentReplacement z_2">
+				<div class="listedWorkouts">
+					<div class="workoutContent">
+						
+						<p>Maxes: </p>
+						
+						{% if personal_record.onerepmax.weight %}
+							<p>1 rep: {{ personal_record.onerepmax.weight }}{{ personal_record.onerepmax.weight_units }}</p>
+						{% else %}
+							<p>1 rep: No max listed</p>
+						{% endif %}
+						{% if personal_record.tworepmax.weight %}
+							<p>2 rep: {{ personal_record.tworepmax.weight }}{{ personal_record.tworepmax.weight_units }}</p>
+						{% else %}
+							<p>2 rep: No max listed</p>
+						{% endif %}
+						{% if personal_record.threerepmax.weight %}
+							<p>3 rep: {{ personal_record.threerepmax.weight }}{{ personal_record.threerepmax.weight_units }}</p>
+						{% else %}
+							<p>3 rep: No max listed</p>
+						{% endif %}
+						{% if personal_record.fiverepmax.weight %}
+							<p>5 rep: {{ personal_record.fiverepmax.weight }}{{ personal_record.fiverepmax.weight_units }}</p>
+						{% else %}
+							<p>5 rep: No max listed</p>
+						{% endif %}
+						{% if personal_record.tenrepmax.weight %}
+							<p>10 rep: {{ personal_record.tenrepmax.weight }}{{ personal_record.tenrepmax.weight_units }}</p>
+						{% else %}
+							<p>10 rep: No max listed</p>
+						{% endif %}
+						{% if personal_record.twentyrepmax.weight %}
+							<p>20 rep: {{ personal_record.twentyrepmax.weight }}{{ personal_record.twentyrepmax.weight_units }}</p>
+						{% else %}
+							<p>20 rep: No max listed</p>
+						{% endif %}
+						<br />
+						{% if personal_record.training_max.weight %}
+							<p>Current Training Max: {{ personal_record.training_max.weight }}{{ personal_record.training_max.weight_units }}</p>
+						{% else %}
+							<p>Current Training Max: No training max listed</p>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		{% else %}
+			<div class='center_stuff'><p>You do not have permission to view this page. Please login with an account that has proper permissions.</p></div>
+		{% endif %}
+	{% else %}
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
+	{% endif %}
+{% endblock %}

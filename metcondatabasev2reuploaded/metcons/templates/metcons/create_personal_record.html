@@ -1,0 +1,31 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% if user.is_authenticated %}
+		{% if user.username == creating_user.username %} <!-- fix this if statement -->
+			<h1>Create Record</h1>
+			
+
+			<form method="post">
+				<div class="tabContentReplacement">
+					<div class="listedWorkouts">
+						<div class="workoutContent">
+							{% csrf_token %}
+							<table>
+							{{ form.as_table }}
+							</table>
+						</div>
+						<div class="create_workout_submit_buttons">
+							<input type="hidden" name="create record">
+							<input type="submit" class='input_submit create_workout_input_submit' value="Submit">
+						</div>
+					</div>
+				</div>
+			</form>
+		{% else %}
+			<div class='center_stuff'><p>You do not have permission to view this page. Please login with an account that has proper permissions.</p></div>
+		{% endif %}
+	{% else %}
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
+	{% endif %}
+{% endblock %}
