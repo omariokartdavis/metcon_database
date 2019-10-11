@@ -20,6 +20,62 @@ class SetInline(admin.TabularInline):
 
     readonly_fields = ['display_name']
     
+class OneRepMaxInline(admin.TabularInline):
+    model = OneRepMax
+    extra = 0
+    
+    field = ['display_name', 'weight', 'weight_units']
+    
+    readonly_fields = ['display_name']
+    
+class TwoRepMaxInline(admin.TabularInline):
+    model = TwoRepMax
+    extra = 0
+    
+    field = ['display_name', 'weight', 'weight_units']
+    
+    readonly_fields = ['display_name']
+    
+class ThreeRepMaxInline(admin.TabularInline):
+    model = ThreeRepMax
+    extra = 0
+    
+    field = ['display_name', 'weight', 'weight_units']
+    
+    readonly_fields = ['display_name']
+    
+class FiveRepMaxInline(admin.TabularInline):
+    model = FiveRepMax
+    extra = 0
+    
+    field = ['display_name', 'weight', 'weight_units']
+    
+    readonly_fields = ['display_name']
+    
+class TenRepMaxInline(admin.TabularInline):
+    model = TenRepMax
+    extra = 0
+    
+    field = ['display_name', 'weight', 'weight_units']
+    
+    readonly_fields = ['display_name']
+    
+class TwentyRepMaxInline(admin.TabularInline):
+    model = TwentyRepMax
+    extra = 0
+    
+    field = ['display_name', 'weight', 'weight_units']
+    
+    readonly_fields = ['display_name']
+    
+class TrainingMaxInline(admin.TabularInline):
+    model = TrainingMax
+    extra = 0
+    
+    field = ['display_name', 'weight', 'weight_units']
+    
+    readonly_fields = ['display_name']
+    
 @admin.register(User)
 class UserProfileAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
@@ -42,6 +98,8 @@ class PersonalWorkoutRecordAdmin(admin.ModelAdmin):
                     'date_completed',
                     'movement',
                     )
+    
+    inlines = [OneRepMaxInline, TwoRepMaxInline, ThreeRepMaxInline, FiveRepMaxInline, TenRepMaxInline, TwentyRepMaxInline, TrainingMaxInline]
     
 admin.site.register(Classification)
 
