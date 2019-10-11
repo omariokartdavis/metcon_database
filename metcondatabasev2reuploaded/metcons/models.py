@@ -748,7 +748,7 @@ class PersonalWorkoutRecord(models.Model):
     history = HistoricalRecords()
     
     class Meta:
-        ordering = ['-date_completed', '-id']
+        ordering = ['-date_completed', '-id', 'movement']
         get_latest_by= ['date_completed', 'date_added_to_database']
         
     def display_name(self):
