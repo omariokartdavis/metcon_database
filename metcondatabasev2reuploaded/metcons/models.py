@@ -596,12 +596,19 @@ class Set(models.Model):
                 ('%', '%'),
                 ]
         weight_units = models.CharField(max_length=5, blank=True, null=True, choices = weight_unit_choices, default='lbs')
+        training_max_percentage = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, help_text='What percentage of your training max should this sets weight be?')
+        round_base = models.IntegerField(blank=True, null=True, help_text="What is the smallest value you want your weights to round to?")
+        training_max= models.ForeignKey('TrainingMax', on_delete=models.SET_NULL, blank=True, null=True)
 
         history = HistoricalRecords()
         
         class Meta:
-                ordering = ['set_number']
+                ordering = ['set_number', 'id']
 
+        def update_weight_based_on_training_max(self):
+            self.weight = self.round_base * round((self.training_max_percentage*self.training_max.weight)/self.round_base)
+            self.weight_units = self.training_max.weight_units
+            
         def display_name(self):
                 if self.strength_exercise:
                         return "Set " + str(self.set_number) + ' of ' + self.strength_exercise.display_name()
@@ -652,6 +659,10 @@ class StrengthProgram(models.Model):
         
         weight_increase_timeline = models.CharField(max_length=6, blank=True, null=True, choices=weight_increase_timeline_choices)
         
+        def __str__(self):
+            if self.name:
+                return self.name
+        
 class StrengthProgramInstance(models.Model):
         strength_program = models.ForeignKey(StrengthProgram, on_delete=models.CASCADE, null=True)
         
@@ -666,7 +677,7 @@ class StrengthProgramInstance(models.Model):
         def display_strength_program(self):
             return self.strength_program.name
         
-        
+            
 class CardioExercise(models.Model):
         date_created = models.DateTimeField(default=timezone.now)
         date_added_to_database = models.DateTimeField(auto_now_add = True)
