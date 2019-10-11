@@ -111,13 +111,13 @@ from django.utils import timezone
 
 num_users_per_category = 5
 
-for i in range(num_users_per_category):
+for i in range(1, num_users_per_category+1):
     if not User.objects.filter(username=f'testathlete{i}').exists():
-        User.objects.create(username=f'testathlete{i}', password='4a0308ki9ps', is_athlete=True)
+        User.objects.create_user(username=f'testathlete{i}', password='4a0308ki9ps', is_athlete=True)
     if not User.objects.filter(username=f'testcoach{i}').exists():
-        User.objects.create(username=f'testcoach{i}', password='4a0308ki9ps', is_coach=True)
+        User.objects.create_user(username=f'testcoach{i}', password='4a0308ki9ps', is_coach=True)
     if not User.objects.filter(username=f'testgymowner{i}').exists():
-        User.objects.create(username=f'testgymowner{i}', password='4a0308ki9ps', is_gym_owner=True)
+        User.objects.create_user(username=f'testgymowner{i}', password='4a0308ki9ps', is_gym_owner=True)
     testathlete_user = User.objects.get(username=f'testathlete{i}')
     testcoach_user = User.objects.get(username=f'testcoach{i}')
     testgymowner_user = User.objects.get(username=f'testgymowner{i}')
@@ -160,7 +160,9 @@ for k, v in all_movements.movement_list.items():
     if k not in current_movements_in_database_names:
         Movement.objects.create(name=k, classification=Classification.objects.get(name=v))
 
-    
+if not StrengthProgram.objects.filter(name='nSuns 531 LP').exists():
+    StrengthProgram.objects.create(name='nSuns 531 LP', weight_increase_timeline='weekly')
+
 ##to change this to include abbreviations later:
 ##change movement_list to a list of lists:
 ##movement_list = [
