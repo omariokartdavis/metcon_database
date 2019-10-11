@@ -7,19 +7,27 @@ from django.contrib.auth.forms import UserCreationForm
 from metcons.models import User, Movement, Classification, StrengthProgram
 from functools import partial
 
-movement_choices = [(i.name, i.name) for i in Movement.objects.all()]
+#these are all commented out in an attempt to move the querysets into the form classes so that it will not fail when resetting the database and trying to perform migrations
+# if these are left here uncommented, when django checks the views.py file these get pulled on import of forms which causes a failure because the models won't exist in the database yet
 
-cardio_choices = [(i.name, i.name) for i in Movement.objects.filter(classification__name='Cardio')]
+#movement_choices = [(i.name, i.name) for i in Movement.objects.all()]
 
-classification_choices = [(i.name, i.name) for i in Classification.objects.all()]
+#cardio_choices = [(i.name, i.name) for i in Movement.objects.filter(classification__name='Cardio')]
 
-strength_program_choices = [(i.name, i.name) for i in StrengthProgram.objects.all()]
+#classification_choices = [(i.name, i.name) for i in Classification.objects.all()]
+
+#strength_program_choices = [(i.name, i.name) for i in StrengthProgram.objects.all()]
 
 weight_unit_choices = [
     ('lbs', 'lbs'),
     ('kgs', 'kgs'),
     ('%', '%'),
     ]
+
+weight_unit_choices_no_percent = [
+        ('lbs', 'lbs'),
+        ('kgs', 'kgs'),
+        ]
 
 strength_program_weight_unit_choices = [
     ('lbs', 'lbs'),
@@ -123,8 +131,8 @@ class RemoveAthletesFromGroupForm(forms.Form):
     athlete_to_remove = forms.MultipleChoiceField(help_text='Which athletes would you like to remove from this group?')
     
 class CreatePersonalRecordForm(forms.Form):
-    weight_units = forms.ChoiceField(widget=forms.Select(), choices=weight_unit_choices, help_text='What units is the weight in?', required=False)
-    movement = forms.ChoiceField(widget=forms.Select(), choices=movement_choices, help_text='What Movement would you like to perform?')
+    weight_units = forms.ChoiceField(widget=forms.Select(), choices=weight_unit_choices_no_percent, help_text='What units is the weight in?', required=False)
+    movement = forms.ModelChoiceField(queryset=Movement.objects.all(), help_text='What Movement would you like to perform?')#widget=forms.Select(), choices=movement_choices, help_text='What Movement would you like to perform?')
     one_rep_max = forms.IntegerField(required=False)
     two_rep_max = forms.IntegerField(required=False)
     three_rep_max = forms.IntegerField(required=False)
@@ -134,7 +142,7 @@ class CreatePersonalRecordForm(forms.Form):
     training_max = forms.IntegerField(required=False)
     
 class EditPersonalRecordForm(forms.Form):
-    weight_units = forms.ChoiceField(widget=forms.Select(), choices=weight_unit_choices, help_text='What units is the weight in?', required=False)
+    weight_units = forms.ChoiceField(widget=forms.Select(), choices=weight_unit_choices_no_percent, help_text='What units is the weight in?', required=False)
     one_rep_max = forms.IntegerField(required=False)
     two_rep_max = forms.IntegerField(required=False)
     three_rep_max = forms.IntegerField(required=False)
@@ -160,11 +168,11 @@ class CreateWorkoutForm(forms.Form):
             
 class CreateMovementForm(forms.Form):
     name = forms.CharField(max_length=200, required=True)
-    classification = forms.ChoiceField(widget=forms.Select(), choices=classification_choices, help_text='What classification does this movement have?')
+    classification = forms.ModelChoiceField(queryset=Classification.objects.all(), help_text='What classification does this movement have?')#widget=forms.Select(), choices=classification_choices, help_text='What classification does this movement have?')
 
 class CreateStrengthWorkoutForm(forms.Form):
     #modify this to allow for changing number of sets/reps/weights to be created
-    movement = forms.ChoiceField(widget=forms.Select(), choices=movement_choices, help_text='What Movement would you like to perform?')
+    movement = forms.ModelChoiceField(queryset=Movement.objects.all(), help_text='What Movement would you like to perform?')#widget=forms.Select(), choices=movement_choices, help_text='What Movement would you like to perform?')
     sets = forms.IntegerField(help_text='How many sets would you like to perform?')
     reps = forms.IntegerField(help_text='If reps left blank it is assumed max possible reps should be performed.', required=False)
     weight = forms.DecimalField(min_value=0.0, max_value=99999.9, decimal_places=1, max_digits=6, required=False)
@@ -183,7 +191,7 @@ class CreateStrengthWorkoutForm(forms.Form):
 StrengthWorkoutFormset = formset_factory(CreateStrengthWorkoutForm, extra=1)
 
 class CreateStrengthProgramForm(forms.Form):
-    strength_program = forms.ChoiceField(widget=forms.Select(), choices=strength_program_choices)
+    strength_program = forms.ModelChoiceField(queryset=StrengthProgram.objects.all() )#widget=forms.Select(), choices=strength_program_choices)
     day_variation = forms.ChoiceField(widget=forms.Select(), choices=day_variation_choices, required=False)
     units = forms.ChoiceField(widget=forms.Select(), choices=strength_program_weight_unit_choices)
     bench_max = forms.IntegerField(required=False, label='Bench One Rep Max')
@@ -206,7 +214,7 @@ class CreateStrengthProgramForm(forms.Form):
             self.fields['group_to_assign'] = forms.MultipleChoiceField(required=False, help_text='Which groups would you like to assign this workout to?')
     
 class CreateCardioWorkoutForm(forms.Form):
-    movement = forms.ChoiceField(widget=forms.Select(), choices=cardio_choices, help_text='What Movement would you like to perform?')
+    movement = forms.ModelChoiceField(Movement.objects.filter(classification__name='Cardio'), help_text='What Movement would you like to perform?') #widget=forms.Select(), choices=cardio_choices, help_text='What Movement would you like to perform?')
     distance = forms.IntegerField(help_text='What distance?', label='Distance/Time')
     distance_units = forms.ChoiceField(widget=forms.Select(), choices=distance_or_time_unit_choices, help_text='What units is the distance in?', required=False)
     reps = forms.IntegerField(required=False)
@@ -317,7 +325,7 @@ class EditStrengthInstanceForm(forms.Form):
         if instance.strength_workout:
             for i in instance.strength_workout.strength_exercises.all():
                 movement_name = 'movement_%s' % (i.strength_exercise_number,)
-                self.fields[movement_name] = forms.ChoiceField(widget=forms.Select(), choices=movement_choices, required=False)
+                self.fields[movement_name] = forms.ModelChoiceField(queryset=Movement.objects.all(), required=False)#widget=forms.Select(), choices=movement_choices, required=False)
                 self.fields[movement_name].initial = i.movement
                 for q in i.set_set.all():
                     field_name = '%s_Set_%d_Reps' % (i.movement, q.set_number,)
@@ -337,7 +345,7 @@ class EditCardioInstanceForm(forms.Form):
         if instance.cardio_workout:
             for i in instance.cardio_workout.cardio_exercises.all():
                 movement_name = 'movement_%s' % (i.cardio_exercise_number,)
-                self.fields[movement_name] = forms.ChoiceField(widget=forms.Select(), choices=cardio_choices, required=False)
+                self.fields[movement_name] = forms.ModelChoiceField(Movement.objects.filter(classification__name='Cardio'), required=False)#widget=forms.Select(), choices=cardio_choices, required=False)
                 self.fields[movement_name].initial = i.movement
                 reps_field_name = movement_name + '_reps'
                 self.fields[reps_field_name] = forms.IntegerField(required=False, label = 'Number of Reps')
