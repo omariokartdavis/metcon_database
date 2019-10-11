@@ -2,9 +2,18 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
 
+## 10/10/19
+at home (not at work or tablet)
+- movements_list.py
+- views.py
+- admin.py
+- models.py (nomigrations)
+- edit_personal_record.html
+- personal_record_detail.html
+- personal_record_list.html
 
 ## 10/10/19
-at work
+at work (not on tablet)
 pip install django-simple-history
 - metcondatabasev2/settings.py
 - models.py (migrations)
@@ -19,7 +28,7 @@ pip install django-simple-history
 - base_generic.html
 
 ## 10/3/19
-at work (not on home or tablet)
+at work (not on tablet)
 - get_most_recent_workouts.py
 - movements_list.py
 - user_page.css
