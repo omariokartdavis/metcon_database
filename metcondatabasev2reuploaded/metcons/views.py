@@ -300,34 +300,65 @@ def create_personal_record(request, username):
                 else:
                     existing_record = PersonalWorkoutRecord.objects.get(created_by_user=user, movement__name=form.cleaned_data['movement'])
                     
-                    if form.cleaned_data['one_rep_max'] and existing_record.onerepmax and form.cleaned_data['one_rep_max'] != existing_record.onerepmax.weight:
-                        existing_record.onerepmax.weight =form.cleaned_data['one_rep_max']
-                        existing_record.onerepmax.weight_units = form.cleaned_data['weight_units']
-                        existing_record.onerepmax.save()
-                    if form.cleaned_data['two_rep_max'] and existing_record.tworepmax and form.cleaned_data['two_rep_max'] != existing_record.tworepmax.weight:
-                        existing_record.tworepmax.weight=form.cleaned_data['two_rep_max']
-                        existing_record.tworepmax.weight_units = form.cleaned_data['weight_units']
-                        existing_record.tworepmax.save()
-                    if form.cleaned_data['three_rep_max'] and existing_record.threerepmax and form.cleaned_data['three_rep_max'] != existing_record.threerepmax.weight:
-                        existing_record.threerepmax.weight=form.cleaned_data['three_rep_max']
-                        existing_record.threerepmax.weight_units = form.cleaned_data['weight_units']
-                        existing_record.threerepmax.save()
-                    if form.cleaned_data['five_rep_max'] and existing_record.fiverepmax and form.cleaned_data['five_rep_max'] != existing_record.fiverepmax.weight:
-                        existing_record.fiverepmax.weight=form.cleaned_data['five_rep_max']
-                        existing_record.fiverepmax.weight_units = form.cleaned_data['weight_units']
-                        existing_record.fiverepmax.save()
-                    if form.cleaned_data['ten_rep_max'] and existing_record.tenrepmax and form.cleaned_data['ten_rep_max'] != existing_record.tenrepmax.weight:
-                        existing_record.tenrepmax.weight=form.cleaned_data['ten_rep_max']
-                        existing_record.tenrepmax.weight_units = form.cleaned_data['weight_units']
-                        existing_record.tenrepmax.save()
-                    if form.cleaned_data['twenty_rep_max'] and existing_record.twentyrepmax and form.cleaned_data['twenty_rep_max'] != existing_record.twentyrepmax.weight:
-                        existing_record.twentyrepmax.weight=form.cleaned_data['twenty_rep_max']
-                        existing_record.twentyrepmax.weight_units = form.cleaned_data['weight_units']
-                        existing_record.twentyrepmax.save()
-                    if form.cleaned_data['training_max'] and existing_record.trainingmax and form.cleaned_data['training_max'] != existing_record.trainingmax.weight:
-                        existing_record.trainingmax.weight=form.cleaned_data['training_max']
-                        existing_record.trainingmax.weight_units = form.cleaned_data['weight_units']
-                        existing_record.trainingmax.save()
+                    #all of these need to be changed to the same if format of edit_personal_record
+                    # where it checks for if OneRepMax.objects.filter(personal_record=existing_record).exists()
+                    # otherwise it will break because you cant call existin_record.onerepmax if the one rep max doesn't already exist
+                    if form.cleaned_data['one_rep_max']:
+                        if OneRepMax.objects.filter(personal_record=existing_record).exists():
+                            if form.cleaned_data['one_rep_max'] != existing_record.onerepmax.weight:
+                                existing_record.onerepmax.weight =form.cleaned_data['one_rep_max']
+                                existing_record.onerepmax.weight_units = form.cleaned_data['weight_units']
+                                existing_record.onerepmax.save()
+                        else:
+                            OneRepMax.objects.create(personal_record=existing_record, weight=form.cleaned_data['one_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                    if form.cleaned_data['two_rep_max']:
+                        if TwoRepMax.objects.filter(personal_record=existing_record).exists():
+                            if form.cleaned_data['two_rep_max'] != existing_record.tworepmax.weight:
+                                existing_record.tworepmax.weight=form.cleaned_data['two_rep_max']
+                                existing_record.tworepmax.weight_units = form.cleaned_data['weight_units']
+                                existing_record.tworepmax.save()
+                        else:
+                            TwoRepMax.objects.create(personal_record=existing_record, weight=form.cleaned_data['two_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                    if form.cleaned_data['three_rep_max']:
+                        if ThreeRepMax.objects.filter(personal_record=existing_record).exists():
+                            if form.cleaned_data['three_rep_max'] != existing_record.threerepmax.weight:
+                                existing_record.threerepmax.weight=form.cleaned_data['three_rep_max']
+                                existing_record.threerepmax.weight_units = form.cleaned_data['weight_units']
+                                existing_record.threerepmax.save()
+                        else:
+                            ThreeRepMax.objects.create(personal_record=existing_record, weight=form.cleaned_data['three_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                    if form.cleaned_data['five_rep_max']:
+                        if FiveRepMax.objects.filter(personal_record=existing_record).exists():
+                            if form.cleaned_data['five_rep_max'] != existing_record.fiverepmax.weight:
+                                existing_record.fiverepmax.weight=form.cleaned_data['five_rep_max']
+                                existing_record.fiverepmax.weight_units = form.cleaned_data['weight_units']
+                                existing_record.fiverepmax.save()
+                        else:
+                            FiveRepMax.objects.create(personal_record=existing_record, weight=form.cleaned_data['five_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                    if form.cleaned_data['ten_rep_max']:
+                        if TenRepMax.objects.filter(personal_record=existing_record).exists():
+                            if form.cleaned_data['ten_rep_max'] != existing_record.tenrepmax.weight:
+                                existing_record.tenrepmax.weight=form.cleaned_data['ten_rep_max']
+                                existing_record.tenrepmax.weight_units = form.cleaned_data['weight_units']
+                                existing_record.tenrepmax.save()
+                        else:
+                            TenRepMax.objects.create(personal_record=existing_record, weight=form.cleaned_data['ten_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                    if form.cleaned_data['twenty_rep_max']:
+                        if TwentyRepMax.objects.filter(personal_record=existing_record).exists():
+                            if form.cleaned_data['twenty_rep_max'] != existing_record.twentyrepmax.weight:
+                                existing_record.twentyrepmax.weight=form.cleaned_data['twenty_rep_max']
+                                existing_record.twentyrepmax.weight_units = form.cleaned_data['weight_units']
+                                existing_record.twentyrepmax.save()
+                        else:
+                            TwentyRepMax.objects.create(personal_record=existing_record, weight=form.cleaned_data['twenty_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                    if form.cleaned_data['training_max']:
+                        if TrainingMax.objects.filter(personal_record=existing_record).exists():
+                            if form.cleaned_data['training_max'] != existing_record.trainingmax.weight:
+                                existing_record.trainingmax.weight=form.cleaned_data['training_max']
+                                existing_record.trainingmax.weight_units = form.cleaned_data['weight_units']
+                                existing_record.trainingmax.save()
+                        else:
+                            TrainingMax.objects.create(personal_record=existing_record, weight=form.cleaned_data['training_max'], weight_units = form.cleaned_data['weight_units'])
                     
                     return HttpResponseRedirect(reverse('personal_record_list', args=[request.user.username]))
             else:
@@ -352,50 +383,123 @@ def edit_personal_record(request, username, pk):
         if 'edit record' in request.POST:
             form = EditPersonalRecordForm(request.POST)
             if form.is_valid():
-                if form.cleaned_data['one_rep_max'] != record.onerepmax.weight:
-                    record.onerepmax.weight = form.cleaned_data['one_rep_max']
-                    record.onerepmax.weight_units = form.cleaned_data['weight_units']
-                    record.onerepmax.save()
-                if form.cleaned_data['two_rep_max'] != record.tworepmax.weight:
-                    record.tworepmax.weight = form.cleaned_data['two_rep_max']
-                    record.tworepmax.weight_units = form.cleaned_data['weight_units']
-                    record.tworepmax.save()
-                if form.cleaned_data['three_rep_max'] != record.threerepmax.weight:
-                    record.threerepmax.weight = form.cleaned_data['three_rep_max']
-                    record.threerepmax.weight_units = form.cleaned_data['weight_units']
-                    record.threerepmax.save()
-                if form.cleaned_data['five_rep_max'] != record.fiverepmax.weight:
-                    record.fiverepmax.weight = form.cleaned_data['five_rep_max']
-                    record.fiverepmax.weight_units = form.cleaned_data['weight_units']
-                    record.fiverepmax.save()
-                if form.cleaned_data['ten_rep_max'] != record.tenrepmax.weight:
-                    record.tenrepmax.weight = form.cleaned_data['ten_rep_max']
-                    record.tenrepmax.weight_units = form.cleaned_data['weight_units']
-                    record.tenrepmax.save()
-                if form.cleaned_data['twenty_rep_max'] != record.twentyrepmax.weight:
-                    record.twentyrepmax.weight = form.cleaned_data['twenty_rep_max']
-                    record.twentyrepmax.weight_units = form.cleaned_data['weight_units']
-                    record.twentyrepmax.save()
-                if form.cleaned_data['training_max'] != record.trainingmax.weight:
-                    record.trainingmax.weight = form.cleaned_data['training_max']
-                    record.trainingmax.weight_units = form.cleaned_data['weight_units']
-                    record.trainingmax.save()
+                if form.cleaned_data['one_rep_max']:
+                    if OneRepMax.objects.filter(personal_record=record).exists():
+                        if form.cleaned_data['one_rep_max'] != record.onerepmax.weight:
+                            record.onerepmax.weight = form.cleaned_data['one_rep_max']
+                            record.onerepmax.weight_units = form.cleaned_data['weight_units']
+                            record.onerepmax.save()
+                    else:
+                        OneRepMax.objects.create(personal_record=record, weight=form.cleaned_data['one_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                if form.cleaned_data['two_rep_max']:
+                    if TwoRepMax.objects.filter(personal_record=record).exists():
+                        if form.cleaned_data['two_rep_max'] != record.tworepmax.weight:
+                            record.tworepmax.weight = form.cleaned_data['two_rep_max']
+                            record.tworepmax.weight_units = form.cleaned_data['weight_units']
+                            record.tworepmax.save()
+                    else:
+                        TwoRepMax.objects.create(personal_record=record, weight=form.cleaned_data['two_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                if form.cleaned_data['three_rep_max']:
+                    if ThreeRepMax.objects.filter(personal_record=record).exists():
+                        if form.cleaned_data['three_rep_max'] != record.threerepmax.weight:
+                            record.threerepmax.weight = form.cleaned_data['three_rep_max']
+                            record.threerepmax.weight_units = form.cleaned_data['weight_units']
+                            record.threerepmax.save()
+                    else:
+                        ThreeRepMax.objects.create(personal_record=record, weight=form.cleaned_data['three_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                if form.cleaned_data['five_rep_max']:
+                    if FiveRepMax.objects.filter(personal_record=record).exists():
+                        if form.cleaned_data['five_rep_max'] != record.fiverepmax.weight:
+                            record.fiverepmax.weight = form.cleaned_data['five_rep_max']
+                            record.fiverepmax.weight_units = form.cleaned_data['weight_units']
+                            record.fiverepmax.save()
+                    else:
+                        FiveRepMax.objects.create(personal_record=record, weight=form.cleaned_data['five_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                if form.cleaned_data['ten_rep_max']:
+                    if TenRepMax.objects.filter(personal_record=record).exists():
+                        if form.cleaned_data['ten_rep_max'] != record.tenrepmax.weight:
+                            record.tenrepmax.weight = form.cleaned_data['ten_rep_max']
+                            record.tenrepmax.weight_units = form.cleaned_data['weight_units']
+                            record.tenrepmax.save()
+                    else:
+                        TenRepMax.objects.create(personal_record=record, weight=form.cleaned_data['ten_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                if form.cleaned_data['twenty_rep_max']:
+                    if TwentyRepMax.objects.filter(personal_record=record).exists():
+                        if form.cleaned_data['twenty_rep_max'] != record.twentyrepmax.weight:
+                            record.twentyrepmax.weight = form.cleaned_data['twenty_rep_max']
+                            record.twentyrepmax.weight_units = form.cleaned_data['weight_units']
+                            record.twentyrepmax.save()
+                    else:
+                        TwentyRepMax.objects.create(personal_record=record, weight=form.cleaned_data['twenty_rep_max'], weight_units = form.cleaned_data['weight_units'])
+                if form.cleaned_data['training_max']:
+                    if TrainingMax.objects.filter(personal_record=record).exists():
+                        if form.cleaned_data['training_max'] != record.trainingmax.weight:
+                            record.trainingmax.weight = form.cleaned_data['training_max']
+                            record.trainingmax.weight_units = form.cleaned_data['weight_units']
+                            record.trainingmax.save()
+                    else:
+                        TrainingMax.objects.create(personal_record=record, weight=form.cleaned_data['training_max'], weight_units = form.cleaned_data['weight_units'])
                 
                 return HttpResponseRedirect(reverse('personal_record_list', args=[request.user.username]))
             else:
                 return render(request, 'metcons/edit_personal_record.html', {'form':form})
     else:
-        form = EditPersonalRecordForm(initial={'one_rep_max': record.onerepmax.weight,
-                                               'two_rep_max': record.tworepmax.weight,
-                                               'three_rep_max': record.threerepmax.weight,
-                                               'five_rep_max': record.fiverepmax.weight,
-                                               'ten_rep_max': record.tenrepmax.weight,
-                                               'twenty_rep_max': record.twentyrepmax.weight,
-                                               'training_max': record.trainingmax.weight,
-                                               'weight_units': record.trainingmax.weight_units})
+        if OneRepMax.objects.filter(personal_record=record).exists():
+            one_rep_max=record.onerepmax.weight
+        else:
+            one_rep_max=None
+        if TwoRepMax.objects.filter(personal_record=record).exists():
+            two_rep_max=record.tworepmax.weight
+        else:
+            two_rep_max=None
+        if ThreeRepMax.objects.filter(personal_record=record).exists():
+            three_rep_max=record.threerepmax.weight
+        else:
+            three_rep_max=None
+        if FiveRepMax.objects.filter(personal_record=record).exists():
+            five_rep_max=record.fiverepmax.weight
+        else:
+            five_rep_max=None
+        if TenRepMax.objects.filter(personal_record=record).exists():
+            ten_rep_max=record.tenrepmax.weight
+        else:
+            ten_rep_max=None
+        if TwentyRepMax.objects.filter(personal_record=record).exists():
+            twenty_rep_max=record.twentyrepmax.weight
+        else:
+            twenty_rep_max=None
+        if TrainingMax.objects.filter(personal_record=record).exists():
+            training_max=record.trainingmax.weight
+        else:
+            training_max=None
+        if OneRepMax.objects.filter(personal_record=record).exists():
+            weight_units = record.onerepmax.weight_units
+        elif TrainingMax.objects.filter(personal_record=record).exists():
+            weight_units = record.trainingmax.weight_units
+        elif TwoRepMax.objects.filter(personal_record=record).exists():
+            weight_units = record.tworepmax.weight_units
+        elif ThreeRepMax.objects.filter(personal_record=record).exists():
+            weight_units = record.threerepmax.weight_units
+        elif FiveRepMax.objects.filter(personal_record=record).exists():
+            weight_units = record.fiverepmax.weight_units
+        elif TenRepMax.objects.filter(personal_record=record).exists():
+            weight_units = record.tenrepmax.weight_units
+        elif TwentyRepMax.objects.filter(personal_record=record).exists():
+            weight_units = record.twentyrepmax.weight_units
+        else:
+            weight_units=None
+        form = EditPersonalRecordForm(initial={'one_rep_max': one_rep_max,
+                                               'two_rep_max': two_rep_max,
+                                               'three_rep_max': three_rep_max,
+                                               'five_rep_max': five_rep_max,
+                                               'ten_rep_max':ten_rep_max,
+                                               'twenty_rep_max': twenty_rep_max,
+                                               'training_max': training_max,
+                                               'weight_units': weight_units})
         
         context = {
                 'form': form,
+                'record': record,
                 }
         
         return render(request, 'metcons/edit_personal_record.html', context=context)
@@ -1523,33 +1627,33 @@ def create_result(request, username, pk):
                             instance.add_date_to_be_completed(next_scheduled_date)
                             # need some easy way to increase Training Max or weights for next time workout is scheduled
                             current_user = instance.current_user
-                            personal_record_main_exercise = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=main_exercise.movement, training_max__gt=0).latest()
+                            personal_record_main_exercise = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=main_exercise.movement)
                             if main_exercise_reps > 1 and main_exercise_reps < 4:
-                                if personal_record_main_exercise.training_max_units == 'lbs':
-                                    personal_record_main_exercise.training_max = F('training_max') + 5
-                                    personal_record_main_exercise.save()
+                                if personal_record_main_exercise.trainingmax.weight_units == 'lbs':
+                                    personal_record_main_exercise.trainingmax.weight = F('training_max') + 5
+                                    personal_record_main_exercise.trainingmax.save()
                                 else:
-                                    personal_record_main_exercise.training_max = F('training_max') + 2
-                                    personal_record_main_exercise.save()
+                                    personal_record_main_exercise.trainingmax.weight = F('training_max') + 2
+                                    personal_record_main_exercise.trainingmax.save()
                             elif main_exercise_reps >= 4:
-                                if personal_record_main_exercise.training_max_units == 'lbs':
-                                    personal_record_main_exercise.training_max = F('training_max') + 10
-                                    personal_record_main_exercise.save()
+                                if personal_record_main_exercise.trainingmax.weight_units == 'lbs':
+                                    personal_record_main_exercise.trainingmax.weight = F('training_max') + 10
+                                    personal_record_main_exercise.trainingmax.save()
                                 else:
-                                    personal_record_main_exercise.training_max = F('training_max') + 5
-                                    personal_record_main_exercise.save()
-                            personal_record_main_exercise.refresh_from_db()
+                                    personal_record_main_exercise.trainingmax.weight = F('training_max') + 5
+                                    personal_record_main_exercise.trainingmax.save()
+                            personal_record_main_exercise.trainingmax.refresh_from_db()
                             today = timezone.now().date()
                             next_monday = today+timezone.timedelta(days=-today.weekday(), weeks=1)
                             users_strength_program_workouts = WorkoutInstance.objects.filter(current_user=current_user, strength_program_instance=current_user.strength_program, dates_to_be_completed__date_completed__gte=next_monday).distinct()
                             squat = Movement.objects.get(name='Back Squat')
-                            squat_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=squat, training_max__gt=0).latest()
+                            squat_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=squat)
                             bench = Movement.objects.get(name='Bench')
-                            bench_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=bench, training_max__gt=0).latest()
+                            bench_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=bench)
                             ohp = Movement.objects.get(name='Overhead Press')
-                            ohp_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=ohp, training_max__gt=0).latest()
+                            ohp_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=ohp)
                             deadlift = Movement.objects.get(name='Deadlift')
-                            deadlift_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=deadlift, training_max__gt=0).latest()
+                            deadlift_record = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=deadlift)
                             for i in users_strength_program_workouts:
                                 strength_workout_main_exercise = i.strength_workout.strength_exercises.get(strength_exercise_number=1)
                                 strength_workout_secondary_exercise = i.strength_workout.strength_exercises.get(strength_exercise_number=2)
@@ -1566,13 +1670,13 @@ def create_result(request, username, pk):
                                             for i in range(1, strength_workout_main_exercise.number_of_sets+1):
                                                 if i < 4:
                                                     set_weight_percentage += 0.10
-                                                    set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                                    set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.trainingmax.weight)/round_base)
                                                 elif i >= 4 and i < 6:
-                                                    set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                                    set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.trainingmax.weight)/round_base)
                                                 elif i >= 6:
                                                     set_weight_percentage -= 0.05
                                                     rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                                    set_weight = round_base * round((rounded_set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                                    set_weight = round_base * round((rounded_set_weight_percentage*personal_record_main_exercise.trainingmax.weight)/round_base)
                                                 specific_set = strength_workout_main_exercise.set_set.get(set_number=i)
                                                 if set_weight != specific_set.weight:
                                                     specific_set.weight=set_weight
@@ -1580,7 +1684,7 @@ def create_result(request, username, pk):
                                         elif strength_workout_main_exercise_set_3_reps == 3:
                                             set_weight_percentage = 0.72
                                             for i in range(1, strength_workout_main_exercise.number_of_sets+1):
-                                                set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                                set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.trainingmax.weight)/round_base)
                                                 specific_set = strength_workout_main_exercise.set_set.get(set_number=i)
                                                 if set_weight != specific_set.weight:
                                                     specific_set.weight=set_weight
@@ -1591,11 +1695,11 @@ def create_result(request, username, pk):
                                         for i in range(1, strength_workout_main_exercise.number_of_sets+1):
                                             if i < 4:
                                                 set_weight_percentage += 0.10
-                                                set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                                set_weight = round_base * round((set_weight_percentage*personal_record_main_exercise.trainingmax.weight)/round_base)
                                             elif i >= 4:
                                                 set_weight_percentage -= 0.05
                                                 rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                                set_weight = round_base * round((rounded_set_weight_percentage*personal_record_main_exercise.training_max)/round_base)
+                                                set_weight = round_base * round((rounded_set_weight_percentage*personal_record_main_exercise.trainingmax.weight)/round_base)
                                             specific_set = strength_workout_main_exercise.set_set.get(set_number=i)
                                             if set_weight != specific_set.weight:
                                                 specific_set.weight=set_weight
@@ -1605,9 +1709,9 @@ def create_result(request, username, pk):
                                     for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
                                         if i < 4:
                                             set_weight_percentage += 0.10
-                                            set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base)
+                                            set_weight = round_base * round((set_weight_percentage*squat_record.trainingmax.weight)/round_base)
                                         elif i >= 4:
-                                            set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base)
+                                            set_weight = round_base * round((set_weight_percentage*squat_record.trainingmax.weight)/round_base)
                                         specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
                                         if set_weight != specific_set.weight:
                                             specific_set.weight=set_weight
@@ -1617,9 +1721,9 @@ def create_result(request, username, pk):
                                     for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
                                         if i < 4:
                                             set_weight_percentage += 0.10
-                                            set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base)
+                                            set_weight = round_base * round((set_weight_percentage*bench_record.trainingmax.weight)/round_base)
                                         elif i >= 4:
-                                            set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base)
+                                            set_weight = round_base * round((set_weight_percentage*bench_record.trainingmax.weight)/round_base)
                                         specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
                                         if set_weight != specific_set.weight:
                                             specific_set.weight=set_weight
@@ -1631,9 +1735,9 @@ def create_result(request, username, pk):
                                         for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
                                             if i < 4:
                                                 set_weight_percentage += 0.10
-                                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base)
+                                                set_weight = round_base * round((set_weight_percentage*ohp_record.trainingmax.weight)/round_base)
                                             elif i >= 4:
-                                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base)
+                                                set_weight = round_base * round((set_weight_percentage*ohp_record.trainingmax.weight)/round_base)
                                             specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
                                             if set_weight != specific_set.weight:
                                                 specific_set.weight=set_weight
@@ -1643,9 +1747,9 @@ def create_result(request, username, pk):
                                         for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
                                             if i < 4:
                                                 set_weight_percentage += 0.10
-                                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base)
+                                                set_weight = round_base * round((set_weight_percentage*ohp_record.trainingmax.weight)/round_base)
                                             elif i >= 4:
-                                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base)
+                                                set_weight = round_base * round((set_weight_percentage*ohp_record.trainingmax.weight)/round_base)
                                             specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
                                             if set_weight != specific_set.weight:
                                                 specific_set.weight=set_weight
@@ -1655,7 +1759,7 @@ def create_result(request, username, pk):
                                     if strength_workout_main_exercise_set_3_reps:
                                         set_weight_percentage = 0.565
                                         for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
-                                            set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base)
+                                            set_weight = round_base * round((set_weight_percentage*deadlift_record.trainingmax.weight)/round_base)
                                             specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
                                             if set_weight != specific_set.weight:
                                                 specific_set.weight=set_weight
@@ -1665,9 +1769,9 @@ def create_result(request, username, pk):
                                         for i in range(1, strength_workout_secondary_exercise.number_of_sets+1):
                                             if i < 4:
                                                 set_weight_percentage += 0.10
-                                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base)
+                                                set_weight = round_base * round((set_weight_percentage*deadlift_record.trainingmax.weight)/round_base)
                                             elif i >= 4:
-                                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base)
+                                                set_weight = round_base * round((set_weight_percentage*deadlift_record.trainingmax.weight)/round_base)
                                             specific_set = strength_workout_secondary_exercise.set_set.get(set_number=i)
                                             if set_weight != specific_set.weight:
                                                 specific_set.weight=set_weight
@@ -2405,52 +2509,86 @@ def create_workout(request):
                         front_squat = Movement.objects.get(name='Front Squat')
                         
                         if not PersonalWorkoutRecord.objects.filter(created_by_user=q, movement=bench).exists():
-                            bench_record = PersonalWorkoutRecord(created_by_user=q, movement=bench, one_rep_max = bench_max, training_max = round(bench_max*0.9),
-                                                                 one_rep_max_units=weight_units, training_max_units=weight_units)
+                            bench_record = PersonalWorkoutRecord(created_by_user=q, movement=bench)
                             bench_record.save()
+                            OneRepMax.objects.create(personal_record=bench_record, weight=bench_max, weight_units=weight_units)
+                            TrainingMax.objects.create(personal_record=bench_record, weight=round(bench_max*0.9), weight_units=weight_units)
                         else:
                             bench_record = PersonalWorkoutRecord.objects.get(created_by_user=q, movement=bench)
-                            bench_record.one_rep_max = bench_max
-                            bench_record.training_max = round(bench_max*0.9)
-                            bench_record.one_rep_max_units=weight_units
-                            bench_record.training_max_units=weight_units
-                            bench_record.save()
+                            if bench_record.onerepmax:
+                                bench_record.onerepmax.weight = bench_max
+                                bench_record.onerepmax.weight_units=weight_units
+                                bench_record.onerepmax.save()
+                            else:
+                                OneRepMax.objects.create(personal_record=bench_record, weight=bench_max, weight_units=weight_units)
+                            if bench_record.trainingmax:
+                                bench_record.trainingmax.weight = round(bench_max*0.9)
+                                bench_record.trainingmax.weight_units=weight_units
+                                bench_record.trainingmax.save()
+                            else:
+                                TrainingMax.objects.create(personal_record=bench_record, weight=round(bench_max*0.9), weight_units=weight_units)
                             
                         if not PersonalWorkoutRecord.objects.filter(created_by_user=q, movement=back_squat).exists():
-                            squat_record = PersonalWorkoutRecord(created_by_user=q, movement=back_squat, one_rep_max = back_squat_max, training_max = round(back_squat_max*0.9),
-                                                                 one_rep_max_units=weight_units, training_max_units=weight_units)
+                            squat_record = PersonalWorkoutRecord(created_by_user=q, movement=back_squat)
                             squat_record.save()
+                            OneRepMax.objects.create(personal_record=squat_record, weight=back_squat_max, weight_units=weight_units)
+                            TrainingMax.objects.create(personal_record=squat_record, weight=round(back_squat_max*0.9), weight_units=weight_units)
                         else:
                             squat_record = PersonalWorkoutRecord.objects.get(created_by_user=q, movement=back_squat)
-                            squat_record.one_rep_max = back_squat_max
-                            squat_record.training_max = round(back_squat_max*0.9)
-                            squat_record.one_rep_max_units=weight_units
-                            squat_record.training_max_units=weight_units
-                            squat_record.save()
-                            
+                            if squat_record.onerepmax:
+                                squat_record.onerepmax.weight = back_squat_max
+                                squat_record.onerepmax.weight_units=weight_units
+                                squat_record.onerepmax.save()
+                            else:
+                                OneRepMax.objects.create(personal_record=squat_record, weight=back_squat_max, weight_units=weight_units)
+                            if squat_record.trainingmax:
+                                squat_record.trainingmax.weight = round(back_squat_max*0.9)
+                                squat_record.trainingmax.weight_units=weight_units
+                                squat_record.trainingmax.save()
+                            else:
+                                TrainingMax.objects.create(personal_record=squat_record, weight=round(back_squat_max*0.9), weight_units=weight_units)
+                                
                         if not PersonalWorkoutRecord.objects.filter(created_by_user=q, movement=ohp).exists():
-                            ohp_record = PersonalWorkoutRecord(created_by_user=q, movement=ohp, one_rep_max = ohp_max, training_max = round(ohp_max*0.9),
-                                                                 one_rep_max_units=weight_units, training_max_units=weight_units)
+                            ohp_record = PersonalWorkoutRecord(created_by_user=q, movement=ohp)
                             ohp_record.save()
+                            OneRepMax.objects.create(personal_record=ohp_record, weight=ohp_max, weight_units=weight_units)
+                            TrainingMax.objects.create(personal_record=ohp_record, weight=round(ohp_max*0.9), weight_units=weight_units)
                         else:
                             ohp_record = PersonalWorkoutRecord.objects.get(created_by_user=q, movement=ohp)
-                            ohp_record.one_rep_max = ohp_max
-                            ohp_record.training_max = round(ohp_max*0.9)
-                            ohp_record.one_rep_max_units=weight_units
-                            ohp_record.training_max_units=weight_units
-                            ohp_record.save()
+                            if ohp_record.onerepmax:
+                                ohp_record.onerepmax.weight = ohp_max
+                                ohp_record.onerepmax.weight_units=weight_units
+                                ohp_record.onerepmax.save()
+                            else:
+                                OneRepMax.objects.create(personal_record=ohp_record, weight=ohp_max, weight_units=weight_units)
+                            if ohp_record.trainingmax:
+                                ohp_record.trainingmax.weight = round(ohp_max*0.9)
+                                ohp_record.trainingmax.weight_units=weight_units
+                                ohp_record.trainingmax.save()
+                            else:
+                                TrainingMax.objects.create(personal_record=squat_record, weight=round(ohp_max*0.9), weight_units=weight_units)
                             
                         if not PersonalWorkoutRecord.objects.filter(created_by_user=q, movement=deadlift).exists():
-                            deadlift_record = PersonalWorkoutRecord(created_by_user=q, movement=deadlift, one_rep_max = deadlift_max, training_max = round(deadlift_max*0.9),
-                                                                 one_rep_max_units=weight_units, training_max_units=weight_units)
+                            deadlift_record = PersonalWorkoutRecord(created_by_user=q, movement=deadlift)
                             deadlift_record.save()
+                            OneRepMax.objects.create(personal_record=deadlift_record, weight=deadlift_max, weight_units=weight_units)
+                            TrainingMax.objects.create(personal_record=deadlift_record, weight=round(deadlift_max*0.9), weight_units=weight_units)
                         else:
                             deadlift_record = PersonalWorkoutRecord.objects.get(created_by_user=q, movement=deadlift)
-                            deadlift_record.one_rep_max = deadlift_max
-                            deadlift_record.training_max = round(deadlift_max*0.9)
-                            deadlift_record.one_rep_max_units=weight_units
-                            deadlift_record.training_max_units=weight_units
-                            deadlift_record.save()
+                            if deadlift_record.onerepmax:
+                                deadlift_record.onerepmax.weight = deadlift_max
+                                deadlift_record.onerepmax.weight_units=weight_units
+                                deadlift_record.onerepmax.save()
+                            else:
+                                OneRepMax.objects.create(personal_record=deadlift_record, weight=deadlift_max, weight_units=weight_units)
+                            if deadlift_record.trainingmax:
+                                deadlift_record.trainingmax.weight = round(deadlift_max*0.9)
+                                deadlift_record.trainingmax.weight_units=weight_units
+                                deadlift_record.trainingmax.save()
+                            else:
+                                TrainingMax.objects.create(personal_record=deadlift_record, weight=round(deadlift_max*0.9), weight_units=weight_units)
+                            
+                        
                         
                         #####################################################################################################################                        
                         #Main Bench Day
@@ -2467,15 +2605,15 @@ def create_workout(request):
                         for i in range(1, bench_strength_exercise_t1.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*bench_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=bench_record.training_max_units)
+                                              weight=set_weight, weight_units=bench_record.trainingmax.weight_units)
                             elif i >= 4:
                                 set_weight_percentage -= 0.05
                                 rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                set_weight = round_base * round((rounded_set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((rounded_set_weight_percentage*bench_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=bench_record.training_max_units)
+                                              weight=set_weight, weight_units=bench_record.trainingmax.weight_units)
                         
                         
                         ohp_strength_exercise_t2 = StrengthExercise(movement=ohp,
@@ -2488,13 +2626,13 @@ def create_workout(request):
                         for i in range(1, ohp_strength_exercise_t2.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*ohp_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=ohp_record.training_max_units)
+                                              weight=set_weight, weight_units=ohp_record.trainingmax.weight_units)
                             elif i >= 4:
-                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*ohp_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=ohp_record.training_max_units)
+                                              weight=set_weight, weight_units=ohp_record.trainingmax.weight_units)
                                 
                         main_bench_strength_workout.strength_exercises.add(bench_strength_exercise_t1, ohp_strength_exercise_t2)
                         main_bench_strength_workout.save()
@@ -2526,15 +2664,15 @@ def create_workout(request):
                         for i in range(1, back_squat_strength_exercise_t1.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*squat_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=back_squat_strength_exercise_t1, set_number=i, reps=squat_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=squat_record.training_max_units)
+                                              weight=set_weight, weight_units=squat_record.trainingmax.weight_units)
                             elif i >= 4:
                                 set_weight_percentage -= 0.05
                                 rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                set_weight = round_base * round((rounded_set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((rounded_set_weight_percentage*squat_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=back_squat_strength_exercise_t1, set_number=i, reps=squat_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=squat_record.training_max_units)
+                                              weight=set_weight, weight_units=squat_record.trainingmax.weight_units)
                         
                         deadlift_strength_exercise_t2 = StrengthExercise(movement=deadlift,
                                                              number_of_sets=8,
@@ -2546,13 +2684,13 @@ def create_workout(request):
                         for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*deadlift_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t2, set_number=i, reps=deadlift_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
+                                              weight=set_weight, weight_units=deadlift_record.trainingmax.weight_units)
                             elif i >= 4:
-                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*deadlift_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t2, set_number=i, reps=deadlift_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
+                                              weight=set_weight, weight_units=deadlift_record.trainingmax.weight_units)
                                 
                         main_back_squat_strength_workout.strength_exercises.add(back_squat_strength_exercise_t1, deadlift_strength_exercise_t2)
                         main_back_squat_strength_workout.save()
@@ -2584,15 +2722,15 @@ def create_workout(request):
                         for i in range(1, ohp_strength_exercise_t1.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*ohp_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=ohp_strength_exercise_t1, set_number=i, reps=ohp_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=ohp_record.training_max_units)
+                                              weight=set_weight, weight_units=ohp_record.trainingmax.weight_units)
                             elif i >= 4:
                                 set_weight_percentage -= 0.05
                                 rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                set_weight = round_base * round((rounded_set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((rounded_set_weight_percentage*ohp_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=ohp_strength_exercise_t1, set_number=i, reps=ohp_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=ohp_record.training_max_units)
+                                              weight=set_weight, weight_units=ohp_record.trainingmax.weight_units)
                         
                         incline_bench_strength_exercise_t2 = StrengthExercise(movement=incline_bench,
                                                              number_of_sets=8,
@@ -2604,13 +2742,13 @@ def create_workout(request):
                         for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*bench_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=incline_bench_strength_exercise_t2, set_number=i, reps=incline_bench_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=bench_record.training_max_units)
+                                              weight=set_weight, weight_units=bench_record.trainingmax.weight_units)
                             elif i >= 4:
-                                set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*bench_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=incline_bench_strength_exercise_t2, set_number=i, reps=incline_bench_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=bench_record.training_max_units)
+                                              weight=set_weight, weight_units=bench_record.trainingmax.weight_units)
                                 
                         main_ohp_strength_workout.strength_exercises.add(ohp_strength_exercise_t1, incline_bench_strength_exercise_t2)
                         main_ohp_strength_workout.save()
@@ -2642,15 +2780,15 @@ def create_workout(request):
                         for i in range(1, deadlift_strength_exercise_t1.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*deadlift_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t1, set_number=i, reps=deadlift_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
+                                              weight=set_weight, weight_units=deadlift_record.trainingmax.weight_units)
                             elif i >= 4:
                                 set_weight_percentage -= 0.05
                                 rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                set_weight = round_base * round((rounded_set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((rounded_set_weight_percentage*deadlift_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t1, set_number=i, reps=deadlift_t1_reps_in_set[i],
-                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
+                                              weight=set_weight, weight_units=deadlift_record.trainingmax.weight_units)
                         
                         front_squat_strength_exercise_t2 = StrengthExercise(movement=front_squat,
                                                              number_of_sets=8,
@@ -2662,13 +2800,13 @@ def create_workout(request):
                         for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
                             if i < 4:
                                 set_weight_percentage += 0.10
-                                set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*squat_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=front_squat_strength_exercise_t2, set_number=i, reps=front_squat_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=squat_record.training_max_units)
+                                              weight=set_weight, weight_units=squat_record.trainingmax.weight_units)
                             elif i >= 4:
-                                set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*squat_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=front_squat_strength_exercise_t2, set_number=i, reps=front_squat_t2_reps_in_set[i],
-                                              weight=set_weight, weight_units=squat_record.training_max_units)
+                                              weight=set_weight, weight_units=squat_record.trainingmax.weight_units)
                                 
                         main_deadlift_strength_workout.strength_exercises.add(deadlift_strength_exercise_t1, front_squat_strength_exercise_t2)
                         main_deadlift_strength_workout.save()
@@ -2700,19 +2838,19 @@ def create_workout(request):
                             for i in range(1, bench_strength_exercise_t1.number_of_sets+1):
                                 if i < 4:
                                     set_weight_percentage += 0.10
-                                    set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    set_weight = round_base * round((set_weight_percentage*bench_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                     Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
-                                                  weight=set_weight, weight_units=bench_record.training_max_units)
+                                                  weight=set_weight, weight_units=bench_record.trainingmax.weight_units)
                                 elif i >= 4 and i < 6:
-                                    set_weight = round_base * round((set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    set_weight = round_base * round((set_weight_percentage*bench_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                     Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
-                                                  weight=set_weight, weight_units=bench_record.training_max_units)
+                                                  weight=set_weight, weight_units=bench_record.trainingmax.weight_units)
                                 elif i >= 6:
                                     set_weight_percentage -= 0.05
                                     rounded_set_weight_percentage = round(set_weight_percentage, 2)
-                                    set_weight = round_base * round((rounded_set_weight_percentage*bench_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    set_weight = round_base * round((rounded_set_weight_percentage*bench_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                     Set.objects.create(strength_exercise=bench_strength_exercise_t1, set_number=i, reps=bench_t1_reps_in_set[i],
-                                                  weight=set_weight, weight_units=bench_record.training_max_units)
+                                                  weight=set_weight, weight_units=bench_record.trainingmax.weight_units)
                             
                             ohp_strength_exercise_t2 = StrengthExercise(movement=ohp,
                                                                  number_of_sets=8,
@@ -2724,13 +2862,13 @@ def create_workout(request):
                             for i in range(1, ohp_strength_exercise_t2.number_of_sets+1):
                                 if i < 4:
                                     set_weight_percentage += 0.10
-                                    set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    set_weight = round_base * round((set_weight_percentage*ohp_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                     Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
-                                                  weight=set_weight, weight_units=ohp_record.training_max_units)
+                                                  weight=set_weight, weight_units=ohp_record.trainingmax.weight_units)
                                 elif i >= 4:
-                                    set_weight = round_base * round((set_weight_percentage*ohp_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                    set_weight = round_base * round((set_weight_percentage*ohp_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                     Set.objects.create(strength_exercise=ohp_strength_exercise_t2, set_number=i, reps=ohp_t2_reps_in_set[i],
-                                                  weight=set_weight, weight_units=ohp_record.training_max_units)
+                                                  weight=set_weight, weight_units=ohp_record.trainingmax.weight_units)
                                     
                             secondary_bench_strength_workout.strength_exercises.add(bench_strength_exercise_t1, ohp_strength_exercise_t2)
                             secondary_bench_strength_workout.save()
@@ -2760,9 +2898,9 @@ def create_workout(request):
                             
                             set_weight_percentage = 0.72
                             for i in range(1, back_squat_strength_exercise_t1.number_of_sets+1):
-                                set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*squat_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=back_squat_strength_exercise_t1, set_number=i, reps=3,
-                                              weight=set_weight, weight_units=squat_record.training_max_units)
+                                              weight=set_weight, weight_units=squat_record.trainingmax.weight_units)
     
                             
                             deadlift_strength_exercise_t2 = StrengthExercise(movement=deadlift,
@@ -2772,9 +2910,9 @@ def create_workout(request):
                             
                             set_weight_percentage = 0.565
                             for i in range(1, deadlift_strength_exercise_t2.number_of_sets+1):
-                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*deadlift_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t2, set_number=i, reps=3,
-                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
+                                              weight=set_weight, weight_units=deadlift_record.trainingmax.weight_units)
     
                                     
                             secondary_squat_strength_workout.strength_exercises.add(back_squat_strength_exercise_t1, deadlift_strength_exercise_t2)
@@ -2805,9 +2943,9 @@ def create_workout(request):
                             
                             set_weight_percentage = 0.72
                             for i in range(1, deadlift_strength_exercise_t1.number_of_sets+1):
-                                set_weight = round_base * round((set_weight_percentage*deadlift_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*deadlift_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=deadlift_strength_exercise_t1, set_number=i, reps=3,
-                                              weight=set_weight, weight_units=deadlift_record.training_max_units)
+                                              weight=set_weight, weight_units=deadlift_record.trainingmax.weight_units)
     
                             
                             back_squat = Movement.objects.get(name='Back Squat')
@@ -2818,9 +2956,9 @@ def create_workout(request):
                             
                             set_weight_percentage = 0.565
                             for i in range(1, back_squat_strength_exercise_t2.number_of_sets+1):
-                                set_weight = round_base * round((set_weight_percentage*squat_record.training_max)/round_base) #rounds to the nearest 5lbs or 2 kgs
+                                set_weight = round_base * round((set_weight_percentage*squat_record.trainingmax.weight)/round_base) #rounds to the nearest 5lbs or 2 kgs
                                 Set.objects.create(strength_exercise=back_squat_strength_exercise_t2, set_number=i, reps=3,
-                                              weight=set_weight, weight_units=squat_record.training_max_units)
+                                              weight=set_weight, weight_units=squat_record.trainingmax.weight_units)
     
                                     
                             secondary_deadlift_strength_workout.strength_exercises.add(deadlift_strength_exercise_t1, back_squat_strength_exercise_t2)
