@@ -5,12 +5,14 @@
 		{% if user.username == record_user.username or user.coach in record_user.athlete.coach_set.all %}
 			<h1>Personal Records</h1>
 			
-			<form class="center_stuff" action="{% url 'create_personal_record' user.username %}">
-				<input type="submit" value="Add Record" />
-			</form>
 			{% if record_list %}
 				<div class="tabContentReplacement">
 					<div class="listedWorkouts">
+						<form action="{% url 'create_personal_record' user.username %}">
+							<div class="create_workout_submit_buttons">
+								<input type="submit" class='input_submit create_workout_input_submit' value="Add Record" />
+							</div>
+						</form>
 						<div class="workoutContent">
 							<div class="infinite-container">
 								{% for record in record_list %}
