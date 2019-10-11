@@ -2,8 +2,17 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
 
+## 10/11/19
+at work (not on home or tablet)
+- views.py
+- models.py (migrations)
+- forms.py
+- personal_record_list.html
+- create_personal_record.html
+- edit_personal_record.html
+
 ## 10/10/19
-at home (not at work or tablet)
+at home (not on tablet)
 - movements_list.py
 - views.py
 - admin.py
@@ -109,17 +118,14 @@ at home (not on tablet)
 - remove_coaches_from_athlets.html
 - request_list.html
 
-## functionality completed on 10/10/19
-- added django-simple history to track changes on models like bodyweight and onerepmax weight
-  - https://django-simple-history.readthedocs.io/en/latest/
-  
-  
-## functionality completed on 10/3/19
-- changed get_most_recent_workouts.py to continue getting workouts until it runs into one that it is already in the database
-  - this is simply for development when I'm not running the update background scheduler every day
-- made popup dim cover wole page on user_page even after scrolling (position:fixed)
-- fixed spelling of Dumbbel(l*) power snatch
-  - also added Dumbbell Snatch movement
+## functionality completed on 10/11/19
+- fixed error on record_list to have add_record button outside of if record_list
+- reworked Set Model to have a direct foreignkey to TrainingMax model.
+  - this only comes into play when sets are created via a strength program
+  - the Set then has a link to the TrainingMax that is created as well as the percentage of the TM that the set weight should be
+    - this way if a TM weight gets changed either by adding a result or manually, the Set can be updated by a simple update func
+      written into the model
+    - this avoids having to rewrite the code for what weight each set should be in every place that a TM could change
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -140,7 +146,7 @@ at home (not on tablet)
         for each specification before it. otherwise you will get a reverse match not found on the template link.
   - see workout instance get_absolute_url for example
   - if using function based views, the argument must also be passed in the view function
-    - see profile view as example
+    - see profilpythone view as example
     - class based views take this into account with the models get_aboslute_url
 - need to pass date as filter in template to display local time: somedate|date:"format" instead of somedate.date
 - Date.objects.filter(dates_to_be_completed=instance, date_completed__gte=now).earliest('date_completed')
@@ -157,9 +163,23 @@ at home (not on tablet)
 - buttons in the dropdowncontainerworkoutbuttons must be input type=submit to show properly. if its just a button it won't display
   correctly
 - can't get rid of the window reload function on workout_detail because it calls a model function
+- for list of sets of a user that are scheduled on or later than next monday with a specific training max:
+  - list_of_sets = Set.objects.filter(strength_exercise__strengthworkout__workoutinstance__dates_to_be_completed__date_completed...
+    - __gte=next_monday, strength_exercise__strengthworkout__workoutinstance_current_user=user, training_max=specificTM).distinct()
+    - may not need to filter for current_user as trainingmax has reference to record which has reference to user
         
 ## Functionality to add:
-- create page to manually enter personal records
+- add warning to create record/edit record page that manually changing your training max will automatically change all
+  weights of workouts that refer to that training max (strength program workouts)
+  - maybe have this as an if statement on the template for if the user is using a strength_program only
+- create graphs for bodyweight or personal records:
+  - some_dict = {}
+  - for i in personalworkoutrecord.onerepmax.history.all():
+    - some_dict[timezone.localtime(i.history_date).date()] = i.weight
+      - the history date is already an aware datetime so just need to convert it to localtime
+      - can also consider putting a check for if weight_units is lbs or if kgs convert to lbs first.
+  - can do the same with bodyweight:
+    - user.bodyweight.history.all()...
 - create hide/show javascript functionality based on strength program variant selection.
 - need to add padding-bottom to group detail page
 - enter every named workout into the database by hand
