@@ -14,6 +14,9 @@
 							<table>
 							{{ form.as_table }}
 							</table>
+							{% if user.strength_program %}
+								<p>If a Training Max for this movement already exists, changing it manually will cause all workouts that refer to the Training Max to change as well.</p>
+							{% endif %}
 						</div>
 						<div class="create_workout_submit_buttons">
 							<input type="hidden" name="create record">
@@ -22,6 +25,8 @@
 					</div>
 				</div>
 			</form>
+			
+			
 		{% else %}
 			<div class='center_stuff'><p>You do not have permission to view this page. Please login with an account that has proper permissions.</p></div>
 		{% endif %}
