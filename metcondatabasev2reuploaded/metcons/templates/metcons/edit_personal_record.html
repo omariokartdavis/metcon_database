@@ -13,6 +13,9 @@
 							<table>
 							{{ form.as_table }}
 							</table>
+							{% if user.strength_program %}
+								<p>Changing a Training Max manually will cause all workouts that refer to the Training Max to change as well.</p>
+							{% endif %}
 						</div>
 						<div class="create_workout_submit_buttons">
 							<input type="hidden" name="edit record">
