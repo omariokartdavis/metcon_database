@@ -12,11 +12,7 @@
 							<input type="submit" class='input_submit create_workout_input_submit' value="Add Record" />
 						</div>
 					</form>
-				</div>
-			</div>
-			{% if record_list %}
-				<div class="tabContentReplacement">
-					<div class="listedWorkouts">
+					{% if record_list %}
 						<div class="workoutContent">
 							<div class="infinite-container">
 								{% for record in record_list %}
