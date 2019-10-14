@@ -226,17 +226,17 @@ def personal_record_list(request, username):
     paginator = Paginator(record_list, 10)
     page = request.GET.get('page', 1)
     record_list = paginator.page(page)
-    
-    if request.user.is_coach:
-        coach_user = request.user.coach
-        athlete_list = coach_user.athletes.all()
         
     
     context = {
         'record_list': record_list,
         'record_user': user,
-        'athlete_list': athlete_list,
         }
+    
+    if request.user.is_coach:
+        coach_user = request.user.coach
+        athlete_list = coach_user.athletes.all()
+        context['athlete_list'] = athlete_list
     
     return render(request, 'metcons/personal_record_list.html', context=context)
 
@@ -3051,7 +3051,8 @@ def create_workout(request):
     else:
         # can have default be whatever default type user wants to put as their default workout type
         form1 = CreateWorkoutForm(**{'user':request.user}, initial={'gender': request.user.workout_default_gender})
-        form2 = CreateStrengthProgramForm(**{'user':request.user})
+        nsuns = StrengthProgram.objects.get(name='nSuns 531 LP')
+        form2 = CreateStrengthProgramForm(**{'user':request.user}, initial={'strength_program': nsuns})
         formset_strength = StrengthWorkoutFormset(form_kwargs={'user': request.user})
         formset_cardio = CardioWorkoutFormset(form_kwargs={'user': request.user}, initial=[{'movement': 'Row'}])
         forms = [i for i in formset_strength]
