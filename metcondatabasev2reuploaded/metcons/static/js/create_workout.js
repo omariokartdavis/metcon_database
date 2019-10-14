@@ -7,6 +7,27 @@ $(document).ready(function() {
 		}
 		var target_form = document.getElementById(this.value);
 		target_form.style.display = "block";
+		if (target_form.id == "strength_program_form") {
+			$('#id_day_variation').on('change', function() {
+				if (this.value == "4 Day") {
+					document.getElementById('secondary_bench_start_date_row').style.display = "none";
+					document.getElementById('secondary_squat_start_date_row').style.display = "none";
+					document.getElementById('secondary_deadlift_start_date_row').style.display = "none";
+				} else if (this.value == "5 Day") {
+					document.getElementById('secondary_bench_start_date_row').style.display = "table-row";
+					document.getElementById('secondary_squat_start_date_row').style.display = "none";
+					document.getElementById('secondary_deadlift_start_date_row').style.display = "none";
+				} else if (this.value == "6 Day Squat") {
+					document.getElementById('secondary_bench_start_date_row').style.display = "table-row";
+					document.getElementById('secondary_squat_start_date_row').style.display = "table-row";
+					document.getElementById('secondary_deadlift_start_date_row').style.display = "none";
+				} else if (this.value == "6 Day Deadlift") {
+					document.getElementById('secondary_bench_start_date_row').style.display = "table-row";
+					document.getElementById('secondary_squat_start_date_row').style.display = "none";
+					document.getElementById('secondary_deadlift_start_date_row').style.display = "table-row";
+				};
+			});
+		};
 	});
 });
 
