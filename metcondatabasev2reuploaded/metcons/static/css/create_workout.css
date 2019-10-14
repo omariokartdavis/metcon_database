@@ -18,6 +18,17 @@
 	display: none;
 }
 
+#secondary_bench_start_date_row {
+	display: none;
+}
+
+#secondary_squat_start_date_row {
+	display: none;
+}
+#secondary_deadlift_start_date_row {
+	display: none;
+}
+
 input[type=text] {
 	width: 80%;
 	max-width: 80%;
