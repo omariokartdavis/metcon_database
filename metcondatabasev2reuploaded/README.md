@@ -2,6 +2,16 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
 
+## 10/14/19
+at work (not on home or tablet)
+- views.py
+- forms.py
+- create_workout.js
+- create_workout.css
+- create_workout.html
+- personal_record_list.html
+- personal_record_detail.html
+
 ## 10/11/19
 at work (not on home or tablet)
 - views.py
@@ -118,14 +128,12 @@ at home (not on tablet)
 - remove_coaches_from_athlets.html
 - request_list.html
 
-## functionality completed on 10/11/19
-- fixed error on record_list to have add_record button outside of if record_list
-- reworked Set Model to have a direct foreignkey to TrainingMax model.
-  - this only comes into play when sets are created via a strength program
-  - the Set then has a link to the TrainingMax that is created as well as the percentage of the TM that the set weight should be
-    - this way if a TM weight gets changed either by adding a result or manually, the Set can be updated by a simple update func
-      written into the model
-    - this avoids having to rewrite the code for what weight each set should be in every place that a TM could change
+## functionality completed on 10/14/19
+- edited personal_record_list.html for betting spacing
+- fixed if statement on personal_record_detail
+- moved if statement about if coach on personal_record_list view to after context formation
+- changed creategeneralworkout form label of workout scaling
+- added hide/show capability for day variation on nsuns 531 creation
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -167,11 +175,17 @@ at home (not on tablet)
   - list_of_sets = Set.objects.filter(strength_exercise__strengthworkout__workoutinstance__dates_to_be_completed__date_completed...
     - __gte=next_monday, strength_exercise__strengthworkout__workoutinstance_current_user=user, training_max=specificTM).distinct()
     - may not need to filter for current_user as trainingmax has reference to record which has reference to user
+- the round function for set weights will round 2.5 down to even 0. so if a weight calculates to 222.5 it will round to 220 not 225
         
 ## Functionality to add:
-- add warning to create record/edit record page that manually changing your training max will automatically change all
-  weights of workouts that refer to that training max (strength program workouts)
-  - maybe have this as an if statement on the template for if the user is using a strength_program only
+- create bug report button + icon in the bottom right corner.
+  - put it on base_generic.html as fixed position bottom right corner
+  - have this open a popup with a bug report form and when submitted will send to my email
+    - report form can have:
+      - url: copy the url the bug was seen on (should be the current url)
+      - type of bug: typo, 404 error, info missing/incorrect
+      - description: give as much detail as possible (in the paragraph that starts with "words words words..."
+        the third sentence has a typo on the word "Blah"
 - create graphs for bodyweight or personal records:
   - some_dict = {}
   - for i in personalworkoutrecord.onerepmax.history.all():
@@ -180,7 +194,6 @@ at home (not on tablet)
       - can also consider putting a check for if weight_units is lbs or if kgs convert to lbs first.
   - can do the same with bodyweight:
     - user.bodyweight.history.all()...
-- create hide/show javascript functionality based on strength program variant selection.
 - need to add padding-bottom to group detail page
 - enter every named workout into the database by hand
 - create a "share workout" button to share this workout with others by username
