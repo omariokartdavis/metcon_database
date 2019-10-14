@@ -153,7 +153,7 @@ class EditPersonalRecordForm(forms.Form):
     
 class CreateWorkoutForm(forms.Form):
     workout_text = forms.CharField(widget=forms.Textarea, max_length=2000, help_text="Enter your workout.")
-    workout_scaling = forms.CharField(widget=forms.Textarea, max_length=4000, help_text='Enter any scaling options.', required=False)
+    workout_scaling = forms.CharField(widget=forms.Textarea, max_length=4000, help_text='Enter any scaling options or comments.', required=False, label='Scaling or Comments')
     estimated_duration = forms.IntegerField(help_text='Enter an estimate of how long it will take to complete the workout in minutes (whole numbers only).', required=False)
     gender = forms.ChoiceField(widget=forms.Select(), choices=workout_gender_choices, help_text='Is this workout (and the weights you have entered) applicable for both Males and Females or only one?')
 
@@ -195,16 +195,16 @@ class CreateStrengthProgramForm(forms.Form):
     day_variation = forms.ChoiceField(widget=forms.Select(), choices=day_variation_choices, required=False)
     units = forms.ChoiceField(widget=forms.Select(), choices=strength_program_weight_unit_choices)
     bench_max = forms.IntegerField(required=False, label='Bench One Rep Max')
-    main_bench_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime)
+    main_bench_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, label='Main Bench Start Date')
     squat_max = forms.IntegerField(required=False, label='Back Squat One Rep Max')
-    main_squat_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime)
+    main_squat_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, label='Main Squat Start Date')
     ohp_max = forms.IntegerField(required=False, label='Overhead Press One Rep Max')
-    main_ohp_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime)
+    main_ohp_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, label='Main OHP Start Date')
     deadlift_max = forms.IntegerField(required=False, label='Deadlift One Rep Max')
-    main_deadlift_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime)
-    secondary_bench_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False)
-    secondary_squat_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False)
-    secondary_deadlift_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False)
+    main_deadlift_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, label='Main Deadlift Start Date')
+    secondary_bench_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False, label='Secondary Bench Start Date')
+    secondary_squat_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False, label='Secondary Bench Squat Date')
+    secondary_deadlift_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False, label='Secondary Deadlift Start Date')
     
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
