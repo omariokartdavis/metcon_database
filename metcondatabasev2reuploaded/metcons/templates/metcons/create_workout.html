@@ -44,7 +44,120 @@
 						<div class="workoutContent">
 							{% csrf_token %}
 							<table>
-							{{ form2.as_table }}
+								<tbody>
+									<tr>
+										<th>
+											<label><strong>{{ form2.strength_program.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.strength_program }}
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<label><strong>{{ form2.day_variation.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.day_variation }}
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<label><strong>{{ form2.units.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.units }}
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<label><strong>{{ form2.bench_max.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.bench_max }}
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<label><strong>{{ form2.main_bench_start_date.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.main_bench_start_date }}
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<label><strong>{{ form2.squat_max.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.squat_max }}
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<label><strong>{{ form2.main_squat_start_date.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.main_squat_start_date }}
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<label><strong>{{ form2.ohp_max.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.ohp_max }}
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<label><strong>{{ form2.main_ohp_start_date.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.main_ohp_start_date }}
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<label><strong>{{ form2.deadlift_max.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.deadlift_max }}
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<label><strong>{{ form2.main_deadlift_start_date.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.main_deadlift_start_date }}
+										</td>
+									</tr>
+									<tr id='secondary_bench_start_date_row'>
+										<th>
+											<label><strong>{{ form2.secondary_bench_start_date.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.secondary_bench_start_date }}
+										</td>
+									</tr>
+									<tr id='secondary_squat_start_date_row'>
+										<th>
+											<label><strong>{{ form2.secondary_squat_start_date.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.secondary_squat_start_date }}
+										</td>
+									</tr>
+									<tr id='secondary_deadlift_start_date_row'>
+										<th>
+											<label><strong>{{ form2.secondary_deadlift_start_date.label }}:</strong></label>
+										</th>
+										<td>
+											{{ form2.secondary_deadlift_start_date }}
+										</td>
+									</tr>
+								</tbody>
 							</table>
 						</div>
 						<div class="create_workout_submit_buttons">
