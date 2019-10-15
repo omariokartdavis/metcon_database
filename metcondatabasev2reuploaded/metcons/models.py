@@ -32,7 +32,7 @@ class User(AbstractUser):
                                   help_text='This is the default gender that workouts you create will be tagged for. Can be changed on workout creation.')
         user_gender = models.CharField(max_length=1, blank=True, null=True, choices=user_gender_choices)
         strength_program = models.ForeignKey('StrengthProgramInstance', on_delete=models.SET_NULL, null=True, blank=True)
-        bodyweight = models.IntegerField(null=True, blank=True)
+        bodyweight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
         history = HistoricalRecords()
         
         privacy_choices = [
