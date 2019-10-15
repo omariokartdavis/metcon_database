@@ -95,6 +95,8 @@ at home (not on tablet)
 ## functionality completed on 10/15/19
 - fixed create result issue for non 1+ days
 - adding padding to multiple pages
+- added user settings and edit pages
+- added bodyweight graph on user settings page
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -147,14 +149,8 @@ at home (not on tablet)
       - type of bug: typo, 404 error, info missing/incorrect
       - description: give as much detail as possible (in the paragraph that starts with "words words words..."
         the third sentence has a typo on the word "Blah"
-- create graphs for bodyweight or personal records:
-  - some_dict = {}
-  - for i in personalworkoutrecord.onerepmax.history.all():
-    - some_dict[timezone.localtime(i.history_date).date()] = i.weight
-      - the history date is already an aware datetime so just need to convert it to localtime
-      - can also consider putting a check for if weight_units is lbs or if kgs convert to lbs first.
-  - can do the same with bodyweight:
-    - user.bodyweight.history.all()...
+- create graphs for personal records:
+  - did this for bodyweight already. check user_info_list view for bodyweight example
 - enter every named workout into the database by hand
 - create a "share workout" button to share this workout with others by username
 - add "change unhide date" page and link for coaches
