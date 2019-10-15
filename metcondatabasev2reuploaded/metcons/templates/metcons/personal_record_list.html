@@ -17,7 +17,7 @@
 							<div class="infinite-container">
 								{% for record in record_list %}
 									<div class="infinite-item">
-										<p><a class="workout_display_name" href="{{ record.get_absolute_url }}">{{ record.display_name }}</a>
+										<p class='{% if forloop.last %}padding_bottom_required{% endif %}'><a class="workout_display_name" href="{{ record.get_absolute_url }}">{{ record.display_name }}</a>
 									</div>
 								{% endfor %}
 							</div>
