@@ -24,19 +24,22 @@ import re
 from django.contrib.auth import login, authenticate
 from metcons.utils import Calendar
 from django.utils.safestring import mark_safe
-from django.core import serializers
 import json
 
 def index(request):
-    """View function for home page of site"""
-    num_workouts = Workout.objects.all().count()
-    num_movements = Movement.objects.all().count()
-
-    context = {
-        'num_workouts': num_workouts,
-        'num_movements': num_movements,
-        }
-    return render(request, 'index.html', context=context)
+    
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+    
+    else:
+        num_workouts = Workout.objects.all().count()
+        num_movements = Movement.objects.all().count()
+    
+        context = {
+            'num_workouts': num_workouts,
+            'num_movements': num_movements,
+            }
+        return render(request, 'index.html', context=context)
 
 @login_required
 def profile(request, username):
