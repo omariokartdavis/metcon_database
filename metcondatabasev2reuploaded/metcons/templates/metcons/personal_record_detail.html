@@ -44,11 +44,11 @@
 						{% if personal_record.twentyrepmax.weight %}
 							<p>20 rep: {{ personal_record.twentyrepmax.weight }}{{ personal_record.twentyrepmax.weight_units }}</p>
 						{% else %}
-							<p>20 rep: No max listed</p>
+							<p class='{% if not personal_record.trainingmax.weight %}padding_bottom_required{% endif %}'>20 rep: No max listed</p>
 						{% endif %}
 						{% if personal_record.trainingmax.weight %}
 						<br />
-							<p>Current Training Max: {{ personal_record.trainingmax.weight }}{{ personal_record.trainingmax.weight_units }}</p>
+							<p class='padding_bottom_required'>Current Training Max: {{ personal_record.trainingmax.weight }}{{ personal_record.trainingmax.weight_units }}</p>
 						{% endif %}
 					</div>
 				</div>
