@@ -17,8 +17,10 @@ at work (not on home or tablet)
 - group_detail.html
 - personal_record_detail.html
 - personal_record_list.html
+- movement_list.html
+- movement_detail.html
 - created user_info_list.html
-
+- workout_list.html
 
 ## 10/14/19
 at work (not on home or tablet)
@@ -141,6 +143,7 @@ at home (not on tablet)
 - the round function for set weights will round 2.5 down to even 0. so if a weight calculates to 222.5 it will round to 220 not 225
         
 ## Functionality to add:
+- restrict bodyweight graph data to the past 2 months or so
 - create bug report button + icon in the bottom right corner.
   - put it on base_generic.html as fixed position bottom right corner
   - have this open a popup with a bug report form and when submitted will send to my email
