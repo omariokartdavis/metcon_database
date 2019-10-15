@@ -95,12 +95,25 @@ class SignUpForm(UserCreationForm):
                                        help_text='Selecting Coach or Gym Owner will also sign you up as an athlete.')
     gender = forms.ChoiceField(widget=forms.RadioSelect, choices=user_gender_choices)
     default_workout_gender = forms.ChoiceField(widget=forms.RadioSelect, choices=workout_gender_choices,
-                                               help_text='What is the gender that you will most often write workouts for? This will be the default gender chosen when you create a workout; however, you can change this during creation of any workout.') 
+                                               help_text='What is the gender that you will most often write workouts for? This will be the default gender chosen when you create a gerneric workout; however, you can change this during creation of any workout.') 
     
 
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'athlete_status', 'gender', 'default_workout_gender', 'password1', 'password2', )
+        
+class EditBodyweightForm(forms.Form):
+    bodyweight = forms.DecimalField(required=False)
+    
+class EditUserInfoForm(forms.Form):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    email = forms.EmailField(max_length=254)
+    athlete_status = forms.ChoiceField(widget=forms.RadioSelect, choices=athlete_status_choices,
+                                       help_text='Selecting Coach or Gym Owner will also sign you up as an athlete.')
+    gender = forms.ChoiceField(widget=forms.RadioSelect, choices=user_gender_choices)
+    workout_default_gender = forms.ChoiceField(widget=forms.RadioSelect, choices=workout_gender_choices,
+                                               help_text='What is the gender that you will most often write workouts for? This will be the default gender chosen when you create a generic workout; however, you can change this during creation of any workout.') 
         
 class AddAthleteToCoachForm(forms.Form):
     athlete_username = forms.CharField(max_length = 30, help_text='What is the athletes username? Lowercase letters only.')
