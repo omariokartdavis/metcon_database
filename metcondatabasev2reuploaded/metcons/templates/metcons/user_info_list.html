@@ -1,0 +1,43 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% if user.is_authenticated %}
+		<h1>User Settings</h1>
+		
+		<div class="tabContentReplacement">
+			<div class="listedWorkouts">
+				<div class='workoutContent'>
+					<form method="post">
+						{% csrf_token %}
+						<p>Bodyweight: {{ form.bodyweight }}</p>
+						<input type="submit" class="input_submit dropdownContainerWorkoutButtons_submit" value="Submit Bodyweight" name="edit bodyweight">
+					</form>
+				
+					<canvas id="bodyweight_chart_id"></canvas>
+					
+					<p>First Name: {{ user.first_name }}<br />
+					Last Name: {{ user.last_name }}<br />
+					Email: {{ user.email }}<br />
+					Athlete Status: {% if user.is_athlete %}Athlete{% elif user.is_coach %}Coach{% else %}Gym Owner {% endif %}<br />
+					Gender: {{ user.user_gender }}<br />
+					Default Workout Gender: {{ user.workout_default_gender }}</p>
+					<form class="post_workout_form" action="{% url 'edit_user_info' user.username %}">
+						<input type="submit" class='input_submit add_result_submit' value="Edit User Info" />
+					</form>
+				</div>
+			</div>
+		</div>
+	{% else %}
+		<div class='center_stuff'><p>Please login to view this page.</p></div>
+	{% endif %}
+{% endblock %}
+{% block extra_js %}
+	{% load static %}
+	<script type="text/javascript">
+		var bodyweight_weight = jQuery.parseJSON('{{bodyweight_weight|safe}}');
+		var bodyweight_date = jQuery.parseJSON('{{bodyweight_date|safe}}');
+		//var bodyweight_dict = jQuery.parseJSON('{{bodyweight_dict|safe}}');
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+	<script src="{% static 'js/user_info_list.js' %}"></script>
+{% endblock %}
