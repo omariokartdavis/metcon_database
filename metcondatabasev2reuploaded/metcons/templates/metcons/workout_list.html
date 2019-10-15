@@ -101,8 +101,8 @@
 						<div class="workoutContent">
 							<p><a class="workout_display_name" href="{{ workout.get_absolute_url }}">{{ workout.display_name }}</a>
 							<br />{{ workout.workout_text|linebreaks }}</p>
-							<p>Classification: {{ workout.classification }}
-							<br />Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+							<p>Classification: {{ workout.classification }}</p>
+							<p class='padding_bottom_required'>Movements: {% for movement in workout.movements.all %} {{ movement }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 						</div>
 					{% endfor %}
 				</div>
