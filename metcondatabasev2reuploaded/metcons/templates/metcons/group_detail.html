@@ -23,7 +23,7 @@
 							<ul>
 								{% for i in athletes_in_group %}
 									<li>
-										<p>{{ i.user.username }}</p>
+										<p class='{% if forloop.last %}padding_bottom_required{% endif %}'>{{ i.user.username }}</p>
 									</li>
 								{% endfor %}
 							</ul>
