@@ -504,7 +504,7 @@ hr {
 	margin-right: 20px;
 }
 
-.workoutContent ul.padding_bottom_required {
+.workoutContent ul.padding_bottom_required, .padding_bottom_required {
 	padding-bottom: 10px;
 }
 
