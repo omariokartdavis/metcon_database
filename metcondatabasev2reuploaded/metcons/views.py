@@ -14,7 +14,8 @@ from metcons.forms import SignUpForm, AddAthleteToCoachForm, AddCoachForm, \
     StrengthWorkoutFormset, CardioWorkoutFormset, CreateGeneralResultForm, \
     CreateStrengthResultForm, CreateCardioResultForm, ScheduleInstanceForm, EditScheduleForm, DeleteScheduleForm, \
     HideInstanceForm, EditInstanceForm, EditStrengthInstanceForm, EditCardioInstanceForm, EditGeneralResultForm, EditStrengthResultForm, \
-    EditCardioResultForm, CreateMovementForm, CreateStrengthProgramForm, CreatePersonalRecordForm, EditPersonalRecordForm
+    EditCardioResultForm, CreateMovementForm, CreateStrengthProgramForm, CreatePersonalRecordForm, EditPersonalRecordForm, \
+    EditBodyweightForm, EditUserInfoForm
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Q, F
@@ -23,6 +24,8 @@ import re
 from django.contrib.auth import login, authenticate
 from metcons.utils import Calendar
 from django.utils.safestring import mark_safe
+from django.core import serializers
+import json
 
 def index(request):
     """View function for home page of site"""
@@ -216,6 +219,105 @@ def profile(request, username):
     context['calendar'] = mark_safe(html_cal)
         
     return render(request, 'metcons/user_page.html', context=context)
+
+@login_required
+def user_info_list(request, username):
+    user = User.objects.get(username=request.user.username)
+    
+    
+    if request.method == 'POST':
+        if 'edit bodyweight' in request.POST:
+            form = EditBodyweightForm(request.POST)
+            if form.is_valid():
+                user.bodyweight = form.cleaned_data['bodyweight']
+                user.save()
+                
+                return HttpResponseRedirect(reverse('user_info_list', args=[request.user.username]))
+    else:
+        form = EditBodyweightForm(initial={'bodyweight': user.bodyweight})
+        bodyweight_dict = {}
+        bodyweight_dict_opposite = {}
+        weight = []
+        date = []
+        for i in user.history.all():
+            if i.bodyweight:
+                if timezone.localtime(i.history_date).date() in date:
+                    continue
+                    # this currently works because the most recent entry to bodyweight is the first in the list. so others will be ignored if the date is arlready there.
+                    #need to test this on multiple days to get accurate representation
+                weight.insert(0, i.bodyweight)
+                date.insert(0, timezone.localtime(i.history_date).date())
+                bodyweight_dict[timezone.localtime(i.history_date).date()] = i.bodyweight
+                bodyweight_dict_opposite[i.bodyweight] = timezone.localtime(i.history_date).date()
+            
+        js_data_weight = json.dumps(weight, default=str)
+        js_data_date = json.dumps(date, default=str)
+        #js_data = json.dumps(bodyweight_dict_opposite, default=str)
+
+    context = {
+            'user': user,
+            'form': form,
+            'bodyweight_weight': js_data_weight,
+            'bodyweight_date': js_data_date,
+            #'bodyweight_dict': js_data,
+            }
+    
+    return render(request, 'metcons/user_info_list.html', context=context)
+
+@login_required
+def edit_user_info(request, username):
+    user = User.objects.get(username=request.user.username)
+    
+    if request.method == 'POST':
+        form = EditUserInfoForm(request.POST)
+        if form.is_valid():
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.email = form.cleaned_data['email']
+            if form.cleaned_data['athlete_status'] == 'G':
+                if not GymOwner.objects.filter(user=user):
+                    GymOwner.objects.create(user=user)
+                user.is_gym_owner = True
+                user.is_coach = False
+                user.is_athlete = False
+                if not Coach.objects.filter(user=user):
+                    Coach.objects.create(user=user)
+            elif form.cleaned_data['athlete_status'] == 'C':
+                if not Coach.objects.filter(user=user):
+                    Coach.objects.create(user=user)
+                user.is_coach = True
+                user.is_gym_owner = False
+                user.is_athlete = False
+            else:
+                user.is_athlete=True
+                user.is_coach=False
+                user.is_gym_owner=False
+            user.user_gender = form.cleaned_data['gender']
+            user.workout_default_gender = form.cleaned_data['workout_default_gender']
+            user.save()
+            
+            return HttpResponseRedirect(reverse('user_info_list', args=[request.user.username]))
+
+    else:
+        if user.is_athlete:
+            athlete_status = 'A'
+        elif user.is_coach:
+            athlete_status = 'C'
+        else:
+            athlete_status = 'G'
+        form = EditUserInfoForm(initial={'first_name': user.first_name,
+                                         'last_name': user.last_name,
+                                         'email': user.email,
+                                         'athlete_status': athlete_status,
+                                         'gender': user.user_gender,
+                                         'workout_default_gender': user.workout_default_gender})
+        
+    context = {
+            'user': user,
+            'form': form,
+            }
+    
+    return render(request, 'metcons/edit_user_info.html', context=context)
 
 @login_required
 def personal_record_list(request, username):
@@ -1637,12 +1739,12 @@ def create_result(request, username, pk):
                             else:
                                 main_exercise_reps = form.cleaned_data['reps']
                                 string_main_exercise_reps = str(main_exercise_reps)
-                            main_exercise_weight = str(main_exercise.set_set.get(set_number=3).weight)
+                            main_exercise_weight = str(round(main_exercise.set_set.get(set_number=3).weight))
                             main_exercise_units = str(main_exercise.set_set.get(set_number=3).weight_units)
                             secondary_exercise = instance.strength_workout.strength_exercises.get(strength_exercise_number=2)
-                            secondary_exercise_weight = str(secondary_exercise.set_set.get(set_number=3).weight)
+                            secondary_exercise_weight = str(round(secondary_exercise.set_set.get(set_number=3).weight))
                             secondary_exercise_units = str(secondary_exercise.set_set.get(set_number=3).weight_units)
-                            all_result_texts = (main_exercise.movement.name + ': ' + string_main_exercise_reps + 'reps at ' + main_exercise_weight + main_exercise_units + '\n')
+                            all_result_texts = (main_exercise.movement.name + ': ' + string_main_exercise_reps + ' reps at ' + main_exercise_weight + main_exercise_units + '\n')
                             all_result_texts += (secondary_exercise.movement.name + ': 6 sets at ' + secondary_exercise_weight + secondary_exercise_units + '\n')
                             all_result_texts += form.cleaned_data['comments']
                             
@@ -1652,7 +1754,7 @@ def create_result(request, username, pk):
                             
                             
                             current_user = instance.current_user
-                            personal_record_main_exercise = PersonalWorkoutRecord.objects.filter(created_by_user=current_user, movement=main_exercise.movement)
+                            personal_record_main_exercise = PersonalWorkoutRecord.objects.get(created_by_user=current_user, movement=main_exercise.movement)
                             if main_exercise_reps > 1 and main_exercise_reps < 4:
                                 if personal_record_main_exercise.trainingmax.weight_units == 'lbs':
                                     personal_record_main_exercise.trainingmax.weight = F('training_max') + 5
@@ -1671,6 +1773,11 @@ def create_result(request, username, pk):
                                     personal_record_main_exercise.trainingmax.weight = F('training_max') + 5
                                     #personal_record_main_exercise.trainingmax.save()
                                     round_base = 2
+                            else:
+                                if personal_record_main_exercise.trainingmax.weight_units == 'lbs':
+                                    round_base=5
+                                else:
+                                    round_base=2
                             personal_record_main_exercise.trainingmax.save()
                             personal_record_main_exercise.trainingmax.refresh_from_db()
                             today = timezone.now().date()
