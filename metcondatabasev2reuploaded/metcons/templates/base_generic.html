@@ -102,6 +102,22 @@
 							<span class="tooltiptext">Create Workout</span>
 						</div>
 					</div>
+					<div class="bug_report_open_button_div">
+						<button type="button" class="bug_report_open_button"><i class="fas fa-bug"></i></button>
+						<span class="tooltiptext">Create Bug Report</span>
+					</div>
+					<div class="popup" id = "bug_report_popup">
+						<div class="popup2" id = "bug_report_popup2">
+							<button class="input_submit first_input_submit close_bug_report_button">Close</button>
+							<form method="post" action="{% url 'bug_report' user.username %}">
+								{% csrf_token %}
+								{% load show_bug_report_form %}
+								{% show_bug_report_form %}
+								<input type="submit" class="input_submit" value="Submit Bug Report">
+								<input type="hidden" name="next" value = "{{ request.path }}">
+							</form>
+						</div>
+					</div>
 				{% endif %}
 				<span id="right_sidenav_open_button">
 					{% if user.is_authenticated %}
