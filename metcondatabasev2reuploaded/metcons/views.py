@@ -2614,7 +2614,8 @@ def create_workout(request):
                         users_to_assign_program.append(current_user)
                 else:
                     users_to_assign_program.append(current_user)
-                if form.cleaned_data['strength_program'] == 'nSuns 531 LP':
+                nsuns = StrengthProgram.objects.get(name='nSuns 531 LP')
+                if form.cleaned_data['strength_program'] == nsuns:
                     strength_program = StrengthProgram.objects.get(name=form.cleaned_data['strength_program'])
                     day_variation = form.cleaned_data['day_variation']
                     main_bench_strength_workout = StrengthWorkout(created_by_user=current_user)
@@ -3152,6 +3153,8 @@ def create_workout(request):
                                 instance.add_date_to_be_completed(secondary_deadlift_start_date)
                                 
                     return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+                else:
+                    return render(request, 'metcons/create_workout.html', {'form2':form})
             else:
                 return render(request, 'metcons/create_workout.html', {'form2':form})
                         
@@ -3185,15 +3188,15 @@ def create_workout(request):
                 else:
                     form.fields.pop('group_to_assign')
             
-    context = {
-        'form1': form1,
-        'form2': form2,
-        'formset_strength': formset_strength,
-        'formset_cardio': formset_cardio,
-        'create_movement_form': create_movement_form,
-        }
-
-    return render(request, 'metcons/create_workout.html', context)
+        context = {
+            'form1': form1,
+            'form2': form2,
+            'formset_strength': formset_strength,
+            'formset_cardio': formset_cardio,
+            'create_movement_form': create_movement_form,
+            }
+    
+        return render(request, 'metcons/create_workout.html', context)
 
 
 @login_required
