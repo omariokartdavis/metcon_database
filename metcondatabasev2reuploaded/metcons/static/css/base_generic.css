@@ -165,6 +165,11 @@ input[type=text].datepicker {
 	max-width: 80%;
 }
 
+#bug_report_popup2 input[type=text], #bug_report_popup2 input[type=url] {
+	width: 80%;
+	max-width: 80%;
+}
+
 th {
 	/* width: 30%;
 	max-width: 30%; this is commented out because when it is active the datepicker on createworkout page is weird.*/
@@ -447,7 +452,7 @@ hr {
 	display: inline-block;
 }
 
-.home-search-create-buttons .tooltiptext {
+.home-search-create-buttons .tooltiptext, .bug_report_open_button_div .tooltiptext {
 	visibility: hidden;
 	width: 120px;
 	background-color: black;
@@ -461,7 +466,7 @@ hr {
 	margin-left: -60px;
 }
 
-.home-search-create-buttons .tooltip:hover .tooltiptext {
+.home-search-create-buttons .tooltip:hover .tooltiptext, .bug_report_open_button_div:hover .tooltiptext {
 	visibility: visible;
 }
 
@@ -600,4 +605,33 @@ hr {
 
 .lost_password_link {
 	text-decoration: none
+}
+
+.bug_report_open_button_div {
+  position: fixed;
+  bottom: 30px;
+  right: 60px;
+}
+
+.bug_report_open_button_div button {
+  display: block;
+  position: relative;
+  color: #66b2b2;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 30px;
+  background-color: transparent;
+  /*box-shadow: 0 0 0 1px rgba(0,0,0,.15);*/
+  padding: 0;
+  outline: none;
+}
+
+.bug_report_open_button_div button:hover {
+	color: white;
+	transition: 0.25s;
+}
+
+#bug_report_popup2 {
+	padding-top: 0;
 }
