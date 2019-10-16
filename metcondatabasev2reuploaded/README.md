@@ -2,8 +2,29 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
 
+## going to production checklist:
+- email backends
+- debug=false
+
+## 10/16/19
+at work (not on tablet or home)
+- metcondatabasev2reuploaded/settings.py
+- views.py
+- forms.py
+- urls.py
+- created in templatetags show_bug_report_form.py
+- base_generic.css
+- user_page.css
+- create_workout.js
+- base_generic.js
+- base_generic.html
+- created bug_report_form.html
+- create_workout.html
+- user_page.html
+
+
 ## 10/15/19
-on tablet (not on work or home)
+on tablet (not on home)
 - views.py
 
 ## 10/15/19
@@ -33,12 +54,15 @@ at work (not on home)
 - create_workout.html
 
 
-## functionality completed on 10/15/19
-- fixed create result issue for non 1+ days
-- adding padding to multiple pages
-- added user settings and edit pages
-- added bodyweight graph on user settings page
-- fixed strengthprogram creation issue now that it is a modelchoicefield
+## functionality completed on 10/16/19
+- create bug report button + icon in the bottom right corner.
+  - put it on base_generic.html as fixed position bottom right corner
+  - have this open a popup with a bug report form and when submitted will send to my email
+    - report form can have:
+      - url: copy the url the bug was seen on (should be the current url)
+      - type of bug: typo, 404 error, info missing/incorrect
+      - description: give as much detail as possible (in the paragraph that starts with "words words words..."
+        the third sentence has a typo on the word "Blah"
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -88,17 +112,22 @@ at work (not on home)
     nSuns 531 LP as a string but now the form returns a model. 
   - this could happen in movement, classification choice forms. fix is to change verification step to be equal to the model
     not a astring of the models name.
+- bug_report_form.html must be in the metcons/templates folder because thats where the templatetag searches for the html template
+- bug_report is done by creating a custom templatetag that holds the form and refers to an html template
+  - the html template deems how the templatetag should be represented when it is called on other templates
+  - then you can call {% load templatetagname %} and then use it by calling {% templatetagname %}
+  - this way the same template can be used multiple times on different pages aka how I made the bug report form show up everywhere
+- to compare historical records and find what changed:
+  - my_fields = [f.name for f in MyModel._meta.get_fields()]
+  - changed_fields = list(filter(lambda field: getattr(first_record,field,None)!=getattr(second_record,field,None), my_fields))
         
 ## Functionality to add:
+- redo create_workout forms to be like strength_program_for
+  - utilizing for field in form
+  - including form errors
+- add sport field to user model
+  - if sport is BB/powerlifting/oly/strength training set the default create_workout template to strength_workout
 - restrict bodyweight graph data to the past 2 months or so
-- create bug report button + icon in the bottom right corner.
-  - put it on base_generic.html as fixed position bottom right corner
-  - have this open a popup with a bug report form and when submitted will send to my email
-    - report form can have:
-      - url: copy the url the bug was seen on (should be the current url)
-      - type of bug: typo, 404 error, info missing/incorrect
-      - description: give as much detail as possible (in the paragraph that starts with "words words words..."
-        the third sentence has a typo on the word "Blah"
 - create graphs for personal records:
   - did this for bodyweight already. check user_info_list view for bodyweight example
 - enter every named workout into the database by hand
@@ -114,11 +143,6 @@ at work (not on home)
 - change strengthresultform to take setsxrepsxweightxunits and a comment instead of just result text
   - this will help with tracking progress later.
 - change result model for strength instances to allow sets, reps, weight, units and a comment
-- can add a model called "strength maxes" and foreignkey it to a user
-  - model would foreign key to a movement and have a weight for that movement
-  - could potentially have 1rm, 2rm, 3rm, 5rm, 10rm with associated weights for each
-  - when creating a result on strength workout it would have to update users personal maxes or create a new one if doesnt exist
-  - this way progress can be tracked.
 - create strength maxes page as well as add new strength max
   - add strength max contains list of movements and boxes for all rep max weights
 - can create leaderboard page for workouts/strength etc.
@@ -229,34 +253,11 @@ at work (not on home)
   -add name to workout model or workoutinstance model and allow for blank/null. If name exists list by name otherwise list
                 by "workout " + str(id)
   -would also change def `__str__` to if statement on if name exists otherwise same as above
-### Pagination:
-- add pagination to profile page.
-  - not sure what exactly would be paginated.
-    - this weeks workouts could maybe paginate by days?
-    - recent and incomplete workouts could just paginate workouts
-- add 'loading...' thing for infinite scroll
 ### For multiple sports:
-- number of sets as integer field
-  - this number from text input or dropdown would decide how many input boxes appear
-    - use javascript to hide input boxes until this box losses focus
-    - use javascript to prepopulate movement into boxes
-    - use javascript to potentially include supersetting
-    - have checkboxes for same weight for every set, same reps for every set so they can be autofilled
-      - if supersetting they apply to each movement individually
-        - (movement 1 all sets will have same weight and reps, movement 2 all sets will have same)
-- on the create workout template, create a dropdown that can switch between different forms for different workout types
-  - name all forms so the view can be seperated
-  - have the default form be based on users default sport
-  - could also just use multiple create workout buttons for different types. I like dropdown idea better if it can work
-- on the create_workout_view, handle the post requests based on form name
-- on the results and create_workout results, base the form and template off the workout/strengthworkout type
 - on the workout_list create a dropdown that can choose between any or all sports. default to users sport
 - create a field on user model that has choices of different sports
   - whatever sport they choose will be their default createworkout model and default workout list to search through
   - choices: Crossfit, BB/Power/Strength Training/Oly (In the future: track, swimming, gymnastics?)
-- set up a strength workout model and strength program model
-  - for strength programs, hold info about periodization rules etc. hold training maxes, days of the week when each workout ill be done
-- create Training Maxes field on user model for eventual strength programs?
 
 ## Styling:
 - style workouts on calendar for if completed or not completed that day
