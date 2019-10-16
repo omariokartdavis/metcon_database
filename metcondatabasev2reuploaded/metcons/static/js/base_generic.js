@@ -82,6 +82,37 @@ document.getElementById("right_sidenav_open_button").addEventListener("mouseover
 document.getElementById("right_side_nav_close_button").addEventListener("click", closeRightNav, false);
 document.getElementsByClassName("right-sidebar-nav")[0].addEventListener("mouseleave", closeRightNav, false);
 
+function openBugReportPopup() {
+	document.getElementsByClassName("backgroundDim")[0].style.visibility = "visible";
+	document.getElementsByClassName("backgroundDim")[0].style.opacity = "0.4";
+	document.getElementById("bug_report_popup").style.visibility = "visible";
+	document.getElementById("bug_report_popup").style.opacity = "1";
+	document.getElementById("bug_report_popup2").style.visibility = "visible";
+	document.getElementById("bug_report_popup2").style.opacity = "1";
+}
+
+function closeBugReportPopup() {
+	document.getElementsByClassName("backgroundDim")[0].style.opacity = "0";
+	document.getElementsByClassName("backgroundDim")[0].style.visibility = "hidden";
+	document.getElementById("bug_report_popup").style.opacity = "0";
+	document.getElementById("bug_report_popup").style.visibility = "hidden";
+	document.getElementById("bug_report_popup2").style.opacity = "0";
+	document.getElementById("bug_report_popup2").style.visibility = "hidden";
+}
+
+var openBugReportButtons = document.getElementsByClassName("bug_report_open_button")
+
+var i;
+for (var i = 0; i < openBugReportButtons.length; i++) {
+	openBugReportButtons[i].addEventListener("click", openBugReportPopup, false)
+}
+
+var closeBugReportButtons = document.getElementsByClassName("close_bug_report_button")
+
+var i;
+for (var i = 0; i < closeBugReportButtons.length; i++) {
+	closeBugReportButtons[i].addEventListener("click", closeBugReportPopup, false)
+}
 $(document).ready(function() {
     $('.datepicker').datepicker();
 });
