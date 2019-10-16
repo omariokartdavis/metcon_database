@@ -87,6 +87,11 @@ DateInput = partial(forms.DateInput, {'class': 'datepicker'})
 def get_default_localtime():
     return timezone.localtime(timezone.now())
 
+class BugReportForm(forms.Form):
+    url = forms.URLField(help_text='Copy the url of the page that contains the bug/issue. (If a link takes you to a failed page, copy the url of the page the link is on)')
+    bug_type = forms.CharField(max_length=40, label='Bug Type', help_text='Ex: "Typo", "404 error that should work", etc.')
+    bug_description = forms.CharField(widget=forms.Textarea, max_length=4000, label='Description', help_text='Be as specific and detailed as possible.')
+    
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
@@ -216,7 +221,7 @@ class CreateStrengthProgramForm(forms.Form):
     deadlift_max = forms.IntegerField(required=False, label='Deadlift One Rep Max')
     main_deadlift_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, label='Main Deadlift Start Date')
     secondary_bench_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False, label='Secondary Bench Start Date')
-    secondary_squat_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False, label='Secondary Bench Squat Date')
+    secondary_squat_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False, label='Secondary Squat Start Date')
     secondary_deadlift_start_date = forms.DateField(widget=DateInput(), initial=get_default_localtime, required=False, label='Secondary Deadlift Start Date')
     
     def __init__(self, *args, **kwargs):
