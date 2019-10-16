@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from metcons.models import User, Athlete, Coach, GymOwner, Group, Request, Classification, Movement, Workout, \
@@ -15,7 +15,7 @@ from metcons.forms import SignUpForm, AddAthleteToCoachForm, AddCoachForm, \
     CreateStrengthResultForm, CreateCardioResultForm, ScheduleInstanceForm, EditScheduleForm, DeleteScheduleForm, \
     HideInstanceForm, EditInstanceForm, EditStrengthInstanceForm, EditCardioInstanceForm, EditGeneralResultForm, EditStrengthResultForm, \
     EditCardioResultForm, CreateMovementForm, CreateStrengthProgramForm, CreatePersonalRecordForm, EditPersonalRecordForm, \
-    EditBodyweightForm, EditUserInfoForm
+    EditBodyweightForm, EditUserInfoForm, BugReportForm
 from django.utils import timezone
 import datetime as dt
 from django.db.models import Q, F
@@ -25,6 +25,7 @@ from django.contrib.auth import login, authenticate
 from metcons.utils import Calendar
 from django.utils.safestring import mark_safe
 import json
+from django.core.mail import mail_admins
 
 def index(request):
     
@@ -41,6 +42,26 @@ def index(request):
             }
         return render(request, 'index.html', context=context)
 
+@login_required
+def bug_report(request, username):
+    user = User.objects.get(username=request.user.username)
+    
+    if request.method == 'POST':
+        form = BugReportForm(request.POST)
+        if form.is_valid():
+            subject = form.cleaned_data['bug_type'] + ' Bug Report On Page: ' + form.cleaned_data['url']
+            message = ' User: ' + user.username + '\n \n Bug Type: ' + form.cleaned_data['bug_type'] + '\n \n Description: ' + form.cleaned_data['bug_description']
+            
+            #mail admins sends email to everyone listed in ADMINS list in metcondatabasev2reuploaded/settings.py file
+            mail_admins(subject=subject,
+                        message=message,
+                        fail_silently=False,
+                        )
+            
+            
+            next_page = request.POST.get('next', '/')
+            return redirect(next_page)
+            
 @login_required
 def profile(request, username):
     #if there isn't a completed date it is last then filtered by date_added_by_user
@@ -238,20 +259,28 @@ def user_info_list(request, username):
                 return HttpResponseRedirect(reverse('user_info_list', args=[request.user.username]))
     else:
         form = EditBodyweightForm(initial={'bodyweight': user.bodyweight})
-        bodyweight_dict = {}
-        bodyweight_dict_opposite = {}
+        #bodyweight_dict = {}
+        #bodyweight_dict_opposite = {}
         weight = []
         date = []
         for i in user.history.all():
             if i.bodyweight:
                 if timezone.localtime(i.history_date).date() in date:
+                    # this works because the most recent entry to bodyweight is the first in the list. so others will be ignored if the date is already there.
                     continue
-                    # this currently works because the most recent entry to bodyweight is the first in the list. so others will be ignored if the date is arlready there.
-                    #need to test this on multiple days to get accurate representation
+                    
+                prev_record = i.prev_record
+                my_fields = [f.name for f in User._meta.get_fields()]
+                
+                #if the only difference in records is last login, skip the record
+                changed_fields = list(filter(lambda field: getattr(i,field,None)!=getattr(prev_record,field,None), my_fields))
+                if changed_fields:
+                    if changed_fields[0] == 'last_login':
+                        continue
                 weight.insert(0, i.bodyweight)
                 date.insert(0, timezone.localtime(i.history_date).date())
-                bodyweight_dict[timezone.localtime(i.history_date).date()] = i.bodyweight
-                bodyweight_dict_opposite[i.bodyweight] = timezone.localtime(i.history_date).date()
+                #bodyweight_dict[timezone.localtime(i.history_date).date()] = i.bodyweight
+                #bodyweight_dict_opposite[i.bodyweight] = timezone.localtime(i.history_date).date()
             
         js_data_weight = json.dumps(weight, default=str)
         js_data_date = json.dumps(date, default=str)
@@ -1759,25 +1788,21 @@ def create_result(request, username, pk):
                             current_user = instance.current_user
                             personal_record_main_exercise = PersonalWorkoutRecord.objects.get(created_by_user=current_user, movement=main_exercise.movement)
                             if main_exercise_reps > 1 and main_exercise_reps < 4:
-                                if personal_record_main_exercise.trainingmax.weight_units == 'lbs':
-                                    personal_record_main_exercise.trainingmax.weight = F('training_max') + 5
-                                    #personal_record_main_exercise.trainingmax.save()
+                                if personal_record_main_exercise.history.most_recent().trainingmax.weight_units == 'lbs':
+                                    personal_record_main_exercise.history.most_recent().trainingmax.weight = F('weight') + 5
                                     round_base = 5
                                 else:
-                                    personal_record_main_exercise.trainingmax.weight = F('training_max') + 2
-                                    #personal_record_main_exercise.trainingmax.save()
+                                    personal_record_main_exercise.history.most_recent().trainingmax.weight = F('weight') + 2
                                     round_base = 2
                             elif main_exercise_reps >= 4:
-                                if personal_record_main_exercise.trainingmax.weight_units == 'lbs':
-                                    personal_record_main_exercise.trainingmax.weight = F('training_max') + 10
-                                    #personal_record_main_exercise.trainingmax.save()
+                                if personal_record_main_exercise.history.most_recent().trainingmax.weight_units == 'lbs':
+                                    personal_record_main_exercise.history.most_recent().trainingmax.weight = F('weight') + 10
                                     round_base = 5
                                 else:
-                                    personal_record_main_exercise.trainingmax.weight = F('training_max') + 5
-                                    #personal_record_main_exercise.trainingmax.save()
+                                    personal_record_main_exercise.history.most_recent().trainingmax.weight = F('weight') + 5
                                     round_base = 2
                             else:
-                                if personal_record_main_exercise.trainingmax.weight_units == 'lbs':
+                                if personal_record_main_exercise.history.most_recent().trainingmax.weight_units == 'lbs':
                                     round_base=5
                                 else:
                                     round_base=2
@@ -2614,9 +2639,10 @@ def create_workout(request):
                         users_to_assign_program.append(current_user)
                 else:
                     users_to_assign_program.append(current_user)
+                #the below is because I changed the form.field to a modelchoicefield so now I have to verify based on model object not model name
                 nsuns = StrengthProgram.objects.get(name='nSuns 531 LP')
                 if form.cleaned_data['strength_program'] == nsuns:
-                    strength_program = StrengthProgram.objects.get(name=form.cleaned_data['strength_program'])
+                    strength_program = nsuns
                     day_variation = form.cleaned_data['day_variation']
                     main_bench_strength_workout = StrengthWorkout(created_by_user=current_user)
                     main_bench_strength_workout.save()
