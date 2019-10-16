@@ -12,12 +12,12 @@
   opacity: 0.3;
 }
 
-.popup {
+.yesterdays_workouts_popup {
 	opacity: 1;
 	visibility: visible;
 }
 
-.popup2 {
+.yesterdays_workouts_popup2 {
 	opacity: 1;
 	visibility: visible;
 }
