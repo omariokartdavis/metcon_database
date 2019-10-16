@@ -52,19 +52,19 @@ function addMoreCardioMovements() {
 function openCreateMovementPopup() {
 	document.getElementsByClassName("backgroundDim")[0].style.visibility = "visible";
 	document.getElementsByClassName("backgroundDim")[0].style.opacity = "0.4";
-	document.getElementsByClassName("popup")[0].style.visibility = "visible";
-	document.getElementsByClassName("popup")[0].style.opacity = "1";
-	document.getElementsByClassName("popup2")[0].style.visibility = "visible";
-	document.getElementsByClassName("popup2")[0].style.opacity = "1";
+	document.getElementById("create_movement_popup").style.visibility = "visible";
+	document.getElementById("create_movement_popup").style.opacity = "1";
+	document.getElementById("create_movement_popup2").style.visibility = "visible";
+	document.getElementById("create_movement_popup2").style.opacity = "1";
 }
 
 function closeCreateMovementPopup() {
 	document.getElementsByClassName("backgroundDim")[0].style.opacity = "0";
 	document.getElementsByClassName("backgroundDim")[0].style.visibility = "hidden";
-	document.getElementsByClassName("popup")[0].style.opacity = "0";
-	document.getElementsByClassName("popup")[0].style.visibility = "hidden";
-	document.getElementsByClassName("popup2")[0].style.opacity = "0";
-	document.getElementsByClassName("popup2")[0].style.visibility = "hidden";
+	document.getElementById("create_movement_popup").style.opacity = "0";
+	document.getElementById("create_movement_popup").style.visibility = "hidden";
+	document.getElementById("create_movement_popup2").style.opacity = "0";
+	document.getElementById("create_movement_popup2").style.visibility = "hidden";
 }
 
 var openCreateMovementButtons = document.getElementsByClassName("open_create_movement_button")
