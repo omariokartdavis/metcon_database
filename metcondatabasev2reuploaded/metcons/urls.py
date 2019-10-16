@@ -45,4 +45,5 @@ urlpatterns = [
     path('<username>/personalrecords/<int:pk>/edit/', views.edit_personal_record, name='edit_personal_record'),
     path('<username>/userinfo/', views.user_info_list, name='user_info_list'),
     path('<username>/edituserinfo/', views.edit_user_info, name='edit_user_info'),
+    path('<username>/bugreport/', views.bug_report, name='bug_report'),
 ]
