@@ -3,7 +3,11 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 ## crossfit mainsite seems to post there workout anywhere form 1pm to 6pm Central Time (16-23 GMT)
 
 ## 10/15/19
-at work (not on home or tablet)
+on tablet (not on work or home)
+- views.py
+
+## 10/15/19
+at work (not on home)
 - views.py
 - models.py (migrations)
 - forms.py
@@ -23,82 +27,18 @@ at work (not on home or tablet)
 - workout_list.html
 
 ## 10/14/19
-at work (not on home or tablet)
+at work (not on home)
 - create_workout.js
 - create_workout.css
 - create_workout.html
 
-## 10/10/19
-at home (not on tablet)
-- movements_list.py
-- admin.py
-
-## 10/10/19
-at work (not on tablet)
-pip install django-simple-history
-- metcondatabasev2/settings.py
-- base_generic.html
-
-## 10/3/19
-at work (not on tablet)
-- get_most_recent_workouts.py
-- user_page.css
-
-## 9/29/19
-at home (not on tablet)
-- base_generic.js
-- created static/css/images and added 2 files
-- created static/css/jquery-ui.css
-- created static/js/jquery-ui.js
-
-## 9/27/19
-(at work) (not on tablet)
-- create_result.html
-
-## 9/26/19
-(at work) (not on tablet)
-- changed mainsite_most_recent_workout to get_most_recent_workouts.py (also changed name of func inside)
-- update.py
-- login.html
-- logged_out.html
-- password_reset_complete.html
-- password_reset_confirm.html
-- password_reset_done.html
-- password_reset_form.html
-- index.html
-- signup.html
-
-
-(not on tablet only)
-- created mainsite_most_recent_workout.py
-- mainsite_workouts.py
-- mainsite_most_recent_workout.py
-- movements_list.py (added 'Any' as cardio movement)
-- created update.py
-- metcons/apps.py
-- created create_result.css
-- create_workout.css
-- workout_list.css
-- create_workout.js
-- workout_list.js
-- add_workout_to_athletes.html
-- create_result.html
-- create_workout.html
-- remove_coach_or_athlete.html
-- user_page.html
-- workout_detail.html
-- workout_list.html
-
-## pages that aren't used and can be deleted:
-- remove_athletes_from_coach.html
-- remove_coaches_from_athlets.html
-- request_list.html
 
 ## functionality completed on 10/15/19
 - fixed create result issue for non 1+ days
 - adding padding to multiple pages
 - added user settings and edit pages
 - added bodyweight graph on user settings page
+- fixed strengthprogram creation issue now that it is a modelchoicefield
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -141,6 +81,13 @@ at home (not on tablet)
     - __gte=next_monday, strength_exercise__strengthworkout__workoutinstance_current_user=user, training_max=specificTM).distinct()
     - may not need to filter for current_user as trainingmax has reference to record which has reference to user
 - the round function for set weights will round 2.5 down to even 0. so if a weight calculates to 222.5 it will round to 220 not 225
+- be on the lookout for form referenced before assignment failures
+  - could be caused by changing some forms to use a modelchoice field instead of regular choice field and therefore a if statement
+    check is failing.
+  - this happened on create workout strength program where it was checking for form.cleaned_data['strength_program'] to be equal to
+    nSuns 531 LP as a string but now the form returns a model. 
+  - this could happen in movement, classification choice forms. fix is to change verification step to be equal to the model
+    not a astring of the models name.
         
 ## Functionality to add:
 - restrict bodyweight graph data to the past 2 months or so
