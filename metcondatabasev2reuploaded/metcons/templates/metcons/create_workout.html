@@ -45,118 +45,32 @@
 							{% csrf_token %}
 							<table>
 								<tbody>
-									<tr>
-										<th>
-											<label><strong>{{ form2.strength_program.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.strength_program }}
-										</td>
-									</tr>
-									<tr>
-										<th>
-											<label><strong>{{ form2.day_variation.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.day_variation }}
-										</td>
-									</tr>
-									<tr>
-										<th>
-											<label><strong>{{ form2.units.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.units }}
-										</td>
-									</tr>
-									<tr>
-										<th>
-											<label><strong>{{ form2.bench_max.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.bench_max }}
-										</td>
-									</tr>
-									<tr>
-										<th>
-											<label><strong>{{ form2.main_bench_start_date.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.main_bench_start_date }}
-										</td>
-									</tr>
-									<tr>
-										<th>
-											<label><strong>{{ form2.squat_max.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.squat_max }}
-										</td>
-									</tr>
-									<tr>
-										<th>
-											<label><strong>{{ form2.main_squat_start_date.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.main_squat_start_date }}
-										</td>
-									</tr>
-									<tr>
-										<th>
-											<label><strong>{{ form2.ohp_max.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.ohp_max }}
-										</td>
-									</tr>
-									<tr>
-										<th>
-											<label><strong>{{ form2.main_ohp_start_date.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.main_ohp_start_date }}
-										</td>
-									</tr>
-									<tr>
-										<th>
-											<label><strong>{{ form2.deadlift_max.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.deadlift_max }}
-										</td>
-									</tr>
-									<tr>
-										<th>
-											<label><strong>{{ form2.main_deadlift_start_date.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.main_deadlift_start_date }}
-										</td>
-									</tr>
-									<tr id='secondary_bench_start_date_row'>
-										<th>
-											<label><strong>{{ form2.secondary_bench_start_date.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.secondary_bench_start_date }}
-										</td>
-									</tr>
-									<tr id='secondary_squat_start_date_row'>
-										<th>
-											<label><strong>{{ form2.secondary_squat_start_date.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.secondary_squat_start_date }}
-										</td>
-									</tr>
-									<tr id='secondary_deadlift_start_date_row'>
-										<th>
-											<label><strong>{{ form2.secondary_deadlift_start_date.label }}:</strong></label>
-										</th>
-										<td>
-											{{ form2.secondary_deadlift_start_date }}
-										</td>
-									</tr>
+									{% for field in form2 %}
+										{{ field.errors }}
+										{% if field.label == "Athlete to assign" or field.label == "Group to assign" %}
+											{% if user.is_coach or user.is_gym_owner %}
+												{% if user.coach.athletes.all %}
+													<tr>
+														<th>
+															<label><strong>{{ field.label }}:</strong></label>
+														</th>
+														<td>
+															{{ field }}
+														</td>
+													</tr>
+												{% endif %}
+											{% endif %}
+										{% else %}
+											<tr {% if field.label == "Secondary Bench Start Date" %} id="secondary_bench_start_date_row"{% elif field.label == "Secondary Squat Start Date" %} id="secondary_squat_start_date_row"{% elif field.label == "Secondary Deadlift Start Date" %} id="secondary_deadlift_start_date_row"{% endif %}>
+												<th>
+													<label><strong>{{ field.label }}:</strong></label>
+												</th>
+												<td>
+													{{ field }}
+												</td>
+											</tr>
+										{% endif %}
+									{% endfor %}
 								</tbody>
 							</table>
 						</div>
@@ -472,8 +386,8 @@
 				{% endif %}
 			</div>
 		{% endif %}
-		<div class="popup">
-			<div class="popup2">
+		<div class="popup" id="create_movement_popup">
+			<div class="popup2" id="create_movement_popup2">
 				<button class="input_submit first_input_submit close_create_movement_button">Close</button>
 				<form class="create_movement_form" method="post">
 					{% csrf_token %}
