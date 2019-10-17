@@ -66,6 +66,7 @@ class MovementList:
         'Pistol': l,
         'Sumo Deadlift': l,
         'Lunge': l,
+        'Glue Ham Raise': l,
         'Overhead Squat': t,
         'Thruster': t,
         'Wall Ball': t,
