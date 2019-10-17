@@ -4,7 +4,20 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 
 ## going to production checklist:
 - email backends
-- debug=false
+- debug=false (already set to environment variable)
+- secret_key (already set to environment variable)
+- change get_most_recent_workout file to break after getting first workout and only run once per day (10pm?)
+  - currently it will keep getting workouts till it hits one that isn't in DB but when live this isn't necessary
+
+## install git at home and tablet via https://git-scm.com/downloads
+
+## 10/17/19
+at work (not on tablet or home)
+- settings.py
+- movements_list.py
+- views.py
+- base_generic.html
+- create_workout.html
 
 ## 10/16/19
 at work (not on tablet or home)
@@ -55,14 +68,12 @@ at work (not on home)
 
 
 ## functionality completed on 10/16/19
-- create bug report button + icon in the bottom right corner.
-  - put it on base_generic.html as fixed position bottom right corner
-  - have this open a popup with a bug report form and when submitted will send to my email
-    - report form can have:
-      - url: copy the url the bug was seen on (should be the current url)
-      - type of bug: typo, 404 error, info missing/incorrect
-      - description: give as much detail as possible (in the paragraph that starts with "words words words..."
-        the third sentence has a typo on the word "Blah"
+- fixed issue with personal_record_training_max_weight and adding based on heavy set reps
+- redo create_workout forms to be like strength_program_for
+  - utilizing for field in form
+  - including form errors
+- restrict bodyweight graph data to the past 2 months or so
+- added Glute Ham Raise to movements_list.py
 
 #### Notes:
 - sometimes django will not update css and javascript from seperate files because it thinks there has been no changes.
@@ -120,14 +131,15 @@ at work (not on home)
 - to compare historical records and find what changed:
   - my_fields = [f.name for f in MyModel._meta.get_fields()]
   - changed_fields = list(filter(lambda field: getattr(first_record,field,None)!=getattr(second_record,field,None), my_fields))
+- objects with historicalrecords cannot be updated via F() expressions
+  - django_simple_history puts any update in as creating a new history instance and F() expressions can only be used
+    to update not create new
         
 ## Functionality to add:
-- redo create_workout forms to be like strength_program_for
-  - utilizing for field in form
-  - including form errors
+- add another job to the schedule that pulls mainsite workouts (update.py) to update movements and classifications on workouts
+  - scheduled for every day at midnight
 - add sport field to user model
   - if sport is BB/powerlifting/oly/strength training set the default create_workout template to strength_workout
-- restrict bodyweight graph data to the past 2 months or so
 - create graphs for personal records:
   - did this for bodyweight already. check user_info_list view for bodyweight example
 - enter every named workout into the database by hand
