@@ -94,93 +94,35 @@
 								<div class="workoutContent">
 									<table>
 										<tbody>
-											<tr>
-												<th>
-													<label><strong>{{ form.movement.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.movement }}<button type="button" class="open_create_movement_button">Add Movement</button>
-												</td>
-											</tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.sets.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.sets }}
-												</td>
-											</tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.reps.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.reps }}
-												</td>
-											</tr>
-											<tr><th></th><td><span class="helptext">{{ form.reps.help_text }}</span></td></tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.weight.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.weight }}
-												</td>
-											</tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.weight_units.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.weight_units }}
-												</td>
-											</tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.comment.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.comment }}
-												</td>
-											</tr>
-											{% if forloop.first %}
-												{% if user.is_coach or user.is_gym_owner %}
-													{% if user.coach.athletes.all %}
-														<tr>
-															<th>
-																<label><strong>{{ form.athlete_to_assign.label }}:</strong></label>
-															</th>
-															<td>
-																{{ form.athlete_to_assign }}
-															</td>
-														</tr>
-														<tr>
-															<th>
-																<label><strong>{{ form.group_to_assign.label }}:</strong></label>
-															</th>
-															<td>
-																{{ form.group_to_assign }}
-															</td>
-														</tr>
-														<tr>
-															<th>
-																<label><strong>{{ form.hide_from_athletes.label }}:</strong></label>
-															</th>
-															<td>
-																{{ form.hide_from_athletes }}
-															</td>
-														</tr>
-														<tr>
-															<th>
-																<label><strong>{{ form.date_to_unhide.label }}:</strong></label>
-															</th>
-															<td>
-																{{ form.date_to_unhide }}
-															</td>
-														</tr>
+											{% for field in form %}
+												{{ field.errors }}
+												{% if field.label == "Athlete to assign" or field.label == "Group to assign" or field.label == "Hide from athletes" or field.label == "Date to unhide" %}
+													{% if forloop.parentloop.first %}
+														{% if user.is_coach or user.is_gym_owner %}
+															{% if user.coach.athletes.all %}
+																<tr>
+																	<th>
+																		<label><strong>{{ field.label }}:</strong></label>
+																	</th>
+																	<td>
+																		{{ field }}
+																	</td>
+																</tr>
+															{% endif %}
+														{% endif %}
 													{% endif %}
+												{% else %}
+													<tr>
+														<th>
+															<label><strong>{{ field.label }}:</strong></label>
+														</th>
+														<td>
+															{{ field }}{% if field.label == "Movement" %}<button type="button" class="open_create_movement_button">Add Movement</button>{% endif %}
+														</td>
+													</tr>
+													{% if field.label == "Reps" %}<tr><th></th><td><span class="helptext">{{ form.reps.help_text }}</span></td></tr>{% endif %}
 												{% endif %}
-											{% endif %}
+											{% endfor %}
 										</tbody>
 									</table>
 								</div>
@@ -215,13 +157,6 @@
 					</div>
 				</div>
 			</form>
-			{% if formset_strength.errors %}
-				{% for dict in formset_strength.errors %}
-					{% for k, v in dict.items %}
-						{{ k }}: {{ v }}
-					{% endfor %}
-				{% endfor %}
-			{% endif %}
 		</div>
 		<div class="workout_form" id="cardio_workout_form">
 			<form method='post'>
@@ -236,100 +171,44 @@
 								<div class="workoutContent">
 									<table>
 										<tbody>
-											<tr>
-												<th>
-													<label><strong>{{ form.movement.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.movement }}
-												</td>
-											</tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.distance.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.distance }}
-												</td>
-											</tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.distance_units.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.distance_units }}
-												</td>
-											</tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.reps.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.reps }}
-												</td>
-											</tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.rest_minutes.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.rest_minutes }}:{{ form.rest_seconds }}
-												</td>
-											</tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.pace.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.pace }}
-												</td>
-											</tr>
-											<tr>
-												<th>
-													<label><strong>{{ form.comment.label }}:</strong></label>
-												</th>
-												<td>
-													{{ form.comment }}
-												</td>
-											</tr>
-											{% if forloop.first %}
-												{% if user.is_coach or user.is_gym_owner %}
-													{% if user.coach.athletes.all %}
-														<tr>
-															<th>
-																<label><strong>{{ form.athlete_to_assign.label }}:</strong></label>
-															</th>
-															<td>
-																{{ form.athlete_to_assign }}
-															</td>
-														</tr>
-														<tr>
-															<th>
-																<label><strong>{{ form.group_to_assign.label }}:</strong></label>
-															</th>
-															<td>
-																{{ form.group_to_assign }}
-															</td>
-														</tr>
-														<tr>
-															<th>
-																<label><strong>{{ form.hide_from_athletes.label }}:</strong></label>
-															</th>
-															<td>
-																{{ form.hide_from_athletes }}
-															</td>
-														</tr>
-														<tr>
-															<th>
-																<label><strong>{{ form.date_to_unhide.label }}:</strong></label>
-															</th>
-															<td>
-																{{ form.date_to_unhide }}
-															</td>
-														</tr>
+											{% for field in form %}
+												{{ field.errors }}
+												{% if field.label == "Athlete to assign" or field.label == "Group to assign" or field.label == "Hide from athletes" or field.label == "Date to unhide" %}
+													{% if forloop.parentloop.first %}
+														{% if user.is_coach or user.is_gym_owner %}
+															{% if user.coach.athletes.all %}
+																<tr>
+																	<th>
+																		<label><strong>{{ field.label }}:</strong></label>
+																	</th>
+																	<td>
+																		{{ field }}
+																	</td>
+																</tr>
+															{% endif %}
+														{% endif %}
 													{% endif %}
+												{% elif field.label == "Rest" %}
+													<tr>
+														<th>
+															<label><strong>{{ field.label }}:</strong></label>
+														</th>
+														<td>
+															{{ field }}:{{ form.rest_seconds }}
+														</td>
+													</tr>
+												{% elif field.label == "Rest Seconds" %}
+												{% else %}
+													<tr>
+														<th>
+															<label><strong>{{ field.label }}:</strong></label>
+														</th>
+														<td>
+															{{ field }}
+														</td>
+													</tr>
 												{% endif %}
-											{% endif %}
+											{% endfor %}
 										</tbody>
 									</table>
 								</div>
@@ -369,13 +248,6 @@
 					</div>
 				</div>
 			</form>
-			{% if formset_cardio.errors %}
-				{% for dict in formset_cardio.errors %}
-					{% for error in dict.values %}
-						{{ error }}
-					{% endfor %}
-				{% endfor %}
-			{% endif %}
 		</div>
 		{% if user.is_coach or user.is_gym_owner %}
 			<div class="center_stuff">
