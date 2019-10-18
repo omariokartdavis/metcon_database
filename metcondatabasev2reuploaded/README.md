@@ -12,16 +12,9 @@ When deleting database: delete db and migrations. Run: makemigrations. migrate. 
 ## install git at home and tablet via https://git-scm.com/downloads
 
 ## 10/17/19
-at work (not on tablet or home)
-- settings.py
-- movements_list.py
-- views.py
-- base_generic.html
-- create_workout.html
-
-## 10/16/19
-at work (not on tablet or home)
+at work (not on tablet)
 - metcondatabasev2reuploaded/settings.py
+- movements_list.py
 - views.py
 - forms.py
 - urls.py
@@ -34,37 +27,6 @@ at work (not on tablet or home)
 - created bug_report_form.html
 - create_workout.html
 - user_page.html
-
-
-## 10/15/19
-on tablet (not on home)
-- views.py
-
-## 10/15/19
-at work (not on home)
-- views.py
-- models.py (migrations)
-- forms.py
-- urls.py
-- base_generic.css
-- created user_info_list.js
-- base_generic.html
-- create_personal_record.html
-- edit_personal_record.html
-- created edit_user_info.html
-- group_detail.html
-- personal_record_detail.html
-- personal_record_list.html
-- movement_list.html
-- movement_detail.html
-- created user_info_list.html
-- workout_list.html
-
-## 10/14/19
-at work (not on home)
-- create_workout.js
-- create_workout.css
-- create_workout.html
 
 
 ## functionality completed on 10/16/19
